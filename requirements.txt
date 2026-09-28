@@ -1,0 +1,19 @@
+# ROA (Research Open Analysis) — dependências
+# Python 3.10+ (testado em 3.12.8 com as versões abaixo)
+
+# ===== Obrigatórias =====
+PySide6>=6.5          # testado com 6.11
+pyqtgraph>=0.13       # testado com 0.14
+numpy>=1.24           # testado com 2.2
+scipy>=1.11           # testado com 1.14
+pyserial>=3.5
+
+# ===== Relatórios em PDF e figuras (recomendadas) =====
+matplotlib>=3.7
+reportlab>=4.0
+
+# ===== Opcionais: o programa avisa e segue sem elas =====
+mne>=1.5              # exportação FIF e leitura de alguns formatos
+pyedflib>=0.1.36      # exportação EDF/EDF+
+pylsl>=1.16           # streaming Lab Streaming Layer
+scikit-learn>=1.3     # classificadores do treinador BCI

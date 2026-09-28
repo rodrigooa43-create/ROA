@@ -1,0 +1,31 @@
+==================================================================
+ AVISO DE USO — ROA (OpenBionica)
+ OpenBionica
+==================================================================
+
+SOFTWARE DE PESQUISA — NÃO É DISPOSITIVO MÉDICO.
+
+O ROA é um software de PESQUISA e ENSINO para aquisição e
+análise de biossinais. Ele NÃO é um dispositivo médico certificado e NÃO foi
+submetido a avaliação/registro por agência reguladora (ex.: ANVISA, FDA, CE).
+
+POR ISSO:
+- NÃO use este software para DIAGNÓSTICO, TRATAMENTO, monitoramento clínico
+  de decisão, ou qualquer finalidade médica.
+- Os resultados, gráficos, classificações de BCI e indicadores de qualidade
+  são para fins de pesquisa/educação e NÃO substituem avaliação profissional.
+- A responsabilidade pelo uso é integralmente do pesquisador/operador.
+
+USO COM SERES HUMANOS:
+- Coletas com participantes humanos exigem aprovação de Comitê de Ética em
+  Pesquisa (CEP) e Termo de Consentimento Livre e Esclarecido (TCLE).
+- Trate os dados conforme a LGPD: minimize dados pessoais, use códigos de
+  voluntário em vez de nomes quando possível, e proteja o acesso aos arquivos.
+
+SEGURANÇA ELÉTRICA:
+- Use apenas hardware adequado, isolado e alimentado conforme as instruções do
+  fabricante (ex.: OpenBCI por bateria; iCelera Nano por power bank). NÃO
+  conecte o participante a equipamento ligado à rede elétrica sem isolação.
+
+Ao usar este software, você concorda com os termos acima.
+==================================================================

@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+title: "ROA (Research Open Analysis) — plataforma open source de biossinais (EEG/EMG/EOG/ECG)"
+message: "Se você usar este software em pesquisa, por favor cite-o."
+type: software
+authors:
+  - name: "Equipe ROA"
+    # Substitua pelo(s) nome(s) civil(is) do(s) autor(es) antes de publicar/arquivar.
+repository-code: "https://github.com/rodrigooa43-create/OpenBionica"
+url: "https://github.com/rodrigooa43-create/OpenBionica"
+license: MIT
+version: "1.9.0"
+date-released: "2026-09-25"
+keywords:
+  - EEG
+  - EMG
+  - ECG
+  - EOG
+  - biosignals
+  - BCI
+  - neuroscience
+  - open-source
+abstract: >-
+  Aplicativo livre e offline para coleta, visualização e análise de biossinais
+  em tempo real (EEG, EMG, ECG, EOG). Agnóstico de placa: reconhece e mapeia
+  canais por nome (10-20) e importa EDF/BDF/CSV de sistemas diversos. Traz
+  filtros, ERS/ERD, topografia (CSD), treinador BCI, remoção de artefatos por
+  ICA e um facilitador estatístico. Uso em pesquisa e educação; não é
+  dispositivo médico.
+# Para DOI: arquive um release no Zenodo e adicione aqui:
+# doi: "10.5281/zenodo.XXXXXXX"
