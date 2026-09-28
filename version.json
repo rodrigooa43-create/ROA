@@ -1,6 +1,7 @@
 {
-  "version": "1.1.0",
-  "py_url": "https://raw.githubusercontent.com/rodrigooa43-create/OpenBionica/main/EEG_Data_Collector.py",
-  "sha256": "99e4b156ef33f03d7d3368a94c579c91087b50bd1d41cd95ed4fc20be8feadb1",
-  "changelog": "v1.1.0 - leitor EDF/BDF com reparo automatico; ICA sem instalar nada (numpy); Consultor metodologico com referencias; topografia CSD/Laplaciano (vs LORETA); Area Maker com ERD%, potencia relativa e modelos prontos; estatistica guiada multi-sujeito; correcoes (E999, tema, mouse nos voluntarios). Bases de conhecimento embutidas."
+  "version": "1.9.0",
+  "py_url": "https://raw.githubusercontent.com/rodrigooa43-create/OpenBionica/main/ROA.py",
+  "sha256": "dd403192370dcc615b81b42c8183c426b69017b8a2ca0deee656c1ef57a78a46",
+  "changelog": "1.9.0: modo simples (exame) como padrao, em resposta a critica de usabilidade: tela inicial em uma coluna, porta achada sozinha, filtro do exame ao conectar, barra de acao com os passos 1-2-3 e um so botao em destaque, Relatorio PDF a um clique; o modo completo devolve a interface da 1.8.4 sem reiniciar. Relatorio PDF descreve EMG, ECG e EoG; simulacao gera cada tipo de sinal a 250 Hz sem perda; Topografia redesenhada (spline esferica, barra com unidade nas tres vistas, ERD% com sinal); fonte resolvida em qualquer entrada; achados das capturas do guia de imagens corrigidos; guia, Manual do Usuario e Manual Tecnico refeitos nos nove idiomas.",
+  "size": 6773700
 }
