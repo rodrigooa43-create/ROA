@@ -9,6 +9,55 @@ Todas as mudanças notáveis deste projeto. Formato baseado em [Keep a Changelog
 
 ## [Não lançado]
 
+### Adicionado
+- **Abertura rápida com tela de abertura (P9).** O lançador
+  `EEG_Data_Collector.py` deixou de recompilar o `ROA.py` inteiro a cada
+  abertura (6,7 s medidos no Windows): compila uma vez para um `.pyc` em
+  cache (`.roa_cache/` ao lado do programa ou, sem permissão de escrita,
+  `%LOCALAPPDATA%\ROA\cache`), invalidado sozinho quando o `ROA.py` ou a
+  versão do Python mudam, e roda o `.pyc`. Na primeira abertura a compilação
+  roda num processo à parte, para a animação não congelar. Enquanto carrega,
+  uma tela leve mostra a logo do ROA entrando com fade e uma linha de sinal se
+  desenhando, com o progresso em palavras nos 9 idiomas e fundo claro ou
+  escuro conforme o tema salvo; ela some com um fade assim que a primeira
+  janela aparece, sem atraso de propósito, e funciona até com um `ROA.py`
+  antigo. `--sem-splash` (ou `ROA_SEM_SPLASH=1`) desliga a tela.
+- **Atualizador também atualiza o lançador** quando o `version.json` trouxer
+  as chaves novas `launcher_url` e `launcher_sha256` (opcionais: manifestos
+  antigos seguem funcionando). Só grava se o `.py` do lançador existir ao lado
+  do programa, depois de o `ROA.py` já estar gravado, com SHA-256 conferido e
+  o arquivo compilando; se falhar, avisa e o programa segue com o lançador
+  atual. Sem `update_config.json`, a verificação usa o manifesto do repositório
+  oficial (`VERSION_URL_PADRAO`); o arquivo, quando existe, continua mandando.
+- `ferramentas/mede_arranque.py` mede o tempo até a primeira tela; bateria de
+  testes offscreen em `testes/` (`python testes/roda_todos.py`) e pipeline de
+  tradução em `ferramentas/` (`coleta_faltantes.py` → `trad/<lote>/` →
+  `aplica_trad.py`), com `testes/test_vazamento_idioma.py` garantindo que toda
+  chave de `tr()` existe nos 8 idiomas.
+
+### Alterado
+- **Importações pesadas adiadas (P9).** `scipy.signal` e `scipy.fft` passam a
+  ser importados na primeira vez que são usados (`_ModuloAdiado`), não na
+  abertura: `import scipy.signal` sozinho custava 1,2 s (puxa scipy.stats,
+  interpolate e optimize) e nada disso é preciso para a tela inicial. As
+  funções chamadas são as mesmas; só o momento do import muda.
+- **Medição do arranque** (Linux da nuvem, Python 3.11; no Windows do autor a
+  compilação custava 6,7 s, então o ganho lá é bem maior). Tempo até a tela
+  inicial desenhada, mediana de 3 aberturas:
+
+  | Como abre | Antes (1.9.0) | Depois |
+  |---|---|---|
+  | lançador, aberturas seguintes (cache pronto) | 2,03 s | **0,90 s** |
+  | lançador, primeira abertura (compila e grava o cache) | 2,03 s | 1,59 s |
+  | `python ROA.py` direto (compila sempre) | 2,02 s | 1,13 s |
+  | só `import ROA`, sem `.pyc` | 2,64 s | 1,35 s → 0,02 s de carga do `.pyc` |
+
+- URL do repositório atualizada para `github.com/rodrigooa43-create/ROA` em
+  `CODE_URL`, no catálogo de erros (E308, E402, E403, E404) nos 9 idiomas e em
+  `CITATION.cff`; a URL antiga (`.../OpenBionica`) redireciona. `version.json`
+  não foi tocado (é publicação).
+
+
 ## [1.9.0] — 2026-09-25
 
 Responde à **crítica de usabilidade** de 17/09/2026: o programa era bom, mas

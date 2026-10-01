@@ -27,7 +27,7 @@ Tradução de textos novos: `python ferramentas/coleta_faltantes.py --lote <nome
 | Pedido | Estado | Observações |
 |---|---|---|
 | Infra (branch, testes, ferramentas de tradução) | feito | `testes/`, `ferramentas/`, `revisao/`, `.gitignore` |
-| P9 Abrir rápido + logo animada | a fazer | medição-base feita (abaixo) |
+| P9 Abrir rápido + logo animada | **feito** | lançador com cache + splash; scipy adiado; medidas no CHANGELOG |
 | P1 Só os canais em uso | a fazer | |
 | P2 Painéis em gavetas | a fazer | |
 | P4 Perfis de uso | a fazer | depende do catálogo do P2 |
@@ -36,7 +36,7 @@ Tradução de textos novos: `python ferramentas/coleta_faltantes.py --lote <nome
 | P7 Replay coração e olhos | a fazer | |
 | P8 Replay integrado em "Rever uma gravação" | a fazer | |
 | P5 Documentação | ao longo + passada final | |
-| Pendências antigas (URLs OpenBionica → ROA) | a fazer | |
+| Pendências antigas (URLs OpenBionica → ROA) | **feito** | CODE_URL, catálogo E308/E402-404 (9 idiomas), CITATION.cff; version.json não tocado |
 
 ## Medições (P9) — base, antes das mudanças
 
@@ -60,13 +60,27 @@ mas as proporções valem:
 
 ## O que fica para o Windows
 
+- **P9**: medir o arranque no PC do autor (`python ferramentas/mede_arranque.py 5` e
+  `--sem-cache`), conferir a splash em monitor real (DPI alto, dois monitores) e
+  rebuildar o `.exe` com o novo `EEG_Data_Collector.py` (o exe antigo continua
+  funcionando com o ROA.py novo, só sem cache nem splash). `publicar_update.py`
+  pode passar a escrever `launcher_url` e `launcher_sha256` no `version.json`.
+- **URLs**: `update_config.json` distribuído com o programa ainda aponta para
+  `.../OpenBionica/main/version.json` (redireciona; trocar na próxima publicação).
+
 - Fotos do guia de imagens (lista será preenchida por pedido).
 - PDFs finais dos manuais (textos-fonte atualizados aqui).
 - `.exe`, empacotamento e `publicar_update.py`.
 
 ## Decisões que o autor precisa tomar
 
-(preenchido ao longo das etapas)
+1. **Manifesto padrão sem update_config.json** (P9): instalações sem o arquivo
+   passam a consultar `VERSION_URL_PADRAO` (raw do repositório ROA) quando a
+   pessoa clica em "Verificar atualizações". Antes mostravam "não configurada".
+   Continua manual e opcional; reverter é apagar 3 linhas em `_check_updates_manual`.
+2. **Cache do lançador na pasta do programa** (`.roa_cache/`): fica ao lado do
+   `.exe` quando a pasta é gravável, senão em `%LOCALAPPDATA%\ROA\cache`.
+   Se preferir sempre em LOCALAPPDATA, inverter a ordem em `pasta_cache()`.
 
 ## Resultados dos testes
 

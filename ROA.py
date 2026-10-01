@@ -68,8 +68,52 @@ import serial
 import serial.tools.list_ports
 from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6.QtCore import QThread, QTimer, Signal
-from scipy import signal as scipy_signal
-from scipy.fft import rfft, rfftfreq
+
+# ============================================================
+# scipy.signal e scipy.fft ADIADOS (1.10.0, pedido P9 "abrir rápido")
+# ------------------------------------------------------------
+# `import scipy.signal` custa de 1 a 2 s (puxa scipy.stats, interpolate e
+# optimize) e nada disso é preciso para a tela inicial aparecer. O proxy
+# abaixo só importa o módulo na PRIMEIRA leitura de um atributo (por exemplo
+# scipy_signal.butter) e daí em diante repassa direto: as funções chamadas são
+# as mesmas, só o momento do import muda. rfft/rfftfreq seguem a mesma ideia.
+# ============================================================
+class _ModuloAdiado:
+    """Substituto de um módulo pesado: importa na primeira vez que um atributo
+    é lido e, depois, repassa tudo para o módulo real.
+
+    Uso: scipy_signal = _ModuloAdiado("scipy.signal"); scipy_signal.butter(...)
+    funciona exatamente como antes, mas o import acontece aqui, sob demanda.
+    """
+
+    def __init__(self, nome):
+        self._nome = nome
+        self._mod = None
+
+    def _carrega(self):
+        """Importa o módulo real (uma vez) e o devolve."""
+        if self._mod is None:
+            import importlib
+            self._mod = importlib.import_module(self._nome)
+        return self._mod
+
+    def __getattr__(self, attr):
+        # só chega aqui para atributos que o proxy não tem: os do módulo real
+        return getattr(self._carrega(), attr)
+
+
+scipy_signal = _ModuloAdiado("scipy.signal")
+_scipy_fft = _ModuloAdiado("scipy.fft")
+
+
+def rfft(*args, **kwargs):
+    """scipy.fft.rfft, importado só no primeiro uso (ver _ModuloAdiado)."""
+    return _scipy_fft.rfft(*args, **kwargs)
+
+
+def rfftfreq(*args, **kwargs):
+    """scipy.fft.rfftfreq, importado só no primeiro uso (ver _ModuloAdiado)."""
+    return _scipy_fft.rfftfreq(*args, **kwargs)
 
 # ============================================================
 # Dependências opcionais — detecção SEM importar (lazy import)
@@ -449,6 +493,10 @@ class I18N:
 
     # Dicionários ENGLISH — chaves em pt-BR
     _en = {
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Opening the program…",
+        "Montando a tela inicial…": "Building the home screen…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "The launcher (EEG_Data_Collector.py) could not be updated; the program keeps working with the current one.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "midline",
         "lado esquerdo": "left side",
@@ -2065,7 +2113,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Terms of Use acceptance not persisted",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "You accepted the terms, but the acceptance could not be recorded on disk. The wizard will reappear the next time the program is opened. Check disk space/permissions.",
         "Termo de Uso completo ausente (resumo exibido)": "Full Terms of Use missing (summary shown)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "The full text of the Terms of Use was not found; showing the summary version. The full document is at https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "The full text of the Terms of Use was not found; showing the summary version. The full document is at https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Settings not saved on exit",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "Your settings could not be saved on exit. Check space/permissions. Do you want to close anyway?",
         "Manifesto de update inválido/incompleto": "Invalid/incomplete update manifest",
@@ -2073,11 +2121,11 @@ class I18N:
         "SHA-256 do download não confere": "Download SHA-256 does not match",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "The downloaded update is corrupted or tampered with and was not applied. Check your connection and try again; the current version was preserved.",
         "Update sem assinatura SHA-256": "Update without SHA-256 signature",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "This update does not include a verification signature (SHA-256). For safety, download the new version manually at https://github.com/rodrigooa43-create/OpenBionica.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "This update does not include a verification signature (SHA-256). For safety, download the new version manually at https://github.com/rodrigooa43-create/ROA.",
         "Falha ao gravar o arquivo atualizado": "Failed to write the updated file",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "The update could not be written (no permission in the program folder, or the app is open in another window). Close other copies / run as administrator, or download it manually at https://github.com/rodrigooa43-create/OpenBionica.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "The update could not be written (no permission in the program folder, or the app is open in another window). Close other copies / run as administrator, or download it manually at https://github.com/rodrigooa43-create/ROA.",
         "update_config.json corrompido": "update_config.json corrupted",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "The update configuration file is corrupted. Update checking was disabled; download updates manually at https://github.com/rodrigooa43-create/OpenBionica.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "The update configuration file is corrupted. Update checking was disabled; download updates manually at https://github.com/rodrigooa43-create/ROA.",
         "Exportação EDF indisponível (pyedflib ausente)": "EDF export unavailable (pyedflib missing)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "EDF export unavailable: the pyedflib library is not installed. Install it with pip install pyedflib or use another format (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "FIF export unavailable (MNE missing)",
@@ -4254,6 +4302,10 @@ class I18N:
 
     # Dicionários ESPAÑOL — chaves em pt-BR
     _es = {
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Abriendo el programa…",
+        "Montando a tela inicial…": "Montando la pantalla inicial…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "El lanzador (EEG_Data_Collector.py) no pudo actualizarse; el programa sigue funcionando con el actual.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "línea media",
         "lado esquerdo": "lado izquierdo",
@@ -5870,7 +5922,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Aceptación de los Términos de Uso no guardada",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "Aceptó los términos, pero no se pudo registrar la aceptación en disco. El asistente volverá a aparecer en la próxima apertura. Compruebe espacio/permisos.",
         "Termo de Uso completo ausente (resumo exibido)": "Términos de Uso completos ausentes (se muestra el resumen)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "No se encontró el texto completo de los Términos de Uso; se muestra la versión resumida. El documento completo está en https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "No se encontró el texto completo de los Términos de Uso; se muestra la versión resumida. El documento completo está en https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Configuración no guardada al salir",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "No se pudo guardar su configuración al salir. Compruebe espacio/permisos. ¿Desea cerrar de todos modos?",
         "Manifesto de update inválido/incompleto": "Manifiesto de actualización inválido/incompleto",
@@ -5878,11 +5930,11 @@ class I18N:
         "SHA-256 do download não confere": "El SHA-256 de la descarga no coincide",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "La actualización descargada está corrupta o manipulada y no se aplicó. Compruebe su conexión e inténtelo de nuevo; se conservó la versión actual.",
         "Update sem assinatura SHA-256": "Actualización sin firma SHA-256",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Esta actualización no incluye firma de verificación (SHA-256). Por seguridad, descargue la nueva versión manualmente en https://github.com/rodrigooa43-create/OpenBionica.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "Esta actualización no incluye firma de verificación (SHA-256). Por seguridad, descargue la nueva versión manualmente en https://github.com/rodrigooa43-create/ROA.",
         "Falha ao gravar o arquivo atualizado": "Fallo al escribir el archivo actualizado",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "No se pudo escribir la actualización (sin permiso en la carpeta del programa, o la app está abierta en otra ventana). Cierre otras copias / ejecute como administrador, o descárguela manualmente en https://github.com/rodrigooa43-create/OpenBionica.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "No se pudo escribir la actualización (sin permiso en la carpeta del programa, o la app está abierta en otra ventana). Cierre otras copias / ejecute como administrador, o descárguela manualmente en https://github.com/rodrigooa43-create/ROA.",
         "update_config.json corrompido": "update_config.json corrupto",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "El archivo de configuración de actualización está corrupto. La comprobación se desactivó; descargue las actualizaciones manualmente en https://github.com/rodrigooa43-create/OpenBionica.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "El archivo de configuración de actualización está corrupto. La comprobación se desactivó; descargue las actualizaciones manualmente en https://github.com/rodrigooa43-create/ROA.",
         "Exportação EDF indisponível (pyedflib ausente)": "Exportación EDF no disponible (pyedflib ausente)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "Exportación EDF no disponible: la biblioteca pyedflib no está instalada. Instálela con pip install pyedflib o use otro formato (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "Exportación FIF no disponible (MNE ausente)",
@@ -8059,6 +8111,10 @@ class I18N:
 
     # Dicionários ITALIANO / FRANCÊS / CHINÊS — gerados na revisão ago/2026
     _it = {
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Apertura del programma…",
+        "Montando a tela inicial…": "Preparazione della schermata iniziale…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "Il lanciatore (EEG_Data_Collector.py) non ha potuto essere aggiornato; il programma continua a funzionare con quello attuale.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "linea mediana",
         "lado esquerdo": "lato sinistro",
@@ -9675,7 +9731,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Accettazione dei Termini d'Uso non salvata",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "Hai accettato i termini, ma non è stato possibile registrare l'accettazione su disco. La procedura guidata riapparirà alla prossima apertura. Verifica spazio/permessi.",
         "Termo de Uso completo ausente (resumo exibido)": "Termini d'Uso completi mancanti (mostrato il riassunto)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "Il testo completo dei Termini d'Uso non è stato trovato; viene mostrata la versione riassunta. Il documento completo è su https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "Il testo completo dei Termini d'Uso non è stato trovato; viene mostrata la versione riassunta. Il documento completo è su https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Impostazioni non salvate all'uscita",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "Non è stato possibile salvare le tue impostazioni all'uscita. Verifica spazio/permessi. Vuoi chiudere comunque?",
         "Manifesto de update inválido/incompleto": "Manifesto di aggiornamento non valido/incompleto",
@@ -9683,11 +9739,11 @@ class I18N:
         "SHA-256 do download não confere": "Lo SHA-256 del download non corrisponde",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "L'aggiornamento scaricato è corrotto o manomesso e non è stato applicato. Verifica la connessione e riprova; la versione attuale è stata conservata.",
         "Update sem assinatura SHA-256": "Aggiornamento senza firma SHA-256",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Questo aggiornamento non include la firma di verifica (SHA-256). Per sicurezza, scarica la nuova versione manualmente da https://github.com/rodrigooa43-create/OpenBionica.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "Questo aggiornamento non include la firma di verifica (SHA-256). Per sicurezza, scarica la nuova versione manualmente da https://github.com/rodrigooa43-create/ROA.",
         "Falha ao gravar o arquivo atualizado": "Impossibile scrivere il file aggiornato",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Non è stato possibile scrivere l'aggiornamento (permesso negato nella cartella del programma, oppure l'app è aperta in un'altra finestra). Chiudi le altre copie / esegui come amministratore, oppure scarica manualmente da https://github.com/rodrigooa43-create/OpenBionica.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "Non è stato possibile scrivere l'aggiornamento (permesso negato nella cartella del programma, oppure l'app è aperta in un'altra finestra). Chiudi le altre copie / esegui come amministratore, oppure scarica manualmente da https://github.com/rodrigooa43-create/ROA.",
         "update_config.json corrompido": "update_config.json corrotto",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Il file di configurazione dell'aggiornamento è corrotto. La verifica è stata disattivata; scarica gli aggiornamenti manualmente da https://github.com/rodrigooa43-create/OpenBionica.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "Il file di configurazione dell'aggiornamento è corrotto. La verifica è stata disattivata; scarica gli aggiornamenti manualmente da https://github.com/rodrigooa43-create/ROA.",
         "Exportação EDF indisponível (pyedflib ausente)": "Esportazione EDF non disponibile (pyedflib mancante)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "Esportazione EDF non disponibile: la libreria pyedflib non è installata. Installala con pip install pyedflib o usa un altro formato (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "Esportazione FIF non disponibile (MNE mancante)",
@@ -11824,6 +11880,10 @@ class I18N:
     }
 
     _fr = {
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Ouverture du programme…",
+        "Montando a tela inicial…": "Préparation de l'écran d'accueil…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "Le lanceur (EEG_Data_Collector.py) n'a pas pu être mis à jour ; le programme continue de fonctionner avec l'actuel.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "ligne médiane",
         "lado esquerdo": "côté gauche",
@@ -13440,7 +13500,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Acceptation des Conditions d'utilisation non enregistrée",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "Vous avez accepté les conditions, mais l'acceptation n'a pas pu être enregistrée sur le disque. L'assistant réapparaîtra au prochain démarrage. Vérifiez l'espace disque et les permissions.",
         "Termo de Uso completo ausente (resumo exibido)": "Conditions d'utilisation complètes absentes (résumé affiché)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "Le texte complet des Conditions d'utilisation est introuvable ; la version résumée est affichée. Le document complet est sur https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "Le texte complet des Conditions d'utilisation est introuvable ; la version résumée est affichée. Le document complet est sur https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Réglages non enregistrés à la fermeture",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "Vos réglages n'ont pas pu être enregistrés à la fermeture. Vérifiez l'espace disque et les permissions. Voulez-vous fermer quand même ?",
         "Manifesto de update inválido/incompleto": "Manifeste de mise à jour invalide/incomplet",
@@ -13448,11 +13508,11 @@ class I18N:
         "SHA-256 do download não confere": "Le SHA-256 du téléchargement ne correspond pas",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "La mise à jour téléchargée est corrompue ou altérée et n'a pas été appliquée. Vérifiez votre connexion et réessayez ; la version actuelle a été préservée.",
         "Update sem assinatura SHA-256": "Mise à jour sans signature SHA-256",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Cette mise à jour n'inclut pas de signature de vérification (SHA-256). Par sécurité, téléchargez la nouvelle version manuellement sur https://github.com/rodrigooa43-create/OpenBionica.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "Cette mise à jour n'inclut pas de signature de vérification (SHA-256). Par sécurité, téléchargez la nouvelle version manuellement sur https://github.com/rodrigooa43-create/ROA.",
         "Falha ao gravar o arquivo atualizado": "Échec de l'écriture du fichier mis à jour",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "La mise à jour n'a pas pu être écrite (pas de permission dans le dossier du programme, ou l'application est ouverte dans une autre fenêtre). Fermez les autres copies / exécutez-le en tant qu'administrateur, ou téléchargez manuellement sur https://github.com/rodrigooa43-create/OpenBionica.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "La mise à jour n'a pas pu être écrite (pas de permission dans le dossier du programme, ou l'application est ouverte dans une autre fenêtre). Fermez les autres copies / exécutez-le en tant qu'administrateur, ou téléchargez manuellement sur https://github.com/rodrigooa43-create/ROA.",
         "update_config.json corrompido": "update_config.json corrompu",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Le fichier de configuration de mise à jour est corrompu. La vérification a été désactivée ; téléchargez les mises à jour manuellement sur https://github.com/rodrigooa43-create/OpenBionica.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "Le fichier de configuration de mise à jour est corrompu. La vérification a été désactivée ; téléchargez les mises à jour manuellement sur https://github.com/rodrigooa43-create/ROA.",
         "Exportação EDF indisponível (pyedflib ausente)": "Export EDF indisponible (pyedflib absente)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "Export EDF indisponible : la bibliothèque pyedflib n'est pas installée. Installez-la avec pip install pyedflib ou utilisez un autre format (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "Export FIF indisponible (MNE absente)",
@@ -15589,6 +15649,10 @@ class I18N:
     }
 
     _zh = {
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "正在打开程序…",
+        "Montando a tela inicial…": "正在生成初始界面…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "启动器（EEG_Data_Collector.py）无法更新；程序将继续使用当前的启动器运行。",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "中线",
         "lado esquerdo": "左侧",
@@ -17205,7 +17269,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "未能保存对使用条款的接受",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "您已接受条款，但无法将接受记录写入磁盘。下次启动时向导将再次出现。请检查空间／权限。",
         "Termo de Uso completo ausente (resumo exibido)": "缺少完整使用条款（显示摘要）",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "未找到使用条款全文；显示摘要版本。完整文档位于 https://github.com/rodrigooa43-create/OpenBionica。",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "未找到使用条款全文；显示摘要版本。完整文档位于 https://github.com/rodrigooa43-create/ROA。",
         "Configurações não salvas ao sair": "退出时设置未保存",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "退出时无法保存您的设置。请检查空间／权限。是否仍要关闭？",
         "Manifesto de update inválido/incompleto": "更新清单无效／不完整",
@@ -17213,11 +17277,11 @@ class I18N:
         "SHA-256 do download não confere": "下载的SHA-256不匹配",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "下载的更新已损坏或被篡改，未被应用。请检查网络连接并重试；已保留当前版本。",
         "Update sem assinatura SHA-256": "更新没有SHA-256签名",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "此更新不包含验证签名（SHA-256）。为安全起见，请从 https://github.com/rodrigooa43-create/OpenBionica 手动下载新版本。",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "此更新不包含验证签名（SHA-256）。为安全起见，请从 https://github.com/rodrigooa43-create/ROA 手动下载新版本。",
         "Falha ao gravar o arquivo atualizado": "写入更新文件失败",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "无法写入更新（程序文件夹无权限，或应用在另一个窗口中打开）。请关闭其他副本／以管理员身份运行，或从 https://github.com/rodrigooa43-create/OpenBionica 手动下载。",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "无法写入更新（程序文件夹无权限，或应用在另一个窗口中打开）。请关闭其他副本／以管理员身份运行，或从 https://github.com/rodrigooa43-create/ROA 手动下载。",
         "update_config.json corrompido": "update_config.json损坏",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "更新配置文件已损坏。更新检查已被禁用；请从 https://github.com/rodrigooa43-create/OpenBionica 手动下载更新。",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "更新配置文件已损坏。更新检查已被禁用；请从 https://github.com/rodrigooa43-create/ROA 手动下载更新。",
         "Exportação EDF indisponível (pyedflib ausente)": "EDF导出不可用（缺少pyedflib）",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "EDF导出不可用：未安装pyedflib库。请用 pip install pyedflib 安装，或使用其他格式（FIF/BIDS）。",
         "Exportação FIF indisponível (MNE ausente)": "FIF导出不可用（缺少MNE）",
@@ -19356,6 +19420,10 @@ class I18N:
 
     # Dicionários DEUTSCH — chaves em pt-BR
     _de = {
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Das Programm wird geöffnet…",
+        "Montando a tela inicial…": "Startbildschirm wird aufgebaut…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "Der Starter (EEG_Data_Collector.py) konnte nicht aktualisiert werden; das Programm läuft mit dem bisherigen weiter.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "Mittellinie",
         "lado esquerdo": "linke Seite",
@@ -20972,7 +21040,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Annahme der Nutzungsbedingungen nicht gespeichert",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "Sie haben die Bedingungen angenommen, aber die Annahme konnte nicht auf der Festplatte gespeichert werden. Der Assistent erscheint beim nächsten Start erneut. Prüfen Sie Speicherplatz/Berechtigungen.",
         "Termo de Uso completo ausente (resumo exibido)": "Vollständige Nutzungsbedingungen fehlen (Zusammenfassung angezeigt)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "Der vollständige Text der Nutzungsbedingungen wurde nicht gefunden; die Kurzfassung wird angezeigt. Das vollständige Dokument liegt unter https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "Der vollständige Text der Nutzungsbedingungen wurde nicht gefunden; die Kurzfassung wird angezeigt. Das vollständige Dokument liegt unter https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Einstellungen beim Beenden nicht gespeichert",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "Ihre Einstellungen konnten beim Beenden nicht gespeichert werden. Prüfen Sie Speicherplatz/Berechtigungen. Trotzdem schließen?",
         "Manifesto de update inválido/incompleto": "Update-Manifest ungültig/unvollständig",
@@ -20980,11 +21048,11 @@ class I18N:
         "SHA-256 do download não confere": "SHA-256 des Downloads stimmt nicht überein",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "Das heruntergeladene Update ist beschädigt oder manipuliert und wurde nicht angewendet. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut; die aktuelle Version blieb erhalten.",
         "Update sem assinatura SHA-256": "Update ohne SHA-256-Signatur",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Dieses Update enthält keine Prüfsignatur (SHA-256). Laden Sie die neue Version zur Sicherheit manuell unter https://github.com/rodrigooa43-create/OpenBionica herunter.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "Dieses Update enthält keine Prüfsignatur (SHA-256). Laden Sie die neue Version zur Sicherheit manuell unter https://github.com/rodrigooa43-create/ROA herunter.",
         "Falha ao gravar o arquivo atualizado": "Aktualisierte Datei konnte nicht geschrieben werden",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Das Update konnte nicht geschrieben werden (keine Berechtigung im Programmordner, oder die App ist in einem anderen Fenster geöffnet). Schließen Sie andere Kopien / führen Sie das Programm als Administrator aus, oder laden Sie es manuell unter https://github.com/rodrigooa43-create/OpenBionica herunter.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "Das Update konnte nicht geschrieben werden (keine Berechtigung im Programmordner, oder die App ist in einem anderen Fenster geöffnet). Schließen Sie andere Kopien / führen Sie das Programm als Administrator aus, oder laden Sie es manuell unter https://github.com/rodrigooa43-create/ROA herunter.",
         "update_config.json corrompido": "update_config.json beschädigt",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Die Update-Konfigurationsdatei ist beschädigt. Die Prüfung wurde deaktiviert; laden Sie Updates manuell unter https://github.com/rodrigooa43-create/OpenBionica herunter.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "Die Update-Konfigurationsdatei ist beschädigt. Die Prüfung wurde deaktiviert; laden Sie Updates manuell unter https://github.com/rodrigooa43-create/ROA herunter.",
         "Exportação EDF indisponível (pyedflib ausente)": "EDF-Export nicht verfügbar (pyedflib fehlt)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "EDF-Export nicht verfügbar: die Bibliothek pyedflib ist nicht installiert. Installieren Sie sie mit pip install pyedflib oder verwenden Sie ein anderes Format (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "FIF-Export nicht verfügbar (MNE fehlt)",
@@ -23121,6 +23189,10 @@ class I18N:
 
     # Dicionários JAPANESE — chaves em pt-BR
     _ja = {
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "プログラムを開いています…",
+        "Montando a tela inicial…": "ホーム画面を準備しています…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "ランチャー（EEG_Data_Collector.py）を更新できませんでした。プログラムは現在のランチャーで引き続き動作します。",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "正中線",
         "lado esquerdo": "左側",
@@ -24737,7 +24809,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "利用規約の同意が保存されませんでした",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "規約に同意しましたが、同意をディスクに記録できませんでした。次回起動時にウィザードが再表示されます。容量／権限を確認してください。",
         "Termo de Uso completo ausente (resumo exibido)": "利用規約の全文がありません（要約を表示）",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "利用規約の全文が見つからないため、要約版を表示しています。全文は https://github.com/rodrigooa43-create/OpenBionica にあります。",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "利用規約の全文が見つからないため、要約版を表示しています。全文は https://github.com/rodrigooa43-create/ROA にあります。",
         "Configurações não salvas ao sair": "終了時に設定が保存されませんでした",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "終了時に設定を保存できませんでした。容量／権限を確認してください。それでも閉じますか？",
         "Manifesto de update inválido/incompleto": "更新マニフェストが無効／不完全",
@@ -24745,11 +24817,11 @@ class I18N:
         "SHA-256 do download não confere": "ダウンロードのSHA-256が一致しません",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "ダウンロードした更新は破損または改ざんされており、適用されませんでした。接続を確認してやり直してください。現在のバージョンは保持されました。",
         "Update sem assinatura SHA-256": "SHA-256署名のない更新",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "この更新には検証署名（SHA-256）が含まれていません。安全のため、新バージョンを https://github.com/rodrigooa43-create/OpenBionica から手動でダウンロードしてください。",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "この更新には検証署名（SHA-256）が含まれていません。安全のため、新バージョンを https://github.com/rodrigooa43-create/ROA から手動でダウンロードしてください。",
         "Falha ao gravar o arquivo atualizado": "更新ファイルの書き込みに失敗しました",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "更新を書き込めませんでした（プログラムフォルダに権限がない、またはアプリが別のウィンドウで開いています）。他のコピーを閉じるか、管理者として実行するか、または https://github.com/rodrigooa43-create/OpenBionica から手動でダウンロードしてください。",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "更新を書き込めませんでした（プログラムフォルダに権限がない、またはアプリが別のウィンドウで開いています）。他のコピーを閉じるか、管理者として実行するか、または https://github.com/rodrigooa43-create/ROA から手動でダウンロードしてください。",
         "update_config.json corrompido": "update_config.jsonが破損",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "更新設定ファイルが破損しています。確認は無効化されました。更新は https://github.com/rodrigooa43-create/OpenBionica から手動でダウンロードしてください。",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "更新設定ファイルが破損しています。確認は無効化されました。更新は https://github.com/rodrigooa43-create/ROA から手動でダウンロードしてください。",
         "Exportação EDF indisponível (pyedflib ausente)": "EDFエクスポート利用不可（pyedflibなし）",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "EDFエクスポートは利用できません。pyedflibライブラリがインストールされていません。pip install pyedflib でインストールするか、別の形式（FIF/BIDS）を使用してください。",
         "Exportação FIF indisponível (MNE ausente)": "FIFエクスポート利用不可（MNEなし）",
@@ -26886,6 +26958,10 @@ class I18N:
 
     # Dicionários RUSSIAN — chaves em pt-BR
     _ru = {
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Открытие программы…",
+        "Montando a tela inicial…": "Подготовка начального экрана…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "Загрузчик (EEG_Data_Collector.py) не удалось обновить; программа продолжает работать с текущим.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "средняя линия",
         "lado esquerdo": "левая сторона",
@@ -28502,7 +28578,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Принятие Условий использования не сохранено",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "Вы приняли условия, но принятие не удалось записать на диск. Мастер появится снова при следующем запуске. Проверьте место/права.",
         "Termo de Uso completo ausente (resumo exibido)": "Отсутствует полный текст Условий использования (показана сводка)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "Полный текст Условий использования не найден; показана краткая версия. Полный документ: https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "Полный текст Условий использования не найден; показана краткая версия. Полный документ: https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Настройки не сохранены при выходе",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "Не удалось сохранить ваши настройки при выходе. Проверьте место/права. Всё равно закрыть?",
         "Manifesto de update inválido/incompleto": "Манифест обновления недопустим/неполон",
@@ -28510,11 +28586,11 @@ class I18N:
         "SHA-256 do download não confere": "SHA-256 загрузки не совпадает",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "Загруженное обновление повреждено или подменено и не применено. Проверьте соединение и повторите; текущая версия сохранена.",
         "Update sem assinatura SHA-256": "Обновление без подписи SHA-256",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Это обновление не содержит проверочной подписи (SHA-256). Для безопасности загрузите новую версию вручную: https://github.com/rodrigooa43-create/OpenBionica.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "Это обновление не содержит проверочной подписи (SHA-256). Для безопасности загрузите новую версию вручную: https://github.com/rodrigooa43-create/ROA.",
         "Falha ao gravar o arquivo atualizado": "Сбой записи обновлённого файла",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Не удалось записать обновление (нет прав на папку программы или приложение открыто в другом окне). Закройте другие копии / запустите от имени администратора или загрузите обновление вручную: https://github.com/rodrigooa43-create/OpenBionica.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "Не удалось записать обновление (нет прав на папку программы или приложение открыто в другом окне). Закройте другие копии / запустите от имени администратора или загрузите обновление вручную: https://github.com/rodrigooa43-create/ROA.",
         "update_config.json corrompido": "update_config.json повреждён",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Файл конфигурации обновления повреждён. Проверка отключена; загружайте обновления вручную: https://github.com/rodrigooa43-create/OpenBionica.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "Файл конфигурации обновления повреждён. Проверка отключена; загружайте обновления вручную: https://github.com/rodrigooa43-create/ROA.",
         "Exportação EDF indisponível (pyedflib ausente)": "Экспорт EDF недоступен (нет pyedflib)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "Экспорт EDF недоступен: библиотека pyedflib не установлена. Установите её (pip install pyedflib) или используйте другой формат (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "Экспорт FIF недоступен (нет MNE)",
@@ -32737,7 +32813,11 @@ APP_YEAR    = 2026
 TERMS_VERSION = "1.0"   # versao do Termo de Uso; bump => assistente reaparece p/ re-aceite
 # Repositorio do codigo (mesmo fluxo do GitHub-pull / version.json) — usado para
 # carimbar PROVENIENCIA nos arquivos gerados (reprodutibilidade/auditoria).
-CODE_URL    = "https://github.com/rodrigooa43-create/OpenBionica"
+# O repositório se chamava OpenBionica; a URL antiga redireciona para esta.
+CODE_URL    = "https://github.com/rodrigooa43-create/ROA"
+# Manifesto de versão usado quando a instalação não tem update_config.json
+# (1.10.0). Quando o arquivo existe, o que está nele continua mandando.
+VERSION_URL_PADRAO = "https://raw.githubusercontent.com/rodrigooa43-create/ROA/main/version.json"
 
 
 # ============================================================
@@ -61655,6 +61735,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         except Exception:
             cfg = {}
         url = (cfg or {}).get("version_url", "")
+        if not url and not os.path.exists(cfg_path):
+            # Sem update_config.json ao lado do programa (1.10.0): usa o
+            # manifesto do repositório oficial. O arquivo, se existir, manda.
+            url = VERSION_URL_PADRAO
         if not url or "SEU_USUARIO" in url:
             QtWidgets.QMessageBox.information(self, tr("Atualizações"),
                 tr("A atualização automática não está configurada nesta instalação.\n\nEste "
@@ -61704,6 +61788,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                    "Apenas o código é baixado; nenhum dado seu é enviado.").format(novo, APP_VERSION, changelog)) \
                 != QtWidgets.QMessageBox.StandardButton.Yes:
             return
+        aviso_lancador = ""
         try:
             blob = _get(manifest["py_url"], 60)
             expected = (manifest.get("sha256") or "").lower().strip()
@@ -61724,13 +61809,57 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             try: _shutil.copyfile(py_path, py_path + ".bak")
             except Exception: pass
             os.replace(tmp, py_path)                 # troca atômica
+            # O lançador só é tocado DEPOIS de o ROA.py estar gravado: se falhar,
+            # a atualização principal já valeu.
+            aviso_lancador = self._atualizar_lancador(manifest, _get, _hashlib, _shutil)
         except Exception as exc:
             self._notify_error("E401" if "SHA-256" in str(exc) else "E403",
                                str(exc), exc=exc)
             return
         QtWidgets.QMessageBox.information(self, tr("Atualização aplicada"),
             tr("Atualizado para a versão {0}.\n\nFeche e abra o aplicativo para usar a "
-               "nova versão.").format(novo))
+               "nova versão.").format(novo)
+            + ("\n\n" + aviso_lancador if aviso_lancador else ""))
+
+    def _atualizar_lancador(self, manifest, _get, _hashlib, _shutil):
+        """Atualiza também o lançador (EEG_Data_Collector.py) quando o manifesto
+        traz launcher_url + launcher_sha256, chaves novas da 1.10.0.
+
+        Manifestos antigos não têm as chaves e nada acontece, então instalações
+        antigas seguem como estavam. Só grava se o lançador .py existir ao lado
+        do programa (no .exe ele vem embutido). O arquivo baixado precisa pelo
+        menos compilar: um lançador quebrado impediria o programa de abrir.
+        Falha aqui não desfaz a atualização do ROA.py: devolve um aviso em texto
+        para a caixa final, ou "" quando não há o que dizer.
+        """
+        url = (manifest.get("launcher_url") or "").strip()
+        esperado = (manifest.get("launcher_sha256") or "").lower().strip()
+        if not url:
+            return ""
+        destino = os.path.join(SCRIPT_DIR, "EEG_Data_Collector.py")
+        if not os.path.exists(destino):
+            return ""
+        try:
+            if not esperado:
+                raise ValueError("manifesto sem launcher_sha256")
+            blob = _get(url, 60)
+            if _hashlib.sha256(blob).hexdigest().lower() != esperado:
+                raise ValueError("SHA-256 do lançador não confere")
+            compile(blob, destino, "exec")
+            tmp = destino + ".new"
+            with open(tmp, "wb") as f:
+                f.write(blob)
+            try:
+                _shutil.copyfile(destino, destino + ".bak")
+            except Exception:
+                pass
+            os.replace(tmp, destino)
+            logging.getLogger("eeg").info("lançador atualizado: %s", destino)
+            return ""
+        except Exception as exc:
+            logging.getLogger("eeg").info("lançador não atualizado: %s", exc)
+            return tr("O lançador (EEG_Data_Collector.py) não pôde ser atualizado; "
+                      "o programa continua funcionando com o atual.")
 
     def _update_status_state(self, text=None):
         """Atualiza a barra de status do rodapé com o estado atual."""
@@ -68789,13 +68918,13 @@ ERROR_CATALOG = {
     'E305': ('Layout salvo com painel inexistente', 'Um ou mais painéis do seu layout salvo não existem nesta versão e foram substituídos pelo padrão. Reorganize em Visualizar → Layout Custom.', False),
     'E306': ('Salvar layout/tema reportou sucesso falso', 'A configuração foi aplicada, mas não pôde ser salva para as próximas sessões (veja o aviso sobre config.json).', False),
     'E307': ('Aceite do Termo de Uso não persistido', 'Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.', True),
-    'E308': ('Termo de Uso completo ausente (resumo exibido)', 'O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.', False),
+    'E308': ('Termo de Uso completo ausente (resumo exibido)', 'O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.', False),
     'E309': ('Configurações não salvas ao sair', 'Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?', True),
     'E400': ('Manifesto de update inválido/incompleto', 'O servidor respondeu, mas as informações da nova versão estão incompletas/corrompidas. Tente mais tarde; sua versão atual foi mantida.', False),
     'E401': ('SHA-256 do download não confere', 'A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.', True),
-    'E402': ('Update sem assinatura SHA-256', 'Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.', True),
-    'E403': ('Falha ao gravar o arquivo atualizado', 'Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.', True),
-    'E404': ('update_config.json corrompido', 'O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.', False),
+    'E402': ('Update sem assinatura SHA-256', 'Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.', True),
+    'E403': ('Falha ao gravar o arquivo atualizado', 'Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.', True),
+    'E404': ('update_config.json corrompido', 'O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.', False),
     'E500': ('Exportação EDF indisponível (pyedflib ausente)', 'Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).', True),
     'E501': ('Exportação FIF indisponível (MNE ausente)', 'Exportação FIF indisponível: a biblioteca MNE não está instalada (pip install mne). Use EDF/BIDS como alternativa.', True),
     'E502': ('Relatório PDF indisponível (reportlab/matplotlib)', 'Geração de PDF indisponível: faltam reportlab e/ou matplotlib (pip install reportlab matplotlib).', True),
@@ -80229,6 +80358,52 @@ def _install_excepthook(logger):
 # ============================================================
 # Entry point
 # ============================================================
+def _splash_lancador():
+    """Tela de abertura do lançador (EEG_Data_Collector.py 1.10+), se houver.
+
+    O lançador a registra em sys.modules["roa_splash"] com progresso(texto) e
+    fechar(). Rodando `python ROA.py` direto, ou com um lançador antigo, não
+    existe e tudo aqui vira no-op.
+    """
+    return sys.modules.get("roa_splash")
+
+
+def _splash_progresso(texto):
+    """Escreve uma frase na tela de abertura, se ela existir."""
+    sp = _splash_lancador()
+    if sp is not None:
+        try:
+            sp.progresso(texto)
+        except Exception:
+            pass
+
+
+def _medir_arranque_se_pedido(app):
+    """Gancho de medição do arranque (ferramentas/mede_arranque.py).
+
+    Com a variável de ambiente ROA_MEDIR_ARRANQUE = instante inicial (time.time()
+    do processo que mediu), imprime "ROA_ARRANQUE_PRONTO <segundos>" assim que a
+    primeira tela (assistente, tela inicial ou janela) estiver desenhada e
+    encerra o processo. Idempotente: a primeira chamada vale.
+    """
+    t0 = os.environ.get("ROA_MEDIR_ARRANQUE")
+    if not t0 or getattr(app, "_roa_medindo", False):
+        return
+    app._roa_medindo = True
+
+    def _pronto():
+        # dois giros do loop para a janela recém-mostrada chegar a pintar
+        app.processEvents()
+        app.processEvents()
+        try:
+            dt = time.time() - float(t0)
+        except ValueError:
+            dt = -1.0
+        print("ROA_ARRANQUE_PRONTO %.3f" % dt, flush=True)
+        os._exit(0)
+    QtCore.QTimer.singleShot(0, _pronto)
+
+
 def main():
     # reaproveita a QApplication se o launcher (auto-update) já tiver criado uma
     """Ponto de entrada do aplicativo: prepara QApplication, logging, tema e
@@ -80321,6 +80496,7 @@ def main():
     if needs_wizard and "--no-wizard" not in sys.argv:
         app.setStyleSheet(build_stylesheet(COLORS))   # estilo p/ o assistente
         wiz = FirstRunWizard(early_config)
+        _medir_arranque_se_pedido(app)
         if wiz.exec() != QtWidgets.QDialog.DialogCode.Accepted:
             logger.info("Termo de uso recusado pelo usuário — encerrando.")
             sys.exit(0)                                # sem consentimento -> nao abre
@@ -80360,8 +80536,10 @@ def main():
             temp_vols = VolunteerRegistry(early_config.save_directory)
         except Exception:
             temp_vols = None
+        _splash_progresso(tr("Montando a tela inicial…"))
         while True:
             launcher = LauncherScreen(config=early_config, volunteers_mgr=temp_vols)
+            _medir_arranque_se_pedido(app)
             result = launcher.exec()
             # "Modo completo (pesquisa)" na tela simples: o nível já foi
             # gravado; reabre o launcher, agora o de 3 painéis.
@@ -80381,6 +80559,7 @@ def main():
     if app.styleSheet() != _qss:
         app.setStyleSheet(_qss)
 
+    _splash_progresso(tr("Abrindo o programa…"))
     window = EEGCollectorWindow()
     # Aplica a escolha do launcher (porta, modo, expansão, tipo de aquisição)
     if launcher_choice is not None:
@@ -80392,7 +80571,15 @@ def main():
     if app.styleSheet() != _qss:
         app.setStyleSheet(_qss)
     # do tamanho da tela útil (notebook maximizado); geometria salva só se couber
+    _medir_arranque_se_pedido(app)
     window.mostrar_na_tela()
+    # a tela de abertura some sozinha ao ver a janela; aqui é só garantia
+    _sp = _splash_lancador()
+    if _sp is not None:
+        try:
+            _sp.fechar()
+        except Exception:
+            pass
     sys.exit(app.exec())
 
 
