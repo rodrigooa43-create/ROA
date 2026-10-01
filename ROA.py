@@ -31365,6 +31365,28 @@ def layout_multimodal(n):
     return (base + ["EEG"] * MAX_CHANNELS)[:MAX_CHANNELS]
 
 
+def canais_por_tipo(tipos, n_em_uso, tipo):
+    """Índices dos canais EM USO (0..n_em_uso-1) cujo tipo configurado é `tipo`.
+
+    Função pura, sem janela: a tela ao vivo chega aqui pelos helpers da
+    EEGCollectorWindow (_canais_em_uso_tipo), o offline/PDF podem passar os
+    tipos do summary.json e os testes a chamam direto. Canal sem tipo na lista
+    conta como "EEG", como no resto do programa; `tipo` None devolve todos os
+    canais em uso. Com 8 canais e exame EMG o launcher marca os 64 como EMG:
+    sem este corte o mapa canais×tempo e os combos listavam CH1..CH64 (P1)."""
+    try:
+        n = int(n_em_uso or 0)
+    except (TypeError, ValueError):
+        n = 0
+    tipos = list(tipos or [])
+    saida = []
+    for ch in range(max(0, n)):
+        t = tipos[ch] if ch < len(tipos) else "EEG"
+        if tipo is None or t == tipo:
+            saida.append(ch)
+    return saida
+
+
 def descreve_layout_multimodal(n):
     """A divisão de layout_multimodal em palavras comuns (tela inicial e
     aviso do cabeçalho)."""
@@ -40081,23 +40103,32 @@ class CoContractionMapDialog(QtWidgets.QDialog):
 
     # ------------------------------------------------------------------
     def _popular_canais(self):
-        """Lista os canais marcados como EMG, com o músculo quando definido."""
-        for cb in (self.cb_flex, self.cb_ext):
-            cb.clear()
+        """Lista só os canais EMG em uso, com o músculo quando definido,
+        mantendo o par escolhido quando os canais ainda existem.
+
+        A janela principal chama de novo (_refresh_listas_canais) quando o
+        número ou o tipo dos canais muda com o mapa aberto (P1)."""
         tipos = getattr(self.main.config, "channel_signal_types", [])
         musc = getattr(self.main.config, "emg_channel_muscle", [])
-        achou = 0
-        for ch in range(MAX_CHANNELS):
-            if ch < len(tipos) and tipos[ch] != "EMG":
-                continue
-            if ch >= self.main.num_channels:
-                continue
+        n = int(getattr(self.main, "num_channels", BASE_CHANNELS) or BASE_CHANNELS)
+        canais = canais_por_tipo(tipos, n, "EMG")
+        anteriores = (self.cb_flex.currentData(), self.cb_ext.currentData())
+        for cb in (self.cb_flex, self.cb_ext):
+            cb.blockSignals(True)
+            cb.clear()
+        for ch in canais:
             nome = musc[ch] if ch < len(musc) and musc[ch] != "(não definido)" else ""
-            rot = f"CH{ch + 1}" + (f" — {nome}" if nome else "")
+            rot = f"CH{ch + 1}" + (f" — {tr(nome)}" if nome else "")
             self.cb_flex.addItem(rot, ch)
             self.cb_ext.addItem(rot, ch)
-            achou += 1
-        if achou >= 2:
+        restaurou = []
+        for cb, ant in zip((self.cb_flex, self.cb_ext), anteriores):
+            i = cb.findData(ant) if isinstance(ant, int) and ant >= 0 else -1
+            if i >= 0:
+                cb.setCurrentIndex(i)
+            restaurou.append(i >= 0)
+            cb.blockSignals(False)
+        if len(canais) >= 2 and not restaurou[1]:
             self.cb_ext.setCurrentIndex(1)
 
     def _norm(self, ch, valor):
@@ -44765,6 +44796,134 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         """O nível global da interface é o Simples? Lê o config, não o combo:
         a visibilidade é aplicada em _build_ui, antes de o combo existir."""
         return getattr(self.config, "ui_level", "simples") == "simples"
+
+    # ------------------------------------------------------------------
+    # P1 — "só os canais em uso": helpers únicos de canais em uso / por tipo
+    # ------------------------------------------------------------------
+    def _canais_em_uso(self):
+        """Índices dos canais em uso na placa (0..num_channels-1).
+
+        É a lista que toda aba deve percorrer: os widgets e buffers existem
+        para MAX_CHANNELS, mas só estes canais têm sinal."""
+        n = int(getattr(self, "num_channels", BASE_CHANNELS) or BASE_CHANNELS)
+        return list(range(max(0, min(n, MAX_CHANNELS))))
+
+    def _tipo_do_canal(self, ch):
+        """Tipo configurado do canal `ch` ("EEG", "EMG", "ECG", "EoG" ou "off");
+        "EEG" quando a lista do config não chega até ele."""
+        tipos = getattr(self.config, "channel_signal_types", None) or []
+        return tipos[ch] if 0 <= ch < len(tipos) else "EEG"
+
+    def _canais_em_uso_tipo(self, tipo):
+        """Canais em uso cujo tipo configurado é `tipo` (ex.: os EMG da placa)."""
+        n = int(getattr(self, "num_channels", BASE_CHANNELS) or BASE_CHANNELS)
+        return canais_por_tipo(
+            getattr(self.config, "channel_signal_types", None) or [],
+            min(n, MAX_CHANNELS), tipo)
+
+    def _rotulo_canal_combo(self, ch):
+        """Texto de um canal nos combos: "CH3", ou "CH3 — Bíceps Braquial"
+        quando é EMG com músculo definido. O nome do músculo é chave (fica em
+        português no config); só o texto exibido passa por tr()."""
+        rot = f"CH{ch + 1}"
+        if self._tipo_do_canal(ch) == "EMG":
+            musc = getattr(self.config, "emg_channel_muscle", None) or []
+            m = musc[ch] if ch < len(musc) else ""
+            if m and m != "(não definido)":
+                rot += f" — {tr(m)}"
+        return rot
+
+    def _repopular_combo_canais(self, combo, canais, tipo_vazio=None, rotulo=None):
+        """Recarrega `combo` com os `canais` dados (userData = índice do canal),
+        preservando a seleção anterior pelo índice do canal, não pela posição.
+
+        Lista vazia vira o item único "nenhum canal" de _msg_sem_canal(tipo_vazio)
+        com data -1 (como _populate_ecg_channel_combo). Os sinais ficam
+        bloqueados durante a troca: repopular não é escolha da pessoa.
+        Devolve True quando a seleção anterior sobreviveu."""
+        if combo is None:
+            return False
+        try:
+            prev = combo.currentData()
+        except Exception:
+            prev = None
+        rotulo = rotulo or self._rotulo_canal_combo
+        combo.blockSignals(True)
+        try:
+            combo.clear()
+            if not canais:
+                if tipo_vazio:
+                    combo.addItem(self._msg_sem_canal(tipo_vazio), -1)
+            else:
+                for ch in canais:
+                    combo.addItem(rotulo(ch), ch)
+            idx = (combo.findData(prev)
+                   if isinstance(prev, int) and prev >= 0 else -1)
+            if idx >= 0:
+                combo.setCurrentIndex(idx)
+            elif combo.count():
+                combo.setCurrentIndex(0)
+        finally:
+            combo.blockSignals(False)
+        return idx >= 0
+
+    def _refresh_listas_canais(self):
+        """Repopula TODAS as listas de canais que dependem do número ou do tipo
+        dos canais em uso, preservando a seleção: combos EMG do MDF/MNF, APDF e
+        espectrograma, combos "Canal" do Atlas, canal do ERP (só sem gravação
+        carregada: a gravação manda nos seus canais), painéis do Layout, linhas
+        da Calibração, legenda do envelope EMG e o mapa de co-contração aberto.
+
+        Chamado por _set_num_channels, _on_channel_signal_type_changed e
+        apply_launcher_choice; os _build_* usam os mesmos helpers ao construir.
+        Cada bloco é protegido para uma aba ainda não montada não travar as
+        outras."""
+        emg = self._canais_em_uso_tipo("EMG")
+        todos = self._canais_em_uso()
+        for nome in ("emg_mnfdf_channel", "emg_apdf_channel", "emg_spec_channel"):
+            combo = getattr(self, nome, None)
+            if combo is not None:
+                try:
+                    self._repopular_combo_canais(combo, emg, "EMG")
+                except Exception:
+                    pass
+        # Os combos "Canal" do Atlas vivem dentro da tabela: ela é refeita
+        if hasattr(self, "emg_atlas_table") and hasattr(self, "emg_atlas"):
+            try:
+                self._emg_atlas_rebuild_table()
+            except Exception:
+                pass
+        # ERP: com uma gravação carregada o combo segue os canais DELA
+        if hasattr(self, "erp_channel_combo") and not getattr(self, "_erp_data", None):
+            try:
+                self._repopular_combo_canais(
+                    self.erp_channel_combo, todos, rotulo=lambda ch: f"CH{ch + 1}")
+            except Exception:
+                pass
+        for slot in getattr(self, "layout_slots", None) or []:
+            cb = slot.get("ch_combo") if isinstance(slot, dict) else None
+            if cb is not None:
+                try:
+                    self._repopular_combo_canais(
+                        cb, todos, rotulo=lambda ch: f"CH{ch + 1}")
+                except Exception:
+                    pass
+        try:
+            self._refresh_imp_table_rows()
+        except Exception:
+            pass
+        try:
+            self._sincroniza_legenda_emg()
+        except Exception:
+            pass
+        dlg = getattr(self, "_cocontr_dialog", None)
+        if dlg is not None:
+            try:
+                dlg._popular_canais()
+            except RuntimeError:          # diálogo já destruído pelo Qt
+                self._cocontr_dialog = None
+            except Exception:
+                pass
 
     def _definir_nivel(self, nivel):
         """Troca o nível global ("simples"/"avancado"): grava no config, aplica
@@ -52773,6 +52932,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # EMG Joystick combos
         if hasattr(self, "_joy_axes"):
             self._joy_repopulate_combos()
+        # Combos EMG (MDF/MNF, APDF, espectrograma), Atlas, legenda (P1)
+        self._refresh_listas_canais()
         # Reenvia os tipos ao FilterChain: a máscara da média comum é lida só em
         # set_reref, então sem isto reclassificar um canal para ECG no meio da
         # sessão não o tirava da CAR — ele seguia sangrando QRS em todo o EEG.
@@ -53519,8 +53680,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         mnfdf_ctrl = QtWidgets.QHBoxLayout()
         mnfdf_ctrl.addWidget(QtWidgets.QLabel(tr("Canal EMG:")))
         self.emg_mnfdf_channel = QtWidgets.QComboBox()
-        for ch in range(MAX_CHANNELS):
-            self.emg_mnfdf_channel.addItem(f"CH{ch+1}", ch)
+        # só canais EMG em uso (P1); _refresh_listas_canais repopula ao mudar
+        self._repopular_combo_canais(
+            self.emg_mnfdf_channel, self._canais_em_uso_tipo("EMG"), "EMG")
         mnfdf_ctrl.addWidget(self.emg_mnfdf_channel)
         mnfdf_ctrl.addSpacing(15)
         self.emg_mnfdf_status_lbl = QtWidgets.QLabel(
@@ -53614,8 +53776,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         lc = QtWidgets.QHBoxLayout()
         lc.addWidget(QtWidgets.QLabel(tr("Canal EMG:")))
         self.emg_apdf_channel = QtWidgets.QComboBox()
-        for ch in range(MAX_CHANNELS):
-            self.emg_apdf_channel.addItem(f"CH{ch+1}", ch)
+        # só canais EMG em uso (P1); _refresh_listas_canais repopula ao mudar
+        self._repopular_combo_canais(
+            self.emg_apdf_channel, self._canais_em_uso_tipo("EMG"), "EMG")
         lc.addWidget(self.emg_apdf_channel); lc.addStretch()
         left.addLayout(lc)
         self.emg_apdf_plot = pg.PlotWidget(enableMenu=False)
@@ -53684,8 +53847,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         lc = QtWidgets.QHBoxLayout()
         lc.addWidget(QtWidgets.QLabel(tr("Canal EMG:")))
         self.emg_spec_channel = QtWidgets.QComboBox()
-        for ch in range(MAX_CHANNELS):
-            self.emg_spec_channel.addItem(f"CH{ch+1}", ch)
+        # só canais EMG em uso (P1); _refresh_listas_canais repopula ao mudar
+        self._repopular_combo_canais(
+            self.emg_spec_channel, self._canais_em_uso_tipo("EMG"), "EMG")
         lc.addWidget(self.emg_spec_channel); lc.addStretch()
         lc.addWidget(QtWidgets.QLabel(tr("<span style='color:#888'>MDF desce ⇒ fadiga</span>")))
         left.addLayout(lc)
@@ -53954,7 +54118,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 # Canal (combo)
                 ccb = QtWidgets.QComboBox()
                 ccb.addItem("—", -1)
-                for ch in range(MAX_CHANNELS):
+                # só os canais EMG em uso (P1); o canal já gravado no
+                # eletrodo continua listado para a montagem salva não mudar
+                # sozinha ao abrir com outra placa
+                _lista = self._canais_em_uso_tipo("EMG")
+                _salvo = e.get("channel", -1)
+                if isinstance(_salvo, int) and _salvo >= 0 and _salvo not in _lista:
+                    _lista = sorted(_lista + [_salvo])
+                for ch in _lista:
                     ccb.addItem(f"CH{ch+1}", ch)
                 idx = ccb.findData(e["channel"])
                 ccb.setCurrentIndex(idx if idx >= 0 else 0)
@@ -54199,11 +54370,13 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             tx = np.linspace(-window, 0.0, self.EMG_ADV_FRAMES)
             self.emg_spec_mdf.setData(tx, self._emg_spec_mdf_hist, connect="finite")
         # ---- Atividade muscular (canais × tempo) ----
-        emg_chs = [ch for ch in range(MAX_CHANNELS)
-                   if (self.config.channel_signal_types[ch]
-                       if ch < len(self.config.channel_signal_types) else "EEG") == "EMG"]
+        # Só os canais EMG em uso: com 8 canais e exame EMG os 64 vinham
+        # marcados EMG e o mapa mostrava CH1..CH64 numa placa de 8 (P1).
+        emg_chs = [ch for ch in self._canais_em_uso_tipo("EMG")
+                   if ch < self._emg_activity_buf.shape[0]]
         self._emg_activity_buf = np.roll(self._emg_activity_buf, -1, axis=1)
-        for ch in range(MAX_CHANNELS):
+        self._emg_activity_buf[:, -1] = 0.0        # canais fora de uso zerados
+        for ch in emg_chs:
             env = env_map.get(ch)
             if env is None or not len(env):
                 self._emg_activity_buf[ch, -1] = 0.0; continue
@@ -54219,6 +54392,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             ax = self.emg_activity_widget.getAxis("left")
             ax.setTicks([[(i + 0.5, f"CH{emg_chs[i]+1}") for i in range(len(emg_chs))]])
             self.emg_activity_widget.setYRange(0, len(emg_chs))
+        else:
+            # sem canal EMG em uso o mapa fica vazio em vez de congelar o último
+            self.emg_activity_img.clear()
+            self.emg_activity_widget.getAxis("left").setTicks([[]])
         # ---- Marcadores de onset/offset (TKEO) sobre o envelope ----
         if not hasattr(self, "_emg_onset_regions"):
             self._emg_onset_regions = []
@@ -54272,9 +54449,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # ---- Comparação de fadiga (MDF %vs início) entre músculos ----
         pens = None
         any_curve = False
+        _emg_uso = set(self._canais_em_uso_tipo("EMG"))      # P1
         for ch in range(MAX_CHANNELS):
-            is_emg = (self.config.channel_signal_types[ch]
-                      if ch < len(self.config.channel_signal_types) else "EEG") == "EMG"
+            is_emg = ch in _emg_uso
             hist = self._emg_median_freq_history.get(ch, [])
             if not is_emg or len(hist) < 3:
                 if ch in self.emg_fatcmp_curves:
@@ -54304,8 +54481,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         electrodes = self.emg_atlas.get_electrodes()
         channels = sorted({e["channel"] for e in electrodes
                            if isinstance(e["channel"], int) and e["channel"] >= 0})
+        _uso = set(self._canais_em_uso())
         for ch in channels:
-            if ch >= MAX_CHANNELS:
+            if ch not in _uso:          # canal além da placa (P1)
                 continue
             env = env_map.get(ch)
             if env is None or not len(env):
@@ -54506,6 +54684,30 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                     tr("{0} canais EMG ativos").format(emg_count))
             else:
                 self.emg_active_count_lbl.setText(self._msg_sem_canal("EMG"))
+        # a legenda do envelope acompanha: só canais EMG em uso (P1)
+        self._sincroniza_legenda_emg()
+
+    def _sincroniza_legenda_emg(self):
+        """Deixa na legenda do envelope EMG só as curvas dos canais EMG em uso,
+        em ordem de canal.
+
+        As 64 curvas nascem registradas pelo name= do plot(): numa placa de 8
+        a legenda listava CH1..CH64 e ficava mais alta que o gráfico."""
+        plot_item = getattr(getattr(self, "emg_plot", None), "plotItem", None)
+        leg = getattr(plot_item, "legend", None) if plot_item is not None else None
+        if leg is None or not hasattr(self, "emg_curves"):
+            return
+        quer = [ch for ch in self._canais_em_uso_tipo("EMG")
+                if ch < len(self.emg_curves)]
+        if getattr(self, "_emg_leg_on", None) == quer:
+            return
+        try:
+            leg.clear()
+            for ch in quer:
+                leg.addItem(self.emg_curves[ch], "CH%d" % (ch + 1))
+            self._emg_leg_on = list(quer)
+        except Exception:
+            pass
 
     def _emg_rotulo_eletrodo(self, ch, is_emg):
         """Texto da coluna "Eletrodo / músculo" de um canal.
@@ -54602,10 +54804,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # Armazena envelope atual por canal para análises agregadas
         ch_envelope_current = {}
         ch_env_full = {}            # canal -> envelope completo (p/ atlas/qualidade)
-        for ch in range(MAX_CHANNELS):
-            sig = (self.config.channel_signal_types[ch]
-                   if ch < len(self.config.channel_signal_types) else "EEG")
-            if sig != "EMG":
+        # Só canais EMG em uso (P1): calcular envelope/FFT dos canais 9-64
+        # marcados EMG gastava CPU e alimentava o atlas, a co-contração e o
+        # mapa canais×tempo com canais que a placa não tem.
+        for ch in self._canais_em_uso_tipo("EMG"):
+            if ch >= data.shape[0] or ch >= len(self.emg_rows):
                 continue
             emg_count_active += 1
             try:
@@ -57140,6 +57343,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             except Exception: pass
         # Propaga para combos de canal das abas multimodais (EMG / EoG / ECG / Focus)
         self._sync_multimodal_tabs_with_channels()
+        # Listas de canais por tipo: combos EMG, Atlas, ERP, Layout,
+        # Calibração, legenda do envelope (P1)
+        self._refresh_listas_canais()
         # Mapeamento de Canais acompanha: só os canais em uso ficam visíveis
         self._refresh_mapping_rows()
         self._log(f"Canais ativos: {n}")
@@ -60802,6 +61008,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 self._populate_eog_channel_combos()
             if hasattr(self, "_joy_axes"):
                 self._joy_repopulate_combos()
+            # Combos EMG, Atlas, ERP, Layout e Calibração seguem os canais em
+            # uso do exame escolhido (P1)
+            self._refresh_listas_canais()
             # os nomes dos canais do Empilhado seguem o tipo do exame (G13):
             # os combos foram sincronizados com os sinais bloqueados
             if hasattr(self, "montage_plot"):
@@ -62331,10 +62540,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 it = QtWidgets.QTableWidgetItem("—")
                 it.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.imp_table.setItem(ch, col, it)
-        # Altura exata: 16 linhas + header + bordas
-        exact_h = ROW_H * MAX_CHANNELS + 28 + 4
-        self.imp_table.setMinimumHeight(exact_h)
-        self.imp_table.setMaximumHeight(exact_h + 40)
+        # Só as linhas dos canais em uso ficam visíveis e a altura segue a
+        # quantidade (P1): com 64 linhas fixas a tabela de uma placa de 8 era
+        # um bloco de 1,7 mil pixels quase todo vazio
+        self._refresh_imp_table_rows()
         # Sem barras de rolagem na tabela em si
         self.imp_table.setHorizontalScrollBarPolicy(
             QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -62342,6 +62551,21 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         outer.addWidget(self.imp_table, stretch=1)
         return widget
+
+    def _refresh_imp_table_rows(self):
+        """Esconde na tabela de Calibração as linhas dos canais que a placa não
+        tem (ch >= num_channels) e ajusta a altura à quantidade visível, para a
+        aba continuar mostrando todos os canais em uso sem rolagem."""
+        tbl = getattr(self, "imp_table", None)
+        if tbl is None:
+            return
+        n = len(self._canais_em_uso())
+        for ch in range(tbl.rowCount()):
+            tbl.setRowHidden(ch, ch >= n)
+        row_h = tbl.verticalHeader().defaultSectionSize()
+        exact_h = row_h * max(1, n) + 28 + 4       # linhas + cabeçalho + bordas
+        tbl.setMinimumHeight(exact_h)
+        tbl.setMaximumHeight(exact_h + 40)
 
     def _show_impedance_tips(self):
         """Abre uma caixa de mensagem com o checklist de preparo de pele e
@@ -62456,9 +62680,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         if not hasattr(self, "layout_slots"): return
         cfg = []
         for slot in self.layout_slots:
+            _ch = slot["ch_combo"].currentData()
             cfg.append({
                 "kind":    slot["kind"],
-                "channel": slot["ch_combo"].currentIndex(),
+                "channel": _ch if isinstance(_ch, int) and _ch >= 0
+                           else slot["ch_combo"].currentIndex(),
             })
         self.config.layout_slots_cfg     = cfg
         self.config.layout_split_h_sizes = self.main_layout_split.sizes()
@@ -62499,9 +62725,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         aba.
 
         Ja anexa o dict a self.layout_slots e liga os sinais dos combos, então
-        chamar duas vezes duplica slots. O combo de canal lista sempre
-        MAX_CHANNELS opções, mesmo que a montagem tenha menos canais; quem
-        válida e o _update_layout_slots.
+        chamar duas vezes duplica slots. O combo de canal lista só os canais
+        em uso (userData = índice do canal) e _refresh_listas_canais o
+        repopula quando o número de canais muda; quem valida no desenho é o
+        _update_layout_slots.
         """
         frame = QtWidgets.QFrame()
         frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
@@ -62525,11 +62752,12 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         tb.addWidget(kind_combo)
 
         ch_combo = QtWidgets.QComboBox()
-        for c in range(MAX_CHANNELS):
-            ch_combo.addItem(f"CH{c + 1}")
+        for c in self._canais_em_uso():            # só canais em uso (P1)
+            ch_combo.addItem(f"CH{c + 1}", c)
         ch_combo.setMaximumWidth(80)
-        if 0 <= default_channel < MAX_CHANNELS:
-            ch_combo.setCurrentIndex(default_channel)
+        _idx_def = ch_combo.findData(default_channel)
+        if _idx_def >= 0:
+            ch_combo.setCurrentIndex(_idx_def)
         tb.addWidget(QtWidgets.QLabel(tr("Canal:")))
         tb.addWidget(ch_combo)
         tb.addStretch()
@@ -62652,8 +62880,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             w = slot["widget"]
             if w is None or k == "empty":
                 continue
-            ch = slot["ch_combo"].currentIndex()
-            if ch >= self.num_channels:
+            ch = slot["ch_combo"].currentData()
+            if not isinstance(ch, int) or ch < 0 or ch >= self.num_channels:
                 ch = 0
             try:
                 if k == "ts1":
@@ -62880,8 +63108,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         ctrl_row.addWidget(self.erp_marker_combo)
         ctrl_row.addWidget(QtWidgets.QLabel(tr("Canal:")))
         self.erp_channel_combo = QtWidgets.QComboBox()
-        for i in range(MAX_CHANNELS):
-            self.erp_channel_combo.addItem(f"CH{i+1}")
+        # sem gravação carregada lista os canais em uso; ao carregar um
+        # data.csv passa a listar os canais DA GRAVAÇÃO (P1)
+        self._repopular_combo_canais(
+            self.erp_channel_combo, self._canais_em_uso(),
+            rotulo=lambda ch: f"CH{ch + 1}")
         ctrl_row.addWidget(self.erp_channel_combo)
         ctrl_row.addWidget(QtWidgets.QLabel(tr("Pré (ms):")))
         self.erp_pre_spin = QtWidgets.QSpinBox()
@@ -62960,6 +63191,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 tr("Esse CSV não tem marcadores — não dá para calcular ERP."))
             return
         self._erp_data = d
+        # o combo de canal segue os canais da gravação, não os da placa (P1)
+        self._erp_popula_canais_da_gravacao(d)
         # Popula combo de markers
         from collections import Counter
         counts = Counter(lbl for _t, lbl in d["markers"])
@@ -62971,6 +63204,20 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             tr("Carregado: {0} canais, {1} amostras @ {2:.1f} Hz, {3} marcadores ({4} "
                "tipos distintos)").format(len(d['ch_names']), d['eeg'].shape[1], d['sr'], len(d['markers']), len(counts))
         )
+
+    def _erp_popula_canais_da_gravacao(self, d):
+        """Lista no combo da aba ERP os canais da gravação carregada
+        (d["ch_names"]), com userData = índice do canal no arquivo, mantendo a
+        seleção quando o canal ainda existe. Não mexe em num_channels nem no
+        config: "Rever uma gravação" segue os canais da gravação (P1)."""
+        combo = getattr(self, "erp_channel_combo", None)
+        if combo is None:
+            return
+        nomes = list((d or {}).get("ch_names") or [])
+        rotulos = {i: (str(nm) if nm not in (None, "") else f"CH{i + 1}")
+                   for i, nm in enumerate(nomes)}
+        self._repopular_combo_canais(
+            combo, list(range(len(nomes))), rotulo=lambda i: rotulos[i])
 
     def _erp_compute(self):
         """Recorta as épocas do marcador escolhido, corrige a linha de base e
@@ -62984,7 +63231,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         if not self._erp_data: return
         d = self._erp_data
         label = self.erp_marker_combo.currentData() or self.erp_marker_combo.currentText().split("  ")[0]
-        ch = self.erp_channel_combo.currentIndex()
+        ch = self.erp_channel_combo.currentData()
+        if not isinstance(ch, int) or ch < 0:
+            ch = self.erp_channel_combo.currentIndex()
         if ch >= len(d["ch_names"]): ch = 0
         pre_s = self.erp_pre_spin.value() / 1000.0
         post_s = self.erp_post_spin.value() / 1000.0
