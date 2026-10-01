@@ -19,6 +19,7 @@ ferramentas/chaves_extras.txt (uma chave por linha), lido junto.
 Também é importado pelos testes (funções chaves_tr, mapas_i18n, faltantes).
 """
 import ast
+import re
 import json
 import os
 import sys
@@ -53,7 +54,9 @@ def chaves_tr(fonte=None, arvore=None):
         if not isinstance(no, ast.Call) or not no.args:
             continue
         f = no.func
-        eh_tr = (isinstance(f, ast.Name) and f.id == "tr") or (
+        # tr("..."), I18N.tr("...") e atalhos locais como _p7_tr("...") (blocos
+        # que embrulham tr() para ter fallback fora do ROA.py)
+        eh_tr = (isinstance(f, ast.Name) and (f.id == "tr" or re.fullmatch(r"_\w*tr", f.id))) or (
             isinstance(f, ast.Attribute) and f.attr == "tr"
             and isinstance(f.value, ast.Name) and f.value.id == "I18N")
         if not eh_tr:

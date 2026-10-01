@@ -41373,6 +41373,3077 @@ class MuscleAtlasWidget(QtWidgets.QWidget):
 # ============================================================
 # _VirtualJoystickWidget — visualização do EMG Joystick
 # ============================================================
+# ============================================================
+# REPLAY (1.10.0, pedidos P6/P7/P8) — tocador único e janela do Replay
+# ------------------------------------------------------------
+# "Rever uma gravação" ganha um botão Replay que se adapta ao exame: músculos
+# (figura articulada + linha do tempo de movimentos), coração (coração que
+# bate + faixa de batidas) e olhos (olhos que piscam e olham). Tudo aqui
+# dentro do ROA.py; o tocador abaixo serve aos três.
+# ============================================================
+def fmt_mmss(t):
+    """Segundos (arredondados) -> 'm:ss' ('0:03', '1:05'); acima de uma hora, 'h:mm:ss'."""
+    try:
+        total = max(0, int(round(float(t))))
+    except (TypeError, ValueError):
+        total = 0
+    h, resto = divmod(total, 3600)
+    m, s = divmod(resto, 60)
+    return "%d:%02d:%02d" % (h, m, s) if h else "%d:%02d" % (m, s)
+
+
+class TocadorReplay(QtWidgets.QWidget):
+    """Barra de transporte do Replay: Tocar/Pausar, voltar ao início, linha do
+    tempo arrastável, relógio "0:03 / 1:20" e, no Completo, velocidade e
+    repetição.
+
+    É um só para os três exames: a cena (figura, coração ou olhos) recebe
+    tempoMudou(t) a cada quadro e pede posição com set_tempo(). O tempo
+    avança por relógio real (QElapsedTimer × velocidade), não por contagem de
+    quadros, para a animação não atrasar quando a pintura demora.
+    """
+
+    tempoMudou = QtCore.Signal(float)
+    tocando = QtCore.Signal(bool)
+    PASSO_MS = 33   # ~30 quadros por segundo
+
+    def __init__(self, duracao_s=0.0, simples=False, parent=None):
+        super().__init__(parent)
+        self._dur = max(0.0, float(duracao_s))
+        self._t = 0.0
+        self._vel = 1.0
+        self._loop = False
+        self._simples = bool(simples)
+        self._relogio = QtCore.QElapsedTimer()
+        self._t_base = 0.0
+        self._timer = QtCore.QTimer(self)
+        self._timer.setInterval(self.PASSO_MS)
+        self._timer.timeout.connect(self._tique)
+        self._arrastando = False
+        self._monta()
+
+    # ---- montagem ----
+    def _monta(self):
+        """Cria os controles; no Simples só o essencial."""
+        lay = QtWidgets.QHBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(8)
+        self.btn_tocar = QtWidgets.QPushButton(tr("▶ Tocar"))
+        self.btn_tocar.setCheckable(True)
+        self.btn_tocar.setToolTip(tr("Toca ou pausa o replay (barra de espaço)."))
+        self.btn_tocar.toggled.connect(self._on_tocar)
+        self.btn_tocar.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key.Key_Space))
+        lay.addWidget(self.btn_tocar)
+        self.btn_inicio = QtWidgets.QPushButton(tr("⏮ Início"))
+        self.btn_inicio.setToolTip(tr("Volta para o começo da gravação."))
+        self.btn_inicio.clicked.connect(self.parar)
+        lay.addWidget(self.btn_inicio)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
+        self.slider.setRange(0, max(1, int(self._dur * 100)))
+        self.slider.setSingleStep(50)
+        self.slider.setPageStep(500)
+        self.slider.setToolTip(tr("Arraste para ir a um instante da gravação."))
+        self.slider.sliderPressed.connect(self._on_slider_pressed)
+        self.slider.sliderReleased.connect(self._on_slider_released)
+        self.slider.valueChanged.connect(self._on_slider_moved)
+        lay.addWidget(self.slider, 1)
+        self.lbl_tempo = QtWidgets.QLabel(self._texto_tempo())
+        f = QtGui.QFont(globals().get("FONT_DATA", "monospace"))
+        self.lbl_tempo.setFont(f)
+        lay.addWidget(self.lbl_tempo)
+        self.combo_vel = QtWidgets.QComboBox()
+        for v, rot in ((0.25, "0,25×"), (0.5, "0,5×"), (1.0, "1×"), (2.0, "2×"), (4.0, "4×")):
+            self.combo_vel.addItem(rot, v)
+        self.combo_vel.setCurrentIndex(2)
+        self.combo_vel.setToolTip(tr("Velocidade do replay (não muda a gravação)."))
+        self.combo_vel.currentIndexChanged.connect(
+            lambda _i: self.set_velocidade(self.combo_vel.currentData()))
+        self.chk_loop = QtWidgets.QCheckBox(tr("Repetir"))
+        self.chk_loop.toggled.connect(self._on_loop)
+        lay.addWidget(self.combo_vel)
+        lay.addWidget(self.chk_loop)
+        # no Simples a velocidade e a repetição são pesquisa: ficam escondidas
+        self.combo_vel.setVisible(not self._simples)
+        self.chk_loop.setVisible(not self._simples)
+
+    # ---- API ----
+    def set_duracao(self, dur_s):
+        """Define a duração total (segundos) e reposiciona no início."""
+        self._dur = max(0.0, float(dur_s))
+        self.slider.blockSignals(True)
+        self.slider.setRange(0, max(1, int(self._dur * 100)))
+        self.slider.blockSignals(False)
+        self.set_tempo(0.0)
+
+    def duracao(self):
+        """Duração total em segundos."""
+        return self._dur
+
+    def tempo(self):
+        """Instante atual em segundos."""
+        return self._t
+
+    def esta_tocando(self):
+        """True enquanto o relógio corre."""
+        return self._timer.isActive()
+
+    def set_tempo(self, t, emitir=True):
+        """Vai para o instante t (segundos), vindo de fora (lista, faixa, clique)."""
+        t = min(self._dur, max(0.0, float(t)))
+        self._t = t
+        if self._timer.isActive():
+            # rebase do relógio: o próximo tique continua a partir daqui
+            self._t_base = t
+            self._relogio.restart()
+        if not self._arrastando:
+            self.slider.blockSignals(True)
+            self.slider.setValue(int(round(t * 100)))
+            self.slider.blockSignals(False)
+        self.lbl_tempo.setText(self._texto_tempo())
+        if emitir:
+            self.tempoMudou.emit(self._t)
+
+    def set_velocidade(self, v):
+        """Velocidade (1.0 = tempo real); rebase do relógio para não pular."""
+        v = float(v or 1.0)
+        if self._timer.isActive():
+            self._t_base = self._t
+            self._relogio.restart()
+        self._vel = max(0.05, v)
+        idx = self.combo_vel.findData(self._vel)
+        if idx >= 0 and self.combo_vel.currentIndex() != idx:
+            self.combo_vel.blockSignals(True)
+            self.combo_vel.setCurrentIndex(idx)
+            self.combo_vel.blockSignals(False)
+
+    def tocar(self):
+        """Começa a tocar (do fim volta ao início)."""
+        if self._dur <= 0:
+            return
+        if self._t >= self._dur - 1e-6:
+            self.set_tempo(0.0)
+        self._t_base = self._t
+        self._relogio.restart()
+        self._timer.start()
+        if not self.btn_tocar.isChecked():
+            self.btn_tocar.blockSignals(True)
+            self.btn_tocar.setChecked(True)
+            self.btn_tocar.blockSignals(False)
+        self.btn_tocar.setText(tr("⏸ Pausar"))
+        self.tocando.emit(True)
+
+    def pausar(self):
+        """Pausa onde está."""
+        self._timer.stop()
+        if self.btn_tocar.isChecked():
+            self.btn_tocar.blockSignals(True)
+            self.btn_tocar.setChecked(False)
+            self.btn_tocar.blockSignals(False)
+        self.btn_tocar.setText(tr("▶ Tocar"))
+        self.tocando.emit(False)
+
+    def parar(self):
+        """Pausa e volta ao início."""
+        self.pausar()
+        self.set_tempo(0.0)
+
+    # ---- internos ----
+    def _texto_tempo(self):
+        return "%s / %s" % (fmt_mmss(self._t), fmt_mmss(self._dur))
+
+    def _on_tocar(self, ligado):
+        if ligado:
+            self.tocar()
+        else:
+            self.pausar()
+
+    def _on_loop(self, on):
+        self._loop = bool(on)
+
+    def _on_slider_pressed(self):
+        self._arrastando = True
+
+    def _on_slider_released(self):
+        self._arrastando = False
+        self.set_tempo(self.slider.value() / 100.0)
+
+    def _on_slider_moved(self, valor):
+        # arrastando: só o relógio acompanha; solto: posiciona de verdade
+        if self._arrastando:
+            self._t = valor / 100.0
+            self.lbl_tempo.setText(self._texto_tempo())
+            self.tempoMudou.emit(self._t)
+        elif not self._timer.isActive():
+            self.set_tempo(valor / 100.0)
+
+    def _tique(self):
+        t = self._t_base + self._relogio.elapsed() / 1000.0 * self._vel
+        if t >= self._dur:
+            if self._loop and self._dur > 0:
+                self._t_base = 0.0
+                self._relogio.restart()
+                t = 0.0
+            else:
+                self.set_tempo(self._dur)
+                self.pausar()
+                return
+        self.set_tempo(t)
+
+
+class ReplayDialog(QtWidgets.QDialog):
+    """Janela do Replay: título, a cena do exame (figura dos músculos, coração
+    ou olhos), o tocador único e o selo de que é uma SIMULAÇÃO.
+
+    A cena é qualquer QWidget com set_tempo(t) e, se quiser mandar no tocador,
+    um sinal cursorMovido(float) (clique numa lista, faixa ou linha do tempo).
+    Pode também ter salvar() (grava o JSON ao lado da gravação) e
+    tem_alteracoes(); nesse caso aparece o botão Salvar.
+    """
+
+    def __init__(self, cena, duracao_s, titulo, simples=False, parent=None,
+                 aviso=None):
+        super().__init__(parent)
+        self.setWindowTitle(titulo)
+        self.setMinimumSize(760, 520)
+        self.resize(1100, 720)
+        self.cena = cena
+        self._simples = bool(simples)
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(12, 10, 12, 10); lay.setSpacing(8)
+        cab = QtWidgets.QHBoxLayout()
+        lbl = QtWidgets.QLabel("<b>%s</b>" % titulo)
+        cab.addWidget(lbl)
+        cab.addStretch(1)
+        selo = QtWidgets.QLabel(aviso or tr(
+            "A animação SIMULA o que foi gravado; não é vídeo da pessoa. "
+            "Não é laudo nem diagnóstico."))
+        selo.setWordWrap(True)
+        selo.setStyleSheet("color: %s; font-style: italic;"
+                           % globals().get("COLORS", {}).get("text_dim", "#666"))
+        cab.addWidget(selo, 2)
+        lay.addLayout(cab)
+        lay.addWidget(cena, 1)
+        self.tocador = TocadorReplay(duracao_s, simples=self._simples)
+        self.tocador.tempoMudou.connect(self._on_tempo)
+        lay.addWidget(self.tocador)
+        if hasattr(cena, "cursorMovido"):
+            cena.cursorMovido.connect(self._on_cursor_da_cena)
+        rodape = QtWidgets.QHBoxLayout()
+        rodape.addStretch(1)
+        self.btn_salvar = None
+        if hasattr(cena, "salvar"):
+            self.btn_salvar = QtWidgets.QPushButton(tr("Salvar"))
+            self.btn_salvar.setToolTip(tr("Grava as marcações ao lado da gravação."))
+            self.btn_salvar.clicked.connect(self._salvar)
+            rodape.addWidget(self.btn_salvar)
+        btn_fechar = QtWidgets.QPushButton(tr("Fechar"))
+        btn_fechar.clicked.connect(self.close)
+        rodape.addWidget(btn_fechar)
+        lay.addLayout(rodape)
+        self.tocador.set_tempo(0.0)
+
+    def _on_tempo(self, t):
+        try:
+            self.cena.set_tempo(t)
+        except Exception:
+            pass
+
+    def _on_cursor_da_cena(self, t):
+        self.tocador.set_tempo(float(t))
+
+    def _salvar(self):
+        """Pede à cena para gravar e avisa na barra de título."""
+        try:
+            ok = self.cena.salvar()
+        except Exception as exc:
+            QtWidgets.QMessageBox.warning(self, tr("Replay"),
+                                          tr("Não foi possível salvar: {0}").format(exc))
+            return
+        if ok is not False:
+            self.setWindowTitle(self.windowTitle().replace(" •", "") )
+
+    def closeEvent(self, ev):
+        """Para o tocador e, se a cena tem alterações não salvas, pergunta."""
+        self.tocador.pausar()
+        tem = getattr(self.cena, "tem_alteracoes", None)
+        if callable(tem) and tem():
+            r = QtWidgets.QMessageBox.question(
+                self, tr("Replay"),
+                tr("Há marcações não salvas. Salvar antes de fechar?"),
+                QtWidgets.QMessageBox.StandardButton.Yes
+                | QtWidgets.QMessageBox.StandardButton.No
+                | QtWidgets.QMessageBox.StandardButton.Cancel)
+            if r == QtWidgets.QMessageBox.StandardButton.Cancel:
+                ev.ignore()
+                return
+            if r == QtWidgets.QMessageBox.StandardButton.Yes:
+                self._salvar()
+        super().closeEvent(ev)
+
+
+# ============================================================
+# REPLAY DO MOVIMENTO (P6) — modelo de movimentos, linha do tempo e lista
+# ------------------------------------------------------------
+# Os trechos nascem dos marcadores/fases da gravação (ou das contrações
+# detectadas, como "a definir"), ficam em movimentos.json ao lado do data.csv
+# e alimentam a figura articulada. Faixas no mesmo instante se somam.
+# ============================================================
+# ----------------------------------------------------------------------
+# P6 — LINHA DO TEMPO DE MOVIMENTOS
+# ----------------------------------------------------------------------
+# Uma gravação de sEMG vira uma lista de TRECHOS (t0, t1, movimento) em 2 a 4
+# FAIXAS. As faixas são camadas independentes: no mesmo instante os movimentos
+# de todas elas se somam (a mão fecha enquanto o cotovelo flete). O arquivo
+# movimentos.json fica ao lado do data.csv da gravação.
+#
+# As chaves de movimento são compartilhadas com a figura do braço (outro
+# bloco); mudar uma chave aqui exige mudar lá também.
+
+MOVIMENTOS_ORDEM = [
+    "repouso", "flexao_cotovelo", "extensao_cotovelo", "supinacao", "pronacao",
+    "flexao_punho", "extensao_punho", "abrir_mao", "fechar_mao", "pinca",
+    "flexao_ombro", "extensao_ombro", "a_definir",
+]
+
+# Chave -> título em português. Os títulos passam por tr() só na exibição,
+# porque em nível de módulo o idioma ativo ainda é o português.
+MOVIMENTOS_TITULOS = {
+    "repouso":           "Repouso",
+    "flexao_cotovelo":   "Flexão do cotovelo",
+    "extensao_cotovelo": "Extensão do cotovelo",
+    "supinacao":         "Supinação (palma para cima)",
+    "pronacao":          "Pronação (palma para baixo)",
+    "flexao_punho":      "Flexão do punho",
+    "extensao_punho":    "Extensão do punho",
+    "abrir_mao":         "Abrir a mão",
+    "fechar_mao":        "Fechar a mão",
+    "pinca":             "Pinça",
+    "flexao_ombro":      "Flexão do ombro",
+    "extensao_ombro":    "Extensão do ombro",
+    "a_definir":         "A definir",
+}
+
+# Títulos curtos para dentro dos blocos estreitos (um trecho de 5 s costuma
+# ter 70 px): o título inteiro entra quando cabe; senão este; senão elide.
+MOVIMENTOS_TITULOS_CURTOS = {
+    "repouso":           "Repouso",
+    "flexao_cotovelo":   "Flex. cotovelo",
+    "extensao_cotovelo": "Ext. cotovelo",
+    "supinacao":         "Supinação",
+    "pronacao":          "Pronação",
+    "flexao_punho":      "Flex. punho",
+    "extensao_punho":    "Ext. punho",
+    "abrir_mao":         "Abrir mão",
+    "fechar_mao":        "Fechar mão",
+    "pinca":             "Pinça",
+    "flexao_ombro":      "Flex. ombro",
+    "extensao_ombro":    "Ext. ombro",
+    "a_definir":         "A definir",
+}
+
+# Músculos que se espera ver ativos em cada movimento (chaves EXATAS de
+# COMMON_MUSCLES). Serve só para o aviso de incompatibilidade.
+MUSCULOS_ESPERADOS = {
+    "repouso":           [],
+    "flexao_cotovelo":   ["Bíceps Braquial"],
+    "extensao_cotovelo": ["Tríceps Braquial"],
+    "supinacao":         ["Bíceps Braquial"],
+    "pronacao":          ["Flexor Carpi Radialis"],
+    "flexao_punho":      ["Flexor Carpi Radialis"],
+    "extensao_punho":    ["Extensor Carpi Radialis"],
+    "abrir_mao":         ["Extensor Carpi Radialis"],
+    "fechar_mao":        ["Flexor Carpi Radialis"],
+    "pinca":             ["Flexor Carpi Radialis"],
+    "flexao_ombro":      ["Deltoide Anterior", "Peitoral Maior"],
+    "extensao_ombro":    ["Deltoide Posterior", "Latíssimo do Dorso"],
+    "a_definir":         [],
+}
+
+# Paleta fixa por movimento. Cores de luminância média (0,3 a 0,6) para o
+# bloco ler bem tanto sobre fundo claro quanto escuro; a cor do texto é
+# escolhida por contraste em _mov_cor_texto. "a_definir" é hachurado.
+MOVIMENTOS_CORES = {
+    "repouso":           "#aab3c5",
+    "flexao_cotovelo":   "#7fb2e5",
+    "extensao_cotovelo": "#f0a872",
+    "supinacao":         "#8fcf8a",
+    "pronacao":          "#c7a3e0",
+    "flexao_punho":      "#6cc5cf",
+    "extensao_punho":    "#e9c664",
+    "abrir_mao":         "#b5d96e",
+    "fechar_mao":        "#ec8a9a",
+    "pinca":             "#d4b08a",
+    "flexao_ombro":      "#8d9ae8",
+    "extensao_ombro":    "#e39bc8",
+    "a_definir":         "#9aa3b5",
+}
+
+# Palavra-chave (minúscula, sem acento) encontrada no rótulo do marcador ->
+# chave de movimento. A ORDEM importa: a primeira palavra encontrada decide,
+# por isso as de repouso vêm antes ("Baseline" não pode cair em "ext"...) e
+# "flex"/"ext" vêm depois das palavras mais específicas. "flex" e "ext"
+# ainda são refinadas por "punho"/"wrist" e "ombro"/"shoulder" em
+# movimento_do_rotulo.
+PALAVRAS_MOVIMENTO = {
+    "repouso": "repouso", "rest": "repouso", "baseline": "repouso",
+    "relax": "repouso", "descanso": "repouso", "interval": "repouso",
+    "pausa": "repouso",
+    "supin": "supinacao",
+    "pron": "pronacao",
+    "pinc": "pinca", "pinch": "pinca",
+    "abr": "abrir_mao", "open": "abrir_mao",
+    "fech": "fechar_mao", "close": "fechar_mao", "grip": "fechar_mao",
+    "preens": "fechar_mao",
+    "flex": "flexao_cotovelo",
+    "ext": "extensao_cotovelo",
+    "mvc": "a_definir", "contra": "a_definir", "isom": "a_definir",
+}
+_MOV_PALAVRAS_PUNHO = ("punho", "wrist")
+_MOV_PALAVRAS_OMBRO = ("ombro", "shoulder")
+_MOV_PREFIXOS_PROTOCOLO = ("protocolo_inicio", "protocolo_fim")
+_MOV_ACENTOS = str.maketrans("áàâãäéèêëíìîïóòôõöúùûüçñ",
+                             "aaaaaeeeeiiiiooooouuuucn")
+
+
+def _mov_normalizar(texto):
+    """Devolve o texto em minúsculas e sem acentos, para comparar palavras."""
+    return str(texto or "").lower().translate(_MOV_ACENTOS).strip()
+
+
+def movimento_do_rotulo(rotulo):
+    """Descobre a chave de movimento a partir do rótulo de um marcador.
+
+    Devolve a chave (ex.: "flexao_punho") ou None quando nenhuma palavra
+    conhecida aparece (ex.: "Movimento 1", "Aviso") ou quando o marcador é
+    de controle do protocolo (PROTOCOLO_INICIO:/PROTOCOLO_FIM:).
+    """
+    txt = _mov_normalizar(rotulo)
+    if not txt or txt.startswith(_MOV_PREFIXOS_PROTOCOLO):
+        return None
+    punho = any(p in txt for p in _MOV_PALAVRAS_PUNHO)
+    ombro = any(p in txt for p in _MOV_PALAVRAS_OMBRO)
+    for palavra, chave in PALAVRAS_MOVIMENTO.items():
+        if palavra not in txt:
+            continue
+        # "flex"/"ext" sozinhas são do cotovelo; o segmento muda a chave.
+        if chave == "flexao_cotovelo":
+            return "flexao_punho" if punho else ("flexao_ombro" if ombro else chave)
+        if chave == "extensao_cotovelo":
+            return "extensao_punho" if punho else ("extensao_ombro" if ombro else chave)
+        return chave
+    return None
+
+
+def _mov_chave_valida(movimento):
+    """Garante uma chave conhecida: desconhecida vira "a_definir"."""
+    return movimento if movimento in MOVIMENTOS_TITULOS else "a_definir"
+
+
+def _mov_mmss(t):
+    """Formata segundos como m:ss ("0:03"); abaixo de 1 s de passo a régua
+    usa a versão com décimos (_mov_mmss_fino)."""
+    t = max(0.0, float(t or 0.0))
+    m, s = divmod(int(round(t)), 60)
+    return "%d:%02d" % (m, s)
+
+
+def _mov_mmss_fino(t):
+    """Formata segundos como m:ss.d ("0:03.5"), para a régua bem ampliada."""
+    t = max(0.0, float(t or 0.0))
+    m = int(t // 60)
+    return "%d:%04.1f" % (m, t - 60 * m)
+
+
+def _mov_luminancia(cor_hex):
+    """Luminância relativa (WCAG 2.1) de uma cor "#rrggbb"; 0,5 se inválida."""
+    h = str(cor_hex).lstrip("#")
+    if len(h) != 6:
+        return 0.5
+    try:
+        cs = [int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4)]
+    except ValueError:
+        return 0.5
+    cs = [(c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4)
+          for c in cs]
+    return 0.2126 * cs[0] + 0.7152 * cs[1] + 0.0722 * cs[2]
+
+
+def _mov_cor_texto(cor_fundo):
+    """Escolhe texto escuro ou claro para um bloco, pelo maior contraste WCAG.
+
+    Usa um azul-ardósia quase preto e um branco levemente azulado (as cores
+    de texto dos dois temas da marca), não preto/branco puros.
+    """
+    lf = _mov_luminancia(cor_fundo)
+    escuro, claro = "#141a33", "#f6f8fc"
+    c_escuro = (lf + 0.05) / (_mov_luminancia(escuro) + 0.05)
+    c_claro = (_mov_luminancia(claro) + 0.05) / (lf + 0.05)
+    return escuro if c_escuro >= c_claro else claro
+
+
+def _mov_nome_faixa(nome, indice):
+    """Nome da faixa para a tela: o padrão "Faixa n" passa por tr(); um nome
+    dado pelo usuário volta como está."""
+    nome = str(nome or "")
+    base, _, n = nome.rpartition(" ")
+    if base == "Faixa" and n.isdigit():
+        return tr("Faixa {0}").format(n)
+    return nome or tr("Faixa {0}").format(indice + 1)
+
+
+def _mov_rotulo_marcador(rotulo):
+    """Rótulo de marcador como aparece na linha do tempo.
+
+    Marcadores de controle do protocolo viram "Protocolo: início/fim"; os
+    demais passam por rotulo_fase_tela (do ROA.py) quando ela existir, para
+    "Contração máxima #2" sair traduzido como no resto do programa.
+    """
+    r = str(rotulo or "")
+    rn = _mov_normalizar(r)
+    if rn.startswith("protocolo_inicio"):
+        return tr("Protocolo: início")
+    if rn.startswith("protocolo_fim"):
+        return tr("Protocolo: fim")
+    f = globals().get("rotulo_fase_tela")
+    return f(r) if callable(f) else tr(r)
+
+
+def descrever_trecho(trecho, faixa):
+    """Frase curta de um trecho para a lista: "0:03–0:07  Flexão do cotovelo
+    (faixa 1)". `faixa` é o índice (0 = faixa 1)."""
+    titulo = tr(MOVIMENTOS_TITULOS.get(trecho.get("movimento"), "A definir"))
+    return "%s–%s  %s (%s)" % (_mov_mmss(trecho.get("t0", 0.0)),
+                              _mov_mmss(trecho.get("t1", 0.0)),
+                              titulo, tr("faixa {0}").format(int(faixa) + 1))
+
+
+def caminho_movimentos(pasta_gravacao):
+    """Caminho do movimentos.json de uma gravação: fica ao lado do data.csv.
+
+    Aceita a pasta da gravação ou o caminho do próprio data.csv.
+    """
+    p = str(pasta_gravacao or "")
+    if p.lower().endswith(".csv") or os.path.isfile(p):
+        p = os.path.dirname(p)
+    return os.path.join(p, "movimentos.json")
+
+
+class ModeloMovimentos:
+    """Trechos de movimento de uma gravação, em 2 a 4 faixas, com desfazer.
+
+    Guarda tudo em `self.dados` (o mesmo dicionário que vai para o JSON):
+        {"versao": 1, "gravacao": nome, "duracao_s": float,
+         "origem": "marcadores"|"contracoes"|"manual"|"vazio",
+         "faixas": [{"nome": "Faixa 1",
+                     "trechos": [{"t0": float, "t1": float, "movimento": chave}]}]}
+    Dentro de uma faixa os trechos ficam ordenados por t0 e nunca se
+    sobrepõem; mover e esticar param no vizinho e respeitam a duração mínima.
+    Cada operação guarda antes um retrato das faixas na pilha de desfazer
+    (até 100), a não ser que receba registrar=False — é o que o widget faz
+    durante um arrasto, para o gesto inteiro valer um único "desfazer".
+    """
+
+    VERSAO = 1
+    MIN_FAIXAS = 2
+    MAX_FAIXAS = 4
+    DURACAO_MINIMA = 0.2
+    LIMITE_DESFAZER = 100
+    ORIGENS = ("marcadores", "contracoes", "manual", "vazio")
+
+    def __init__(self, gravacao="", duracao_s=0.0, n_faixas=2, origem="vazio"):
+        """Cria um modelo vazio com `n_faixas` faixas (2 a 4) e a duração da
+        gravação em segundos."""
+        n = min(self.MAX_FAIXAS, max(self.MIN_FAIXAS, int(n_faixas or 2)))
+        self.dados = {
+            "versao": self.VERSAO,
+            "gravacao": str(gravacao or ""),
+            "duracao_s": max(0.0, float(duracao_s or 0.0)),
+            "origem": origem if origem in self.ORIGENS else "vazio",
+            "faixas": [{"nome": "Faixa %d" % (i + 1), "trechos": []}
+                       for i in range(n)],
+        }
+        self._desfazer = []
+        self._refazer = []
+        self.modificado = False
+
+    # ----- leitura -------------------------------------------------------
+    @property
+    def faixas(self):
+        """Lista de faixas (dicionários com "nome" e "trechos")."""
+        return self.dados["faixas"]
+
+    @property
+    def duracao_s(self):
+        """Duração da gravação em segundos (limite direito da linha do tempo)."""
+        return float(self.dados["duracao_s"])
+
+    @property
+    def origem(self):
+        """De onde vieram os trechos iniciais: marcadores, contracoes, manual
+        ou vazio."""
+        return self.dados["origem"]
+
+    @property
+    def gravacao(self):
+        """Nome da gravação a que o modelo pertence."""
+        return self.dados["gravacao"]
+
+    def n_faixas(self):
+        """Quantidade de faixas (2 a 4)."""
+        return len(self.faixas)
+
+    def trechos(self, faixa):
+        """Lista de trechos da faixa `faixa` (índice 0..n-1); [] se não existe."""
+        if 0 <= int(faixa) < len(self.faixas):
+            return self.faixas[int(faixa)]["trechos"]
+        return []
+
+    def trecho(self, faixa, idx):
+        """Um trecho pelo par (faixa, idx), ou None se não existe."""
+        ts = self.trechos(faixa)
+        if 0 <= int(idx) < len(ts):
+            return ts[int(idx)]
+        return None
+
+    def total_trechos(self):
+        """Quantos trechos há somando todas as faixas."""
+        return sum(len(f["trechos"]) for f in self.faixas)
+
+    def todos_trechos(self):
+        """Todos os trechos como (faixa, idx, trecho), ordenados por t0 e
+        depois por faixa — a ordem da lista em palavras simples."""
+        fora = []
+        for fi, f in enumerate(self.faixas):
+            for ti, tr_ in enumerate(f["trechos"]):
+                fora.append((fi, ti, tr_))
+        fora.sort(key=lambda x: (x[2]["t0"], x[0]))
+        return fora
+
+    def movimentos_em(self, t):
+        """Movimentos ativos no instante `t`, de TODAS as faixas (a mescla).
+
+        Devolve [(chave, fase)] com fase = (t - t0) / (t1 - t0) em 0..1, na
+        ordem das faixas. O intervalo é [t0, t1): na fronteira entre dois
+        trechos vizinhos vale o que começa.
+        """
+        t = float(t)
+        fora = []
+        for f in self.faixas:
+            for tr_ in f["trechos"]:
+                if tr_["t0"] <= t < tr_["t1"]:
+                    dur = tr_["t1"] - tr_["t0"]
+                    fase = (t - tr_["t0"]) / dur if dur > 0 else 0.0
+                    fora.append((tr_["movimento"], min(1.0, max(0.0, fase))))
+                    break   # por construção só um trecho por faixa cobre t
+        return fora
+
+    # ----- desfazer / refazer -------------------------------------------
+    def _copia_faixas(self):
+        """Retrato independente das faixas (sem copy.deepcopy: só dicts
+        rasos de números e strings)."""
+        return [{"nome": f["nome"],
+                 "trechos": [dict(t) for t in f["trechos"]]}
+                for f in self.faixas]
+
+    def marcar_desfazer(self):
+        """Guarda o estado atual na pilha de desfazer e limpa a de refazer.
+
+        É chamado por cada operação antes de mudar algo; o widget chama
+        direto no começo de um arrasto, para o gesto inteiro ser um passo só.
+        """
+        self._desfazer.append(self._copia_faixas())
+        if len(self._desfazer) > self.LIMITE_DESFAZER:
+            del self._desfazer[0]
+        self._refazer.clear()
+
+    def pode_desfazer(self):
+        """Há algo para desfazer?"""
+        return bool(self._desfazer)
+
+    def pode_refazer(self):
+        """Há algo para refazer?"""
+        return bool(self._refazer)
+
+    def desfazer(self):
+        """Volta ao retrato anterior das faixas; False se não há o que desfazer."""
+        if not self._desfazer:
+            return False
+        self._refazer.append(self._copia_faixas())
+        self.dados["faixas"] = self._desfazer.pop()
+        self.modificado = True
+        return True
+
+    def refazer(self):
+        """Reaplica o último desfazer; False se não há o que refazer."""
+        if not self._refazer:
+            return False
+        self._desfazer.append(self._copia_faixas())
+        self.dados["faixas"] = self._refazer.pop()
+        self.modificado = True
+        return True
+
+    # ----- operações sobre trechos ---------------------------------------
+    def _clamp_tempo(self, t):
+        """Prende um instante dentro de [0, duração]."""
+        return min(self.duracao_s, max(0.0, float(t)))
+
+    def _limites(self, faixa, idx):
+        """(t_min, t_max) em que o trecho idx pode existir sem invadir os
+        vizinhos da mesma faixa."""
+        ts = self.trechos(faixa)
+        tmin = ts[idx - 1]["t1"] if idx > 0 else 0.0
+        tmax = ts[idx + 1]["t0"] if idx + 1 < len(ts) else self.duracao_s
+        return tmin, tmax
+
+    def _marcar_mudanca(self, registrar):
+        """Parte comum das operações: registra o desfazer e marca o modelo
+        como modificado (origem "vazio" passa a "manual")."""
+        if registrar:
+            self.marcar_desfazer()
+        self.modificado = True
+        if self.dados["origem"] == "vazio":
+            self.dados["origem"] = "manual"
+
+    def adicionar_trecho(self, faixa, t0, t1, movimento="a_definir", registrar=True):
+        """Insere um trecho na faixa, encolhido para caber na lacuna entre os
+        vizinhos. Devolve o índice do trecho novo, ou None se não coube
+        (lacuna menor que a duração mínima)."""
+        if not (0 <= int(faixa) < len(self.faixas)):
+            return None
+        ts = self.trechos(faixa)
+        t0, t1 = sorted((self._clamp_tempo(t0), self._clamp_tempo(t1)))
+        pos = 0
+        while pos < len(ts) and ts[pos]["t0"] <= t0:
+            pos += 1
+        tmin = ts[pos - 1]["t1"] if pos > 0 else 0.0
+        tmax = ts[pos]["t0"] if pos < len(ts) else self.duracao_s
+        t0, t1 = max(t0, tmin), min(t1, tmax)
+        if t1 - t0 < self.DURACAO_MINIMA - 1e-9:
+            return None
+        self._marcar_mudanca(registrar)
+        ts.insert(pos, {"t0": float(t0), "t1": float(t1),
+                        "movimento": _mov_chave_valida(movimento)})
+        return pos
+
+    def mover(self, faixa, idx, dt, registrar=True):
+        """Desloca o trecho inteiro em `dt` segundos, parando nos vizinhos e
+        nas bordas da gravação. Devolve o deslocamento realmente aplicado."""
+        tr_ = self.trecho(faixa, idx)
+        if tr_ is None:
+            return 0.0
+        dur = tr_["t1"] - tr_["t0"]
+        tmin, tmax = self._limites(faixa, idx)
+        novo_t0 = min(tmax - dur, max(tmin, tr_["t0"] + float(dt)))
+        real = novo_t0 - tr_["t0"]
+        if abs(real) < 1e-9:
+            return 0.0
+        self._marcar_mudanca(registrar)
+        tr_["t0"], tr_["t1"] = float(novo_t0), float(novo_t0 + dur)
+        return real
+
+    def esticar(self, faixa, idx, lado, novo_t, registrar=True):
+        """Move uma borda ("t0" ou "t1") do trecho para `novo_t`, parando no
+        vizinho e sem encurtar abaixo da duração mínima. Devolve o valor
+        final da borda."""
+        tr_ = self.trecho(faixa, idx)
+        if tr_ is None:
+            return None
+        tmin, tmax = self._limites(faixa, idx)
+        if lado == "t0":
+            novo = min(tr_["t1"] - self.DURACAO_MINIMA, max(tmin, float(novo_t)))
+        else:
+            lado = "t1"
+            novo = max(tr_["t0"] + self.DURACAO_MINIMA, min(tmax, float(novo_t)))
+        if abs(novo - tr_[lado]) < 1e-9:
+            return tr_[lado]
+        self._marcar_mudanca(registrar)
+        tr_[lado] = float(novo)
+        return novo
+
+    def dividir(self, faixa, idx, t, registrar=True):
+        """Corta o trecho em dois no instante `t`; o segundo herda o movimento.
+        Devolve o índice da segunda metade, ou None se alguma metade ficaria
+        menor que a duração mínima."""
+        tr_ = self.trecho(faixa, idx)
+        if tr_ is None:
+            return None
+        t = float(t)
+        if (t - tr_["t0"] < self.DURACAO_MINIMA - 1e-9
+                or tr_["t1"] - t < self.DURACAO_MINIMA - 1e-9):
+            return None
+        self._marcar_mudanca(registrar)
+        segundo = {"t0": t, "t1": tr_["t1"], "movimento": tr_["movimento"]}
+        tr_["t1"] = t
+        self.trechos(faixa).insert(idx + 1, segundo)
+        return idx + 1
+
+    def trocar_movimento(self, faixa, idx, movimento, registrar=True):
+        """Troca o movimento do trecho. Devolve True se mudou algo."""
+        tr_ = self.trecho(faixa, idx)
+        if tr_ is None:
+            return False
+        movimento = _mov_chave_valida(movimento)
+        if tr_["movimento"] == movimento:
+            return False
+        self._marcar_mudanca(registrar)
+        tr_["movimento"] = movimento
+        return True
+
+    def apagar(self, faixa, idx, registrar=True):
+        """Remove o trecho. Devolve True se existia."""
+        if self.trecho(faixa, idx) is None:
+            return False
+        self._marcar_mudanca(registrar)
+        del self.trechos(faixa)[int(idx)]
+        return True
+
+    # ----- faixas ----------------------------------------------------------
+    def adicionar_faixa(self, nome=None, registrar=True):
+        """Acrescenta uma faixa vazia no fim (até 4). Devolve o índice dela
+        ou None se já há o máximo."""
+        if len(self.faixas) >= self.MAX_FAIXAS:
+            return None
+        self._marcar_mudanca(registrar)
+        self.faixas.append({"nome": nome or "Faixa %d" % (len(self.faixas) + 1),
+                            "trechos": []})
+        return len(self.faixas) - 1
+
+    def remover_faixa(self, faixa, registrar=True):
+        """Remove a faixa e seus trechos (nunca abaixo de 2 faixas). As faixas
+        com nome padrão são renumeradas. Devolve True se removeu."""
+        if len(self.faixas) <= self.MIN_FAIXAS or not (0 <= int(faixa) < len(self.faixas)):
+            return False
+        self._marcar_mudanca(registrar)
+        del self.faixas[int(faixa)]
+        for i, f in enumerate(self.faixas):
+            base, _, n = str(f["nome"]).rpartition(" ")
+            if base == "Faixa" and n.isdigit():
+                f["nome"] = "Faixa %d" % (i + 1)
+        return True
+
+    # ----- arquivo ---------------------------------------------------------
+    def para_dict(self):
+        """Cópia independente de `dados`, pronta para json.dump."""
+        d = dict(self.dados)
+        d["faixas"] = self._copia_faixas()
+        return d
+
+    def salvar(self, caminho):
+        """Grava o JSON (utf-8, indent=2). Escreve num .tmp e renomeia por
+        cima, para uma queda no meio da escrita não deixar um arquivo pela
+        metade no lugar do bom."""
+        pasta = os.path.dirname(os.path.abspath(caminho))
+        if pasta and not os.path.isdir(pasta):
+            os.makedirs(pasta, exist_ok=True)
+        tmp = caminho + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(self.para_dict(), f, ensure_ascii=False, indent=2)
+        os.replace(tmp, caminho)
+        self.modificado = False
+        return caminho
+
+    @classmethod
+    def carregar(cls, caminho, duracao_s=None):
+        """Lê um movimentos.json e devolve o modelo validado. `duracao_s`, se
+        dada, manda sobre a do arquivo (a gravação é quem sabe quanto dura)."""
+        with open(caminho, "r", encoding="utf-8") as f:
+            d = json.load(f)
+        return cls.de_dict(d, duracao_s)
+
+    @classmethod
+    def de_dict(cls, d, duracao_s=None):
+        """Monta um modelo a partir de um dicionário solto, tolerando lixo:
+        movimento desconhecido vira "a_definir", tempos fora da duração são
+        presos nela, trechos curtos ou sobrepostos são aparados/descartados,
+        e o número de faixas é levado para 2..4."""
+        if not isinstance(d, dict):
+            d = {}
+        faixas_in = d.get("faixas") if isinstance(d.get("faixas"), list) else []
+        try:
+            dur = float(duracao_s if duracao_s is not None else d.get("duracao_s", 0.0) or 0.0)
+        except (TypeError, ValueError):
+            dur = 0.0
+        if dur <= 0:
+            # Sem duração conhecida, a gravação vai até o fim do último trecho.
+            for f in faixas_in:
+                for t in (f.get("trechos") or []) if isinstance(f, dict) else []:
+                    try:
+                        dur = max(dur, float(t.get("t1", 0.0)))
+                    except (TypeError, ValueError, AttributeError):
+                        pass
+        m = cls(d.get("gravacao", ""), dur, n_faixas=cls.MIN_FAIXAS,
+                origem=str(d.get("origem", "vazio")))
+        m.dados["faixas"] = []
+        for i, f in enumerate(faixas_in[:cls.MAX_FAIXAS]):
+            if not isinstance(f, dict):
+                continue
+            nome = str(f.get("nome") or "Faixa %d" % (i + 1))
+            limpos = []
+            for t in f.get("trechos") or []:
+                try:
+                    t0, t1 = float(t["t0"]), float(t["t1"])
+                except (TypeError, ValueError, KeyError):
+                    continue
+                if not (math.isfinite(t0) and math.isfinite(t1)):
+                    continue
+                t0, t1 = sorted((min(dur, max(0.0, t0)), min(dur, max(0.0, t1))))
+                limpos.append({"t0": t0, "t1": t1,
+                               "movimento": _mov_chave_valida(t.get("movimento"))})
+            limpos.sort(key=lambda x: x["t0"])
+            sem_sobrepor = []
+            for t in limpos:
+                if sem_sobrepor and t["t0"] < sem_sobrepor[-1]["t1"]:
+                    t["t0"] = sem_sobrepor[-1]["t1"]      # apara o que invade
+                if t["t1"] - t["t0"] >= cls.DURACAO_MINIMA - 1e-9:
+                    sem_sobrepor.append(t)
+            m.dados["faixas"].append({"nome": nome, "trechos": sem_sobrepor})
+        while len(m.dados["faixas"]) < cls.MIN_FAIXAS:
+            m.dados["faixas"].append({"nome": "Faixa %d" % (len(m.dados["faixas"]) + 1),
+                                      "trechos": []})
+        m.modificado = False
+        return m
+
+
+def trechos_de_marcadores(marcadores, duracao_s, nome="", alcance_s=3.0):
+    """Modelo inicial a partir dos marcadores da gravação [(t_s, rótulo)].
+
+    Cada marcador abre um trecho na faixa 1 que vai até o marcador seguinte
+    (ou até +`alcance_s`/fim da gravação, se for o último). O movimento sai
+    de movimento_do_rotulo; marcadores de protocolo e rótulos sem palavra
+    conhecida viram "a_definir". Trechos mais curtos que a duração mínima
+    (dois marcadores quase no mesmo instante) são descartados.
+    """
+    ms = []
+    for par in marcadores or []:
+        try:
+            ms.append((float(par[0]), str(par[1])))
+        except (TypeError, ValueError, IndexError):
+            continue
+    ms.sort(key=lambda x: x[0])
+    dur = float(duracao_s or 0.0)
+    if dur <= 0 and ms:
+        dur = ms[-1][0] + alcance_s
+    modelo = ModeloMovimentos(nome, dur, origem="marcadores")
+    for i, (t, rot) in enumerate(ms):
+        t_fim = ms[i + 1][0] if i + 1 < len(ms) else min(t + alcance_s, dur)
+        mov = movimento_do_rotulo(rot) or "a_definir"
+        modelo.adicionar_trecho(0, t, t_fim, mov, registrar=False)
+    modelo.modificado = False
+    return modelo
+
+
+def trechos_de_contracoes(onsets, duracao_s, nome=""):
+    """Modelo inicial a partir das contrações detectadas [(t0, t1)]: cada uma
+    vira um trecho "a_definir" na faixa 1 (origem "contracoes"). Contrações
+    mais curtas que a duração mínima são descartadas."""
+    dur = float(duracao_s or 0.0)
+    pares = []
+    for par in onsets or []:
+        try:
+            pares.append((float(par[0]), float(par[1])))
+        except (TypeError, ValueError, IndexError):
+            continue
+    if dur <= 0 and pares:
+        dur = max(b for _, b in pares)
+    modelo = ModeloMovimentos(nome, dur, origem="contracoes")
+    for t0, t1 in sorted(pares):
+        modelo.adicionar_trecho(0, t0, t1, "a_definir", registrar=False)
+    modelo.modificado = False
+    return modelo
+
+
+def modelo_inicial(marcadores, onsets, duracao_s, nome=""):
+    """Escolhe o ponto de partida da linha do tempo de uma gravação.
+
+    Marcadores ganham se houver pelo menos um com movimento reconhecido ou
+    dois marcadores quaisquer (fases de protocolo); senão as contrações
+    detectadas viram trechos "a definir"; sem nada, modelo vazio.
+    """
+    marcadores = list(marcadores or [])
+    reconhecidos = [r for _, r in marcadores if movimento_do_rotulo(r)]
+    if reconhecidos or len(marcadores) >= 2:
+        m = trechos_de_marcadores(marcadores, duracao_s, nome)
+        if m.total_trechos() > 0 or not onsets:
+            return m
+    if onsets:
+        return trechos_de_contracoes(onsets, duracao_s, nome)
+    return ModeloMovimentos(nome, duracao_s, origem="vazio")
+
+
+def contracoes_da_gravacao(sinal, fs):
+    """Contrações [(t0, t1)] de um canal de sEMG, usando o detector que já
+    existe no programa (emg_onset_tkeo, e emg_fundir_ativacoes para juntar
+    liga-desliga da mesma contração). Sem o detector no namespace (protótipo
+    isolado) devolve []."""
+    detectar = globals().get("emg_onset_tkeo")
+    if not callable(detectar) or sinal is None:
+        return []
+    sinal = np.asarray(sinal, float).ravel()
+    if sinal.size < 2 or not fs:
+        return []
+    ativ = detectar(sinal, float(fs))
+    fundir = globals().get("emg_fundir_ativacoes")
+    return list(fundir(ativ) if callable(fundir) else ativ)
+
+
+def intensidade_no_instante(envelopes, fs, t, janela_s=0.1, mvc=None, percentil=95.0):
+    """Ativação 0..1 de cada músculo em volta do instante `t`.
+
+    `envelopes` é {músculo: array do envelope}; a média do módulo numa janela
+    de `janela_s` centrada em `t` é dividida pela MVC do músculo (`mvc`
+    {músculo: valor}), ou, sem MVC, pelo percentil `percentil` do envelope
+    inteiro — assim a escala não depende de o paciente ter feito a
+    calibração.
+    """
+    fora = {}
+    fs = float(fs or 0.0)
+    if fs <= 0:
+        return {m: 0.0 for m in (envelopes or {})}
+    meia = max(1, int(round(janela_s * fs / 2.0)))
+    centro = int(round(float(t) * fs))
+    for musculo, env in (envelopes or {}).items():
+        env = np.abs(np.asarray(env, float).ravel())
+        a, b = max(0, centro - meia), min(env.size, centro + meia)
+        if env.size == 0 or b <= a:
+            fora[musculo] = 0.0
+            continue
+        v = float(np.mean(env[a:b]))
+        ref = None
+        if mvc:
+            try:
+                ref = float(mvc.get(musculo) or 0.0)
+            except (TypeError, ValueError):
+                ref = 0.0
+        if not ref or ref <= 0:
+            ref = float(np.percentile(env, percentil))
+        fora[musculo] = 0.0 if ref <= 0 else min(1.0, max(0.0, v / ref))
+    return fora
+
+
+def aviso_incompatibilidade(movimento, ativacao_por_musculo, limiar=0.3):
+    """Texto de aviso quando os músculos ativos não combinam com o movimento.
+
+    Devolve "" quando não há o que avisar: nenhum músculo acima do limiar,
+    algum dos músculos esperados está ativo, ou o movimento não tem músculos
+    de referência (repouso, a definir). Os músculos ativos saem em ordem de
+    ativação. É um aviso de coerência da marcação, não um diagnóstico.
+    """
+    esperados = MUSCULOS_ESPERADOS.get(movimento) or []
+    if not esperados:
+        return ""
+    ativos = []
+    for m, v in (ativacao_por_musculo or {}).items():
+        try:
+            v = float(v)
+        except (TypeError, ValueError):
+            continue
+        if v >= limiar:
+            ativos.append((v, str(m)))
+    if not ativos:
+        return ""
+    ativos.sort(reverse=True)
+    nomes_ativos = [m for _, m in ativos]
+    if any(m in esperados for m in nomes_ativos):
+        return ""
+    return tr("Os músculos ativos ({0}) não combinam com o movimento escolhido "
+              "({1}); esperado: {2}.").format(
+        ", ".join(tr(m) for m in nomes_ativos),
+        tr(MOVIMENTOS_TITULOS.get(movimento, movimento)),
+        ", ".join(tr(m) for m in esperados))
+
+
+def _mov_icone_cor(cor, tam=12):
+    """Quadradinho arredondado da cor do movimento, para menus e listas."""
+    pix = QtGui.QPixmap(tam, tam)
+    pix.fill(QtCore.Qt.GlobalColor.transparent)
+    p = QtGui.QPainter(pix)
+    p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
+    p.setPen(QtCore.Qt.PenStyle.NoPen)
+    p.setBrush(QtGui.QColor(cor))
+    p.drawRoundedRect(QtCore.QRectF(0.5, 0.5, tam - 1, tam - 1), 3, 3)
+    p.end()
+    return QtGui.QIcon(pix)
+
+
+def _mov_passo_regua(span_s, largura_px, min_px=64):
+    """Passo "redondo" da régua para rótulos com pelo menos `min_px` entre si."""
+    if span_s <= 0 or largura_px <= 0:
+        return 1.0
+    for passo in (0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 1800):
+        if largura_px / (span_s / passo) >= min_px:
+            return float(passo)
+    return max(1.0, round(span_s / 8.0))
+
+
+class LinhaDoTempoMovimentosWidget(QtWidgets.QWidget):
+    """Linha do tempo com 2 a 4 faixas de trechos de movimento.
+
+    Desenha a régua (m:ss) em cima, os marcadores da gravação como traços
+    finos com rótulo, uma linha por faixa com os trechos como blocos
+    arredondados coloridos por movimento, e o cursor do tocador.
+
+    No modo Completo edita: arrastar o bloco move, arrastar as bordas estica,
+    duplo clique no fundo cria um trecho "a definir" de 1 s, botão direito
+    abre o menu (trocar o movimento, dividir, apagar, desfazer, refazer,
+    adicionar/remover faixa), Ctrl+Z/Ctrl+Y, Delete; roda rola e Ctrl+roda
+    amplia. No modo Simples (set_somente_leitura(True)) só exibe e o clique
+    posiciona o cursor.
+
+    Sinais: modeloMudou() após cada edição; cursorMovido(t) quando o usuário
+    clica/arrasta na linha do tempo; trechoSelecionado(faixa, idx).
+    """
+
+    modeloMudou = QtCore.Signal()
+    cursorMovido = QtCore.Signal(float)
+    trechoSelecionado = QtCore.Signal(int, int)
+
+    REGUA_H = 22
+    MARCADORES_H = 16
+    FAIXA_H = 34
+    ESPACO_H = 6
+    MARGEM_ESQ = 72
+    MARGEM_DIR = 12
+    MARGEM_INF = 6
+    BORDA_PX = 6            # zona, em px, em que o arrasto pega a borda
+    ZOOM_MINIMO_S = 2.0
+    NOVO_TRECHO_S = 1.0
+
+    def __init__(self, parent=None):
+        """Começa sem modelo, cursor em 0 e modo de edição."""
+        super().__init__(parent)
+        self._modelo = None
+        self._cursor = 0.0
+        self._marcadores = []
+        self._somente_leitura = False
+        self._v0, self._v1 = 0.0, 1.0        # janela visível, em segundos
+        self._sel = None                     # (faixa, idx) selecionado
+        self._hover = None                   # (faixa, idx, lado) sob o mouse
+        self._arrasto = None                 # estado do gesto em curso
+        self.setMouseTracking(True)
+        self.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Fixed)
+        self._atualizar_altura()
+
+    # ----- estado público --------------------------------------------------
+    def set_modelo(self, modelo):
+        """Troca o modelo exibido e mostra a gravação inteira."""
+        self._modelo = modelo
+        self._sel = None
+        self._hover = None
+        self._arrasto = None
+        dur = modelo.duracao_s if modelo is not None else 0.0
+        self._v0, self._v1 = 0.0, max(1.0, dur)
+        self._cursor = min(self._cursor, dur)
+        self._atualizar_altura()
+        self.update()
+
+    def modelo(self):
+        """O ModeloMovimentos exibido (ou None)."""
+        return self._modelo
+
+    def set_cursor(self, t):
+        """Posiciona o cursor do tocador em `t` segundos (sem emitir sinal:
+        é o tocador avisando a linha do tempo, não o contrário)."""
+        dur = self._modelo.duracao_s if self._modelo is not None else 0.0
+        self._cursor = min(dur, max(0.0, float(t or 0.0)))
+        self.update()
+
+    def cursor(self):
+        """Instante atual do cursor, em segundos."""
+        return self._cursor
+
+    def set_marcadores(self, marcadores):
+        """Define os marcadores da gravação [(t_s, rótulo)] desenhados como
+        traços finos."""
+        ms = []
+        for par in marcadores or []:
+            try:
+                ms.append((float(par[0]), str(par[1])))
+            except (TypeError, ValueError, IndexError):
+                continue
+        self._marcadores = sorted(ms, key=lambda x: x[0])
+        self._atualizar_altura()
+        self.update()
+
+    def set_somente_leitura(self, ativo):
+        """Modo Simples: só exibe; o clique posiciona o cursor."""
+        self._somente_leitura = bool(ativo)
+        self._arrasto = None
+        if self._somente_leitura:
+            self._sel = None
+            self._hover = None
+            self.unsetCursor()
+        self.update()
+
+    def somente_leitura(self):
+        """True no modo Simples."""
+        return self._somente_leitura
+
+    def selecionar(self, faixa, idx):
+        """Destaca o trecho (faixa, idx); None/None limpa a seleção."""
+        if faixa is None or idx is None or self._modelo is None \
+                or self._modelo.trecho(faixa, idx) is None:
+            self._sel = None
+        else:
+            self._sel = (int(faixa), int(idx))
+        self.update()
+
+    def selecionado(self):
+        """(faixa, idx) do trecho destacado, ou None."""
+        return self._sel
+
+    def set_janela(self, t0, t1):
+        """Define o intervalo visível [t0, t1] em segundos (zoom/rolagem)."""
+        dur = self._modelo.duracao_s if self._modelo is not None else 1.0
+        t0, t1 = sorted((float(t0), float(t1)))
+        span = min(max(t1 - t0, self.ZOOM_MINIMO_S), max(dur, self.ZOOM_MINIMO_S))
+        t0 = min(max(0.0, t0), max(0.0, dur - span))
+        self._v0, self._v1 = t0, t0 + span
+        self.update()
+
+    def ajustar_tudo(self):
+        """Volta a mostrar a gravação inteira."""
+        dur = self._modelo.duracao_s if self._modelo is not None else 1.0
+        self._v0, self._v1 = 0.0, max(1.0, dur)
+        self.update()
+
+    # ----- geometria ---------------------------------------------------------
+    def _marc_h(self):
+        """Altura da tira de rótulos dos marcadores (0 quando não há nenhum)."""
+        return self.MARCADORES_H if self._marcadores else 0
+
+    def _n_faixas(self):
+        """Faixas a desenhar (2 quando ainda não há modelo)."""
+        return self._modelo.n_faixas() if self._modelo is not None else 2
+
+    def _altura_total(self):
+        """Altura necessária para régua, marcadores e todas as faixas."""
+        n = self._n_faixas()
+        return (self.REGUA_H + self._marc_h() + n * self.FAIXA_H
+                + (n - 1) * self.ESPACO_H + self.MARGEM_INF)
+
+    def _atualizar_altura(self):
+        """Fixa a altura ao número de faixas (o layout pai acompanha)."""
+        h = self._altura_total()
+        self.setMinimumHeight(h)
+        self.setMaximumHeight(h)
+        self.updateGeometry()
+
+    def sizeHint(self):
+        """Largura sugerida generosa; a altura é a das faixas."""
+        return QtCore.QSize(720, self._altura_total())
+
+    def _area(self):
+        """(x0, largura) da área de tempo, à direita dos nomes das faixas."""
+        return self.MARGEM_ESQ, max(1, self.width() - self.MARGEM_ESQ - self.MARGEM_DIR)
+
+    def _y_faixa(self, i):
+        """Topo, em px, da faixa i."""
+        return self.REGUA_H + self._marc_h() + i * (self.FAIXA_H + self.ESPACO_H)
+
+    def _x_de_t(self, t):
+        """Posição x de um instante na janela visível."""
+        x0, larg = self._area()
+        span = max(1e-9, self._v1 - self._v0)
+        return x0 + (float(t) - self._v0) / span * larg
+
+    def _t_de_x(self, x):
+        """Instante correspondente a uma posição x (preso à gravação)."""
+        x0, larg = self._area()
+        t = self._v0 + (float(x) - x0) / larg * (self._v1 - self._v0)
+        dur = self._modelo.duracao_s if self._modelo is not None else self._v1
+        return min(dur, max(0.0, t))
+
+    def _px_por_s(self):
+        """Escala atual, em pixels por segundo."""
+        _, larg = self._area()
+        return larg / max(1e-9, self._v1 - self._v0)
+
+    def _faixa_em_y(self, y):
+        """Índice da faixa sob a coordenada y, ou None (régua, espaços)."""
+        for i in range(self._n_faixas()):
+            y0 = self._y_faixa(i)
+            if y0 <= y < y0 + self.FAIXA_H:
+                return i
+        return None
+
+    def _trecho_em(self, pos):
+        """(faixa, idx, lado) do trecho sob o ponto; lado é "t0", "t1" (zona
+        de 6 px nas bordas) ou "meio". None se não há trecho ali."""
+        if self._modelo is None:
+            return None
+        fi = self._faixa_em_y(pos.y())
+        if fi is None or pos.x() < self.MARGEM_ESQ:
+            return None
+        x = pos.x()
+        for idx, tr_ in enumerate(self._modelo.trechos(fi)):
+            xa, xb = self._x_de_t(tr_["t0"]), self._x_de_t(tr_["t1"])
+            if xa - 1 <= x <= xb + 1:
+                if xb - xa > 3 * self.BORDA_PX:
+                    if x <= xa + self.BORDA_PX:
+                        return (fi, idx, "t0")
+                    if x >= xb - self.BORDA_PX:
+                        return (fi, idx, "t1")
+                return (fi, idx, "meio")
+        return None
+
+    # ----- pintura -------------------------------------------------------------
+    def paintEvent(self, _ev):
+        """Pinta fundo, régua, marcadores, faixas com blocos e o cursor."""
+        p = QtGui.QPainter(self)
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
+        p.setRenderHint(QtGui.QPainter.RenderHint.TextAntialiasing)
+        w, h = self.width(), self.height()
+        p.fillRect(0, 0, w, h, QtGui.QColor(COLORS["surface"]))
+        if self._modelo is None or self._modelo.duracao_s <= 0:
+            p.setPen(QtGui.QColor(COLORS["text_dim"]))
+            p.setFont(QtGui.QFont(FONT_UI, 9))
+            p.drawText(QtCore.QRect(0, 0, w, h), QtCore.Qt.AlignmentFlag.AlignCenter,
+                       tr("Nenhuma gravação carregada."))
+            p.end()
+            return
+        x0, larg = self._area()
+        self._pintar_regua(p, x0, larg)
+        self._pintar_faixas(p, x0, larg)
+        self._pintar_marcadores(p, x0, larg)
+        self._pintar_blocos(p, x0, larg)
+        self._pintar_cursor(p, x0, larg)
+        p.end()
+
+    def _pintar_regua(self, p, x0, larg):
+        """Régua de tempo (m:ss) com marcas principais e secundárias."""
+        p.setFont(QtGui.QFont(FONT_UI, 8))
+        cor_txt = QtGui.QColor(COLORS["text_dim"])
+        cor_borda = QtGui.QColor(COLORS["border"])
+        p.setPen(QtGui.QPen(cor_borda, 1))
+        p.drawLine(x0, self.REGUA_H - 1, x0 + larg, self.REGUA_H - 1)
+        span = self._v1 - self._v0
+        passo = _mov_passo_regua(span, larg)
+        fmt = _mov_mmss_fino if passo < 1 else _mov_mmss
+        sub = passo / 5.0
+        if sub * self._px_por_s() >= 7:
+            t = math.floor(self._v0 / sub) * sub
+            p.setPen(QtGui.QPen(cor_borda, 1))
+            while t <= self._v1 + 1e-9:
+                x = int(round(self._x_de_t(t)))
+                p.drawLine(x, self.REGUA_H - 4, x, self.REGUA_H - 1)
+                t += sub
+        t = math.floor(self._v0 / passo) * passo
+        fm = QtGui.QFontMetrics(p.font())
+        while t <= self._v1 + 1e-9:
+            x = self._x_de_t(t)
+            p.setPen(QtGui.QPen(cor_txt, 1))
+            p.drawLine(int(round(x)), self.REGUA_H - 7, int(round(x)), self.REGUA_H - 1)
+            txt = fmt(t)
+            tw = fm.horizontalAdvance(txt)
+            # O rótulo fica centrado na marca, mas sem sair da área de tempo.
+            tx = min(x0 + larg - tw, max(x0, x - tw / 2.0))
+            p.drawText(QtCore.QRectF(tx, 1, tw + 2, self.REGUA_H - 9),
+                       QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter,
+                       txt)
+            t += passo
+
+    def _pintar_faixas(self, p, x0, larg):
+        """Fundo de cada faixa e o nome dela à esquerda."""
+        p.setFont(QtGui.QFont(FONT_UI, 8))
+        fm = QtGui.QFontMetrics(p.font())
+        for i in range(self._n_faixas()):
+            y = self._y_faixa(i)
+            r = QtCore.QRectF(x0, y, larg, self.FAIXA_H)
+            p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.setBrush(QtGui.QColor(COLORS["surface_alt"]))
+            p.drawRoundedRect(r, 4, 4)
+            nome = _mov_nome_faixa(self._modelo.faixas[i]["nome"], i)
+            p.setPen(QtGui.QColor(COLORS["text_dim"]))
+            p.drawText(QtCore.QRectF(6, y, self.MARGEM_ESQ - 12, self.FAIXA_H),
+                       QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter,
+                       fm.elidedText(nome, QtCore.Qt.TextElideMode.ElideRight,
+                                     self.MARGEM_ESQ - 12))
+
+    def _pintar_marcadores(self, p, x0, larg):
+        """Marcadores da gravação: traço fino por toda a altura e rótulo na
+        tira abaixo da régua, cortado antes do marcador seguinte."""
+        if not self._marcadores:
+            return
+        y_tira = self.REGUA_H
+        y_fim = self._y_faixa(self._n_faixas() - 1) + self.FAIXA_H
+        cor = QtGui.QColor(COLORS["text_dim"])
+        p.setFont(QtGui.QFont(FONT_UI, 7))
+        fm = QtGui.QFontMetrics(p.font())
+        p.setClipRect(QtCore.QRectF(x0, 0, larg, self.height()))
+        n = len(self._marcadores)
+        for i, (t, rot) in enumerate(self._marcadores):
+            if t < self._v0 - 1e-9 or t > self._v1 + 1e-9:
+                continue
+            x = self._x_de_t(t)
+            cor_linha = QtGui.QColor(cor)
+            cor_linha.setAlpha(110)
+            p.setPen(QtGui.QPen(cor_linha, 1, QtCore.Qt.PenStyle.DashLine))
+            p.drawLine(QtCore.QPointF(x, y_tira), QtCore.QPointF(x, y_fim))
+            x_prox = self._x_de_t(self._marcadores[i + 1][0]) if i + 1 < n else x0 + larg
+            disp = x_prox - x - 6
+            if disp > 10:
+                p.setPen(cor)
+                p.drawText(QtCore.QRectF(x + 3, y_tira, disp, self.MARCADORES_H),
+                           QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter,
+                           fm.elidedText(_mov_rotulo_marcador(rot),
+                                         QtCore.Qt.TextElideMode.ElideRight, int(disp)))
+        p.setClipping(False)
+
+    def _pintar_blocos(self, p, x0, larg):
+        """Blocos arredondados dos trechos, coloridos por movimento, com o
+        título dentro quando cabe; o selecionado ganha borda de acento."""
+        fonte = QtGui.QFont(FONT_UI, 8)
+        fonte.setBold(True)
+        p.setFont(fonte)
+        fm = QtGui.QFontMetrics(fonte)
+        cor_texto_tema = QtGui.QColor(COLORS["text"])
+        cor_dim = QtGui.QColor(COLORS["text_dim"])
+        for fi, faixa in enumerate(self._modelo.faixas):
+            y = self._y_faixa(fi)
+            p.setClipRect(QtCore.QRectF(x0, y, larg, self.FAIXA_H))
+            for idx, tr_ in enumerate(faixa["trechos"]):
+                xa, xb = self._x_de_t(tr_["t0"]), self._x_de_t(tr_["t1"])
+                if xb < x0 or xa > x0 + larg:
+                    continue
+                r = QtCore.QRectF(xa, y + 3, max(2.0, xb - xa), self.FAIXA_H - 6)
+                mov = tr_["movimento"]
+                cor_hex = MOVIMENTOS_CORES.get(mov, MOVIMENTOS_CORES["a_definir"])
+                cor = QtGui.QColor(cor_hex)
+                selecionado = self._sel == (fi, idx)
+                sob_mouse = self._hover is not None and self._hover[:2] == (fi, idx)
+                caminho = QtGui.QPainterPath()
+                caminho.addRoundedRect(r, 5, 5)
+                if mov == "a_definir":
+                    # Hachura em vez de cor cheia: o olho lê "ainda não decidido".
+                    p.fillPath(caminho, QtGui.QColor(COLORS["surface"]))
+                    hach = QtGui.QColor(cor_dim)
+                    hach.setAlpha(90)
+                    p.fillPath(caminho, QtGui.QBrush(hach, QtCore.Qt.BrushStyle.BDiagPattern))
+                    caneta = QtGui.QPen(cor_dim, 1, QtCore.Qt.PenStyle.DashLine)
+                    cor_txt = cor_texto_tema
+                else:
+                    p.fillPath(caminho, cor)
+                    caneta = QtGui.QPen(cor.darker(125 if sob_mouse else 112), 1)
+                    cor_txt = QtGui.QColor(_mov_cor_texto(cor_hex))
+                if selecionado:
+                    caneta = QtGui.QPen(QtGui.QColor(COLORS["accent"]), 2)
+                p.setPen(caneta)
+                p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+                p.drawPath(caminho)
+                if r.width() >= 28:
+                    titulo = tr(MOVIMENTOS_TITULOS.get(mov, "A definir"))
+                    disp = int(r.width() - 6)
+                    if fm.horizontalAdvance(titulo) > disp:
+                        titulo = tr(MOVIMENTOS_TITULOS_CURTOS.get(mov, titulo))
+                    p.setPen(cor_txt)
+                    p.drawText(r.adjusted(3, 0, -3, 0), QtCore.Qt.AlignmentFlag.AlignCenter,
+                               fm.elidedText(titulo, QtCore.Qt.TextElideMode.ElideRight, disp))
+            p.setClipping(False)
+
+    def _pintar_cursor(self, p, x0, larg):
+        """Cursor do tocador: linha vertical na cor de aviso, com o instante
+        escrito numa etiqueta na régua."""
+        if not (self._v0 - 1e-9 <= self._cursor <= self._v1 + 1e-9):
+            return
+        x = self._x_de_t(self._cursor)
+        cor = QtGui.QColor(COLORS["warning"])
+        p.setPen(QtGui.QPen(cor, 2))
+        p.drawLine(QtCore.QPointF(x, self.REGUA_H - 8), QtCore.QPointF(x, self.height() - 2))
+        fonte = QtGui.QFont(FONT_UI, 8)
+        fonte.setBold(True)
+        p.setFont(fonte)
+        fm = QtGui.QFontMetrics(fonte)
+        txt = _mov_mmss_fino(self._cursor) if self._px_por_s() > 60 else _mov_mmss(self._cursor)
+        tw = fm.horizontalAdvance(txt) + 10
+        rx = min(x0 + larg - tw, max(x0, x - tw / 2.0))
+        r = QtCore.QRectF(rx, 2, tw, self.REGUA_H - 8)
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.setBrush(cor)
+        p.drawRoundedRect(r, 3, 3)
+        p.setPen(QtGui.QColor(_mov_cor_texto(cor.name())))
+        p.drawText(r, QtCore.Qt.AlignmentFlag.AlignCenter, txt)
+
+    # ----- interação -----------------------------------------------------------
+    def _apos_mudanca(self):
+        """Depois de qualquer edição: acerta altura e seleção, repinta e avisa."""
+        if self._sel is not None and self._modelo is not None \
+                and self._modelo.trecho(*self._sel) is None:
+            self._sel = None
+        self._hover = None
+        self._atualizar_altura()
+        self.update()
+        self.modeloMudou.emit()
+
+    def _mover_cursor_para(self, x):
+        """Posiciona o cursor pelo x do mouse e avisa o tocador."""
+        self._cursor = self._t_de_x(x)
+        self.update()
+        self.cursorMovido.emit(self._cursor)
+
+    def mousePressEvent(self, ev):
+        """Botão esquerdo: pega um trecho (modo Completo) ou posiciona o cursor."""
+        if self._modelo is None or ev.button() != QtCore.Qt.MouseButton.LeftButton:
+            return super().mousePressEvent(ev)
+        self.setFocus()
+        pos = ev.position()
+        hit = None if self._somente_leitura else self._trecho_em(pos)
+        if hit is not None:
+            fi, idx, lado = hit
+            tr_ = self._modelo.trecho(fi, idx)
+            self._sel = (fi, idx)
+            self._arrasto = {"modo": lado, "faixa": fi, "idx": idx,
+                             "t_mouse": self._t_de_x(pos.x()),
+                             "t0": tr_["t0"], "t1": tr_["t1"], "moveu": False}
+            self.update()
+            self.trechoSelecionado.emit(fi, idx)
+            ev.accept()
+            return
+        if pos.x() >= self.MARGEM_ESQ:
+            if not self._somente_leitura and self._faixa_em_y(pos.y()) is not None:
+                self._sel = None
+            self._arrasto = {"modo": "cursor", "moveu": False}
+            self._mover_cursor_para(pos.x())
+            ev.accept()
+
+    def mouseMoveEvent(self, ev):
+        """Arrasta cursor, bloco ou borda; sem botão, só troca o ponteiro."""
+        if self._modelo is None:
+            return super().mouseMoveEvent(ev)
+        pos = ev.position()
+        a = self._arrasto
+        if a is not None:
+            if a["modo"] == "cursor":
+                self._mover_cursor_para(pos.x())
+                return
+            if self._modelo.trecho(a["faixa"], a["idx"]) is None:
+                self._arrasto = None
+                return
+            dt = self._t_de_x(pos.x()) - a["t_mouse"]
+            if not a["moveu"]:
+                if abs(dt) * self._px_por_s() < 3:
+                    return                      # tremor de clique não conta
+                self._modelo.marcar_desfazer()  # um desfazer para o gesto todo
+                a["moveu"] = True
+            fi, idx = a["faixa"], a["idx"]
+            if a["modo"] == "meio":
+                # Alvo absoluto (posição inicial + dt), para o bloco não
+                # "escorregar" quando bate no vizinho e o mouse volta.
+                atual = self._modelo.trecho(fi, idx)["t0"]
+                self._modelo.mover(fi, idx, a["t0"] + dt - atual, registrar=False)
+            elif a["modo"] == "t0":
+                self._modelo.esticar(fi, idx, "t0", a["t0"] + dt, registrar=False)
+            else:
+                self._modelo.esticar(fi, idx, "t1", a["t1"] + dt, registrar=False)
+            self.update()
+            return
+        hit = None if self._somente_leitura else self._trecho_em(pos)
+        if hit != self._hover:
+            self._hover = hit
+            self.update()
+        if hit is None:
+            if pos.x() >= self.MARGEM_ESQ and (pos.y() < self.REGUA_H
+                                              or self._faixa_em_y(pos.y()) is not None):
+                self.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+            else:
+                self.unsetCursor()
+        elif hit[2] == "meio":
+            self.setCursor(QtCore.Qt.CursorShape.OpenHandCursor)
+        else:
+            self.setCursor(QtCore.Qt.CursorShape.SizeHorCursor)
+
+    def mouseReleaseEvent(self, ev):
+        """Fecha o gesto; se o bloco realmente mudou, avisa modeloMudou."""
+        a = self._arrasto
+        self._arrasto = None
+        if a is not None and a["modo"] != "cursor" and a["moveu"]:
+            self._apos_mudanca()
+        else:
+            self.update()
+        super().mouseReleaseEvent(ev)
+
+    def mouseDoubleClickEvent(self, ev):
+        """Duplo clique no fundo de uma faixa cria um trecho "a definir" de 1 s."""
+        if self._modelo is None or self._somente_leitura \
+                or ev.button() != QtCore.Qt.MouseButton.LeftButton:
+            return super().mouseDoubleClickEvent(ev)
+        pos = ev.position()
+        if self._trecho_em(pos) is not None:
+            return
+        fi = self._faixa_em_y(pos.y())
+        if fi is None or pos.x() < self.MARGEM_ESQ:
+            return
+        t = self._t_de_x(pos.x())
+        idx = self._modelo.adicionar_trecho(fi, t - self.NOVO_TRECHO_S / 2.0,
+                                            t + self.NOVO_TRECHO_S / 2.0, "a_definir")
+        if idx is None:
+            return
+        self._arrasto = None
+        self._sel = (fi, idx)
+        self._apos_mudanca()
+        self.trechoSelecionado.emit(fi, idx)
+
+    def wheelEvent(self, ev):
+        """Roda: rola no tempo; Ctrl+roda: amplia/reduz em volta do mouse."""
+        if self._modelo is None:
+            return super().wheelEvent(ev)
+        delta = ev.angleDelta().y() or ev.angleDelta().x()
+        if delta == 0:
+            return
+        dur = max(self.ZOOM_MINIMO_S, self._modelo.duracao_s)
+        span = self._v1 - self._v0
+        if ev.modifiers() & QtCore.Qt.KeyboardModifier.ControlModifier:
+            fator = 0.8 if delta > 0 else 1.25
+            novo = min(dur, max(self.ZOOM_MINIMO_S, span * fator))
+            t_m = self._t_de_x(ev.position().x())
+            frac = (t_m - self._v0) / span if span > 0 else 0.5
+            v0 = t_m - frac * novo
+        else:
+            v0 = self._v0 + (-1 if delta > 0 else 1) * span * 0.1
+            novo = span
+        v0 = min(max(0.0, v0), max(0.0, dur - novo))
+        self._v0, self._v1 = v0, v0 + novo
+        self.update()
+        ev.accept()
+
+    def keyPressEvent(self, ev):
+        """Ctrl+Z desfaz, Ctrl+Y (ou Ctrl+Shift+Z) refaz, Delete apaga o
+        selecionado; nada disso no modo Simples."""
+        if self._modelo is None or self._somente_leitura:
+            return super().keyPressEvent(ev)
+        ctrl = bool(ev.modifiers() & QtCore.Qt.KeyboardModifier.ControlModifier)
+        shift = bool(ev.modifiers() & QtCore.Qt.KeyboardModifier.ShiftModifier)
+        k = ev.key()
+        if ctrl and k == QtCore.Qt.Key.Key_Z and not shift:
+            self._acao_desfazer()
+        elif ctrl and (k == QtCore.Qt.Key.Key_Y or (k == QtCore.Qt.Key.Key_Z and shift)):
+            self._acao_refazer()
+        elif k in (QtCore.Qt.Key.Key_Delete, QtCore.Qt.Key.Key_Backspace) and self._sel:
+            self._acao_apagar(*self._sel)
+        else:
+            return super().keyPressEvent(ev)
+        ev.accept()
+
+    def contextMenuEvent(self, ev):
+        """Botão direito (modo Completo): abre o menu de edição no ponto."""
+        if self._modelo is None or self._somente_leitura:
+            return
+        menu = self.criar_menu(ev.pos())
+        menu.exec(ev.globalPos())
+
+    def criar_menu(self, pos):
+        """Monta (sem abrir) o QMenu do ponto `pos`: trocar o movimento,
+        dividir aqui, apagar, desfazer, refazer, adicionar/remover faixa.
+        Separado de contextMenuEvent para poder ser testado e capturado."""
+        m = self._modelo
+        hit = self._trecho_em(pos)
+        fi = hit[0] if hit is not None else self._faixa_em_y(pos.y())
+        t = self._t_de_x(pos.x())
+        menu = QtWidgets.QMenu(self)
+        if hit is not None:
+            fi, idx = hit[0], hit[1]
+            self._sel = (fi, idx)
+            self.update()
+            atual = m.trecho(fi, idx)["movimento"]
+            sub = menu.addMenu(tr("Trocar o movimento"))
+            for chave in MOVIMENTOS_ORDEM:
+                act = sub.addAction(_mov_icone_cor(MOVIMENTOS_CORES[chave]),
+                                    tr(MOVIMENTOS_TITULOS[chave]))
+                act.setCheckable(True)
+                act.setChecked(chave == atual)
+                act.triggered.connect(
+                    lambda _c=False, f=fi, i=idx, k=chave: self._acao_trocar(f, i, k))
+            tr_ = m.trecho(fi, idx)
+            a_div = menu.addAction(tr("Dividir aqui"))
+            a_div.setEnabled(tr_["t0"] + m.DURACAO_MINIMA <= t <= tr_["t1"] - m.DURACAO_MINIMA)
+            a_div.triggered.connect(lambda _c=False, f=fi, i=idx, tt=t: self._acao_dividir(f, i, tt))
+            a_del = menu.addAction(tr("Apagar"))
+            a_del.triggered.connect(lambda _c=False, f=fi, i=idx: self._acao_apagar(f, i))
+            menu.addSeparator()
+        elif fi is not None and pos.x() >= self.MARGEM_ESQ:
+            a_novo = menu.addAction(tr("Novo trecho aqui"))
+            a_novo.triggered.connect(lambda _c=False, f=fi, tt=t: self._acao_novo(f, tt))
+            menu.addSeparator()
+        a_desf = menu.addAction(tr("Desfazer"))
+        a_desf.setShortcut(QtGui.QKeySequence("Ctrl+Z"))
+        a_desf.setEnabled(m.pode_desfazer())
+        a_desf.triggered.connect(lambda _c=False: self._acao_desfazer())
+        a_ref = menu.addAction(tr("Refazer"))
+        a_ref.setShortcut(QtGui.QKeySequence("Ctrl+Y"))
+        a_ref.setEnabled(m.pode_refazer())
+        a_ref.triggered.connect(lambda _c=False: self._acao_refazer())
+        menu.addSeparator()
+        a_add = menu.addAction(tr("Adicionar faixa"))
+        a_add.setEnabled(m.n_faixas() < m.MAX_FAIXAS)
+        a_add.triggered.connect(lambda _c=False: self._acao_adicionar_faixa())
+        a_rem = menu.addAction(tr("Remover faixa"))
+        a_rem.setEnabled(fi is not None and m.n_faixas() > m.MIN_FAIXAS)
+        a_rem.triggered.connect(lambda _c=False, f=fi: self._acao_remover_faixa(f))
+        return menu
+
+    # ----- ações do menu / teclado -----------------------------------------------
+    def _acao_trocar(self, fi, idx, chave):
+        """Troca o movimento do trecho e avisa."""
+        if self._modelo.trocar_movimento(fi, idx, chave):
+            self._apos_mudanca()
+
+    def _acao_dividir(self, fi, idx, t):
+        """Divide o trecho em `t`; a metade nova fica selecionada."""
+        novo = self._modelo.dividir(fi, idx, t)
+        if novo is not None:
+            self._sel = (fi, novo)
+            self._apos_mudanca()
+            self.trechoSelecionado.emit(fi, novo)
+
+    def _acao_apagar(self, fi, idx):
+        """Apaga o trecho e avisa."""
+        if self._modelo.apagar(fi, idx):
+            self._sel = None
+            self._apos_mudanca()
+
+    def _acao_novo(self, fi, t):
+        """Cria um trecho "a definir" de 1 s centrado em `t`."""
+        idx = self._modelo.adicionar_trecho(fi, t - self.NOVO_TRECHO_S / 2.0,
+                                            t + self.NOVO_TRECHO_S / 2.0, "a_definir")
+        if idx is not None:
+            self._sel = (fi, idx)
+            self._apos_mudanca()
+            self.trechoSelecionado.emit(fi, idx)
+
+    def _acao_desfazer(self):
+        """Desfaz a última edição."""
+        if self._modelo.desfazer():
+            self._apos_mudanca()
+
+    def _acao_refazer(self):
+        """Refaz a última edição desfeita."""
+        if self._modelo.refazer():
+            self._apos_mudanca()
+
+    def _acao_adicionar_faixa(self):
+        """Acrescenta uma faixa (até 4)."""
+        if self._modelo.adicionar_faixa() is not None:
+            self._apos_mudanca()
+
+    def _acao_remover_faixa(self, fi):
+        """Remove a faixa sob o mouse (nunca abaixo de 2)."""
+        if fi is not None and self._modelo.remover_faixa(fi):
+            self._sel = None
+            self._apos_mudanca()
+
+
+class ListaTrechosWidget(QtWidgets.QListWidget):
+    """Lista dos trechos em palavras simples ("0:03–0:07  Flexão do cotovelo
+    (faixa 1)"), ordenada pelo tempo. Clicar num item leva o cursor do
+    tocador ao começo do trecho (cursorMovido) e avisa qual trecho é
+    (trechoSelecionado)."""
+
+    cursorMovido = QtCore.Signal(float)
+    trechoSelecionado = QtCore.Signal(int, int)
+
+    def __init__(self, parent=None):
+        """Lista vazia, com a fonte da interface."""
+        super().__init__(parent)
+        self._modelo = None
+        self.setFont(QtGui.QFont(FONT_UI, 10))
+        self.setAlternatingRowColors(True)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.itemClicked.connect(self._clicou)
+        self.itemActivated.connect(self._clicou)
+
+    def set_modelo(self, modelo):
+        """Refaz a lista a partir do modelo (chame após cada modeloMudou)."""
+        self._modelo = modelo
+        self.clear()
+        if modelo is None or modelo.total_trechos() == 0:
+            vazio = QtWidgets.QListWidgetItem(
+                tr("Nenhum trecho de movimento marcado nesta gravação."))
+            vazio.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
+            self.addItem(vazio)
+            return
+        for fi, idx, tr_ in modelo.todos_trechos():
+            item = QtWidgets.QListWidgetItem(
+                _mov_icone_cor(MOVIMENTOS_CORES.get(tr_["movimento"],
+                                                    MOVIMENTOS_CORES["a_definir"])),
+                descrever_trecho(tr_, fi))
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, (fi, idx))
+            self.addItem(item)
+
+    def selecionar(self, faixa, idx):
+        """Destaca o item do trecho (faixa, idx), se estiver na lista."""
+        for i in range(self.count()):
+            it = self.item(i)
+            if it.data(QtCore.Qt.ItemDataRole.UserRole) == (faixa, idx):
+                self.setCurrentItem(it)
+                return
+
+    def _clicou(self, item):
+        """Leva o cursor ao começo do trecho clicado."""
+        dados = item.data(QtCore.Qt.ItemDataRole.UserRole)
+        if not dados or self._modelo is None:
+            return
+        fi, idx = dados
+        tr_ = self._modelo.trecho(fi, idx)
+        if tr_ is None:
+            return
+        self.cursorMovido.emit(float(tr_["t0"]))
+        self.trechoSelecionado.emit(int(fi), int(idx))
+
+
+# ============================================================
+# REPLAY DO CORAÇÃO E DOS OLHOS (P7) — detecções sobre a gravação inteira
+# (as MESMAS do relatório PDF), batidas.json / olhos.json e os widgets
+# ============================================================
+# ----------------------------------------------------------------------------
+# P7 — Replay do coração e dos olhos
+#
+# Tudo aqui calcula sobre a GRAVAÇÃO INTEIRA com as MESMAS funções da tela
+# ao vivo e do relatório PDF, para o replay mostrar os mesmos números:
+#   ECG  picos R = ecg_pan_tompkins (a do PDF e das receitas);
+#        RR = ecg_rr; bpm médio = ecg_hrv_tempo["fc_media"];
+#        batida adiantada / pausa = correct_ectopic_rr(rr, 0.30), o critério
+#        com que _update_ecg_view conta ectópicos.
+#   EOG  piscadas = eog_piscadas_tela(v, fs, limiar) (tela e PDF) ou
+#        eog_piscadas(v, fs) quando a gravação não guardou o limiar (PDF);
+#        sacadas = eog_sacadas (PDF); direção = polaridade da tela
+#        (_update_eog_view: +H = direita, +V = cima).
+# As globais do programa são lidas por _p7_global() dentro das funções, nunca
+# em nível de módulo: o bloco pode ser colado em qualquer ponto do ROA.py.
+# ----------------------------------------------------------------------------
+
+P7_VERSAO_JSON = 1
+P7_ECTOPICO_LIMIAR = 0.30        # o mesmo threshold de correct_ectopic_rr na tela
+P7_JANELA_BASE_S = 10.0          # BUFFER_SECONDS da tela: a mediana do buffer é a base
+P7_TOLERANCIA_CORRECAO_S = 0.08  # clique "na batida" = a menos de 80 ms dela
+
+
+def _p7_global(nome, padrao=None):
+    """Lê uma global do programa (tr, COLORS, FONT_UI...) se existir; senão o padrão.
+
+    Permite ao bloco rodar fora do ROA.py (protótipo e testes) sem referenciar
+    essas globais em nível de módulo."""
+    return globals().get(nome, padrao)
+
+
+def _p7_tr(s):
+    """Traduz com o tr() do programa quando ele existe; senão devolve o texto."""
+    f = _p7_global("tr")
+    return f(s) if callable(f) else s
+
+
+def _p7_cor(chave, padrao):
+    """Cor do tema atual (COLORS[chave]) ou a cor padrão informada."""
+    cores = _p7_global("COLORS") or {}
+    return str(cores.get(chave, padrao))
+
+
+def _p7_cor_sinal(tipo, padrao):
+    """Cor do tipo de sinal (SIGNAL_TYPE_COLORS[tipo]) ou a padrão."""
+    cores = _p7_global("SIGNAL_TYPE_COLORS") or {}
+    return str(cores.get(tipo, padrao))
+
+
+def _p7_cor_legivel(cor):
+    """Escurece uma cor de sinal clara (ciano, verde-limão) quando o fundo é
+    claro, para o texto continuar legível; em tema escuro devolve como está."""
+    cor = QtGui.QColor(cor)
+    fundo = QtGui.QColor(_p7_cor("surface", "#ffffff"))
+    return cor.darker(175) if fundo.lightnessF() > 0.5 else cor
+
+
+def _p7_fonte(tamanho, negrito=False, dados=False):
+    """QFont na família da interface (FONT_UI) ou dos dados (FONT_DATA)."""
+    nome = _p7_global("FONT_DATA" if dados else "FONT_UI") or "Sans Serif"
+    f = QtGui.QFont(str(nome), int(tamanho))
+    if negrito:
+        f.setBold(True)
+    return f
+
+
+def _p7_idioma():
+    """Código do idioma da interface (I18N.current) ou 'pt'."""
+    i18n = _p7_global("I18N")
+    return str(getattr(i18n, "current", "pt") or "pt") if i18n is not None else "pt"
+
+
+def fmt_num(x, casas=1):
+    """Número com a vírgula decimal dos idiomas que a usam (pt, es, it, fr, de, ru).
+
+    Usa num_loc do programa quando existe (mesma formatação do PDF); fora dele,
+    troca o ponto por vírgula conforme I18N.current. None/NaN -> '—'."""
+    f = _p7_global("num_loc")
+    if callable(f):
+        return f(x, casas)
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return "—"
+    if not math.isfinite(v):
+        return "—"
+    s = "%.*f" % (max(0, int(casas)), v)
+    if _p7_idioma() in ("pt", "es", "it", "fr", "de", "ru"):
+        s = s.replace(".", ",")
+    return s
+
+
+def _p7_plural(n, singular, plural, nenhum=None):
+    """'1 pausa maior' / '2 pausas maiores' / 'nenhuma pausa maior' via tr()."""
+    n = int(n)
+    if n == 0 and nenhum:
+        return _p7_tr(nenhum)
+    return _p7_tr(singular if n == 1 else plural).format(n)
+
+
+def _p7_sem_nan(v):
+    """float finito ou None — o JSON não guarda NaN."""
+    try:
+        v = float(v)
+    except (TypeError, ValueError):
+        return None
+    return v if math.isfinite(v) else None
+
+
+def _p7_agora_iso():
+    """Carimbo de data/hora local em ISO 8601, para 'gerado_em'."""
+    return time.strftime("%Y-%m-%dT%H:%M:%S")
+
+
+# ============================================================ ECG — batidas
+
+def _p7_mediana_movel_rr(rr):
+    """Mediana móvel dos RR com o MESMO kernel de correct_ectopic_rr (≤ 5).
+
+    correct_ectopic_rr decide QUAIS RR desviam mais de 30% dela, mas devolve
+    só os índices; o sinal do desvio (abaixo = batida adiantada, acima =
+    pausa) precisa da mediana, e ela é recalculada aqui exatamente como lá.
+    Pedido no relatório: expor a mediana em correct_ectopic_rr para não
+    repetir estas três linhas."""
+    rr = np.asarray(rr, float)
+    if rr.size < 3:
+        return rr.copy()
+    kern = max(3, min(5, rr.size if rr.size % 2 else rr.size - 1))
+    sig = _p7_global("scipy_signal")          # o módulo adiado do ROA.py
+    if sig is not None:
+        return np.asarray(sig.medfilt(rr, kernel_size=kern), float)
+    # fallback só com numpy, idêntico ao medfilt (bordas preenchidas com zero)
+    meia = kern // 2
+    cheio = np.concatenate([np.zeros(meia), rr, np.zeros(meia)])
+    return np.array([np.median(cheio[i:i + kern]) for i in range(rr.size)])
+
+
+def classificar_batidas(tempos_s, fs=1000.0):
+    """Lista de batidas {t, rr_ms, tipo, origem} a partir dos instantes dos picos R.
+
+    rr_ms é o intervalo desde a batida anterior (None na primeira). O tipo
+    segue o critério com que o painel ao vivo conta ectópicos
+    (_update_ecg_view: correct_ectopic_rr(rr, threshold=0.30)): RR que desvia
+    mais de 30% da mediana móvel; se ficou abaixo dela a batida chegou cedo
+    ("adiantada"), se ficou acima houve uma pausa antes dela ("pausa").
+    Diferença consciente: a tela descarta RR fora de 300-2000 ms antes de
+    contar; aqui nenhuma batida é descartada, para a pausa longa aparecer."""
+    tempos = np.sort(np.asarray(list(tempos_s), float))
+    n = tempos.size
+    batidas = [{"t": float(t), "rr_ms": None, "tipo": "normal", "origem": "auto"}
+               for t in tempos]
+    if n < 2:
+        return batidas
+    # ecg_rr trabalha em amostras: passar t*fs devolve exatamente diff(t)*1000
+    rr = np.asarray(ecg_rr(tempos * float(fs), fs), float)
+    for i, v in enumerate(rr):
+        batidas[i + 1]["rr_ms"] = float(v)
+    _corr, ruins = correct_ectopic_rr(rr, threshold=P7_ECTOPICO_LIMIAR)
+    if ruins:
+        med = _p7_mediana_movel_rr(rr)
+        for i in ruins:
+            i = int(i)
+            batidas[i + 1]["tipo"] = "adiantada" if rr[i] < med[i] else "pausa"
+    return batidas
+
+
+def resumo_batidas(batidas):
+    """{'bpm_medio', 'n_adiantadas', 'n_pausas', 'n_batidas'} de uma lista de batidas.
+
+    bpm_medio = 60000/média(RR) como ecg_hrv_tempo['fc_media'], o número do PDF."""
+    rr = np.asarray([b["rr_ms"] for b in batidas if b.get("rr_ms") is not None], float)
+    bpm = ecg_hrv_tempo(rr)["fc_media"] if rr.size >= 2 else float("nan")
+    return {"bpm_medio": _p7_sem_nan(bpm),
+            "n_adiantadas": sum(1 for b in batidas if b.get("tipo") == "adiantada"),
+            "n_pausas": sum(1 for b in batidas if b.get("tipo") == "pausa"),
+            "n_batidas": len(batidas)}
+
+
+def detectar_batidas_gravacao(sinal_ecg, fs):
+    """Todas as batidas de uma gravação de ECG, com os números do PDF.
+
+    Picos R por ecg_pan_tompkins (a função de _pdf_figs_ecg e das receitas),
+    RR por ecg_rr, bpm médio por ecg_hrv_tempo e tipo de cada batida por
+    classificar_batidas. Devolve {"versao", "fs", "batidas", "bpm_medio",
+    "n_adiantadas", "n_pausas"}."""
+    fs = float(fs)
+    x = np.nan_to_num(np.asarray(sinal_ecg, float))
+    picos = np.asarray(ecg_pan_tompkins(x, fs), int)
+    batidas = classificar_batidas(picos / fs, fs)
+    saida = {"versao": P7_VERSAO_JSON, "fs": fs, "batidas": batidas}
+    saida.update(resumo_batidas(batidas))
+    return saida
+
+
+def _p7_indice_mais_perto(tempos, t, tolerancia):
+    """Índice do instante mais próximo de t (ou None se nenhum está a menos de tolerancia)."""
+    if not len(tempos):
+        return None
+    arr = np.asarray(tempos, float)
+    i = int(np.argmin(np.abs(arr - float(t))))
+    return i if abs(arr[i] - float(t)) <= tolerancia else None
+
+
+def aplicar_correcoes(batidas, correcoes, tolerancia_s=P7_TOLERANCIA_CORRECAO_S):
+    """Aplica correções manuais e recalcula RR e tipos dos vizinhos.
+
+    correcoes = [{"acao": "remover", "t": s}, {"acao": "adicionar", "t": s},
+                 {"acao": "tipo", "t": s, "tipo": "normal|adiantada|pausa"}].
+    Uma batida com tipo fixado à mão fica marcada ("tipo_fixo": True,
+    "origem": "manual") e não é reclassificada; as demais voltam a passar pelo
+    mesmo critério automático, porque remover ou acrescentar uma batida muda
+    os RR ao redor. Devolve a lista nova (não altera a de entrada)."""
+    tempos = [float(b["t"]) for b in batidas]
+    fixos = {round(float(b["t"]), 4): b["tipo"] for b in batidas if b.get("tipo_fixo")}
+    manuais = {round(float(b["t"]), 4) for b in batidas if b.get("origem") == "manual"}
+    for c in correcoes or []:
+        acao = c.get("acao")
+        try:
+            t = float(c.get("t"))
+        except (TypeError, ValueError):
+            continue
+        if acao == "remover":
+            i = _p7_indice_mais_perto(tempos, t, tolerancia_s)
+            if i is not None:
+                chave = round(tempos.pop(i), 4)
+                fixos.pop(chave, None)
+                manuais.discard(chave)
+        elif acao == "adicionar":
+            if _p7_indice_mais_perto(tempos, t, tolerancia_s) is None:
+                tempos.append(t)
+                manuais.add(round(t, 4))
+        elif acao == "tipo":
+            i = _p7_indice_mais_perto(tempos, t, tolerancia_s)
+            tipo = c.get("tipo")
+            if i is not None and tipo in ("normal", "adiantada", "pausa"):
+                fixos[round(tempos[i], 4)] = tipo
+                manuais.add(round(tempos[i], 4))
+    novas = classificar_batidas(tempos)
+    for b in novas:
+        chave = round(b["t"], 4)
+        if chave in fixos:
+            b["tipo"] = fixos[chave]
+            b["tipo_fixo"] = True
+        if chave in manuais:
+            b["origem"] = "manual"
+    return novas
+
+
+def caminho_batidas(pasta_gravacao):
+    """Caminho do batidas.json dentro da pasta da gravação."""
+    return os.path.join(str(pasta_gravacao), "batidas.json")
+
+
+def salvar_batidas(pasta_gravacao, deteccao, correcoes=None):
+    """Grava batidas.json: {"versao", "fs", "batidas", "correcoes", "gerado_em",
+    "bpm_medio", "n_adiantadas", "n_pausas"}.
+
+    "batidas" já vem com as correções aplicadas; "correcoes" é só o histórico
+    (quem carrega NÃO deve reaplicá-lo). Devolve o caminho gravado."""
+    batidas = list(deteccao.get("batidas", []))
+    dados = {"versao": P7_VERSAO_JSON, "fs": float(deteccao.get("fs", 0.0)),
+             "batidas": batidas, "correcoes": list(correcoes or []),
+             "gerado_em": _p7_agora_iso()}
+    dados.update(resumo_batidas(batidas))
+    caminho = caminho_batidas(pasta_gravacao)
+    with open(caminho, "w", encoding="utf-8") as f:
+        json.dump(dados, f, ensure_ascii=False, indent=1)
+    return caminho
+
+
+def carregar_batidas(pasta_gravacao):
+    """Lê batidas.json da pasta; None se não existe ou está ilegível."""
+    caminho = caminho_batidas(pasta_gravacao)
+    try:
+        with open(caminho, encoding="utf-8") as f:
+            dados = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(dados, dict) or "batidas" not in dados:
+        return None
+    dados.setdefault("correcoes", [])
+    dados.update(resumo_batidas(dados["batidas"]))
+    return dados
+
+
+# ============================================================ EOG — olhos
+
+P7_DIRECOES = ("direita", "esquerda", "cima", "baixo")
+_P7_OPOSTA = {"direita": "esquerda", "esquerda": "direita",
+              "cima": "baixo", "baixo": "cima"}
+
+
+def _p7_pico_piscada(v, a, b, fs):
+    """Instante do pico da piscada entre as amostras a e b (o que a tela marca).
+
+    eog_piscadas_tela já devolve o índice do pico; eog_piscadas não, então o
+    pico é o máximo do resíduo sobre a linha de base local, a mesma base das
+    duas funções."""
+    r = v[a:b] - eog_linha_base(v, fs)[a:b]
+    return float((a + int(np.argmax(np.abs(r)))) / fs) if b > a else float(a / fs)
+
+
+def detectar_eventos_olhos(h, v, fs, limiar_uV, inverter_h=False, inverter_v=False):
+    """Piscadas e sacadas de uma gravação de EOG, com os critérios da tela/PDF.
+
+    Piscadas (canal vertical): eog_piscadas_tela(v, fs, limiar_uV) — subida do
+    resíduo acima de 1,5 x limiar por ≥ 50 ms, um pico por trecho, picos a
+    menos de 200 ms descartados — a mesma chamada de _update_eog_view e de
+    _pdf_figs_eog; sem limiar (gravação antiga) usa eog_piscadas(v, fs) como
+    o PDF. Sacadas: eog_sacadas (velocidade > 6 MAD, ≥ 20 ms), a função do
+    PDF, no canal horizontal e também no vertical (descartando as que caem
+    numa piscada). Direção pela polaridade que a tela usa para "Direita"/
+    "Cima" (+H = direita, +V = cima); inverter_h / inverter_v trocam o lado.
+    n_sacadas conta só as horizontais, como a tela e o PDF; as verticais
+    ficam em n_sacadas_v. Devolve {"versao", "fs", "limiar_uV", "inverter_h",
+    "inverter_v", "eventos", "n_piscadas", "n_sacadas", "n_sacadas_v",
+    "taxa_piscadas_min"}."""
+    fs = float(fs)
+    h = np.nan_to_num(np.asarray(h, float))
+    v = np.nan_to_num(np.asarray(v, float))
+    n = min(h.size, v.size)
+    h, v = h[:n], v[:n]
+    eventos = []
+    janelas_piscada = []
+    try:
+        piscadas = (eog_piscadas_tela(v, fs, float(limiar_uV)) if limiar_uV
+                    else eog_piscadas(v, fs))
+    except Exception:
+        piscadas = []
+    for q in piscadas:
+        a, b = int(q[0]), int(q[1])
+        t = float(q[4] / fs) if len(q) >= 5 else _p7_pico_piscada(v, a, b, fs)
+        janelas_piscada.append((a / fs - 0.1, b / fs + 0.1))
+        eventos.append({"t": t, "tipo": "piscada", "direcao": None,
+                        "dur_s": float(q[2]), "origem": "auto"})
+    sh = -1.0 if inverter_h else 1.0
+    sv = -1.0 if inverter_v else 1.0
+    try:
+        sac_h = eog_sacadas(h, fs)
+    except Exception:
+        sac_h = []
+    for a, b, amp, _vel in sac_h:
+        eventos.append({"t": float(a / fs), "tipo": "sacada",
+                        "direcao": "direita" if amp * sh > 0 else "esquerda",
+                        "dur_s": float((b - a) / fs), "amp_uV": float(abs(amp)),
+                        "eixo": "h", "origem": "auto"})
+    try:
+        sac_v = eog_sacadas(v, fs)
+    except Exception:
+        sac_v = []
+    n_sac_v = 0
+    for a, b, amp, _vel in sac_v:
+        ta, tb = a / fs, b / fs
+        if any(ta <= j1 and tb >= j0 for j0, j1 in janelas_piscada):
+            continue          # é a própria piscada, não um olhar para cima
+        n_sac_v += 1
+        eventos.append({"t": float(ta), "tipo": "sacada",
+                        "direcao": "cima" if amp * sv > 0 else "baixo",
+                        "dur_s": float(tb - ta), "amp_uV": float(abs(amp)),
+                        "eixo": "v", "origem": "auto"})
+    eventos.sort(key=lambda e: e["t"])
+    minutos = n / fs / 60.0 if fs > 0 else 0.0
+    taxa = (len(piscadas) / minutos) if minutos > 0 else float("nan")
+    return {"versao": P7_VERSAO_JSON, "fs": fs,
+            "limiar_uV": (float(limiar_uV) if limiar_uV else None),
+            "inverter_h": bool(inverter_h), "inverter_v": bool(inverter_v),
+            "eventos": eventos, "n_piscadas": len(piscadas),
+            "n_sacadas": len(sac_h), "n_sacadas_v": n_sac_v,
+            "taxa_piscadas_min": _p7_sem_nan(taxa)}
+
+
+def inverter_direcoes(deteccao, inverter_h, inverter_v):
+    """Devolve uma cópia da detecção com as direções trocadas conforme os flags
+    pedidos, sem detectar de novo (o botão 'Inverter' do replay é só isto)."""
+    nova = dict(deteccao)
+    troca_h = bool(inverter_h) != bool(deteccao.get("inverter_h", False))
+    troca_v = bool(inverter_v) != bool(deteccao.get("inverter_v", False))
+    eventos = []
+    for e in deteccao.get("eventos", []):
+        e = dict(e)
+        d = e.get("direcao")
+        if d in ("direita", "esquerda") and troca_h:
+            e["direcao"] = _P7_OPOSTA[d]
+        elif d in ("cima", "baixo") and troca_v:
+            e["direcao"] = _P7_OPOSTA[d]
+        eventos.append(e)
+    nova["eventos"] = eventos
+    nova["inverter_h"] = bool(inverter_h)
+    nova["inverter_v"] = bool(inverter_v)
+    return nova
+
+
+def resumo_eventos_olhos(eventos, dur_s=None):
+    """Contadores de uma lista de eventos: piscadas, sacadas (horizontais),
+    sacadas verticais e piscadas por minuto (se a duração for conhecida)."""
+    n_p = sum(1 for e in eventos if e.get("tipo") == "piscada")
+    n_sh = sum(1 for e in eventos if e.get("tipo") == "sacada"
+               and e.get("direcao") in ("direita", "esquerda", None))
+    n_sv = sum(1 for e in eventos if e.get("tipo") == "sacada"
+               and e.get("direcao") in ("cima", "baixo"))
+    taxa = (n_p / (dur_s / 60.0)) if dur_s and dur_s > 0 else None
+    return {"n_piscadas": n_p, "n_sacadas": n_sh, "n_sacadas_v": n_sv,
+            "taxa_piscadas_min": _p7_sem_nan(taxa) if taxa is not None else None}
+
+
+def aplicar_correcoes_olhos(eventos, correcoes, tolerancia_s=P7_TOLERANCIA_CORRECAO_S):
+    """Correções manuais na lista de eventos dos olhos, no molde das batidas.
+
+    correcoes = [{"acao": "remover", "t"}, {"acao": "adicionar", "t", "tipo",
+    "direcao"?, "dur_s"?}, {"acao": "tipo", "t", "tipo", "direcao"?}].
+    Devolve a lista nova, ordenada por t (não altera a de entrada)."""
+    novos = [dict(e) for e in eventos]
+    for c in correcoes or []:
+        acao = c.get("acao")
+        try:
+            t = float(c.get("t"))
+        except (TypeError, ValueError):
+            continue
+        tempos = [e["t"] for e in novos]
+        if acao == "remover":
+            i = _p7_indice_mais_perto(tempos, t, tolerancia_s)
+            if i is not None:
+                novos.pop(i)
+        elif acao == "adicionar":
+            tipo = c.get("tipo", "piscada")
+            if tipo in ("piscada", "sacada", "fixacao"):
+                novos.append({"t": t, "tipo": tipo, "direcao": c.get("direcao"),
+                              "dur_s": c.get("dur_s"), "origem": "manual"})
+        elif acao == "tipo":
+            i = _p7_indice_mais_perto(tempos, t, tolerancia_s)
+            if i is not None and c.get("tipo") in ("piscada", "sacada", "fixacao"):
+                novos[i]["tipo"] = c["tipo"]
+                if "direcao" in c:
+                    novos[i]["direcao"] = c["direcao"]
+                novos[i]["origem"] = "manual"
+    novos.sort(key=lambda e: e["t"])
+    return novos
+
+
+def caminho_olhos(pasta_gravacao):
+    """Caminho do olhos.json dentro da pasta da gravação."""
+    return os.path.join(str(pasta_gravacao), "olhos.json")
+
+
+def salvar_olhos(pasta_gravacao, deteccao, correcoes=None, dur_s=None):
+    """Grava olhos.json: {"versao", "fs", "limiar_uV", "inverter_h", "inverter_v",
+    "eventos", "correcoes", "gerado_em", "n_piscadas", "n_sacadas",
+    "n_sacadas_v", "taxa_piscadas_min"}. "eventos" já corrigidos; "correcoes"
+    é histórico. Devolve o caminho gravado."""
+    eventos = list(deteccao.get("eventos", []))
+    dados = {"versao": P7_VERSAO_JSON, "fs": float(deteccao.get("fs", 0.0)),
+             "limiar_uV": deteccao.get("limiar_uV"),
+             "inverter_h": bool(deteccao.get("inverter_h", False)),
+             "inverter_v": bool(deteccao.get("inverter_v", False)),
+             "eventos": eventos, "correcoes": list(correcoes or []),
+             "gerado_em": _p7_agora_iso()}
+    dados.update(resumo_eventos_olhos(eventos, dur_s))
+    if dados.get("taxa_piscadas_min") is None:
+        dados["taxa_piscadas_min"] = _p7_sem_nan(deteccao.get("taxa_piscadas_min"))
+    caminho = caminho_olhos(pasta_gravacao)
+    with open(caminho, "w", encoding="utf-8") as f:
+        json.dump(dados, f, ensure_ascii=False, indent=1)
+    return caminho
+
+
+def carregar_olhos(pasta_gravacao):
+    """Lê olhos.json da pasta; None se não existe ou está ilegível."""
+    caminho = caminho_olhos(pasta_gravacao)
+    try:
+        with open(caminho, encoding="utf-8") as f:
+            dados = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(dados, dict) or "eventos" not in dados:
+        return None
+    dados.setdefault("correcoes", [])
+    return dados
+
+
+def texto_evento(ev):
+    """Frase em palavras simples para um evento: '0:03 piscou',
+    '0:05 olhou para a direita', '0:09 ficou olhando para cima por 1,2 s'."""
+    t = fmt_mmss(ev.get("t", 0.0))
+    tipo = ev.get("tipo")
+    d = ev.get("direcao")
+    if tipo == "piscada":
+        return _p7_tr("{0} piscou").format(t)
+    frases_sacada = {"direita": "{0} olhou para a direita",
+                     "esquerda": "{0} olhou para a esquerda",
+                     "cima": "{0} olhou para cima",
+                     "baixo": "{0} olhou para baixo"}
+    frases_fix = {"direita": "{0} ficou olhando para a direita",
+                  "esquerda": "{0} ficou olhando para a esquerda",
+                  "cima": "{0} ficou olhando para cima",
+                  "baixo": "{0} ficou olhando para baixo"}
+    if tipo == "sacada":
+        return _p7_tr(frases_sacada.get(d, "{0} moveu os olhos")).format(t)
+    if tipo == "fixacao":
+        base = _p7_tr(frases_fix.get(d, "{0} ficou olhando para frente")).format(t)
+        dur = ev.get("dur_s")
+        if dur:
+            base = _p7_tr("{0} por {1} s").format(base, fmt_num(dur, 1))
+        return base
+    return _p7_tr("{0} evento").format(t)
+
+
+def olhar_no_instante(h, v, fs, t, inverter_h=False, inverter_v=False, escala_uV=160.0):
+    """(gx, gy) em -1..1 para animar os olhos no instante t.
+
+    Média de ~100 ms em volta de t, relativa à linha de base = mediana dos
+    10 s anteriores (a tela usa a mediana do buffer de 10 s em
+    _update_eog_view), dividida por escala_uV (a tela divide por 2 x limiar:
+    gx = h_mean / max(th*2, 1)). Com escala_uV = 2 x limiar, |g| > 0,5
+    equivale ao critério da tela para dizer 'Direita'/'Cima'. inverter_h e
+    inverter_v trocam o sinal."""
+    fs = float(fs)
+    h = np.asarray(h, float)
+    v = np.asarray(v, float)
+    n = min(h.size, v.size)
+    if n == 0 or fs <= 0:
+        return 0.0, 0.0
+    i = int(round(float(t) * fs))
+    meia = max(1, int(0.05 * fs))
+    a, b = max(0, i - meia), min(n, i + meia + 1)
+    if b <= a:
+        return 0.0, 0.0
+    j0 = max(0, b - int(P7_JANELA_BASE_S * fs))
+    hb = float(np.median(h[j0:b]))
+    vb = float(np.median(v[j0:b]))
+    esc = max(float(escala_uV), 1e-6)
+    gx = (float(np.mean(h[a:b])) - hb) / esc
+    gy = (float(np.mean(v[a:b])) - vb) / esc
+    if inverter_h:
+        gx = -gx
+    if inverter_v:
+        gy = -gy
+    return (max(-1.0, min(1.0, gx)), max(-1.0, min(1.0, gy)))
+
+
+def direcao_do_olhar(gx, gy, limite=0.5):
+    """'direita'|'esquerda'|'cima'|'baixo'|'centro' a partir do olhar em -1..1.
+
+    Mesma ordem de decisão de _update_eog_view (vertical antes de horizontal):
+    com gx = h_mean/(2·th), |gx| > 0,5 é exatamente |h_mean| > th."""
+    if gy > limite:
+        return "cima"
+    if gy < -limite:
+        return "baixo"
+    if gx > limite:
+        return "direita"
+    if gx < -limite:
+        return "esquerda"
+    return "centro"
+
+
+# ============================================================ Widgets
+
+_P7_RODAPE = "Isto não é laudo nem diagnóstico."
+
+
+def _p7_pinta_rodape(p, w, h):
+    """Rodapé fixo em letra pequena na base do widget."""
+    p.setPen(QtGui.QPen(QtGui.QColor(_p7_cor("text_dim", "#777777"))))
+    p.setFont(_p7_fonte(7))
+    p.drawText(QtCore.QRectF(0, h - 16, w, 14), QtCore.Qt.AlignmentFlag.AlignCenter,
+               _p7_tr(_P7_RODAPE))
+
+
+def _p7_palavra_tipo(tipo):
+    """Nome em palavras simples do tipo da batida."""
+    return _p7_tr({"adiantada": "batida adiantada", "pausa": "pausa maior"}
+                  .get(tipo, "batida regular"))
+
+
+def _p7_cor_tipo(tipo):
+    """Cor do tipo da batida: adiantada = aviso, pausa = erro, regular = texto fraco."""
+    if tipo == "adiantada":
+        return QtGui.QColor(_p7_cor("warning", "#b8730a"))
+    if tipo == "pausa":
+        return QtGui.QColor(_p7_cor("error", "#d4364f"))
+    return QtGui.QColor(_p7_cor("text_dim", "#777777"))
+
+
+class CoracaoReplayWidget(QtWidgets.QWidget):
+    """Coração desenhado que BATE no instante de cada batida gravada.
+
+    A animação é derivada do tempo que o tocador manda em set_tempo(t), não de
+    um timer próprio: o pulso é um decaimento desde a última batida <= t, com
+    um segundo pulso menor ("tum-tum"). Mostra o bpm instantâneo (60000/RR)
+    em letra grande e o tipo da batida atual em palavras, na cor do tipo."""
+
+    def __init__(self, parent=None):
+        """Começa sem batidas e no instante zero."""
+        super().__init__(parent)
+        self.setMinimumSize(200, 200)
+        self._batidas = []
+        self._tempos = np.zeros(0)
+        self._t = 0.0
+
+    def set_batidas(self, lista):
+        """Recebe a lista de batidas ({t, rr_ms, tipo}) da gravação."""
+        self._batidas = list(lista or [])
+        self._tempos = np.asarray([b["t"] for b in self._batidas], float)
+        self.update()
+
+    def set_tempo(self, t):
+        """Instante atual do tocador (chamado a cada ~33 ms)."""
+        self._t = float(t)
+        self.update()
+
+    def batida_atual(self):
+        """Índice da última batida <= t, ou None antes da primeira."""
+        if not self._tempos.size:
+            return None
+        i = int(np.searchsorted(self._tempos, self._t + 1e-9, side="right")) - 1
+        return i if i >= 0 else None
+
+    def pulso(self):
+        """Intensidade 0..1 do pulso no instante atual, só em função do tempo.
+
+        Sobe em 60 ms, decai com constante de 160 ms e ganha um segundo pico
+        menor 220 ms depois — o 'tum-tum' que o olho reconhece como coração."""
+        i = self.batida_atual()
+        if i is None:
+            return 0.0
+        dt = self._t - float(self._tempos[i])
+        if dt < 0:
+            return 0.0
+        ataque = 0.06
+        if dt < ataque:
+            principal = dt / ataque
+        else:
+            principal = math.exp(-(dt - ataque) / 0.16)
+        segundo = 0.0
+        if 0.20 <= dt < 0.26:
+            segundo = (dt - 0.20) / 0.06 * 0.45
+        elif dt >= 0.26:
+            segundo = 0.45 * math.exp(-(dt - 0.26) / 0.12)
+        return max(0.0, min(1.0, max(principal, segundo)))
+
+    @staticmethod
+    def _caminho_coracao(cx, cy, s):
+        """Contorno do coração em duas curvas de Bézier por lado: lóbulos
+        redondos, entalhe suave no alto e ponta embaixo, em escala s."""
+        path = QtGui.QPainterPath()
+        path.moveTo(cx, cy - 0.42 * s)                       # entalhe
+        path.cubicTo(cx - 0.20 * s, cy - 1.12 * s,
+                     cx - 1.42 * s, cy - 0.78 * s,
+                     cx - 1.00 * s, cy + 0.05 * s)           # lóbulo esquerdo
+        path.cubicTo(cx - 0.70 * s, cy + 0.55 * s,
+                     cx - 0.25 * s, cy + 0.78 * s,
+                     cx, cy + 1.05 * s)                      # ponta
+        path.cubicTo(cx + 0.25 * s, cy + 0.78 * s,
+                     cx + 0.70 * s, cy + 0.55 * s,
+                     cx + 1.00 * s, cy + 0.05 * s)
+        path.cubicTo(cx + 1.42 * s, cy - 0.78 * s,
+                     cx + 0.20 * s, cy - 1.12 * s,
+                     cx, cy - 0.42 * s)                      # lóbulo direito
+        path.closeSubpath()
+        return path
+
+    def paintEvent(self, ev):
+        """Pinta fundo, halo, coração com brilho, bpm instantâneo, tipo da
+        batida e o rodapé fixo."""
+        p = QtGui.QPainter(self)
+        try:
+            p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+            w, h = self.width(), self.height()
+            p.fillRect(0, 0, w, h, QtGui.QColor(_p7_cor("surface", "#ffffff")))
+            pulso = self.pulso()
+            i = self.batida_atual()
+            b = self._batidas[i] if i is not None else None
+            tipo = b.get("tipo", "normal") if b else "normal"
+            cor_tipo = _p7_cor_tipo(tipo)
+            cor = QtGui.QColor(_p7_cor_sinal("ECG", "#e0554e"))
+            # área do desenho: deixa 112 px embaixo para número, tipo e rodapé
+            area_h = max(60.0, h - 112.0)
+            cx, cy = w / 2.0, 14.0 + area_h / 2.0
+            s = min(w / 2.0, area_h) * 0.36 * (1.0 + 0.12 * pulso)
+            path = self._caminho_coracao(cx, cy, s)
+            halo = QtGui.QColor(cor)
+            halo.setAlpha(int(40 + 120 * pulso))
+            p.setPen(QtGui.QPen(halo, 6 + 10 * pulso, QtCore.Qt.PenStyle.SolidLine,
+                                QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenJoinStyle.RoundJoin))
+            p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+            p.drawPath(path)
+            grad = QtGui.QRadialGradient(cx - 0.45 * s, cy - 0.45 * s, 1.9 * s)
+            clara = QtGui.QColor(cor).lighter(118)
+            grad.setColorAt(0.0, clara)
+            grad.setColorAt(0.55, cor)
+            grad.setColorAt(1.0, QtGui.QColor(cor).darker(135))
+            p.setBrush(QtGui.QBrush(grad))
+            p.setPen(QtGui.QPen(QtGui.QColor(cor).darker(140), 1.5))
+            p.drawPath(path)
+            # brilho: pequena elipse clara no lóbulo esquerdo
+            brilho = QtGui.QColor("#ffffff")
+            brilho.setAlpha(150)
+            p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.setBrush(QtGui.QBrush(brilho))
+            p.save()
+            p.translate(cx - 0.62 * s, cy - 0.58 * s)
+            p.rotate(-35)
+            p.drawEllipse(QtCore.QPointF(0, 0), 0.26 * s, 0.13 * s)
+            p.restore()
+            # bpm instantâneo em letra grande
+            rr = b.get("rr_ms") if b else None
+            txt = "%d" % round(60000.0 / rr) if rr and rr > 0 else "--"
+            p.setPen(QtGui.QPen(QtGui.QColor(_p7_cor("text", "#141a33"))))
+            p.setFont(_p7_fonte(max(18, int(min(w, h) * 0.13)), negrito=True, dados=True))
+            # o número fica abaixo do coração para não cobrir o desenho
+            base_txt = 14.0 + area_h
+            p.drawText(QtCore.QRectF(0, base_txt - 4, w, 46),
+                       QtCore.Qt.AlignmentFlag.AlignCenter, txt)
+            p.setFont(_p7_fonte(8))
+            p.setPen(QtGui.QPen(QtGui.QColor(_p7_cor("text_dim", "#5a6480"))))
+            p.drawText(QtCore.QRectF(0, base_txt + 42, w, 12),
+                       QtCore.Qt.AlignmentFlag.AlignCenter, "bpm")
+            # tipo da batida atual em palavras, na cor do tipo
+            p.setPen(QtGui.QPen(cor_tipo))
+            p.setFont(_p7_fonte(10, negrito=(tipo != "normal")))
+            p.drawText(QtCore.QRectF(0, base_txt + 56, w, 18),
+                       QtCore.Qt.AlignmentFlag.AlignCenter,
+                       _p7_palavra_tipo(tipo) if b else _p7_tr("aguardando a primeira batida"))
+            _p7_pinta_rodape(p, w, h)
+        finally:
+            p.end()
+
+
+class FaixaBatidasWidget(QtWidgets.QWidget):
+    """Faixa horizontal com TODAS as batidas da gravação e o cursor do tocador.
+
+    Marcas: batida regular = traço fino; adiantada = triângulo laranja
+    (COLORS["warning"]); pausa = retângulo vazado vermelho (COLORS["error"])
+    cobrindo o intervalo longo — cor E forma diferentes, para quem não
+    distingue cores. Régua em m:ss embaixo. Clique numa marca emite
+    batidaClicada(indice) e cursorMovido(t); clique fora, só cursorMovido.
+    Em modo correção (set_edicao(True)) o clique direito abre um menu e emite
+    correcaoPedida(dict) no formato de aplicar_correcoes."""
+
+    batidaClicada = QtCore.Signal(int)
+    cursorMovido = QtCore.Signal(float)
+    correcaoPedida = QtCore.Signal(dict)
+
+    MARGEM = 12          # px livres de cada lado
+    ALTURA_REGUA = 18    # px da régua embaixo
+    TOL_CLIQUE_PX = 6
+
+    def __init__(self, parent=None):
+        """Começa vazia, com 1 s de duração e sem modo correção."""
+        super().__init__(parent)
+        self.setMinimumHeight(64)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Fixed)
+        self._batidas = []
+        self._tempos = np.zeros(0)
+        self._dur = 1.0
+        self._t = 0.0
+        self._edicao = False
+        self._linhas_cache = None
+
+    def set_batidas(self, lista):
+        """Recebe as batidas; se a duração não foi dada, estende até a última."""
+        self._batidas = list(lista or [])
+        self._tempos = np.asarray([b["t"] for b in self._batidas], float)
+        if self._tempos.size and self._dur < float(self._tempos[-1]) + 1.0:
+            self._dur = float(self._tempos[-1]) + 1.0
+        self._linhas_cache = None
+        self.update()
+
+    def set_duracao(self, dur_s):
+        """Duração total da gravação (largura da faixa em segundos)."""
+        self._dur = max(0.001, float(dur_s))
+        self._linhas_cache = None
+        self.update()
+
+    def set_tempo(self, t):
+        """Move o cursor do tocador."""
+        self._t = float(t)
+        self.update()
+
+    def set_edicao(self, ligado):
+        """Liga/desliga o modo correção (menu no clique direito)."""
+        self._edicao = bool(ligado)
+
+    def tempo_para_x(self, t):
+        """Converte segundos em x (px) dentro da faixa (aceita escalar ou array)."""
+        largura = max(1.0, self.width() - 2.0 * self.MARGEM)
+        if isinstance(t, np.ndarray):
+            return self.MARGEM + largura * (t.astype(float) / self._dur)
+        return self.MARGEM + largura * (float(t) / self._dur)
+
+    def x_para_tempo(self, x):
+        """Converte x (px) em segundos, limitado a 0..duração."""
+        largura = max(1.0, self.width() - 2.0 * self.MARGEM)
+        t = (float(x) - self.MARGEM) / largura * self._dur
+        return max(0.0, min(self._dur, t))
+
+    def indice_em(self, x, tol_px=None):
+        """Índice da batida cuja marca está a menos de tol_px de x, ou None."""
+        if not self._tempos.size:
+            return None
+        tol = self.TOL_CLIQUE_PX if tol_px is None else tol_px
+        xs = self.tempo_para_x(self._tempos)
+        i = int(np.argmin(np.abs(xs - float(x))))
+        return i if abs(xs[i] - float(x)) <= tol else None
+
+    def resizeEvent(self, ev):
+        """Invalida o cache de traços ao mudar de largura."""
+        self._linhas_cache = None
+        super().resizeEvent(ev)
+
+    def mousePressEvent(self, ev):
+        """Clique esquerdo: escolhe a batida sob o cursor (ou só move o cursor)."""
+        if ev.button() == QtCore.Qt.MouseButton.LeftButton:
+            x = ev.position().x()
+            i = self.indice_em(x)
+            if i is not None:
+                t = float(self._tempos[i])
+                self.set_tempo(t)
+                self.batidaClicada.emit(i)
+                self.cursorMovido.emit(t)
+            else:
+                t = self.x_para_tempo(x)
+                self.set_tempo(t)
+                self.cursorMovido.emit(t)
+            ev.accept()
+            return
+        super().mousePressEvent(ev)
+
+    def menu_correcao(self, x):
+        """Monta (sem abrir) o QMenu de correção para a posição x; None fora do
+        modo correção. Separado de contextMenuEvent para poder ser testado."""
+        if not self._edicao:
+            return None
+        menu = QtWidgets.QMenu(self)
+        i = self.indice_em(x)
+        t_aqui = self.x_para_tempo(x)
+        if i is not None:
+            t_b = float(self._tempos[i])
+            a = menu.addAction(_p7_tr("Remover batida"))
+            a.triggered.connect(lambda _=False, t=t_b: self.correcaoPedida.emit(
+                {"acao": "remover", "t": t}))
+            menu.addSeparator()
+            for tipo, rotulo in (("normal", "Marcar como batida regular"),
+                                 ("adiantada", "Marcar como batida adiantada"),
+                                 ("pausa", "Marcar como pausa maior")):
+                a = menu.addAction(_p7_tr(rotulo))
+                a.setEnabled(self._batidas[i].get("tipo") != tipo)
+                a.triggered.connect(lambda _=False, t=t_b, tp=tipo: self.correcaoPedida.emit(
+                    {"acao": "tipo", "t": t, "tipo": tp}))
+        else:
+            a = menu.addAction(_p7_tr("Adicionar batida aqui"))
+            a.triggered.connect(lambda _=False, t=t_aqui: self.correcaoPedida.emit(
+                {"acao": "adicionar", "t": t}))
+        return menu
+
+    def contextMenuEvent(self, ev):
+        """Clique direito em modo correção: abre o menu de correção."""
+        menu = self.menu_correcao(ev.pos().x())
+        if menu is None:
+            return super().contextMenuEvent(ev)
+        menu.exec(ev.globalPos())
+        ev.accept()
+
+    def _passo_regua(self):
+        """Espaçamento das marcas da régua (s) para caber ~1 rótulo a cada 70 px."""
+        largura = max(1.0, self.width() - 2.0 * self.MARGEM)
+        alvo = self._dur / max(1.0, largura / 70.0)
+        for passo in (1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600):
+            if passo >= alvo:
+                return passo
+        return 3600
+
+    def paintEvent(self, ev):
+        """Pinta a faixa: fundo, marcas de cada batida, cursor e régua."""
+        p = QtGui.QPainter(self)
+        try:
+            p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+            w, h = self.width(), self.height()
+            p.fillRect(0, 0, w, h, QtGui.QColor(_p7_cor("surface", "#ffffff")))
+            topo, base = 6.0, h - self.ALTURA_REGUA - 4.0
+            meio = (topo + base) / 2.0
+            alt = base - topo
+            x0, x1 = self.tempo_para_x(0.0), self.tempo_para_x(self._dur)
+            # trilho
+            p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.setBrush(QtGui.QBrush(QtGui.QColor(_p7_cor("surface_alt", "#eef2fb"))))
+            p.drawRoundedRect(QtCore.QRectF(x0, topo, x1 - x0, alt), 4, 4)
+            cor_regular = QtGui.QColor(_p7_cor("text_dim", "#5a6480"))
+            cor_regular.setAlpha(170)
+            cor_adiant = QtGui.QColor(_p7_cor("warning", "#b8730a"))
+            cor_pausa = QtGui.QColor(_p7_cor("error", "#d4364f"))
+            # traços das batidas regulares em lote (milhares em gravação longa)
+            if self._linhas_cache is None:
+                xs = self.tempo_para_x(self._tempos) if self._tempos.size else np.zeros(0)
+                linhas = []
+                for i, b in enumerate(self._batidas):
+                    if b.get("tipo", "normal") == "normal":
+                        x = float(xs[i])
+                        linhas.append(QtCore.QLineF(x, meio - alt * 0.28, x, meio + alt * 0.28))
+                self._linhas_cache = (xs, linhas)
+            xs, linhas = self._linhas_cache
+            if linhas:
+                p.setPen(QtGui.QPen(cor_regular, 1))
+                p.drawLines(linhas)
+            # pausas: retângulo vazado cobrindo o intervalo longo (fundo bem
+            # tênue só para o olho achar o trecho numa gravação longa)
+            fundo_pausa = QtGui.QColor(cor_pausa)
+            fundo_pausa.setAlpha(28)
+            p.setBrush(QtGui.QBrush(fundo_pausa))
+            p.setPen(QtGui.QPen(cor_pausa, 1.6))
+            for i, b in enumerate(self._batidas):
+                if b.get("tipo") == "pausa" and i > 0:
+                    xa, xb = float(xs[i - 1]), float(xs[i])
+                    p.drawRect(QtCore.QRectF(xa, meio - alt * 0.38, max(4.0, xb - xa), alt * 0.76))
+            # adiantadas: triângulo cheio
+            p.setPen(QtGui.QPen(cor_adiant.darker(120), 1))
+            p.setBrush(QtGui.QBrush(cor_adiant))
+            for i, b in enumerate(self._batidas):
+                if b.get("tipo") == "adiantada":
+                    x = float(xs[i])
+                    tri = QtGui.QPolygonF([QtCore.QPointF(x, meio - alt * 0.40),
+                                           QtCore.QPointF(x - 6, meio + alt * 0.34),
+                                           QtCore.QPointF(x + 6, meio + alt * 0.34)])
+                    p.drawPolygon(tri)
+            # cursor do tocador
+            xc = self.tempo_para_x(self._t)
+            cor_cursor = QtGui.QColor(_p7_cor("accent", "#1a23e0"))
+            p.setPen(QtGui.QPen(cor_cursor, 2))
+            p.drawLine(QtCore.QPointF(xc, topo - 2), QtCore.QPointF(xc, base + 2))
+            p.setBrush(QtGui.QBrush(cor_cursor))
+            p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.drawPolygon(QtGui.QPolygonF([QtCore.QPointF(xc - 5, topo - 5),
+                                           QtCore.QPointF(xc + 5, topo - 5),
+                                           QtCore.QPointF(xc, topo + 2)]))
+            # régua m:ss
+            passo = self._passo_regua()
+            p.setPen(QtGui.QPen(QtGui.QColor(_p7_cor("text_dim", "#5a6480")), 1))
+            p.setFont(_p7_fonte(7, dados=True))
+            t = 0.0
+            while t <= self._dur + 1e-9:
+                x = self.tempo_para_x(t)
+                p.drawLine(QtCore.QPointF(x, base + 3), QtCore.QPointF(x, base + 7))
+                p.drawText(QtCore.QRectF(x - 30, base + 6, 60, 12),
+                           QtCore.Qt.AlignmentFlag.AlignCenter, fmt_mmss(t))
+                t += passo
+            # legenda curta (cor E forma)
+            p.setFont(_p7_fonte(7))
+            p.setPen(QtGui.QPen(cor_regular))
+            p.drawText(QtCore.QRectF(x0, topo - 2, x1 - x0, 10),
+                       QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter,
+                       "|  " + _p7_tr("regular") + "    ▲ " + _p7_tr("adiantada")
+                       + "    ▭ " + _p7_tr("pausa") + "  ")
+        finally:
+            p.end()
+
+
+class ListaBatidasWidget(QtWidgets.QListWidget):
+    """Lista clicável, em palavras simples, só das batidas NÃO regulares.
+
+    Primeira linha = resumo ('128 batidas · 72 bpm em média · 2 adiantadas ·
+    1 pausa'); depois '0:12  batida adiantada', '1:05  pausa maior (1,8 s)'.
+    Clicar numa linha emite cursorMovido(t)."""
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, parent=None):
+        """Lista vazia; liga o clique ao sinal cursorMovido."""
+        super().__init__(parent)
+        self.setMinimumWidth(220)
+        self.itemClicked.connect(self._clicou)
+
+    def _clicou(self, item):
+        """Emite o instante guardado no item (a linha de resumo não tem)."""
+        t = item.data(QtCore.Qt.ItemDataRole.UserRole)
+        if t is not None:
+            self.cursorMovido.emit(float(t))
+
+    def set_batidas(self, lista):
+        """Monta a linha de resumo e uma linha por batida adiantada ou pausa."""
+        self.clear()
+        batidas = list(lista or [])
+        r = resumo_batidas(batidas)
+        bpm = r["bpm_medio"]
+        bpm_txt = (_p7_tr("{0} bpm em média").format("%d" % round(bpm)) if bpm
+                   else _p7_tr("bpm em média: —"))
+        resumo = " · ".join([
+            _p7_plural(r["n_batidas"], "{0} batida", "{0} batidas", "nenhuma batida"),
+            bpm_txt,
+            _p7_plural(r["n_adiantadas"], "{0} adiantada", "{0} adiantadas",
+                       "nenhuma adiantada"),
+            _p7_plural(r["n_pausas"], "{0} pausa", "{0} pausas", "nenhuma pausa")])
+        it = QtWidgets.QListWidgetItem(resumo)
+        it.setFont(_p7_fonte(9, negrito=True))
+        it.setFlags(it.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)
+        self.addItem(it)
+        for b in batidas:
+            tipo = b.get("tipo", "normal")
+            if tipo == "normal":
+                continue
+            txt = "%s  %s" % (fmt_mmss(b["t"]), _p7_palavra_tipo(tipo))
+            if tipo == "pausa" and b.get("rr_ms"):
+                txt += " (%s s)" % fmt_num(b["rr_ms"] / 1000.0, 1)
+            if b.get("origem") == "manual":
+                txt += "  " + _p7_tr("(corrigida à mão)")
+            it = QtWidgets.QListWidgetItem(txt)
+            it.setForeground(QtGui.QBrush(_p7_cor_tipo(tipo)))
+            it.setFont(_p7_fonte(9, dados=True))
+            it.setData(QtCore.Qt.ItemDataRole.UserRole, float(b["t"]))
+            self.addItem(it)
+        if len(batidas) and self.count() == 1:
+            it = QtWidgets.QListWidgetItem(_p7_tr("Todas as batidas foram regulares."))
+            it.setForeground(QtGui.QBrush(QtGui.QColor(_p7_cor("text_dim", "#5a6480"))))
+            it.setFlags(it.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)
+            self.addItem(it)
+
+
+class OlhosReplayWidget(QtWidgets.QWidget):
+    """Dois olhos desenhados que PISCAM nas piscadas e olham para onde os
+    sinais mandam.
+
+    A pálpebra fecha e abre em função do tempo (set_tempo), centrada no
+    instante de cada piscada, em ~150 ms (ou a duração detectada, até 0,5 s);
+    o olhar vem de set_olhar(gx, gy) em -1..1 (olhar_no_instante). Abaixo:
+    'olhando para a direita' etc. e os contadores de piscadas e sacadas até o
+    instante atual. set_inverter(h, v) troca o lado SÓ aqui no desenho: se o
+    olhar já vier invertido de olhar_no_instante, deixe os dois em False."""
+
+    def __init__(self, parent=None):
+        """Olhos abertos, olhando para frente, sem eventos."""
+        super().__init__(parent)
+        self.setMinimumSize(240, 190)
+        self._eventos = []
+        self._t_piscadas = np.zeros(0)
+        self._dur_piscadas = np.zeros(0)
+        self._t_sacadas = np.zeros(0)
+        self._t_sacadas_v = np.zeros(0)
+        self._gx = 0.0
+        self._gy = 0.0
+        self._t = 0.0
+        self._inv_h = False
+        self._inv_v = False
+
+    def set_eventos(self, deteccao):
+        """Recebe o dict de detectar_eventos_olhos (ou uma lista de eventos)."""
+        eventos = deteccao.get("eventos", []) if isinstance(deteccao, dict) else list(deteccao or [])
+        self._eventos = list(eventos)
+        pisc = [e for e in self._eventos if e.get("tipo") == "piscada"]
+        self._t_piscadas = np.asarray([e["t"] for e in pisc], float)
+        self._dur_piscadas = np.asarray(
+            [max(0.15, min(0.5, float(e.get("dur_s") or 0.15))) for e in pisc], float)
+        self._t_sacadas = np.asarray(
+            [e["t"] for e in self._eventos if e.get("tipo") == "sacada"
+             and e.get("direcao") in ("direita", "esquerda", None)], float)
+        self._t_sacadas_v = np.asarray(
+            [e["t"] for e in self._eventos if e.get("tipo") == "sacada"
+             and e.get("direcao") in ("cima", "baixo")], float)
+        self.update()
+
+    def set_olhar(self, gx, gy):
+        """Direção do olhar em -1..1 (direita/cima positivos)."""
+        self._gx = max(-1.0, min(1.0, float(gx)))
+        self._gy = max(-1.0, min(1.0, float(gy)))
+        self.update()
+
+    def set_tempo(self, t):
+        """Instante atual do tocador."""
+        self._t = float(t)
+        self.update()
+
+    def set_inverter(self, h, v):
+        """Inverte o lado horizontal e/ou vertical no desenho e no texto."""
+        self._inv_h = bool(h)
+        self._inv_v = bool(v)
+        self.update()
+
+    def olhar_mostrado(self):
+        """(gx, gy) efetivamente desenhados, já com a inversão do widget."""
+        return ((-self._gx if self._inv_h else self._gx),
+                (-self._gy if self._inv_v else self._gy))
+
+    def fechamento(self):
+        """0 (aberto) .. 1 (fechado) no instante atual, só em função do tempo:
+        meia senoide ao quadrado centrada em cada piscada."""
+        if not self._t_piscadas.size:
+            return 0.0
+        i = int(np.searchsorted(self._t_piscadas, self._t + 0.3, side="right")) - 1
+        melhor = 0.0
+        for k in (i, i - 1):
+            if 0 <= k < self._t_piscadas.size:
+                d = float(self._dur_piscadas[k])
+                ini = float(self._t_piscadas[k]) - d / 2.0
+                f = (self._t - ini) / d
+                if 0.0 <= f <= 1.0:
+                    melhor = max(melhor, math.sin(math.pi * f) ** 2)
+        return melhor
+
+    def contadores(self):
+        """(piscadas, sacadas para os lados, sacadas para cima/baixo) até o
+        instante atual. As horizontais são as que a tela e o PDF chamam de
+        'sacadas'."""
+        n_p = int(np.searchsorted(self._t_piscadas, self._t + 1e-9, side="right"))
+        n_s = int(np.searchsorted(self._t_sacadas, self._t + 1e-9, side="right"))
+        n_v = int(np.searchsorted(self._t_sacadas_v, self._t + 1e-9, side="right"))
+        return n_p, n_s, n_v
+
+    def _pinta_olho(self, p, cx, cy, ew, eh, gx, gy, fech, cor_iris, cor_linha, cor_pele):
+        """Um olho: esclera, íris em gradiente, pupila, brilho e pálpebras."""
+        olho = QtGui.QPainterPath()
+        olho.addEllipse(QtCore.QPointF(cx, cy), ew, eh)
+        p.setPen(QtGui.QPen(cor_linha, 2))
+        p.setBrush(QtGui.QBrush(QtGui.QColor("#fbfbfb")))
+        p.drawPath(olho)
+        p.save()
+        p.setClipPath(olho)
+        # sombra leve no alto da esclera (volume)
+        sombra = QtGui.QColor("#000000")
+        sombra.setAlpha(22)
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.setBrush(QtGui.QBrush(sombra))
+        p.drawEllipse(QtCore.QPointF(cx, cy - eh * 0.9), ew * 1.05, eh * 0.55)
+        ir = eh * 0.80
+        px = cx + gx * (ew - ir) * 0.80
+        py = cy - gy * (eh - ir) * 0.80
+        grad = QtGui.QRadialGradient(px - ir * 0.2, py - ir * 0.2, ir * 1.1)
+        grad.setColorAt(0.0, QtGui.QColor(cor_iris).lighter(125))
+        grad.setColorAt(0.6, QtGui.QColor(cor_iris))
+        grad.setColorAt(1.0, QtGui.QColor(cor_iris).darker(160))
+        p.setBrush(QtGui.QBrush(grad))
+        p.setPen(QtGui.QPen(QtGui.QColor(cor_iris).darker(170), 1))
+        p.drawEllipse(QtCore.QPointF(px, py), ir, ir)
+        p.setBrush(QtGui.QBrush(QtGui.QColor("#0c0c0c")))
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.drawEllipse(QtCore.QPointF(px, py), ir * 0.42, ir * 0.42)
+        p.setBrush(QtGui.QBrush(QtGui.QColor("#ffffff")))
+        p.drawEllipse(QtCore.QPointF(px - ir * 0.30, py - ir * 0.32), ir * 0.14, ir * 0.14)
+        # pálpebras: a de cima desce 75% do caminho, a de baixo sobe 25%
+        if fech > 0.01:
+            p.setBrush(QtGui.QBrush(cor_pele))
+            alt_cima = 2.0 * eh * fech * 0.75
+            alt_baixo = 2.0 * eh * fech * 0.25
+            p.drawRect(QtCore.QRectF(cx - ew - 2, cy - eh - 2, 2 * ew + 4, alt_cima + 2))
+            p.drawRect(QtCore.QRectF(cx - ew - 2, cy + eh - alt_baixo, 2 * ew + 4, alt_baixo + 2))
+            p.setPen(QtGui.QPen(cor_linha, 2))
+            y1 = cy - eh + alt_cima
+            y2 = cy + eh - alt_baixo
+            p.drawLine(QtCore.QPointF(cx - ew, y1), QtCore.QPointF(cx + ew, y1))
+            if fech > 0.6:
+                p.drawLine(QtCore.QPointF(cx - ew, y2), QtCore.QPointF(cx + ew, y2))
+        p.restore()
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.setPen(QtGui.QPen(cor_linha, 2))
+        p.drawPath(olho)
+
+    def paintEvent(self, ev):
+        """Pinta os dois olhos, o texto da direção, os contadores e o rodapé."""
+        p = QtGui.QPainter(self)
+        try:
+            p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+            w, h = self.width(), self.height()
+            p.fillRect(0, 0, w, h, QtGui.QColor(_p7_cor("surface", "#ffffff")))
+            gx, gy = self.olhar_mostrado()
+            fech = self.fechamento()
+            cor_iris = QtGui.QColor(_p7_cor_sinal("EoG", "#4fb3d9"))
+            cor_linha = QtGui.QColor(_p7_cor("text", "#141a33"))
+            cor_pele = QtGui.QColor(_p7_cor("surface_alt", "#eef2fb"))
+            area_h = max(50.0, h - 76.0)
+            cy = 10.0 + area_h / 2.0
+            ew = min(w * 0.21, area_h * 0.85)
+            eh = min(area_h * 0.42, ew * 0.62)
+            for cx in (w / 2.0 - ew * 1.18, w / 2.0 + ew * 1.18):
+                self._pinta_olho(p, cx, cy, ew, eh, gx, gy, fech, cor_iris, cor_linha, cor_pele)
+            # texto da direção (mesma regra de decisão da tela)
+            d = direcao_do_olhar(gx, gy)
+            if fech > 0.5:
+                frase = _p7_tr("piscando")
+            else:
+                frase = _p7_tr({"direita": "olhando para a direita",
+                                "esquerda": "olhando para a esquerda",
+                                "cima": "olhando para cima",
+                                "baixo": "olhando para baixo"}.get(d, "olhando para frente"))
+            base_txt = 10.0 + area_h + 4.0
+            p.setPen(QtGui.QPen(_p7_cor_legivel(cor_iris)))
+            p.setFont(_p7_fonte(12, negrito=True))
+            p.drawText(QtCore.QRectF(0, base_txt, w, 22), QtCore.Qt.AlignmentFlag.AlignCenter, frase)
+            n_p, n_s, n_v = self.contadores()
+            p.setPen(QtGui.QPen(QtGui.QColor(_p7_cor("text_dim", "#5a6480"))))
+            p.setFont(_p7_fonte(9))
+            p.drawText(QtCore.QRectF(0, base_txt + 24, w, 16), QtCore.Qt.AlignmentFlag.AlignCenter,
+                       _p7_tr("piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}")
+                       .format(n_p, n_s, n_v))
+            _p7_pinta_rodape(p, w, h)
+        finally:
+            p.end()
+
+
+class LinhaDoTempoOlhosWidget(QtWidgets.QListWidget):
+    """Linha do tempo dos olhos em palavras ('0:03 piscou', '0:05 olhou para
+    a direita'); clicar numa linha emite cursorMovido(t). set_tempo(t)
+    destaca o último evento já ocorrido."""
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, parent=None):
+        """Lista vazia; liga o clique ao sinal cursorMovido."""
+        super().__init__(parent)
+        self.setMinimumWidth(220)
+        self._tempos = np.zeros(0)
+        self.itemClicked.connect(self._clicou)
+
+    def _clicou(self, item):
+        """Emite o instante do evento clicado."""
+        t = item.data(QtCore.Qt.ItemDataRole.UserRole)
+        if t is not None:
+            self.cursorMovido.emit(float(t))
+
+    def set_eventos(self, deteccao):
+        """Recebe o dict de detectar_eventos_olhos (ou uma lista de eventos)."""
+        self.clear()
+        eventos = deteccao.get("eventos", []) if isinstance(deteccao, dict) else list(deteccao or [])
+        eventos = sorted(eventos, key=lambda e: e["t"])
+        self._tempos = np.asarray([e["t"] for e in eventos], float)
+        cor_pisc = _p7_cor_legivel(_p7_cor_sinal("EoG", "#4fb3d9"))
+        cor_sac = QtGui.QColor(_p7_cor("accent", "#1a23e0"))
+        cor_fix = QtGui.QColor(_p7_cor("text_dim", "#5a6480"))
+        for e in eventos:
+            txt = texto_evento(e)
+            if e.get("origem") == "manual":
+                txt += "  " + _p7_tr("(corrigido à mão)")
+            it = QtWidgets.QListWidgetItem(txt)
+            it.setFont(_p7_fonte(9, dados=True))
+            cor = {"piscada": cor_pisc, "sacada": cor_sac}.get(e.get("tipo"), cor_fix)
+            it.setForeground(QtGui.QBrush(cor))
+            it.setData(QtCore.Qt.ItemDataRole.UserRole, float(e["t"]))
+            self.addItem(it)
+        if not eventos:
+            it = QtWidgets.QListWidgetItem(_p7_tr("Nenhuma piscada ou movimento dos olhos encontrado."))
+            it.setForeground(QtGui.QBrush(cor_fix))
+            it.setFlags(it.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)
+            self.addItem(it)
+
+    def set_tempo(self, t):
+        """Destaca o último evento com t <= instante atual (só se mudou de linha)."""
+        if not self._tempos.size:
+            return
+        i = int(np.searchsorted(self._tempos, float(t) + 1e-9, side="right")) - 1
+        if i >= 0 and i != self.currentRow():
+            self.setCurrentRow(i)
+
+
 class _VirtualJoystickWidget(QtWidgets.QWidget):
     """Widget que desenha um joystick virtual.
 

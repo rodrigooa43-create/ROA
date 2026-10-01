@@ -1,0 +1,62 @@
+# Chaves de tr() que o código passa por VARIÁVEL (tabelas), uma por linha.
+# coleta_faltantes.py lê este arquivo junto das chaves literais.
+# --- P6 replay do movimento: títulos e títulos curtos de MOVIMENTOS_TITULOS ---
+Repouso
+Flexão do cotovelo
+Extensão do cotovelo
+Supinação (palma para cima)
+Pronação (palma para baixo)
+Flexão do punho
+Extensão do punho
+Abrir a mão
+Fechar a mão
+Pinça
+Flexão do ombro
+Extensão do ombro
+A definir
+Flex. cotovelo
+Ext. cotovelo
+Supinação
+Pronação
+Flex. punho
+Ext. punho
+Abrir mão
+Fechar mão
+Flex. ombro
+Ext. ombro
+# --- P7 replay do coração e dos olhos ---
+direita
+esquerda
+cima
+baixo
+{0} olhou para a direita
+{0} olhou para a esquerda
+{0} olhou para cima
+{0} olhou para baixo
+{0} moveu os olhos
+{0} ficou olhando para a direita
+{0} ficou olhando para a esquerda
+{0} ficou olhando para cima
+{0} ficou olhando para baixo
+{0} ficou olhando para frente
+olhando para a direita
+olhando para a esquerda
+olhando para cima
+olhando para baixo
+olhando para frente
+batida adiantada
+pausa maior
+batida regular
+Marcar como batida regular
+Marcar como batida adiantada
+Marcar como pausa maior
+{0} batida
+{0} batidas
+nenhuma batida
+{0} adiantada
+{0} adiantadas
+nenhuma adiantada
+{0} pausa
+{0} pausas
+nenhuma pausa
+Isto não é laudo nem diagnóstico.
