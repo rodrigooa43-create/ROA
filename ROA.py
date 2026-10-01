@@ -493,6 +493,27 @@ class I18N:
 
     # Dicionários ENGLISH — chaves em pt-BR
     _en = {
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "What do you work with?",
+        "Duplicar perfil": "Duplicate profile",
+        "Escolha os gráficos": "Choose the charts",
+        "Exames deste perfil:": "Exams in this profile:",
+        "Excluir o perfil \"{0}\"?": "Delete the profile \"{0}\"?",
+        "Já existe um perfil com esse nome.": "A profile with that name already exists.",
+        "Marque pelo menos um.": "Check at least one.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Check everything you use. Whoever does only one kind of exam does not see the others on screen. You can change this later on the home screen or in System → Usage profile.",
+        "Nenhum gráfico a escolher para estes exames.": "No charts to choose for these exams.",
+        "Nome do perfil:": "Profile name:",
+        "Novo perfil de uso": "New usage profile",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "The ones recommended for your profile are already checked; uncheck what you do not want to see. This applies to the Full level and can be changed at any time with the Panels button on each tab.",
+        "Perfil de uso": "Usage profile",
+        "Perfil de uso: {0}.": "Usage profile: {0}.",
+        "Perfil:": "Profile:",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "Ready-made profiles cannot be renamed or deleted; duplicate one to edit it.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Whoever does only one kind of exam does not need to see the others: the profile decides what the home screen offers and which tabs appear.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Whoever does only one kind of exam does not need to see the others: the profile decides what the home screen offers and which tabs appear. Create yours in System → Usage profile.",
+        "Renomear perfil": "Rename profile",
+        "Renomear…": "Rename…",
         # ===== p9_arranque (1.10.0) =====
         "Abrindo o programa…": "Opening the program…",
         "Montando a tela inicial…": "Building the home screen…",
@@ -4302,6 +4323,27 @@ class I18N:
 
     # Dicionários ESPAÑOL — chaves em pt-BR
     _es = {
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "¿Con qué trabaja usted?",
+        "Duplicar perfil": "Duplicar perfil",
+        "Escolha os gráficos": "Elija los gráficos",
+        "Exames deste perfil:": "Exámenes de este perfil:",
+        "Excluir o perfil \"{0}\"?": "¿Eliminar el perfil \"{0}\"?",
+        "Já existe um perfil com esse nome.": "Ya existe un perfil con ese nombre.",
+        "Marque pelo menos um.": "Marque al menos uno.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Marque todo lo que usa. Quien solo hace un tipo de examen no ve los demás en la pantalla. Puede cambiarlo después en la pantalla inicial o en Sistema → Perfil de uso.",
+        "Nenhum gráfico a escolher para estes exames.": "No hay gráficos para elegir para estos exámenes.",
+        "Nome do perfil:": "Nombre del perfil:",
+        "Novo perfil de uso": "Nuevo perfil de uso",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "Los recomendados para su perfil ya están marcados; desmarque lo que no quiera ver. Esto vale para el nivel Completo y puede cambiarse en cualquier momento con el botón Paneles de cada pestaña.",
+        "Perfil de uso": "Perfil de uso",
+        "Perfil de uso: {0}.": "Perfil de uso: {0}.",
+        "Perfil:": "Perfil:",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "Los perfiles predefinidos no se pueden renombrar ni eliminar; duplique uno para editarlo.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Quien solo hace un tipo de examen no necesita ver los demás: el perfil decide qué ofrece la pantalla inicial y qué pestañas aparecen.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Quien solo hace un tipo de examen no necesita ver los demás: el perfil decide qué ofrece la pantalla inicial y qué pestañas aparecen. Cree el suyo en Sistema → Perfil de uso.",
+        "Renomear perfil": "Renombrar perfil",
+        "Renomear…": "Renombrar…",
         # ===== p9_arranque (1.10.0) =====
         "Abrindo o programa…": "Abriendo el programa…",
         "Montando a tela inicial…": "Montando la pantalla inicial…",
@@ -8111,6 +8153,27 @@ class I18N:
 
     # Dicionários ITALIANO / FRANCÊS / CHINÊS — gerados na revisão ago/2026
     _it = {
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "Con cosa lavori?",
+        "Duplicar perfil": "Duplica profilo",
+        "Escolha os gráficos": "Scegli i grafici",
+        "Exames deste perfil:": "Esami di questo profilo:",
+        "Excluir o perfil \"{0}\"?": "Eliminare il profilo \"{0}\"?",
+        "Já existe um perfil com esse nome.": "Esiste già un profilo con questo nome.",
+        "Marque pelo menos um.": "Seleziona almeno uno.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Seleziona tutto ciò che usi. Chi fa un solo tipo di esame non vede gli altri sullo schermo. Puoi cambiarlo in seguito nella schermata iniziale o in Sistema → Profilo d'uso.",
+        "Nenhum gráfico a escolher para estes exames.": "Nessun grafico da scegliere per questi esami.",
+        "Nome do perfil:": "Nome del profilo:",
+        "Novo perfil de uso": "Nuovo profilo d'uso",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "Quelli consigliati per il tuo profilo sono già selezionati; deseleziona ciò che non vuoi vedere. Vale per il livello Completo e può essere cambiato in qualsiasi momento con il pulsante Pannelli di ogni scheda.",
+        "Perfil de uso": "Profilo d'uso",
+        "Perfil de uso: {0}.": "Profilo d'uso: {0}.",
+        "Perfil:": "Profilo:",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "I profili predefiniti non possono essere rinominati né eliminati; duplicane uno per modificarlo.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Chi fa un solo tipo di esame non ha bisogno di vedere gli altri: il profilo decide cosa offre la schermata iniziale e quali schede compaiono.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Chi fa un solo tipo di esame non ha bisogno di vedere gli altri: il profilo decide cosa offre la schermata iniziale e quali schede compaiono. Crea il tuo in Sistema → Profilo d'uso.",
+        "Renomear perfil": "Rinomina profilo",
+        "Renomear…": "Rinomina…",
         # ===== p9_arranque (1.10.0) =====
         "Abrindo o programa…": "Apertura del programma…",
         "Montando a tela inicial…": "Preparazione della schermata iniziale…",
@@ -11880,6 +11943,27 @@ class I18N:
     }
 
     _fr = {
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "Avec quoi travaillez-vous ?",
+        "Duplicar perfil": "Dupliquer le profil",
+        "Escolha os gráficos": "Choisissez les graphiques",
+        "Exames deste perfil:": "Examens de ce profil :",
+        "Excluir o perfil \"{0}\"?": "Supprimer le profil « {0} » ?",
+        "Já existe um perfil com esse nome.": "Un profil porte déjà ce nom.",
+        "Marque pelo menos um.": "Cochez au moins un élément.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Cochez tout ce que vous utilisez. Qui ne fait qu'un type d'examen ne voit pas les autres à l'écran. Vous pourrez changer plus tard sur l'écran d'accueil ou dans Système → Profil d'utilisation.",
+        "Nenhum gráfico a escolher para estes exames.": "Aucun graphique à choisir pour ces examens.",
+        "Nome do perfil:": "Nom du profil :",
+        "Novo perfil de uso": "Nouveau profil d'utilisation",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "Ceux recommandés pour votre profil sont déjà cochés ; décochez ce que vous ne voulez pas voir. Cela vaut pour le niveau Complet et peut être modifié à tout moment avec le bouton Panneaux de chaque onglet.",
+        "Perfil de uso": "Profil d'utilisation",
+        "Perfil de uso: {0}.": "Profil d'utilisation : {0}.",
+        "Perfil:": "Profil :",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "Les profils prédéfinis ne peuvent être ni renommés ni supprimés ; dupliquez-en un pour le modifier.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Qui ne fait qu'un type d'examen n'a pas besoin de voir les autres : le profil décide ce que l'écran d'accueil propose et quels onglets apparaissent.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Qui ne fait qu'un type d'examen n'a pas besoin de voir les autres : le profil décide ce que l'écran d'accueil propose et quels onglets apparaissent. Créez le vôtre dans Système → Profil d'utilisation.",
+        "Renomear perfil": "Renommer le profil",
+        "Renomear…": "Renommer…",
         # ===== p9_arranque (1.10.0) =====
         "Abrindo o programa…": "Ouverture du programme…",
         "Montando a tela inicial…": "Préparation de l'écran d'accueil…",
@@ -15649,6 +15733,27 @@ class I18N:
     }
 
     _zh = {
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "您从事哪类检查？",
+        "Duplicar perfil": "复制配置",
+        "Escolha os gráficos": "选择图表",
+        "Exames deste perfil:": "此配置包含的检查：",
+        "Excluir o perfil \"{0}\"?": "要删除配置“{0}”吗？",
+        "Já existe um perfil com esse nome.": "已存在同名配置。",
+        "Marque pelo menos um.": "请至少勾选一项。",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "勾选您会用到的全部项目。只做一种检查的人不会在屏幕上看到其他检查。以后可在初始界面或“系统 → 使用配置”中更改。",
+        "Nenhum gráfico a escolher para estes exames.": "这些检查没有可选的图表。",
+        "Nome do perfil:": "配置名称：",
+        "Novo perfil de uso": "新建使用配置",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "推荐给您配置的图表已勾选；取消勾选不想看到的即可。这适用于“完整”级别，并可随时通过每个选项卡的“面板”按钮更改。",
+        "Perfil de uso": "使用配置",
+        "Perfil de uso: {0}.": "使用配置：{0}。",
+        "Perfil:": "配置：",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "预设配置不能重命名或删除；请复制后再编辑。",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "只做一种检查的人无需看到其他检查：配置决定初始界面提供哪些检查以及显示哪些选项卡。",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "只做一种检查的人无需看到其他检查：配置决定初始界面提供哪些检查以及显示哪些选项卡。请在“系统 → 使用配置”中创建您自己的配置。",
+        "Renomear perfil": "重命名配置",
+        "Renomear…": "重命名…",
         # ===== p9_arranque (1.10.0) =====
         "Abrindo o programa…": "正在打开程序…",
         "Montando a tela inicial…": "正在生成初始界面…",
@@ -19420,6 +19525,27 @@ class I18N:
 
     # Dicionários DEUTSCH — chaves em pt-BR
     _de = {
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "Womit arbeiten Sie?",
+        "Duplicar perfil": "Profil duplizieren",
+        "Escolha os gráficos": "Diagramme auswählen",
+        "Exames deste perfil:": "Untersuchungen dieses Profils:",
+        "Excluir o perfil \"{0}\"?": "Profil „{0}“ löschen?",
+        "Já existe um perfil com esse nome.": "Ein Profil mit diesem Namen gibt es bereits.",
+        "Marque pelo menos um.": "Mindestens eines ankreuzen.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Kreuzen Sie alles an, was Sie nutzen. Wer nur eine Art von Untersuchung macht, sieht die anderen nicht auf dem Bildschirm. Das lässt sich später auf dem Startbildschirm oder unter System → Nutzungsprofil ändern.",
+        "Nenhum gráfico a escolher para estes exames.": "Keine Diagramme für diese Untersuchungen auswählbar.",
+        "Nome do perfil:": "Name des Profils:",
+        "Novo perfil de uso": "Neues Nutzungsprofil",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "Die für Ihr Profil empfohlenen sind schon angekreuzt; entfernen Sie das Häkchen bei dem, was Sie nicht sehen möchten. Das gilt für die Stufe Vollständig und kann jederzeit über die Schaltfläche Panels jeder Registerkarte geändert werden.",
+        "Perfil de uso": "Nutzungsprofil",
+        "Perfil de uso: {0}.": "Nutzungsprofil: {0}.",
+        "Perfil:": "Profil:",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "Vorgefertigte Profile können weder umbenannt noch gelöscht werden; duplizieren Sie eines, um es zu bearbeiten.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Wer nur eine Art von Untersuchung macht, braucht die anderen nicht zu sehen: das Profil bestimmt, was der Startbildschirm anbietet und welche Registerkarten erscheinen.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Wer nur eine Art von Untersuchung macht, braucht die anderen nicht zu sehen: das Profil bestimmt, was der Startbildschirm anbietet und welche Registerkarten erscheinen. Legen Sie Ihres unter System → Nutzungsprofil an.",
+        "Renomear perfil": "Profil umbenennen",
+        "Renomear…": "Umbenennen…",
         # ===== p9_arranque (1.10.0) =====
         "Abrindo o programa…": "Das Programm wird geöffnet…",
         "Montando a tela inicial…": "Startbildschirm wird aufgebaut…",
@@ -23189,6 +23315,27 @@ class I18N:
 
     # Dicionários JAPANESE — chaves em pt-BR
     _ja = {
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "どの検査を行いますか？",
+        "Duplicar perfil": "プロファイルを複製",
+        "Escolha os gráficos": "グラフを選ぶ",
+        "Exames deste perfil:": "このプロファイルの検査：",
+        "Excluir o perfil \"{0}\"?": "プロファイル「{0}」を削除しますか？",
+        "Já existe um perfil com esse nome.": "同じ名前のプロファイルがすでにあります。",
+        "Marque pelo menos um.": "少なくとも1つ選んでください。",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "使うものをすべて選んでください。1種類の検査しか行わない人には、ほかの検査は画面に表示されません。あとでホーム画面または「システム → 使用プロファイル」で変更できます。",
+        "Nenhum gráfico a escolher para estes exames.": "これらの検査で選べるグラフはありません。",
+        "Nome do perfil:": "プロファイル名：",
+        "Novo perfil de uso": "新しい使用プロファイル",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "お使いのプロファイルに推奨されるものはすでに選択されています。見たくないものはチェックを外してください。これは「完全」レベルに適用され、各タブの「パネル」ボタンでいつでも変更できます。",
+        "Perfil de uso": "使用プロファイル",
+        "Perfil de uso: {0}.": "使用プロファイル：{0}。",
+        "Perfil:": "プロファイル：",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "既定のプロファイルは名前の変更も削除もできません。複製して編集してください。",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "1種類の検査しか行わない人は、ほかの検査を見る必要がありません。プロファイルが、ホーム画面に表示する検査とタブを決めます。",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "1種類の検査しか行わない人は、ほかの検査を見る必要がありません。プロファイルが、ホーム画面に表示する検査とタブを決めます。「システム → 使用プロファイル」で自分のプロファイルを作成できます。",
+        "Renomear perfil": "プロファイル名の変更",
+        "Renomear…": "名前を変更…",
         # ===== p9_arranque (1.10.0) =====
         "Abrindo o programa…": "プログラムを開いています…",
         "Montando a tela inicial…": "ホーム画面を準備しています…",
@@ -26958,6 +27105,27 @@ class I18N:
 
     # Dicionários RUSSIAN — chaves em pt-BR
     _ru = {
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "С чем вы работаете?",
+        "Duplicar perfil": "Дублировать профиль",
+        "Escolha os gráficos": "Выберите графики",
+        "Exames deste perfil:": "Обследования этого профиля:",
+        "Excluir o perfil \"{0}\"?": "Удалить профиль «{0}»?",
+        "Já existe um perfil com esse nome.": "Профиль с таким именем уже существует.",
+        "Marque pelo menos um.": "Отметьте хотя бы одно.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Отметьте всё, чем вы пользуетесь. Тот, кто делает только один вид обследования, не видит остальные на экране. Изменить это можно позже на начальном экране или в разделе Система → Профиль использования.",
+        "Nenhum gráfico a escolher para estes exames.": "Для этих обследований нет графиков на выбор.",
+        "Nome do perfil:": "Имя профиля:",
+        "Novo perfil de uso": "Новый профиль использования",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "Рекомендованные для вашего профиля уже отмечены; снимите отметку с того, что не хотите видеть. Это относится к уровню «Полный» и может быть изменено в любой момент кнопкой «Панели» на каждой вкладке.",
+        "Perfil de uso": "Профиль использования",
+        "Perfil de uso: {0}.": "Профиль использования: {0}.",
+        "Perfil:": "Профиль:",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "Готовые профили нельзя переименовать или удалить; продублируйте профиль, чтобы изменить его.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Тому, кто делает только один вид обследования, не нужно видеть остальные: профиль определяет, что предлагает начальный экран и какие вкладки отображаются.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Тому, кто делает только один вид обследования, не нужно видеть остальные: профиль определяет, что предлагает начальный экран и какие вкладки отображаются. Создайте свой в разделе Система → Профиль использования.",
+        "Renomear perfil": "Переименовать профиль",
+        "Renomear…": "Переименовать…",
         # ===== p9_arranque (1.10.0) =====
         "Abrindo o programa…": "Открытие программы…",
         "Montando a tela inicial…": "Подготовка начального экрана…",
@@ -31537,6 +31705,10 @@ class AppConfig:
         # pasta do último paciente usado (a tela inicial já vem com ele)
         self.last_volunteer_dir = ""
         self.window_maximized = False
+        # Perfil de uso (P4): "Tudo" é o padrão para quem já usava o programa;
+        # usage_profiles guarda só os personalizados ({nome: {"exames", "paineis"}})
+        self.usage_profile = PERFIL_TUDO
+        self.usage_profiles = {}
         self.load()
         # Registra temas customizados em THEMES
         for name, palette in self.custom_themes.items():
@@ -31689,6 +31861,21 @@ class AppConfig:
             lv = d.get("last_volunteer_dir")
             if isinstance(lv, str):
                 self.last_volunteer_dir = lv
+            # --- perfil de uso (P4): só aceita o que tem forma válida ---
+            ups = d.get("usage_profiles")
+            if isinstance(ups, dict):
+                limpos = {}
+                for nome, dados in ups.items():
+                    if not isinstance(nome, str) or not nome or not isinstance(dados, dict):
+                        continue
+                    exames = [e for e in (dados.get("exames") or []) if e in EXAMES_PERFIL]
+                    paineis = dados.get("paineis") if isinstance(dados.get("paineis"), dict) else {}
+                    if exames:
+                        limpos[nome] = {"exames": exames, "paineis": paineis}
+                self.usage_profiles = limpos
+            up = d.get("usage_profile")
+            if isinstance(up, str) and up:
+                self.usage_profile = up
             # --- cores das bandas ---
             bc = d.get("band_colors")
             if isinstance(bc, dict):
@@ -31807,6 +31994,8 @@ class AppConfig:
                     "window_maximized":     self.window_maximized,
                     "launcher_channels":    self.launcher_channels,
                     "last_volunteer_dir":   self.last_volunteer_dir,
+                    "usage_profile":        self.usage_profile,
+                    "usage_profiles":       self.usage_profiles,
                 }, ensure_ascii=False, indent=2)
         except Exception as exc:
             print(f"[AppConfig] falha serializando config: {exc}")
@@ -41459,11 +41648,11 @@ class _SimulationOverlay(QtWidgets.QWidget):
 # Para dispositivos BT clássicos (HC-05, módulos seriais), o usuário deve
 # parear pelo Windows e a porta COM virtual aparecerá no combo de portas.
 # ============================================================
-try:
-    import bleak as _bleak_module
-    HAS_BLEAK = True
-except Exception:
-    HAS_BLEAK = False
+# Só confere se a biblioteca está instalada (find_spec, sem importar): o
+# import do bleak puxa asyncio e, no Windows, as APIs WinRT, e custava de 0,3 a
+# 1 s na abertura. O import de verdade acontece em _BluetoothScanThread.run,
+# quando a pessoa pede para procurar aparelhos (1.10.0, P9).
+HAS_BLEAK = _module_available("bleak")
 
 
 class _BluetoothScanThread(QtCore.QThread):
@@ -41752,6 +41941,95 @@ class _WorkflowCard(QtWidgets.QFrame):
         super().leaveEvent(ev)
 
 
+# ============================================================
+# Perfis de uso (1.10.0, pedido P4)
+# ------------------------------------------------------------
+# Um perfil diz COM O QUE a pessoa trabalha: quais exames a tela inicial
+# oferece e quais abas e painéis aparecem. Quem só faz EEG não precisa ver
+# músculo, coração nem olhos. Os perfis prontos têm nome em português (chave
+# de tr(), traduzida na hora de exibir); o personalizado chama-se "Minha
+# bancada". Instalações antigas (config.json sem a chave) ficam em "Tudo",
+# que não esconde nada: é o comportamento da 1.9.0.
+# ============================================================
+PERFIL_TUDO = "Tudo"
+PERFIL_PERSONALIZADO = "Minha bancada"
+EXAMES_PERFIL = ("EEG", "EMG", "ECG", "EoG")
+PERFIS_PRONTOS = {
+    "Cérebro (EEG)":  ("EEG",),
+    "Músculos (EMG)": ("EMG",),
+    "Coração (ECG)":  ("ECG",),
+    "Olhos (EOG)":    ("EoG",),
+    PERFIL_TUDO:      EXAMES_PERFIL,
+}
+# Nome do cartão do assistente por exame (também é o nome do perfil pronto)
+ROTULO_EXAME_PERFIL = {"EEG": "Cérebro (EEG)", "EMG": "Músculos (EMG)",
+                       "ECG": "Coração (ECG)", "EoG": "Olhos (EOG)"}
+# Abas que só existem no Multimodal e não pertencem a exame nenhum: num
+# perfil com 2 ou 3 exames elas continuam aparecendo no modo Multimodal.
+_ABAS_SO_MULTIMODAL = {"view": {"Layout Custom"}, "system": {"Rede e Eventos"},
+                       "bio": {"Acel · Movimento"}}
+
+
+def perfis_disponiveis(config):
+    """Todos os perfis: os prontos mais os personalizados do config.
+
+    Devolve dict nome -> {"exames": [...], "paineis": dict, "pronto": bool},
+    na ordem: prontos (um por exame, depois "Tudo") e, por fim, os do usuário.
+    """
+    saida = {}
+    for nome, exames in PERFIS_PRONTOS.items():
+        saida[nome] = {"exames": list(exames), "paineis": {}, "pronto": True}
+    extras = getattr(config, "usage_profiles", None) if config is not None else None
+    if isinstance(extras, dict):
+        for nome, dados in extras.items():
+            if not isinstance(nome, str) or not nome or nome in saida:
+                continue
+            dados = dados if isinstance(dados, dict) else {}
+            exames = [e for e in (dados.get("exames") or []) if e in EXAMES_PERFIL]
+            paineis = dados.get("paineis") if isinstance(dados.get("paineis"), dict) else {}
+            saida[nome] = {"exames": exames or list(EXAMES_PERFIL),
+                           "paineis": dict(paineis), "pronto": False}
+    return saida
+
+
+def perfil_valido(config):
+    """Nome do perfil em uso; cai em "Tudo" quando o salvo não existe mais."""
+    nome = getattr(config, "usage_profile", None) if config is not None else None
+    if isinstance(nome, str) and nome in perfis_disponiveis(config):
+        return nome
+    return PERFIL_TUDO
+
+
+def exames_do_perfil(config, nome=None):
+    """Códigos de exame que o perfil oferece, com "Hibrido" quando há 2 ou mais.
+
+    Sem config (testes, launcher avulso) devolve todos. A ordem é a dos
+    cartões (EEG, EMG, ECG, EoG) e o Multimodal vem por último.
+    """
+    if config is None:
+        return list(EXAMES_PERFIL) + ["Hibrido"]
+    nome = nome or perfil_valido(config)
+    exames = perfis_disponiveis(config).get(nome, {}).get("exames") or list(EXAMES_PERFIL)
+    ordenados = [e for e in EXAMES_PERFIL if e in exames]
+    if len(ordenados) >= 2:
+        ordenados.append("Hibrido")
+    return ordenados
+
+
+def perfil_para_exames(exames):
+    """Nome do perfil pronto que bate com esses exames, ou "Minha bancada"."""
+    alvo = tuple(e for e in EXAMES_PERFIL if e in set(exames))
+    for nome, lista in PERFIS_PRONTOS.items():
+        if tuple(lista) == alvo:
+            return nome
+    return PERFIL_PERSONALIZADO
+
+
+def rotulo_perfil(nome):
+    """Texto de tela de um perfil: prontos passam por tr(); os do usuário não."""
+    return tr(nome) if nome in PERFIS_PRONTOS or nome == PERFIL_PERSONALIZADO else nome
+
+
 class LauncherScreen(QtWidgets.QDialog):
     """Tela inicial. Bloqueia até o usuário fazer uma escolha (ou sair).
 
@@ -41947,6 +42225,20 @@ class LauncherScreen(QtWidgets.QDialog):
         v.addLayout(topo)
         self._atualiza_rotulo_exame()
 
+        # ---- Perfil de uso (P4) ----
+        # Só aparece quando há mais de um perfil para escolher; com um só
+        # (instalação nova que marcou um exame) a linha seria ruído.
+        perf = QtWidgets.QHBoxLayout(); perf.setSpacing(8)
+        perf_lbl = QtWidgets.QLabel(tr("Perfil:"))
+        perf_lbl.setObjectName("rotuloPaciente")
+        perf.addWidget(perf_lbl)
+        self.perfil_combo = self._monta_combo_perfil()
+        self.perfil_combo.setMinimumHeight(d(38, 32))
+        perf.addWidget(self.perfil_combo)
+        perf.addStretch(1)
+        self._perfil_widgets = (perf_lbl, self.perfil_combo)
+        v.addLayout(perf)
+
         # ---- Paciente ----
         pac = QtWidgets.QHBoxLayout(); pac.setSpacing(8)
         pac_lbl = QtWidgets.QLabel(tr("Paciente:"))
@@ -42117,10 +42409,16 @@ class LauncherScreen(QtWidgets.QDialog):
         return lbl
 
     def _tipos_de_exame(self):
-        """Os 5 tipos de exame (chave, rótulo, dica), na ordem da tela. Fonte
-        única dos radios do Pré-Flight e do diálogo "Trocar". No Simples a
-        dica diz o que o exame mede, em palavras comuns; a dica com filtro e
-        notch é do Completo (validação com leigos, G34)."""
+        """Os tipos de exame (chave, rótulo, dica) que o PERFIL DE USO oferece,
+        na ordem da tela. Fonte única dos radios do Pré-Flight e do diálogo
+        "Trocar". No Simples a dica diz o que o exame mede, em palavras comuns;
+        a dica com filtro e notch é do Completo (validação com leigos, G34).
+        Fora do perfil nada é oferecido (P4): quem só faz EEG não vê músculo."""
+        permitidos = set(exames_do_perfil(self.config))
+        return tuple(t for t in self._tipos_de_exame_todos() if t[0] in permitidos)
+
+    def _tipos_de_exame_todos(self):
+        """Os 5 tipos de exame sem o filtro do perfil (base de _tipos_de_exame)."""
         if getattr(self, "_simples", False):
             return (
                 ("EEG", tr("EEG · Cérebro"),
@@ -42169,7 +42467,8 @@ class LauncherScreen(QtWidgets.QDialog):
         acq = self._acq_escolhido or getattr(
             self.config, "acquisition_mode", "EEG")
         validos = [k for k, _l, _t in self._tipos_de_exame()]
-        return acq if acq in validos else "EEG"
+        # fora do perfil cai no primeiro exame oferecido, não em EEG fixo
+        return acq if acq in validos else (validos[0] if validos else "EEG")
 
     def _atualiza_rotulo_exame(self):
         """Reescreve o rótulo ao lado de "Exame:" com a modalidade em vigor."""
@@ -42183,6 +42482,65 @@ class LauncherScreen(QtWidgets.QDialog):
         if n_ch != BASE_CHANNELS:
             rotulo = rotulo + " · " + tr("{0} canais").format(n_ch)
         self.exame_lbl.setText(rotulo)
+
+    def _monta_combo_perfil(self):
+        """Combo com os perfis de uso (userData = nome-chave), já no perfil em
+        vigor e ligado a _on_perfil_trocado. Serve às duas telas."""
+        combo = QtWidgets.QComboBox()
+        combo.setObjectName("perfilCombo")
+        for nome in perfis_disponiveis(self.config):
+            combo.addItem(rotulo_perfil(nome), nome)
+        idx = combo.findData(perfil_valido(self.config))
+        combo.setCurrentIndex(max(0, idx))
+        combo.setToolTip(tr("Quem só faz um tipo de exame não precisa ver os outros: "
+                            "o perfil decide o que a tela inicial oferece e quais abas "
+                            "aparecem. Crie o seu em Sistema → Perfil de uso."))
+        combo.currentIndexChanged.connect(self._on_perfil_trocado)
+        return combo
+
+    def _on_perfil_trocado(self, _idx=None):
+        """Troca o perfil de uso na hora: grava no config, refaz os exames
+        oferecidos e corrige o exame em vigor se ele saiu do perfil."""
+        combo = getattr(self, "perfil_combo", None)
+        if combo is None or self.config is None:
+            return
+        nome = combo.currentData()
+        if not isinstance(nome, str) or nome == perfil_valido(self.config):
+            return
+        self.config.usage_profile = nome
+        try:
+            self.config.save()
+        except Exception as exc:
+            print(f"[Launcher] erro salvando o perfil: {exc}")
+        self._aplica_perfil_na_tela()
+
+    def _aplica_perfil_na_tela(self):
+        """Deixa visíveis só os exames do perfil (radios do Completo) e corrige
+        a escolha/rótulo do exame (Simples) quando o atual ficou de fora."""
+        permitidos = exames_do_perfil(self.config)
+        radios = getattr(self, "_acq_radios", None)
+        if radios:
+            for key, rb in radios.items():
+                rb.setVisible(key in permitidos)
+            marcado = next((k for k, rb in radios.items() if rb.isChecked()), None)
+            if marcado not in permitidos and permitidos:
+                rb = radios.get(permitidos[0])
+                if rb is not None:
+                    rb.setChecked(True)
+            if hasattr(self, "summary_lbl"):
+                self._refresh_summary()
+        if getattr(self, "_simples", False):
+            if self._acq_escolhido not in permitidos:
+                self._acq_escolhido = None
+            atual = self._exame_atual()
+            if self.config is not None and getattr(self.config, "acquisition_mode", None) not in permitidos:
+                # o salvo saiu do perfil: a janela vai abrir no primeiro exame dele
+                self.config.acquisition_mode = atual
+                try:
+                    self.config.save()
+                except Exception:
+                    pass
+            self._atualiza_rotulo_exame()
 
     def _dialogo_trocar_exame(self):
         """Diálogo pequeno da tela simples: tipo de exame + número de canais.
@@ -42624,6 +42982,16 @@ class LauncherScreen(QtWidgets.QDialog):
         hint.setWordWrap(True)
         v.addWidget(hint)
 
+        # ---- Bloco: Perfil de uso (P4) ----
+        perfil_box = QtWidgets.QFrame()
+        perfil_box.setObjectName("subPanel")
+        pl = QtWidgets.QVBoxLayout(perfil_box)
+        pl.setContentsMargins(12, 10, 12, 12); pl.setSpacing(6)
+        pl.addWidget(self._sub_label(tr("Perfil de uso")))
+        self.perfil_combo = self._monta_combo_perfil()
+        pl.addWidget(self.perfil_combo)
+        v.addWidget(perfil_box)
+
         # ---- Bloco: Hardware ----
         hw_box = QtWidgets.QFrame()
         hw_box.setObjectName("subPanel")
@@ -42671,7 +43039,9 @@ class LauncherScreen(QtWidgets.QDialog):
         self.acquisition_group = QtWidgets.QButtonGroup(self)
         self.acquisition_group.setExclusive(True)
         self._acq_radios = {}
-        for key, label, tip in self._tipos_de_exame():
+        # todos os tipos são criados; _aplica_perfil_na_tela esconde os que o
+        # perfil não oferece (trocar de perfil não reconstrói o painel)
+        for key, label, tip in self._tipos_de_exame_todos():
             rb = QtWidgets.QRadioButton(label)
             rb.setObjectName("acqRadio")
             rb.setToolTip(tip)
@@ -42684,6 +43054,7 @@ class LauncherScreen(QtWidgets.QDialog):
             getattr(self.config, "acquisition_mode", "EEG"),
             self._acq_radios["EEG"]).setChecked(True)
         v.addWidget(type_box)
+        self._aplica_perfil_na_tela()
 
         # Espaço
         v.addStretch()
@@ -52892,6 +53263,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             self._on_mode_visibility_apply)
         mode_l.addWidget(self.mode_visibility_combo)
         layout.addWidget(mode_group)
+        self._aplicar_perfil_no_combo_modo()
 
         layout.addStretch()
         return widget
@@ -60572,6 +60944,19 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             # modalidades). Sem `return`: o nível Simples ainda corta por cima.
             rules = {k: set(title_map[k])
                      for k in ("setup", "view", "analyse", "system", "bio")}
+        # Perfil de uso (P4): o que não pertence a nenhum exame do perfil some,
+        # até no Multimodal. "Tudo" (ou um perfil com os 4 exames) não corta.
+        perfil_ex = [e for e in self._exames_do_perfil() if e != "Hibrido"]
+        if perfil_ex and len(perfil_ex) < len(EXAMES_PERFIL):
+            uniao = {k: set() for k in ("setup", "view", "analyse", "system", "bio")}
+            for ex in perfil_ex:
+                for k, titulos in (self.MODE_TAB_VISIBILITY.get(ex) or {}).items():
+                    uniao[k] |= set(titulos)
+            if multimodal:
+                for k, titulos in _ABAS_SO_MULTIMODAL.items():
+                    uniao[k] |= titulos
+            rules = {k: (set(v) & uniao[k]) if v is not None else None
+                     for k, v in rules.items()}
         simples = self._nivel_simples()
 
         def _primeira_visivel(tabs):
@@ -60869,6 +61254,220 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             else:
                 self._on_channel_signal_type_changed(ch, code)
 
+    # ------------------------------------------------------------------
+    # Perfil de uso (P4)
+    # ------------------------------------------------------------------
+    def _exames_do_perfil(self):
+        """Exames que o perfil de uso em vigor oferece (com "Hibrido" se 2+)."""
+        return exames_do_perfil(self.config)
+
+    def _aplicar_perfil_no_combo_modo(self):
+        """Desabilita no combo "Modo do exame" os exames fora do perfil."""
+        combo = getattr(self, "mode_visibility_combo", None)
+        if combo is None:
+            return
+        permitidos = self._exames_do_perfil()
+        modelo = combo.model()
+        for i in range(combo.count()):
+            item = modelo.item(i) if hasattr(modelo, "item") else None
+            if item is not None:
+                item.setEnabled(combo.itemData(i) in permitidos)
+
+    def _perfil_definir(self, nome):
+        """Troca o perfil de uso valendo na hora: grava, refaz as abas e, se o
+        exame atual saiu do perfil, muda para o primeiro exame dele."""
+        if nome not in perfis_disponiveis(self.config):
+            nome = PERFIL_TUDO
+        self.config.usage_profile = nome
+        try:
+            self.config.save()
+        except Exception:
+            pass
+        self._aplicar_perfil()
+        try:
+            self._log(tr("Perfil de uso: {0}.").format(rotulo_perfil(nome)))
+        except Exception:
+            pass
+
+    def _aplicar_perfil(self):
+        """Reaplica o perfil em vigor: combo do modo, abas e badge."""
+        permitidos = self._exames_do_perfil()
+        self._aplicar_perfil_no_combo_modo()
+        modo = getattr(self, "_signal_mode", None) or getattr(self.config, "acquisition_mode", "EEG")
+        if modo not in permitidos and permitidos:
+            combo = getattr(self, "mode_visibility_combo", None)
+            idx = combo.findData(permitidos[0]) if combo is not None else -1
+            if combo is not None and idx >= 0 and combo.currentIndex() != idx:
+                combo.setCurrentIndex(idx)      # o handler aplica o modo novo
+            else:
+                self._apply_signal_mode_visibility(permitidos[0])
+        else:
+            self._apply_signal_mode_visibility(modo)
+        combo_cfg = getattr(self, "perfil_cfg_combo", None)
+        if combo_cfg is not None:
+            self._perfil_recarregar_combo()
+        try:
+            self._sync_action_bar()
+        except Exception:
+            pass
+
+    def _build_perfil_group(self):
+        """Grupo "Perfil de uso" da aba Sistema → Tema e Cores: escolher,
+        criar, duplicar, renomear e excluir perfis; os exames de um perfil
+        personalizado são caixas de marcar. Visível nos dois níveis."""
+        grp = QtWidgets.QGroupBox(tr("Perfil de uso"))
+        g = QtWidgets.QVBoxLayout(grp)
+        g.addWidget(QtWidgets.QLabel(tr(
+            "Quem só faz um tipo de exame não precisa ver os outros: o perfil "
+            "decide o que a tela inicial oferece e quais abas aparecem.")))
+        linha = QtWidgets.QHBoxLayout()
+        linha.addWidget(QtWidgets.QLabel(tr("Perfil:")))
+        self.perfil_cfg_combo = QtWidgets.QComboBox()
+        self.perfil_cfg_combo.setMinimumContentsLength(18)
+        linha.addWidget(self.perfil_cfg_combo, 1)
+        for rotulo, fn in ((tr("Novo…"), self._perfil_novo),
+                           (tr("Duplicar…"), self._perfil_duplicar),
+                           (tr("Renomear…"), self._perfil_renomear)):
+            bt = QtWidgets.QPushButton(rotulo)
+            bt.clicked.connect(fn)
+            linha.addWidget(bt)
+        self.perfil_del_btn = QtWidgets.QPushButton(tr("Excluir"))
+        self.perfil_del_btn.clicked.connect(self._perfil_excluir)
+        linha.addWidget(self.perfil_del_btn)
+        g.addLayout(linha)
+        ex_row = QtWidgets.QHBoxLayout()
+        ex_row.addWidget(QtWidgets.QLabel(tr("Exames deste perfil:")))
+        self._perfil_exame_chks = {}
+        for code in EXAMES_PERFIL:
+            chk = QtWidgets.QCheckBox(tr(ROTULO_EXAME_PERFIL[code]))
+            chk.toggled.connect(self._perfil_exames_mudaram)
+            ex_row.addWidget(chk)
+            self._perfil_exame_chks[code] = chk
+        ex_row.addStretch(1)
+        g.addLayout(ex_row)
+        self._perfil_nota = QtWidgets.QLabel(tr(
+            "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar."))
+        self._perfil_nota.setStyleSheet(f"color: {COLORS['text_dim']}; font-style: italic;")
+        self._perfil_nota.setWordWrap(True)
+        g.addWidget(self._perfil_nota)
+        self._perfil_combo_ligado = False
+        self._perfil_recarregar_combo()
+        return grp
+
+    def _perfil_recarregar_combo(self):
+        """Repopula o combo de perfis da aba Sistema e os checkboxes de exames."""
+        combo = getattr(self, "perfil_cfg_combo", None)
+        if combo is None:
+            return
+        combo.blockSignals(True)
+        combo.clear()
+        perfis = perfis_disponiveis(self.config)
+        for nome in perfis:
+            combo.addItem(rotulo_perfil(nome), nome)
+        atual = perfil_valido(self.config)
+        combo.setCurrentIndex(max(0, combo.findData(atual)))
+        combo.blockSignals(False)
+        if not self._perfil_combo_ligado:
+            combo.currentIndexChanged.connect(self._perfil_trocou_no_combo)
+            self._perfil_combo_ligado = True
+        pronto = perfis.get(atual, {}).get("pronto", True)
+        exames = set(perfis.get(atual, {}).get("exames") or EXAMES_PERFIL)
+        for code, chk in self._perfil_exame_chks.items():
+            chk.blockSignals(True)
+            chk.setChecked(code in exames)
+            chk.setEnabled(not pronto)
+            chk.blockSignals(False)
+        self.perfil_del_btn.setEnabled(not pronto)
+        self._perfil_nota.setVisible(pronto)
+
+    def _perfil_trocou_no_combo(self, _idx=None):
+        """Combo da aba Sistema: aplica o perfil escolhido na hora."""
+        combo = self.perfil_cfg_combo
+        nome = combo.currentData()
+        if isinstance(nome, str) and nome != perfil_valido(self.config):
+            self._perfil_definir(nome)
+
+    def _perfil_exames_mudaram(self, _on=None):
+        """Checkbox de exame de um perfil personalizado: grava e reaplica.
+        Pelo menos um exame fica marcado."""
+        nome = perfil_valido(self.config)
+        perfis = perfis_disponiveis(self.config)
+        if perfis.get(nome, {}).get("pronto", True):
+            return
+        marcados = [c for c, chk in self._perfil_exame_chks.items() if chk.isChecked()]
+        if not marcados:
+            self._perfil_recarregar_combo()   # desfaz: não existe perfil sem exame
+            return
+        self.config.usage_profiles[nome] = {
+            "exames": marcados,
+            "paineis": dict(perfis[nome].get("paineis") or {})}
+        try:
+            self.config.save()
+        except Exception:
+            pass
+        self._aplicar_perfil()
+
+    def _perfil_pede_nome(self, titulo, sugestao=""):
+        """Pergunta o nome de um perfil e recusa vazio ou repetido."""
+        nome, ok = pede_texto(self, titulo, tr("Nome do perfil:"), text=sugestao)
+        if not ok:
+            return None
+        nome = str(nome or "").strip()
+        if not nome:
+            return None
+        if nome in perfis_disponiveis(self.config):
+            QtWidgets.QMessageBox.warning(self, tr("Nome já existe"),
+                                          tr("Já existe um perfil com esse nome."))
+            return None
+        return nome
+
+    def _perfil_novo(self):
+        """Cria um perfil personalizado com os exames do perfil em vigor."""
+        nome = self._perfil_pede_nome(tr("Novo perfil de uso"), PERFIL_PERSONALIZADO)
+        if not nome:
+            return
+        atual = perfis_disponiveis(self.config)[perfil_valido(self.config)]
+        self.config.usage_profiles[nome] = {"exames": list(atual["exames"]), "paineis": {}}
+        self._perfil_definir(nome)
+
+    def _perfil_duplicar(self):
+        """Duplica o perfil em vigor (inclusive um pronto) como personalizado."""
+        origem = perfil_valido(self.config)
+        nome = self._perfil_pede_nome(tr("Duplicar perfil"),
+                                      tr("{0} (cópia)").format(rotulo_perfil(origem)))
+        if not nome:
+            return
+        dados = perfis_disponiveis(self.config)[origem]
+        self.config.usage_profiles[nome] = {"exames": list(dados["exames"]),
+                                            "paineis": dict(dados.get("paineis") or {})}
+        self._perfil_definir(nome)
+
+    def _perfil_renomear(self):
+        """Renomeia o perfil personalizado em vigor."""
+        atual = perfil_valido(self.config)
+        if perfis_disponiveis(self.config)[atual].get("pronto", True):
+            QtWidgets.QMessageBox.information(self, tr("Perfil de uso"), tr(
+                "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar."))
+            return
+        nome = self._perfil_pede_nome(tr("Renomear perfil"), atual)
+        if not nome:
+            return
+        self.config.usage_profiles[nome] = self.config.usage_profiles.pop(atual)
+        self._perfil_definir(nome)
+
+    def _perfil_excluir(self):
+        """Exclui o perfil personalizado em vigor (volta para "Tudo")."""
+        atual = perfil_valido(self.config)
+        if perfis_disponiveis(self.config)[atual].get("pronto", True):
+            return
+        if QtWidgets.QMessageBox.question(
+                self, tr("Perfil de uso"),
+                tr("Excluir o perfil \"{0}\"?").format(atual)) \
+                != QtWidgets.QMessageBox.StandardButton.Yes:
+            return
+        self.config.usage_profiles.pop(atual, None)
+        self._perfil_definir(PERFIL_TUDO)
+
     def _menu_trocar_modalidade(self):
         """Menu do badge de modalidade: troca o modo do exame sem passar por
         Filtros e Canais (que some no Simples). Seleciona no combo — o handler
@@ -60881,7 +61480,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         atual = combo.findData(getattr(self, "_signal_mode", None))
         if atual < 0:
             atual = combo.currentIndex()
+        permitidos = self._exames_do_perfil()
         for i in range(combo.count()):
+            if combo.itemData(i) not in permitidos and i != atual:
+                continue   # fora do perfil de uso (P4) não é oferecido
             ac = menu.addAction(combo.itemText(i) + ("   ✓" if i == atual else ""))
             ac.setData(i)
         escolha = menu.exec(QtGui.QCursor.pos())
@@ -66794,6 +67396,9 @@ print("Análise completa.")
         lgl.addWidget(lang_hint, stretch=1)
         layout.addWidget(lang_group)
 
+        # ---- Perfil de uso (P4): visível nos dois níveis ----
+        layout.addWidget(self._build_perfil_group())
+
         # ---- Quais bandas usar ----
         # Pedido de usuário: silenciar banda que não vai usar. Quem trabalha
         # com alfa/mu/beta não precisa carregar Delta em toda tabela, e banda
@@ -68767,8 +69372,10 @@ class FirstRunWizard(QtWidgets.QDialog):
         self._layout_mostrado = False   # só grava layout se a página apareceu
         self.stack.addWidget(self._build_page_language())  # 0
         self.stack.addWidget(self._build_page_uso())       # 1
-        self.stack.addWidget(self._build_page_layout())    # 2 (só em Pesquisa)
-        self.stack.addWidget(self._build_page_terms())     # 3
+        self.stack.addWidget(self._build_page_trabalho())  # 2 (perfil de uso, P4)
+        self.stack.addWidget(self._build_page_graficos())  # 3 (só em Pesquisa, P4)
+        self.stack.addWidget(self._build_page_layout())    # 4 (só em Pesquisa)
+        self.stack.addWidget(self._build_page_terms())     # 5
         root.addWidget(self.stack, 1)
         nav = QtWidgets.QHBoxLayout()
         self.btn_decline = QtWidgets.QPushButton(tr("Recusar e sair"))
@@ -68875,8 +69482,11 @@ class FirstRunWizard(QtWidgets.QDialog):
         return tr("Você pode trocar depois no seletor Exibição, no alto da tela, "
                   "ou em Ajuda → Mudar para Completo (pesquisa).")
 
-    # Índices do stack; a página de layout é pulada no caminho "Aplicar exames"
-    _PAG_LAYOUT = 2
+    # Índices do stack; as páginas de gráficos e de layout são puladas no
+    # caminho "Aplicar exames" (só o Completo escolhe gráficos e layout)
+    _PAG_GRAFICOS = 3
+    _PAG_LAYOUT = 4
+    _PAGS_SO_PESQUISA = (3, 4)
 
     @staticmethod
     def _renumera(titulo, n):
@@ -68915,13 +69525,169 @@ class FirstRunWizard(QtWidgets.QDialog):
         v.addStretch(1)
         return w
 
+    def _build_page_trabalho(self):
+        """Página 3 do assistente: "Com o que você trabalha?" — quatro cartões
+        grandes de marcar (cérebro, músculos, coração, olhos). Decide o perfil
+        de uso (P4): um cartão = perfil pronto daquele exame; dois ou três =
+        "Minha bancada"; os quatro = "Tudo". Todos vêm marcados: ninguém perde
+        uma tela por esquecer de marcar."""
+        w = QtWidgets.QWidget(); v = QtWidgets.QVBoxLayout(w)
+        v.addWidget(QtWidgets.QLabel("<h2>3. " + tr("Com o que você trabalha?") + "</h2>"))
+        dica = QtWidgets.QLabel(tr("Marque tudo o que você usa. Quem só faz um tipo de "
+                                   "exame não vê os outros na tela. Dá para mudar depois na "
+                                   "tela inicial ou em Sistema → Perfil de uso."))
+        dica.setWordWrap(True)
+        v.addWidget(dica)
+        grade = QtWidgets.QGridLayout(); grade.setSpacing(12)
+        self._cartoes_trabalho = {}
+        descricoes = {
+            "EEG": tr("Sinal do cérebro, pelos eletrodos na cabeça."),
+            "EMG": tr("Sinal dos músculos, pelos eletrodos na pele sobre o músculo."),
+            "ECG": tr("Sinal do coração, pelos eletrodos no peito ou nos pulsos."),
+            "EoG": tr("Piscadas e movimento do olhar, pelos eletrodos perto dos olhos."),
+        }
+        exames_atuais = set(exames_do_perfil(self.config)) - {"Hibrido"}
+        th = COLORS
+        # QPushButton não quebra linha: o cartão é um botão marcável com dois
+        # QLabel dentro (título e descrição com quebra), transparentes ao mouse
+        # para o clique em qualquer ponto marcar o cartão.
+        w.setStyleSheet(
+            "QPushButton#cartaoPerfil { border: 2px solid %s; border-radius: 10px; "
+            "background: %s; text-align: left; }"
+            "QPushButton#cartaoPerfil:hover { border-color: %s; }"
+            "QPushButton#cartaoPerfil:checked { border-color: %s; background: %s; }"
+            % (th["border"], th["surface"], th["accent_dim"], th["accent"], th["accent"]))
+        for i, code in enumerate(EXAMES_PERFIL):
+            bt = QtWidgets.QPushButton()
+            bt.setCheckable(True)
+            bt.setObjectName("cartaoPerfil")
+            bt.setMinimumSize(250, 96)
+            lay = QtWidgets.QVBoxLayout(bt)
+            lay.setContentsMargins(16, 12, 16, 12); lay.setSpacing(4)
+            titulo = QtWidgets.QLabel(tr(ROTULO_EXAME_PERFIL[code]))
+            texto = QtWidgets.QLabel(descricoes[code])
+            texto.setWordWrap(True)
+            for lbl in (titulo, texto):
+                lbl.setAttribute(QtCore.Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+                lay.addWidget(lbl)
+            lay.addStretch(1)
+
+            def _pinta(marcado, _t=titulo, _d=texto, _th=th):
+                # marcado: fundo no acento, letras brancas; solto: cores do tema
+                cor_t = "#ffffff" if marcado else _th["text"]
+                cor_d = "#ffffff" if marcado else _th["text_dim"]
+                _t.setStyleSheet("background: transparent; font-weight: bold; "
+                                 "font-size: %dpt; color: %s;" % (_pt(12), cor_t))
+                _d.setStyleSheet("background: transparent; color: %s;" % cor_d)
+            bt.toggled.connect(_pinta)
+            bt.toggled.connect(lambda _on: self._refresh_nav())
+            bt.setChecked(code in exames_atuais)
+            _pinta(bt.isChecked())
+            grade.addWidget(bt, i // 2, i % 2)
+            self._cartoes_trabalho[code] = bt
+        v.addLayout(grade)
+        self._aviso_trabalho = QtWidgets.QLabel(tr("Marque pelo menos um."))
+        self._aviso_trabalho.setStyleSheet("color: %s;" % COLORS["error"])
+        self._aviso_trabalho.setVisible(False)
+        v.addWidget(self._aviso_trabalho)
+        v.addStretch(1)
+        return w
+
+    def _exames_marcados(self):
+        """Códigos dos cartões marcados em "Com o que você trabalha?"."""
+        cartoes = getattr(self, "_cartoes_trabalho", {})
+        return [c for c in EXAMES_PERFIL if c in cartoes and cartoes[c].isChecked()]
+
+    def _build_page_graficos(self):
+        """Página 4 (só no caminho Pesquisa): quais gráficos (painéis) ver,
+        com os recomendados já marcados. A lista vem do catálogo de painéis
+        (P2); sem catálogo a página fica vazia e é pulada."""
+        w = QtWidgets.QWidget(); v = QtWidgets.QVBoxLayout(w)
+        v.addWidget(QtWidgets.QLabel("<h2>4. " + tr("Escolha os gráficos") + "</h2>"))
+        dica = QtWidgets.QLabel(tr("Os recomendados para o seu perfil já estão marcados; "
+                                   "desmarque o que não quer ver. Isto vale para o nível "
+                                   "Completo e pode ser mudado a qualquer hora pelo botão "
+                                   "Painéis de cada aba."))
+        dica.setWordWrap(True)
+        v.addWidget(dica)
+        area = QtWidgets.QScrollArea(); area.setWidgetResizable(True)
+        area.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        self._graficos_widget = QtWidgets.QWidget()
+        self._graficos_layout = QtWidgets.QVBoxLayout(self._graficos_widget)
+        area.setWidget(self._graficos_widget)
+        v.addWidget(area, 1)
+        self._graficos_chks = {}
+        return w
+
+    def _atualiza_pagina_graficos(self):
+        """(Re)monta as caixas de painéis conforme os exames marcados."""
+        lay = getattr(self, "_graficos_layout", None)
+        if lay is None:
+            return
+        while lay.count():
+            item = lay.takeAt(0)
+            wdg = item.widget()
+            if wdg is not None:
+                wdg.deleteLater()
+        self._graficos_chks = {}
+        catalogo = globals().get("CATALOGO_PAINEIS")
+        exames = set(self._exames_marcados())
+        itens = []
+        if catalogo is not None:
+            try:
+                itens = [it for it in catalogo.itens()
+                         if not it.get("exames") or (set(it["exames"]) & exames)]
+            except Exception:
+                itens = []
+        if not itens:
+            lay.addWidget(QtWidgets.QLabel(tr("Nenhum gráfico a escolher para estes exames.")))
+            return
+        por_aba = {}
+        for it in itens:
+            por_aba.setdefault(it.get("aba", ""), []).append(it)
+        for aba, lista in por_aba.items():
+            cab = QtWidgets.QLabel("<b>%s</b>" % tr(aba))
+            lay.addWidget(cab)
+            for it in lista:
+                chk = QtWidgets.QCheckBox(tr(it.get("titulo", it["id"])))
+                chk.setChecked(bool((it.get("padrao") or {}).get("visivel", True)))
+                lay.addWidget(chk)
+                self._graficos_chks[it["id"]] = chk
+        lay.addStretch(1)
+
+    def _paineis_escolhidos(self):
+        """{id: visível?} só quando a pessoa desmarcou algo; vazio = padrão."""
+        chks = getattr(self, "_graficos_chks", {})
+        if not chks:
+            return {}
+        return {pid: chk.isChecked() for pid, chk in chks.items()}
+
+    def _aplicar_perfil_escolhido(self):
+        """Grava no config o perfil decidido pelos cartões (e pelos gráficos)."""
+        exames = self._exames_marcados()
+        if not exames:
+            exames = list(EXAMES_PERFIL)
+        paineis = self._paineis_escolhidos() if self._caminho_pesquisa() else {}
+        # só o que foi DESMARCADO personaliza o perfil; tudo marcado é o padrão
+        paineis = {pid: vis for pid, vis in paineis.items() if not vis}
+        nome = perfil_para_exames(exames)
+        if paineis and nome != PERFIL_PERSONALIZADO:
+            nome = PERFIL_PERSONALIZADO
+        if nome == PERFIL_PERSONALIZADO:
+            perfis = dict(getattr(self.config, "usage_profiles", {}) or {})
+            perfis[nome] = {"exames": exames, "paineis": paineis}
+            self.config.usage_profiles = perfis
+        self.config.usage_profile = nome
+        if getattr(self.config, "acquisition_mode", "EEG") not in exames_do_perfil(self.config):
+            self.config.acquisition_mode = exames[0]
+
     def _build_page_layout(self):
-        """Página 3 do assistente (só no caminho Pesquisa): radio buttons com
+        """Página 5 do assistente (só no caminho Pesquisa): radio buttons com
         os presets de WIZARD_LAYOUT_PRESETS para o arranjo inicial dos 4
         painéis."""
         w = QtWidgets.QWidget(); v = QtWidgets.QVBoxLayout(w)
         v.addWidget(QtWidgets.QLabel(
-            self._renumera(tr("<h2>2. Layout dos painéis</h2>"), 3)))
+            self._renumera(tr("<h2>2. Layout dos painéis</h2>"), 5)))
         v.addWidget(QtWidgets.QLabel(
             tr("Organização inicial dos 4 painéis (mude depois em "
             "Visualizar → Layout Custom):")))
@@ -69010,7 +69776,8 @@ class FirstRunWizard(QtWidgets.QDialog):
         i = self.stack.currentIndex()
         if i > 0:
             ant = i - 1
-            if ant == self._PAG_LAYOUT and not self._caminho_pesquisa():
+            # no caminho "Aplicar exames" as páginas só de pesquisa não existem
+            while ant in self._PAGS_SO_PESQUISA and not self._caminho_pesquisa():
                 ant -= 1
             self.stack.setCurrentIndex(ant)
         self._refresh_nav()
@@ -69021,11 +69788,12 @@ class FirstRunWizard(QtWidgets.QDialog):
         i = self.stack.currentIndex()
         if i < self.stack.count() - 1:
             prox = i + 1
+            while prox in self._PAGS_SO_PESQUISA and not self._caminho_pesquisa():
+                prox += 1   # "Aplicar exames" vai direto ao Termo
             if prox == self._PAG_LAYOUT:
-                if self._caminho_pesquisa():
-                    self._layout_mostrado = True
-                else:
-                    prox += 1   # "Aplicar exames" vai direto ao Termo
+                self._layout_mostrado = True
+            if prox == self._PAG_GRAFICOS:
+                self._atualiza_pagina_graficos()
             self.stack.setCurrentIndex(prox); self._refresh_nav()
         else:
             self.accept()
@@ -69044,10 +69812,16 @@ class FirstRunWizard(QtWidgets.QDialog):
         # Numa captura do assistente em inglês, "Decline and exit" e "Back"
         # apareciam traduzidos e "Avançar" não.
         self.btn_next.setText(tr("Concluir") if last else tr("Avançar"))
-        self.btn_next.setEnabled(self.chk_terms.isChecked() if last else True)
+        pode = self.chk_terms.isChecked() if last else True
+        # na página dos cartões é preciso marcar pelo menos um exame
+        if i == 2 and hasattr(self, "_cartoes_trabalho"):
+            algum = bool(self._exames_marcados())
+            self._aviso_trabalho.setVisible(not algum)
+            pode = pode and algum
+        self.btn_next.setEnabled(pode)
         if hasattr(self, "lbl_titulo_termo"):
             self.lbl_titulo_termo.setText(self._renumera(
-                self._titulo_termo, 4 if self._caminho_pesquisa() else 3))
+                self._titulo_termo, 6 if self._caminho_pesquisa() else 4))
 
     def accept(self):
         """Conclui o primeiro uso gravando na config idioma, nível da interface
@@ -69078,6 +69852,7 @@ class FirstRunWizard(QtWidgets.QDialog):
             self.config.terms_version     = TERMS_VERSION
             self.config.terms_accepted_at = datetime.now().isoformat(timespec="seconds")
             self.config.first_run_done    = True
+            self._aplicar_perfil_escolhido()
             self.config.save()
         except Exception:
             logging.getLogger("eeg").exception("Falha salvando aceite do termo")
@@ -80607,6 +81382,24 @@ def _install_excepthook(logger):
 # ============================================================
 # Entry point
 # ============================================================
+def _diagnostico_ob_core(logger):
+    """Confere se a ponte C++ (ob_core) carrega e registra o backend no log.
+
+    Chamada por QTimer depois de a janela aparecer: é só diagnóstico, não
+    pode atrasar a abertura. Sem a DLL (Linux, instalação sem o núcleo) loga
+    o motivo e o programa segue no caminho Python, como sempre.
+    """
+    try:
+        import importlib
+        _obmod = importlib.import_module("ob_core.ob_bridge")
+        _obc = _obmod.OBCore(board_id=0, n_channels=8, srate=250.0)
+        logger.info("ob_core: ponte OK — backend=%s (dll=%s)",
+                    _obc.backend, bool(getattr(_obc, "_lib_path", None)))
+        _obc.close()
+    except Exception as _obexc:
+        logger.info("ob_core: indisponivel (%s) — fallback/desabilitado", _obexc)
+
+
 def _splash_lancador():
     """Tela de abertura do lançador (EEG_Data_Collector.py 1.10+), se houver.
 
@@ -80702,19 +81495,13 @@ def main():
     _install_excepthook(logger)
 
     # Diagnóstico do núcleo de aquisição C++ (ob_core): registra no app.log se a
-    # ponte Python<->C++ carregou (backend=c++) ou caiu no fallback Python. Leve:
-    # só carrega a lib, não inicia thread.
-    try:
-        if SCRIPT_DIR not in sys.path:
-            sys.path.insert(0, SCRIPT_DIR)
-        import importlib
-        _obmod = importlib.import_module("ob_core.ob_bridge")
-        _obc = _obmod.OBCore(board_id=0, n_channels=8, srate=250.0)
-        logger.info("ob_core: ponte OK — backend=%s (dll=%s)",
-                    _obc.backend, bool(getattr(_obc, "_lib_path", None)))
-        _obc.close()
-    except Exception as _obexc:
-        logger.info("ob_core: indisponivel (%s) — fallback/desabilitado", _obexc)
+    # ponte Python<->C++ carregou (backend=c++) ou caiu no fallback Python. Só
+    # carrega a lib, não inicia thread — mas carregar uma DLL antes da tela
+    # inicial é tempo que a pessoa espera à toa, então roda 2 s depois de a
+    # janela aparecer (1.10.0, P9). O caminho de busca entra já.
+    if SCRIPT_DIR not in sys.path:
+        sys.path.insert(0, SCRIPT_DIR)
+    QtCore.QTimer.singleShot(2000, lambda: _diagnostico_ob_core(logger))
 
     # ----------------------------------------------------------------
     # IMPORTANTE: carrega config.json e aplica o tema salvo ANTES de

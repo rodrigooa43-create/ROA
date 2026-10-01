@@ -28,9 +28,9 @@ Tradução de textos novos: `python ferramentas/coleta_faltantes.py --lote <nome
 |---|---|---|
 | Infra (branch, testes, ferramentas de tradução) | feito | `testes/`, `ferramentas/`, `revisao/`, `.gitignore` |
 | P9 Abrir rápido + logo animada | **feito** | lançador com cache + splash; scipy adiado; medidas no CHANGELOG |
-| P1 Só os canais em uso | a fazer | |
+| P1 Só os canais em uso | **feito** | helpers + 16 locais; `testes/test_p1_canais_em_uso.py` |
 | P2 Painéis em gavetas | a fazer | |
-| P4 Perfis de uso | a fazer | depende do catálogo do P2 |
+| P4 Perfis de uso | **feito** (página "Escolha os gráficos" liga ao catálogo do P2 quando ele entrar) | `testes/test_p4_perfis.py`; imagens em `revisao/p4_perfis/` |
 | P3 Atlas muscular | a fazer | |
 | P6 Replay do movimento (EMG) | a fazer | |
 | P7 Replay coração e olhos | a fazer | |
@@ -84,4 +84,5 @@ mas as proporções valem:
 
 ## Resultados dos testes
 
-(preenchido a cada etapa)
+Etapa P9+P1+P4 (`python testes/roda_todos.py`): test_p1_canais_em_uso 12/12,
+test_p4_perfis 16/16, test_p9_lancador 7/7, test_vazamento_idioma 4/4.

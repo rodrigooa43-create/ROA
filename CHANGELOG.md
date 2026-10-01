@@ -10,6 +10,24 @@ Todas as mudanças notáveis deste projeto. Formato baseado em [Keep a Changelog
 ## [Não lançado]
 
 ### Adicionado
+- **Perfis de uso (P4).** Conceito novo: o perfil diz com o que a pessoa
+  trabalha e decide o que a tela inicial oferece e quais abas aparecem.
+  Prontos: "Cérebro (EEG)", "Músculos (EMG)", "Coração (ECG)", "Olhos (EOG)"
+  e "Tudo"; personalizado: "Minha bancada" (criar, duplicar, renomear e
+  excluir em Sistema → Tema e Cores → Perfil de uso, com os exames do perfil
+  em caixas de marcar). No assistente de primeiro uso, a página "Com o que
+  você trabalha?" tem quatro cartões grandes de marcar (um cartão = perfil
+  pronto; dois ou três = "Minha bancada"; quatro = "Tudo"); no caminho
+  Completo há a página opcional "Escolha os gráficos" (recomendados já
+  marcados; lista vem do catálogo de painéis). Trocar de perfil na tela
+  inicial (combo "Perfil:", nos dois níveis) ou em Sistema vale na hora: os
+  exames fora do perfil somem da tela inicial, do diálogo "Trocar", do combo
+  "Modo do exame" e do menu do selo; as abas que não pertencem a nenhum
+  exame do perfil ficam ocultas, inclusive no Multimodal. Abrir uma gravação
+  de outro exame continua funcionando. Chaves novas do `config.json`:
+  `usage_profile` (padrão "Tudo": instalações existentes não mudam nada) e
+  `usage_profiles` (só os personalizados). Teste: `testes/test_p4_perfis.py`.
+
 - **Abertura rápida com tela de abertura (P9).** O lançador
   `EEG_Data_Collector.py` deixou de recompilar o `ROA.py` inteiro a cada
   abertura (6,7 s medidos no Windows): compila uma vez para um `.pyc` em
@@ -35,7 +53,28 @@ Todas as mudanças notáveis deste projeto. Formato baseado em [Keep a Changelog
   `aplica_trad.py`), com `testes/test_vazamento_idioma.py` garantindo que toda
   chave de `tr()` existe nos 8 idiomas.
 
+### Corrigido
+- **Só os canais em uso (P1).** Com 8 canais de EMG o mapa "Atividade
+  muscular (canais × tempo)" listava CH1 a CH64, porque `_emg_update_advanced`
+  percorria `range(MAX_CHANNELS)` e os canais 9 a 64 também estão marcados
+  como EMG no config. Agora há um helper único (`canais_por_tipo` no módulo;
+  `_canais_em_uso`, `_tipo_do_canal`, `_canais_em_uso_tipo` e
+  `_refresh_listas_canais` na janela) usado em todos os pontos que montavam
+  listas por tipo: combos do canal EMG (MDF/MNF, APDF, espectrograma), combos
+  "Canal" do Atlas, ERP, slots do Layout Custom, linhas da tabela de
+  Calibração, legenda do envelope EMG, laços `_update_emg_view`,
+  `_emg_update_advanced`, `_emg_update_ergonomics`, `_emg_atlas_update_live` e
+  o diálogo de co-contração. As listas repopulam (preservando a seleção)
+  quando muda o número ou o tipo dos canais e ao aplicar a escolha da tela
+  inicial; o ERP segue os canais da gravação carregada. Teste:
+  `testes/test_p1_canais_em_uso.py` (5 exames × 8/16/32/64 canais × 2 níveis).
+
 ### Alterado
+- **`bleak` e `ob_core` fora do caminho crítico da abertura (P9).** O import
+  do `bleak` (Bluetooth) saiu do topo do arquivo (custava 0,3 a 1 s no
+  Windows) e passou a acontecer só ao procurar aparelhos; o diagnóstico da
+  ponte C++ `ob_core` roda 2 s depois de a janela aparecer, não antes da tela
+  inicial.
 - **Importações pesadas adiadas (P9).** `scipy.signal` e `scipy.fft` passam a
   ser importados na primeira vez que são usados (`_ModuloAdiado`), não na
   abertura: `import scipy.signal` sozinho custava 1,2 s (puxa scipy.stats,
