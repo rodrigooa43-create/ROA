@@ -493,6 +493,56 @@ class I18N:
 
     # Dicionários ENGLISH — chaves em pt-BR
     _en = {
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Drag to change the height · double-click: default size",
+        "Canais EMG — envelope e ativações": "EMG channels — envelope and activations",
+        "Expandir": "Expand",
+        "Expandir todos": "Expand all",
+        "Fechar painel (reabra pelo botão Painéis)": "Close panel (reopen from the Panels button)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Show, hide and arrange this tab's panels",
+        "Mover para baixo": "Move down",
+        "Mover para cima": "Move up",
+        "Opções do painel": "Panel options",
+        "Painéis": "Panels",
+        "Recolher": "Collapse",
+        "Recolher todos": "Collapse all",
+        "Restaurar o padrão": "Restore default",
+        "Tacograma e Poincaré": "Tachogram and Poincaré",
+        "Tamanho padrão": "Default size",
+        "Traçado ECG e detecção de picos R": "ECG trace and R-peak detection",
+        "Traçado H/V — piscadas e sacadas": "H/V traces — blinks and saccades",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "The figure SIMULATES the marked movement; it is not a video of the person.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "The figure SIMULATES the marked movement; it is not a video of the person. This is not a medical report or a diagnosis.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Open a muscle, heart or eye recording to see the Replay.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Places the task's movements on the timeline from the current instant, with the object held in the hand.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "A heart that beats at the recorded rhythm, with every beat on the strip.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "An articulated figure that redoes the marked movement, with the muscles lighting up as recorded.",
+        "Figura do movimento indisponível.": "Movement figure unavailable.",
+        "Gráfico indisponível.": "Chart unavailable.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "There are active muscles ({0}) in a segment marked as rest.",
+        "Inserir no cursor": "Insert at cursor",
+        "Inverter horizontal": "Flip horizontal",
+        "Inverter vertical": "Flip vertical",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "The Replay exists for muscle, heart and eye exams; this recording is of another kind.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "The drawn heart SIMULATES the recorded rhythm. This is not a medical report or a diagnosis.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Eyes that blink and look according to the recorded signals.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "The drawn eyes SIMULATE the recorded blinks and gaze. This is not a medical report or a diagnosis.",
+        "Remover este evento": "Remove this event",
+        "Replay do coração — {0}": "Heart replay — {0}",
+        "Replay do movimento — {0}": "Movement replay — {0}",
+        "Replay dos olhos — {0}": "Eye replay — {0}",
+        "Simulação": "Simulation",
+        "Tarefa pronta:": "Ready-made task:",
+        "Traçado do coração (ECG)": "Heart trace (ECG)",
+        "Traçado dos olhos (horizontal e vertical)": "Eye traces (horizontal and vertical)",
+        "Trocar a direção": "Change the direction",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "Use it if the eyes look to the opposite side of what the person did (swapped electrodes).",
+        "intensidade": "intensity",
+        "nenhum músculo acima de 2%": "no muscle above 2%",
+        "palma para baixo": "palm down",
+        "palma para cima": "palm up",
+        "▶ Replay": "▶ Replay",
         # ===== replay_p6p7 (1.10.0) =====
         "(corrigida à mão)": "(hand-corrected)",
         "(corrigido à mão)": "(hand-corrected)",
@@ -4426,6 +4476,56 @@ class I18N:
 
     # Dicionários ESPAÑOL — chaves em pt-BR
     _es = {
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Arrastre para cambiar la altura · doble clic: tamaño predeterminado",
+        "Canais EMG — envelope e ativações": "Canales EMG — envolvente y activaciones",
+        "Expandir": "Expandir",
+        "Expandir todos": "Expandir todos",
+        "Fechar painel (reabra pelo botão Painéis)": "Cerrar panel (vuelva a abrirlo con el botón Paneles)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Mostrar, ocultar y ordenar los paneles de esta pestaña",
+        "Mover para baixo": "Bajar",
+        "Mover para cima": "Subir",
+        "Opções do painel": "Opciones del panel",
+        "Painéis": "Paneles",
+        "Recolher": "Contraer",
+        "Recolher todos": "Contraer todos",
+        "Restaurar o padrão": "Restaurar el predeterminado",
+        "Tacograma e Poincaré": "Tacograma y Poincaré",
+        "Tamanho padrão": "Tamaño predeterminado",
+        "Traçado ECG e detecção de picos R": "Trazado ECG y detección de picos R",
+        "Traçado H/V — piscadas e sacadas": "Trazados H/V — parpadeos y sacadas",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "La figura SIMULA el movimiento marcado; no es el vídeo de la persona.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "La figura SIMULA el movimiento marcado; no es un vídeo de la persona. No es un informe médico ni un diagnóstico.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Abra una grabación de músculos, corazón u ojos para ver la Reproducción.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Coloca los movimientos de la tarea en la línea de tiempo a partir del instante actual, con el objeto sujeto en la mano.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "Un corazón que late al ritmo grabado, con todos los latidos en la franja.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "Una figura articulada que repite el movimiento marcado, con los músculos encendiéndose según la grabación.",
+        "Figura do movimento indisponível.": "Figura del movimiento no disponible.",
+        "Gráfico indisponível.": "Gráfico no disponible.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "Hay músculos activos ({0}) en un tramo marcado como reposo.",
+        "Inserir no cursor": "Insertar en el cursor",
+        "Inverter horizontal": "Invertir horizontal",
+        "Inverter vertical": "Invertir vertical",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "La Reproducción existe para exámenes de músculos, corazón y ojos; esta grabación es de otro tipo.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "El corazón dibujado SIMULA el ritmo grabado. No es un informe médico ni un diagnóstico.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Ojos que parpadean y miran según las señales grabadas.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "Los ojos dibujados SIMULAN los parpadeos y la mirada grabados. No es un informe médico ni un diagnóstico.",
+        "Remover este evento": "Quitar este evento",
+        "Replay do coração — {0}": "Reproducción del corazón — {0}",
+        "Replay do movimento — {0}": "Reproducción del movimiento — {0}",
+        "Replay dos olhos — {0}": "Reproducción de los ojos — {0}",
+        "Simulação": "Simulación",
+        "Tarefa pronta:": "Tarea predefinida:",
+        "Traçado do coração (ECG)": "Trazado del corazón (ECG)",
+        "Traçado dos olhos (horizontal e vertical)": "Trazados de los ojos (horizontal y vertical)",
+        "Trocar a direção": "Cambiar la dirección",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "Úselo si los ojos miran hacia el lado contrario de lo que hizo la persona (electrodos intercambiados).",
+        "intensidade": "intensidad",
+        "nenhum músculo acima de 2%": "ningún músculo por encima del 2%",
+        "palma para baixo": "palma hacia abajo",
+        "palma para cima": "palma hacia arriba",
+        "▶ Replay": "▶ Reproducción",
         # ===== replay_p6p7 (1.10.0) =====
         "(corrigida à mão)": "(corregido a mano)",
         "(corrigido à mão)": "(corregido a mano)",
@@ -8359,6 +8459,56 @@ class I18N:
 
     # Dicionários ITALIANO / FRANCÊS / CHINÊS — gerados na revisão ago/2026
     _it = {
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Trascina per cambiare l'altezza · doppio clic: dimensione predefinita",
+        "Canais EMG — envelope e ativações": "Canali EMG — inviluppo e attivazioni",
+        "Expandir": "Espandi",
+        "Expandir todos": "Espandi tutti",
+        "Fechar painel (reabra pelo botão Painéis)": "Chiudi pannello (riaprilo dal pulsante Pannelli)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Mostra, nascondi e sistema i pannelli di questa scheda",
+        "Mover para baixo": "Sposta in basso",
+        "Mover para cima": "Sposta in alto",
+        "Opções do painel": "Opzioni del pannello",
+        "Painéis": "Pannelli",
+        "Recolher": "Comprimi",
+        "Recolher todos": "Comprimi tutti",
+        "Restaurar o padrão": "Ripristina predefinito",
+        "Tacograma e Poincaré": "Tacogramma e Poincaré",
+        "Tamanho padrão": "Dimensione predefinita",
+        "Traçado ECG e detecção de picos R": "Tracciato ECG e rilevamento dei picchi R",
+        "Traçado H/V — piscadas e sacadas": "Tracciati H/V — ammiccamenti e saccadi",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "La figura SIMULA il movimento marcato; non è il video della persona.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "La figura SIMULA il movimento marcato; non è un video della persona. Non è un referto né una diagnosi.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Apri una registrazione di muscoli, cuore o occhi per vedere il Replay.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Inserisce i movimenti del compito nella linea del tempo a partire dall'istante attuale, con l'oggetto tenuto in mano.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "Un cuore che batte al ritmo registrato, con tutti i battiti sulla striscia.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "Una figura articolata che ripete il movimento marcato, con i muscoli che si accendono come registrato.",
+        "Figura do movimento indisponível.": "Figura del movimento non disponibile.",
+        "Gráfico indisponível.": "Grafico non disponibile.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "Ci sono muscoli attivi ({0}) in un tratto marcato come riposo.",
+        "Inserir no cursor": "Inserisci al cursore",
+        "Inverter horizontal": "Inverti orizzontale",
+        "Inverter vertical": "Inverti verticale",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "Il Replay esiste per gli esami di muscoli, cuore e occhi; questa registrazione è di un altro tipo.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "Il cuore disegnato SIMULA il ritmo registrato. Non è un referto né una diagnosi.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Occhi che sbattono le palpebre e guardano secondo i segnali registrati.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "Gli occhi disegnati SIMULANO gli ammiccamenti e lo sguardo registrati. Non è un referto né una diagnosi.",
+        "Remover este evento": "Rimuovi questo evento",
+        "Replay do coração — {0}": "Replay del cuore — {0}",
+        "Replay do movimento — {0}": "Replay del movimento — {0}",
+        "Replay dos olhos — {0}": "Replay degli occhi — {0}",
+        "Simulação": "Simulazione",
+        "Tarefa pronta:": "Compito predefinito:",
+        "Traçado do coração (ECG)": "Tracciato del cuore (ECG)",
+        "Traçado dos olhos (horizontal e vertical)": "Tracciati degli occhi (orizzontale e verticale)",
+        "Trocar a direção": "Cambia la direzione",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "Usalo se gli occhi guardano dal lato opposto a quello che la persona ha fatto (elettrodi scambiati).",
+        "intensidade": "intensità",
+        "nenhum músculo acima de 2%": "nessun muscolo sopra il 2%",
+        "palma para baixo": "palmo in giù",
+        "palma para cima": "palmo in su",
+        "▶ Replay": "▶ Replay",
         # ===== replay_p6p7 (1.10.0) =====
         "(corrigida à mão)": "(corretto a mano)",
         "(corrigido à mão)": "(corretto a mano)",
@@ -12252,6 +12402,56 @@ class I18N:
     }
 
     _fr = {
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Glisser pour changer la hauteur · double-clic : taille par défaut",
+        "Canais EMG — envelope e ativações": "Canaux EMG — enveloppe et activations",
+        "Expandir": "Déplier",
+        "Expandir todos": "Tout déplier",
+        "Fechar painel (reabra pelo botão Painéis)": "Fermer le panneau (rouvrir via le bouton Panneaux)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Afficher, masquer et ranger les panneaux de cet onglet",
+        "Mover para baixo": "Descendre",
+        "Mover para cima": "Monter",
+        "Opções do painel": "Options du panneau",
+        "Painéis": "Panneaux",
+        "Recolher": "Replier",
+        "Recolher todos": "Tout replier",
+        "Restaurar o padrão": "Rétablir la disposition par défaut",
+        "Tacograma e Poincaré": "Tachogramme et Poincaré",
+        "Tamanho padrão": "Taille par défaut",
+        "Traçado ECG e detecção de picos R": "Tracé ECG et détection des pics R",
+        "Traçado H/V — piscadas e sacadas": "Tracés H/V — clignements et saccades",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "La figure SIMULE le mouvement marqué ; ce n'est pas la vidéo de la personne.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "La figure SIMULE le mouvement marqué ; ce n'est pas une vidéo de la personne. Ce n'est ni un compte rendu médical ni un diagnostic.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Ouvrez un enregistrement de muscles, de cœur ou d'yeux pour voir le Replay.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Place les mouvements de la tâche sur la ligne de temps à partir de l'instant actuel, l'objet tenu dans la main.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "Un cœur qui bat au rythme enregistré, avec tous les battements sur la bande.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "Une figure articulée qui refait le mouvement marqué, les muscles s'allumant selon l'enregistrement.",
+        "Figura do movimento indisponível.": "Figure du mouvement indisponible.",
+        "Gráfico indisponível.": "Graphique indisponible.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "Des muscles sont actifs ({0}) dans un segment marqué comme repos.",
+        "Inserir no cursor": "Insérer au curseur",
+        "Inverter horizontal": "Inverser l'horizontal",
+        "Inverter vertical": "Inverser le vertical",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "Le Replay existe pour les examens des muscles, du cœur et des yeux ; cet enregistrement est d'un autre type.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "Le cœur dessiné SIMULE le rythme enregistré. Ce n'est ni un compte rendu médical ni un diagnostic.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Des yeux qui clignent et regardent selon les signaux enregistrés.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "Les yeux dessinés SIMULENT les clignements et le regard enregistrés. Ce n'est ni un compte rendu médical ni un diagnostic.",
+        "Remover este evento": "Supprimer cet événement",
+        "Replay do coração — {0}": "Replay du cœur — {0}",
+        "Replay do movimento — {0}": "Replay du mouvement — {0}",
+        "Replay dos olhos — {0}": "Replay des yeux — {0}",
+        "Simulação": "Simulation",
+        "Tarefa pronta:": "Tâche prête :",
+        "Traçado do coração (ECG)": "Tracé du cœur (ECG)",
+        "Traçado dos olhos (horizontal e vertical)": "Tracés des yeux (horizontal et vertical)",
+        "Trocar a direção": "Changer la direction",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "À utiliser si les yeux regardent du côté opposé à ce que la personne a fait (électrodes inversées).",
+        "intensidade": "intensité",
+        "nenhum músculo acima de 2%": "aucun muscle au-dessus de 2 %",
+        "palma para baixo": "paume vers le bas",
+        "palma para cima": "paume vers le haut",
+        "▶ Replay": "▶ Replay",
         # ===== replay_p6p7 (1.10.0) =====
         "(corrigida à mão)": "(corrigé à la main)",
         "(corrigido à mão)": "(corrigé à la main)",
@@ -16145,6 +16345,56 @@ class I18N:
     }
 
     _zh = {
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "拖动调整高度 · 双击：默认大小",
+        "Canais EMG — envelope e ativações": "EMG 通道 — 包络与激活",
+        "Expandir": "展开",
+        "Expandir todos": "全部展开",
+        "Fechar painel (reabra pelo botão Painéis)": "关闭面板（可通过“面板”按钮重新打开）",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "显示、隐藏和整理此标签页的面板",
+        "Mover para baixo": "下移",
+        "Mover para cima": "上移",
+        "Opções do painel": "面板选项",
+        "Painéis": "面板",
+        "Recolher": "折叠",
+        "Recolher todos": "全部折叠",
+        "Restaurar o padrão": "恢复默认",
+        "Tacograma e Poincaré": "心动周期图与庞加莱图",
+        "Tamanho padrão": "默认大小",
+        "Traçado ECG e detecção de picos R": "ECG 曲线与 R 波检测",
+        "Traçado H/V — piscadas e sacadas": "水平/垂直曲线 — 眨眼与扫视",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "该人像仅是对所标记动作的模拟，并非本人的视频。",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "该人像仅是对所标记动作的模拟，并非本人的视频。这不是诊断报告，也不是诊断。",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "请打开一条肌肉、心脏或眼睛的记录以查看回放。",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "从当前时刻起，把该任务的动作放到时间线上，物体握在手中。",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "按所记录的节律跳动的心脏，所有心跳都显示在条带上。",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "按所标记动作活动的关节人像，肌肉按记录依次点亮。",
+        "Figura do movimento indisponível.": "动作人像不可用。",
+        "Gráfico indisponível.": "图表不可用。",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "在标记为休息的片段中有活动的肌肉（{0}）。",
+        "Inserir no cursor": "在光标处插入",
+        "Inverter horizontal": "水平反转",
+        "Inverter vertical": "垂直反转",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "回放仅适用于肌肉、心脏和眼睛检查；这条记录属于其他类型。",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "所绘的心脏仅是对所记录节律的模拟。这不是诊断报告，也不是诊断。",
+        "Olhos que piscam e olham conforme os sinais gravados.": "按所记录的信号眨眼并转动目光的眼睛。",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "所绘的眼睛仅是对所记录的眨眼和目光的模拟。这不是诊断报告，也不是诊断。",
+        "Remover este evento": "删除此事件",
+        "Replay do coração — {0}": "心脏回放 — {0}",
+        "Replay do movimento — {0}": "动作回放 — {0}",
+        "Replay dos olhos — {0}": "眼睛回放 — {0}",
+        "Simulação": "模拟",
+        "Tarefa pronta:": "预设任务：",
+        "Traçado do coração (ECG)": "心脏曲线（ECG）",
+        "Traçado dos olhos (horizontal e vertical)": "眼睛曲线（水平与垂直）",
+        "Trocar a direção": "更改方向",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "如果眼睛看向与本人实际相反的一侧（电极接反），请使用此项。",
+        "intensidade": "强度",
+        "nenhum músculo acima de 2%": "没有肌肉超过 2%",
+        "palma para baixo": "掌心向下",
+        "palma para cima": "掌心向上",
+        "▶ Replay": "▶ 回放",
         # ===== replay_p6p7 (1.10.0) =====
         "(corrigida à mão)": "（手动修正）",
         "(corrigido à mão)": "（手动修正）",
@@ -20040,6 +20290,56 @@ class I18N:
 
     # Dicionários DEUTSCH — chaves em pt-BR
     _de = {
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Ziehen ändert die Höhe · Doppelklick: Standardgröße",
+        "Canais EMG — envelope e ativações": "EMG-Kanäle — Hüllkurve und Aktivierungen",
+        "Expandir": "Ausklappen",
+        "Expandir todos": "Alle ausklappen",
+        "Fechar painel (reabra pelo botão Painéis)": "Bereich schließen (über die Schaltfläche Bereiche wieder öffnen)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Bereiche dieses Reiters anzeigen, ausblenden und anordnen",
+        "Mover para baixo": "Nach unten",
+        "Mover para cima": "Nach oben",
+        "Opções do painel": "Bereichsoptionen",
+        "Painéis": "Bereiche",
+        "Recolher": "Einklappen",
+        "Recolher todos": "Alle einklappen",
+        "Restaurar o padrão": "Standard wiederherstellen",
+        "Tacograma e Poincaré": "Tachogramm und Poincaré",
+        "Tamanho padrão": "Standardgröße",
+        "Traçado ECG e detecção de picos R": "EKG-Kurve und R-Zacken-Erkennung",
+        "Traçado H/V — piscadas e sacadas": "H/V-Kurven — Lidschläge und Sakkaden",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "Die Figur SIMULIERT die markierte Bewegung; sie ist kein Video der Person.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "Die Figur SIMULIERT die markierte Bewegung; sie ist kein Video der Person. Dies ist weder ein Befund noch eine Diagnose.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Öffnen Sie eine Aufnahme von Muskeln, Herz oder Augen, um das Replay zu sehen.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Setzt die Bewegungen der Aufgabe ab dem aktuellen Zeitpunkt auf die Zeitleiste, mit dem Gegenstand in der Hand.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "Ein Herz, das im aufgezeichneten Rhythmus schlägt, mit allen Schlägen auf dem Streifen.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "Eine Gliederfigur, die die markierte Bewegung nachmacht; die Muskeln leuchten wie aufgezeichnet auf.",
+        "Figura do movimento indisponível.": "Bewegungsfigur nicht verfügbar.",
+        "Gráfico indisponível.": "Diagramm nicht verfügbar.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "In einem als Ruhe markierten Abschnitt sind Muskeln aktiv ({0}).",
+        "Inserir no cursor": "Am Cursor einfügen",
+        "Inverter horizontal": "Horizontal spiegeln",
+        "Inverter vertical": "Vertikal spiegeln",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "Das Replay gibt es für Muskel-, Herz- und Augenuntersuchungen; diese Aufnahme ist von anderer Art.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "Das gezeichnete Herz SIMULIERT den aufgezeichneten Rhythmus. Dies ist weder ein Befund noch eine Diagnose.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Augen, die gemäß den aufgezeichneten Signalen blinzeln und blicken.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "Die gezeichneten Augen SIMULIEREN die aufgezeichneten Lidschläge und den Blick. Dies ist weder ein Befund noch eine Diagnose.",
+        "Remover este evento": "Dieses Ereignis entfernen",
+        "Replay do coração — {0}": "Herz-Replay — {0}",
+        "Replay do movimento — {0}": "Bewegungs-Replay — {0}",
+        "Replay dos olhos — {0}": "Augen-Replay — {0}",
+        "Simulação": "Simulation",
+        "Tarefa pronta:": "Vorgefertigte Aufgabe:",
+        "Traçado do coração (ECG)": "Herzkurve (EKG)",
+        "Traçado dos olhos (horizontal e vertical)": "Augenkurven (horizontal und vertikal)",
+        "Trocar a direção": "Richtung ändern",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "Verwenden, wenn die Augen zur entgegengesetzten Seite blicken als die Person es tat (vertauschte Elektroden).",
+        "intensidade": "Intensität",
+        "nenhum músculo acima de 2%": "kein Muskel über 2 %",
+        "palma para baixo": "Handfläche nach unten",
+        "palma para cima": "Handfläche nach oben",
+        "▶ Replay": "▶ Replay",
         # ===== replay_p6p7 (1.10.0) =====
         "(corrigida à mão)": "(von Hand korrigiert)",
         "(corrigido à mão)": "(von Hand korrigiert)",
@@ -23933,6 +24233,56 @@ class I18N:
 
     # Dicionários JAPANESE — chaves em pt-BR
     _ja = {
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "ドラッグで高さを変更 · ダブルクリック：既定サイズ",
+        "Canais EMG — envelope e ativações": "EMG チャネル — 包絡線と活動",
+        "Expandir": "展開",
+        "Expandir todos": "すべて展開",
+        "Fechar painel (reabra pelo botão Painéis)": "パネルを閉じる（「パネル」ボタンで再表示）",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "このタブのパネルを表示・非表示・整理",
+        "Mover para baixo": "下へ移動",
+        "Mover para cima": "上へ移動",
+        "Opções do painel": "パネルのオプション",
+        "Painéis": "パネル",
+        "Recolher": "折りたたむ",
+        "Recolher todos": "すべて折りたたむ",
+        "Restaurar o padrão": "既定に戻す",
+        "Tacograma e Poincaré": "タコグラムとポアンカレ",
+        "Tamanho padrão": "既定サイズ",
+        "Traçado ECG e detecção de picos R": "ECG 波形と R 波検出",
+        "Traçado H/V — piscadas e sacadas": "水平/垂直波形 — まばたきとサッカード",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "この人物像は、マークした動きをシミュレーションしたものです。本人の映像ではありません。",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "この人物像は、マークした動きをシミュレーションしたものです。本人の映像ではなく、診断書でも診断でもありません。",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "リプレイを見るには、筋肉・心臓・目の記録を開いてください。",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "現在の時刻から、タスクの動きを物を手に持った状態でタイムラインに配置します。",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "記録されたリズムで拍動する心臓。すべての拍がバンドに表示されます。",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "マークした動きを再現する関節付きの人物像。筋肉は記録どおりに光ります。",
+        "Figura do movimento indisponível.": "動きの人物像は利用できません。",
+        "Gráfico indisponível.": "グラフは利用できません。",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "休息としてマークした区間に活動中の筋肉（{0}）があります。",
+        "Inserir no cursor": "カーソル位置に挿入",
+        "Inverter horizontal": "水平反転",
+        "Inverter vertical": "垂直反転",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "リプレイは筋肉・心臓・目の検査用です。この記録は別の種類です。",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "描かれた心臓は、記録されたリズムをシミュレーションしたものです。診断書でも診断でもありません。",
+        "Olhos que piscam e olham conforme os sinais gravados.": "記録された信号に合わせてまばたきし、視線を動かす目。",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "描かれた目は、記録されたまばたきと視線をシミュレーションしたものです。診断書でも診断でもありません。",
+        "Remover este evento": "このイベントを削除",
+        "Replay do coração — {0}": "心臓のリプレイ — {0}",
+        "Replay do movimento — {0}": "動きのリプレイ — {0}",
+        "Replay dos olhos — {0}": "目のリプレイ — {0}",
+        "Simulação": "シミュレーション",
+        "Tarefa pronta:": "既定のタスク：",
+        "Traçado do coração (ECG)": "心臓の波形（ECG）",
+        "Traçado dos olhos (horizontal e vertical)": "目の波形（水平・垂直）",
+        "Trocar a direção": "方向を変更",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "本人の動きと反対側を見ている場合（電極の入れ替わり）に使います。",
+        "intensidade": "強さ",
+        "nenhum músculo acima de 2%": "2% を超える筋肉はありません",
+        "palma para baixo": "手のひらを下に",
+        "palma para cima": "手のひらを上に",
+        "▶ Replay": "▶ リプレイ",
         # ===== replay_p6p7 (1.10.0) =====
         "(corrigida à mão)": "（手動で修正）",
         "(corrigido à mão)": "（手動で修正）",
@@ -27826,6 +28176,56 @@ class I18N:
 
     # Dicionários RUSSIAN — chaves em pt-BR
     _ru = {
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Перетащите, чтобы изменить высоту · двойной щелчок: размер по умолчанию",
+        "Canais EMG — envelope e ativações": "Каналы ЭМГ — огибающая и активации",
+        "Expandir": "Развернуть",
+        "Expandir todos": "Развернуть все",
+        "Fechar painel (reabra pelo botão Painéis)": "Закрыть панель (открыть снова кнопкой «Панели»)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Показать, скрыть и упорядочить панели этой вкладки",
+        "Mover para baixo": "Переместить вниз",
+        "Mover para cima": "Переместить вверх",
+        "Opções do painel": "Параметры панели",
+        "Painéis": "Панели",
+        "Recolher": "Свернуть",
+        "Recolher todos": "Свернуть все",
+        "Restaurar o padrão": "Восстановить по умолчанию",
+        "Tacograma e Poincaré": "Тахограмма и Пуанкаре",
+        "Tamanho padrão": "Размер по умолчанию",
+        "Traçado ECG e detecção de picos R": "Кривая ЭКГ и обнаружение R-зубцов",
+        "Traçado H/V — piscadas e sacadas": "Кривые Г/В — моргания и саккады",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "Фигура ИМИТИРУЕТ отмеченное движение; это не видео человека.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "Фигура ИМИТИРУЕТ отмеченное движение; это не видео человека. Это не заключение и не диагноз.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Откройте запись мышц, сердца или глаз, чтобы увидеть воспроизведение.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Размещает движения задания на шкале времени начиная с текущего момента, с предметом в руке.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "Сердце, бьющееся в записанном ритме; все удары показаны на полосе.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "Шарнирная фигура, повторяющая отмеченное движение; мышцы подсвечиваются, как записано.",
+        "Figura do movimento indisponível.": "Фигура движения недоступна.",
+        "Gráfico indisponível.": "График недоступен.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "В участке, отмеченном как покой, есть активные мышцы ({0}).",
+        "Inserir no cursor": "Вставить у курсора",
+        "Inverter horizontal": "Отразить по горизонтали",
+        "Inverter vertical": "Отразить по вертикали",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "Воспроизведение есть для обследований мышц, сердца и глаз; эта запись другого типа.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "Нарисованное сердце ИМИТИРУЕТ записанный ритм. Это не заключение и не диагноз.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Глаза, которые моргают и смотрят в соответствии с записанными сигналами.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "Нарисованные глаза ИМИТИРУЮТ записанные моргания и взгляд. Это не заключение и не диагноз.",
+        "Remover este evento": "Удалить это событие",
+        "Replay do coração — {0}": "Воспроизведение сердца — {0}",
+        "Replay do movimento — {0}": "Воспроизведение движения — {0}",
+        "Replay dos olhos — {0}": "Воспроизведение глаз — {0}",
+        "Simulação": "Имитация",
+        "Tarefa pronta:": "Готовое задание:",
+        "Traçado do coração (ECG)": "Кривая сердца (ЭКГ)",
+        "Traçado dos olhos (horizontal e vertical)": "Кривые глаз (горизонталь и вертикаль)",
+        "Trocar a direção": "Изменить направление",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "Используйте, если глаза смотрят в противоположную сторону от того, что делал человек (электроды перепутаны).",
+        "intensidade": "интенсивность",
+        "nenhum músculo acima de 2%": "нет мышц выше 2%",
+        "palma para baixo": "ладонь вниз",
+        "palma para cima": "ладонь вверх",
+        "▶ Replay": "▶ Воспроизведение",
         # ===== replay_p6p7 (1.10.0) =====
         "(corrigida à mão)": "(исправлено вручную)",
         "(corrigido à mão)": "(исправлено вручную)",
@@ -32533,6 +32933,8 @@ class AppConfig:
         # usage_profiles guarda só os personalizados ({nome: {"exames", "paineis"}})
         self.usage_profile = PERFIL_TUDO
         self.usage_profiles = {}
+        # Arranjo dos painéis em gavetas (P2): {aba: {"ordem", "paineis", "splits"}}
+        self.paineis = {}
         self.load()
         # Registra temas customizados em THEMES
         for name, palette in self.custom_themes.items():
@@ -32700,6 +33102,11 @@ class AppConfig:
             up = d.get("usage_profile")
             if isinstance(up, str) and up:
                 self.usage_profile = up
+            # --- painéis em gavetas (P2): só o dict; ids e tipos são
+            # validados pelo CatalogoPaineis ao aplicar ---
+            pa = d.get("paineis")
+            if isinstance(pa, dict):
+                self.paineis = pa
             # --- cores das bandas ---
             bc = d.get("band_colors")
             if isinstance(bc, dict):
@@ -32820,6 +33227,7 @@ class AppConfig:
                     "last_volunteer_dir":   self.last_volunteer_dir,
                     "usage_profile":        self.usage_profile,
                     "usage_profiles":       self.usage_profiles,
+                    "paineis":              self.paineis,
                 }, ensure_ascii=False, indent=2)
         except Exception as exc:
             print(f"[AppConfig] falha serializando config: {exc}")
@@ -34074,7 +34482,11 @@ QToolTip {{ background-color: {c['surface_alt']}; color: {c['text']};
     # O bloco do Simples entra sempre que a densidade já foi decidida: as
     # regras dele só valem sob a janela com nivelUi="simples", então trocar de
     # nível não refaz a folha do app (repolir os ~14 mil widgets leva ~10 s).
-    return _escala_fontes_qss(qss + _qss_simples(c)) + _qss_barra_escala()
+    # As gavetas (P2) entram antes da escala: a folha delas tem font-size em pt.
+    # A folha das gavetas (P2) é definida mais abaixo no arquivo; build_stylesheet
+    # também roda na importação (STYLESHEET), por isso a busca é tardia.
+    _qg = globals().get("qss_gavetas")
+    return _escala_fontes_qss(qss + _qss_simples(c) + (_qg(c) if callable(_qg) else "")) + _qss_barra_escala()
 
 
 # ============================================================
@@ -45268,6 +45680,1692 @@ class LinhaDoTempoOlhosWidget(QtWidgets.QListWidget):
             self.setCurrentRow(i)
 
 
+# ============================================================
+# REPLAY DO MOVIMENTO (P6) — figura articulada de perfil, poses, tarefas prontas
+# ------------------------------------------------------------
+# A figura SIMULA o movimento marcado na linha do tempo (não é vídeo da
+# pessoa) e acende cada músculo com a intensidade medida no instante.
+# ============================================================
+# ------------------------------------------------------------------
+# P6 — Replay do movimento (EMG): tabelas de movimentos e músculos
+# ------------------------------------------------------------------
+# Chaves canônicas, compartilhadas com a linha do tempo da gravação. Os títulos
+# são chaves de tr() em português: traduzir só na hora de exibir.
+MOVIMENTOS_INFO = {
+    "repouso":           {"titulo": "Repouso",                      "musculos": []},
+    "flexao_cotovelo":   {"titulo": "Flexão do cotovelo",           "musculos": ["Bíceps Braquial"]},
+    "extensao_cotovelo": {"titulo": "Extensão do cotovelo",         "musculos": ["Tríceps Braquial"]},
+    "supinacao":         {"titulo": "Supinação (palma para cima)",  "musculos": ["Bíceps Braquial"]},
+    "pronacao":          {"titulo": "Pronação (palma para baixo)",  "musculos": ["Flexor Carpi Radialis"]},
+    "flexao_punho":      {"titulo": "Flexão do punho",              "musculos": ["Flexor Carpi Radialis"]},
+    "extensao_punho":    {"titulo": "Extensão do punho",            "musculos": ["Extensor Carpi Radialis"]},
+    "abrir_mao":         {"titulo": "Abrir a mão",                  "musculos": ["Extensor Carpi Radialis"]},
+    "fechar_mao":        {"titulo": "Fechar a mão",                 "musculos": ["Flexor Carpi Radialis"]},
+    "pinca":             {"titulo": "Pinça",                        "musculos": ["Flexor Carpi Radialis"]},
+    "flexao_ombro":      {"titulo": "Flexão do ombro",              "musculos": ["Deltoide Anterior", "Peitoral Maior"]},
+    "extensao_ombro":    {"titulo": "Extensão do ombro",            "musculos": ["Deltoide Posterior", "Latíssimo do Dorso"]},
+    "a_definir":         {"titulo": "A definir",                    "musculos": []},
+}
+MOVIMENTOS = list(MOVIMENTOS_INFO.keys())
+
+# Músculos esperados por movimento (figura e aviso de incompatibilidade).
+# MUSCULOS_ESPERADOS: definido no bloco da linha do tempo (P6), mesmo mapeamento.
+
+# Os dez músculos de braço/tronco que a figura sabe acender (chaves de
+# COMMON_MUSCLES). Os demais (perna, quadril) são ignorados sem erro.
+MUSCULOS_FIGURA = (
+    "Bíceps Braquial", "Tríceps Braquial",
+    "Deltoide Anterior", "Deltoide Medio", "Deltoide Posterior",
+    "Trapézio", "Latíssimo do Dorso", "Peitoral Maior",
+    "Flexor Carpi Radialis", "Extensor Carpi Radialis",
+)
+
+# Limites articulares da figura: a soma de faixas simultâneas é recortada aqui.
+LIMITES_POSE = {
+    "ombro":    (-50.0, 170.0),
+    "cotovelo": (0.0, 145.0),
+    "pronacao": (-1.0, 1.0),
+    "punho":    (-70.0, 70.0),
+    "mao":      (0.0, 1.0),
+    "pinca":    (0.0, 1.0),
+    "tronco":   (-20.0, 20.0),
+}
+
+# Repouso: braço solto ao lado do corpo, cotovelo quase esticado, dedos em
+# leve flexão natural (uma mão "aberta" de verdade não fica rígida).
+POSE_REPOUSO = {
+    "ombro": 5.0, "cotovelo": 12.0, "pronacao": 0.0, "punho": 0.0,
+    "mao": 0.15, "pinca": 0.0, "tronco": 0.0,
+}
+
+# Deltas no PICO de cada movimento (fase 0,5). "primario" é o gesto em si e se
+# SOMA com as outras faixas; "postura" é a posição de teste (antebraço na
+# horizontal para girar, fletir o punho ou fechar a mão) e NÃO se soma: entre
+# faixas simultâneas vale a maior, senão duas faixas de mão levariam o
+# cotovelo ao limite.
+_POSTURA_ANTEBRACO = {"ombro": 20.0, "cotovelo": 76.0}
+_DELTAS_MOVIMENTO = {
+    "repouso":           ({}, {}),
+    "a_definir":         ({}, {}),
+    "flexao_cotovelo":   ({"cotovelo": 120.0, "ombro": 8.0}, {}),
+    # Extensão parte de um cotovelo fletido à frente e termina esticado.
+    "extensao_cotovelo": ({"cotovelo": -110.0}, {"ombro": 40.0, "cotovelo": 110.0}),
+    "supinacao":         ({"pronacao": -1.0}, _POSTURA_ANTEBRACO),
+    "pronacao":          ({"pronacao": 1.0}, _POSTURA_ANTEBRACO),
+    "flexao_punho":      ({"punho": -60.0}, _POSTURA_ANTEBRACO),
+    "extensao_punho":    ({"punho": 55.0}, _POSTURA_ANTEBRACO),
+    "abrir_mao":         ({"mao": -0.4, "punho": 8.0}, _POSTURA_ANTEBRACO),
+    "fechar_mao":        ({"mao": 0.85}, _POSTURA_ANTEBRACO),
+    "pinca":             ({"pinca": 1.0, "mao": 0.25}, _POSTURA_ANTEBRACO),
+    "flexao_ombro":      ({"ombro": 95.0, "cotovelo": 10.0, "tronco": -3.0}, {}),
+    "extensao_ombro":    ({"ombro": -48.0, "cotovelo": 10.0, "tronco": 4.0}, {}),
+}
+
+
+def _suave(a, b, x):
+    """Rampa suave (smoothstep) de 0 em x<=a até 1 em x>=b."""
+    if b <= a:
+        return 1.0 if x >= b else 0.0
+    t = max(0.0, min(1.0, (x - a) / (b - a)))
+    return t * t * (3.0 - 2.0 * t)
+
+
+def perfil_movimento(fase, duracao_s=None):
+    """Intensidade 0..1 do gesto ao longo da fase 0..1 (0 e 1 = repouso).
+
+    Faixa curta (uma repetição): meio seno, pico em 0,5. Faixa longa (mais de
+    2,5 s): sobe em ~0,6 s, SUSTENTA e volta em ~0,6 s, porque ninguém
+    repete um movimento em câmera lenta durante 8 s; segura a posição.
+    """
+    fase = max(0.0, min(1.0, float(fase)))
+    if duracao_s and duracao_s > 2.5:
+        rampa = max(0.08, min(0.5, 0.6 / float(duracao_s)))
+        return _suave(0.0, rampa, fase) * (1.0 - _suave(1.0 - rampa, 1.0, fase))
+    return math.sin(math.pi * fase)
+
+
+def _perfil_postura(fase):
+    """A posição de teste entra rápido (20% da fase), fica e sai rápido."""
+    fase = max(0.0, min(1.0, float(fase)))
+    return _suave(0.0, 0.2, fase) * (1.0 - _suave(0.8, 1.0, fase))
+
+
+def _componentes(chave, fase, duracao_s=None):
+    """Devolve (deltas do gesto, deltas de postura) já escalados pela fase."""
+    prim, post = _DELTAS_MOVIMENTO.get(chave, ({}, {}))
+    p = perfil_movimento(fase, duracao_s)
+    q = _perfil_postura(fase)
+    return ({k: v * p for k, v in prim.items()},
+            {k: v * q for k, v in post.items()})
+
+
+def pose_do_movimento(chave, fase, duracao_s=None):
+    """Deltas de pose de UM movimento na fase 0..1 (0 início, 0,5 pico, 1 volta).
+
+    Devolve todas as chaves de POSE_REPOUSO (zero quando não mudam); some em
+    POSE_REPOUSO com aplicar_deltas(). Chave desconhecida -> deltas zero.
+    """
+    prim, post = _componentes(chave, fase, duracao_s)
+    d = {k: 0.0 for k in POSE_REPOUSO}
+    for k, v in prim.items():
+        d[k] += v
+    for k, v in post.items():
+        d[k] += v
+    return d
+
+
+def aplicar_deltas(deltas, base=None):
+    """Soma deltas à pose base (POSE_REPOUSO) e recorta nos limites articulares."""
+    pose = dict(base or POSE_REPOUSO)
+    for k, v in (deltas or {}).items():
+        if k in pose:
+            pose[k] = pose[k] + float(v)
+    for k, (lo, hi) in LIMITES_POSE.items():
+        if k in pose:
+            pose[k] = max(lo, min(hi, pose[k]))
+    return pose
+
+
+def pose_mesclada(lista):
+    """Pose das faixas ativas no mesmo instante: os gestos se SOMAM.
+
+    lista: [(chave, fase), (chave, fase, peso) ou (chave, fase, peso, duracao_s)].
+    Gestos de faixas simultâneas se somam (peso escala cada um); a postura de
+    teste não se soma (vale a maior); tudo recortado em LIMITES_POSE.
+    """
+    soma = {k: 0.0 for k in POSE_REPOUSO}
+    postura = {k: 0.0 for k in POSE_REPOUSO}
+    lista = list(lista or ())
+    # Quem move ombro/cotovelo de verdade (gesto de braço) manda na posição do
+    # braço: a postura de teste das faixas de mão só entra quando nenhuma
+    # OUTRA faixa simultânea é gesto de braço (senão o copo subiria da mesa).
+    de_braco = [any(k in _DELTAS_MOVIMENTO.get(it[0], ({}, {}))[0] for k in ("ombro", "cotovelo"))
+                for it in lista]
+    for i, item in enumerate(lista):
+        chave, fase = item[0], item[1]
+        peso = float(item[2]) if len(item) > 2 and item[2] is not None else 1.0
+        dur = item[3] if len(item) > 3 else None
+        prim, post = _componentes(chave, fase, dur)
+        for k, v in prim.items():
+            soma[k] += v * peso
+        if any(de_braco[j] for j in range(len(lista)) if j != i):
+            continue
+        for k, v in post.items():
+            postura[k] = max(postura[k], v * peso)
+    for k in soma:
+        soma[k] += postura[k]
+    return aplicar_deltas(soma)
+
+
+# Tarefas prontas: sequências plausíveis de faixas. Cada trecho é
+# (movimento, t0_frac, t1_frac) ou (movimento, t0_frac, t1_frac, peso).
+TAREFAS = {
+    "levantar_halter": {
+        "titulo": "Levantar o halter", "objeto": "halter", "duracao_s": 9.0,
+        "trechos": [
+            ("fechar_mao", 0.0, 1.0),
+            ("flexao_cotovelo", 0.0, 0.33), ("supinacao", 0.0, 0.33, 0.35),
+            ("flexao_cotovelo", 0.33, 0.66), ("supinacao", 0.33, 0.66, 0.35),
+            ("flexao_cotovelo", 0.66, 1.0), ("supinacao", 0.66, 1.0, 0.35),
+        ],
+    },
+    "chave_na_porta": {
+        "titulo": "Abrir a porta com a chave", "objeto": "chave", "duracao_s": 8.0,
+        "trechos": [
+            ("pinca", 0.0, 1.0),
+            ("pronacao", 0.14, 0.40), ("supinacao", 0.40, 0.66), ("pronacao", 0.66, 0.92),
+        ],
+    },
+    "copo_a_boca": {
+        "titulo": "Pegar o copo e levar à boca", "objeto": "copo", "duracao_s": 10.0,
+        "trechos": [
+            ("flexao_ombro", 0.0, 1.0, 0.36), ("fechar_mao", 0.04, 0.96),
+            ("flexao_cotovelo", 0.28, 0.82), ("supinacao", 0.34, 0.76, 0.3),
+        ],
+    },
+}
+
+
+def pose_da_tarefa(chave, t_frac):
+    """Pose da tarefa pronta no instante t_frac (0..1), mesclando os trechos ativos."""
+    tarefa = TAREFAS.get(chave)
+    if not tarefa:
+        return dict(POSE_REPOUSO)
+    t = max(0.0, min(1.0, float(t_frac)))
+    dur = float(tarefa.get("duracao_s", 1.0))
+    ativos = []
+    for trecho in tarefa["trechos"]:
+        mov, t0, t1 = trecho[0], trecho[1], trecho[2]
+        peso = trecho[3] if len(trecho) > 3 else 1.0
+        if t0 <= t <= t1 and t1 > t0:
+            ativos.append((mov, (t - t0) / (t1 - t0), peso, (t1 - t0) * dur))
+    return pose_mesclada(ativos)
+
+
+def movimentos_da_tarefa(chave, t_frac):
+    """Chaves dos movimentos ativos na tarefa em t_frac (para o rótulo da figura)."""
+    tarefa = TAREFAS.get(chave)
+    if not tarefa:
+        return []
+    t = max(0.0, min(1.0, float(t_frac)))
+    return [tr_[0] for tr_ in tarefa["trechos"] if tr_[1] <= t <= tr_[2]]
+
+
+def cor_intensidade(v):
+    """Cor da intensidade 0..1: azul frio -> amarelo -> vermelho (alfa cresce junto)."""
+    v = max(0.0, min(1.0, float(v)))
+    frio, meio, quente = (70, 130, 225), (248, 196, 40), (222, 44, 44)
+    if v < 0.5:
+        a, b, t = frio, meio, v / 0.5
+    else:
+        a, b, t = meio, quente, (v - 0.5) / 0.5
+    return QtGui.QColor(int(a[0] + (b[0] - a[0]) * t), int(a[1] + (b[1] - a[1]) * t),
+                        int(a[2] + (b[2] - a[2]) * t))
+
+
+# ------------------------------------------------------------------
+# Geometria e cores de apoio da figura
+# ------------------------------------------------------------------
+def _misturar(c1, c2, t):
+    """Cor entre c1 (t=0) e c2 (t=1); aceita QColor ou "#rrggbb"."""
+    a, b = QtGui.QColor(c1), QtGui.QColor(c2)
+    t = max(0.0, min(1.0, t))
+    return QtGui.QColor(int(a.red() + (b.red() - a.red()) * t),
+                        int(a.green() + (b.green() - a.green()) * t),
+                        int(a.blue() + (b.blue() - a.blue()) * t))
+
+
+def _com_alfa(c, alfa):
+    """Cópia da cor com alfa 0..1."""
+    q = QtGui.QColor(c)
+    q.setAlphaF(max(0.0, min(1.0, alfa)))
+    return q
+
+
+def _capsula(p0, r0, p1, r1):
+    """Caminho fechado que envolve dois círculos (segmento afilado de membro).
+
+    É a forma de braço, antebraço, pescoço e perna: rolicha nas pontas e
+    afunilando, em vez de um palito.
+    """
+    x0, y0 = p0
+    x1, y1 = p1
+    dx, dy = x1 - x0, y1 - y0
+    d = math.hypot(dx, dy)
+    path = QtGui.QPainterPath()
+    if d < 1e-6:
+        path.addEllipse(QtCore.QPointF(x0, y0), max(r0, r1), max(r0, r1))
+        return path
+    ang = math.atan2(dy, dx)
+    g = math.acos(max(-1.0, min(1.0, (r0 - r1) / d)))  # normal da tangente externa
+    pts = []
+    n = 10
+    for i in range(n + 1):           # arco do círculo 1 (ponta distal)
+        a = ang + g - (2.0 * g) * i / n
+        pts.append(QtCore.QPointF(x1 + r1 * math.cos(a), y1 + r1 * math.sin(a)))
+    for i in range(n + 1):           # arco do círculo 0 (ponta proximal)
+        a = ang - g - (2.0 * math.pi - 2.0 * g) * i / n
+        pts.append(QtCore.QPointF(x0 + r0 * math.cos(a), y0 + r0 * math.sin(a)))
+    path.addPolygon(QtGui.QPolygonF(pts))
+    path.closeSubpath()
+    return path
+
+
+def _caminho_suave(pontos, fechado=True):
+    """Curva fechada suave (Catmull-Rom -> Bézier) pelos pontos (x, y)."""
+    n = len(pontos)
+    path = QtGui.QPainterPath()
+    if n < 3:
+        return path
+    path.moveTo(QtCore.QPointF(*pontos[0]))
+    rng = range(n) if fechado else range(n - 1)
+    for i in rng:
+        p0 = pontos[(i - 1) % n]
+        p1 = pontos[i]
+        p2 = pontos[(i + 1) % n]
+        p3 = pontos[(i + 2) % n]
+        c1 = (p1[0] + (p2[0] - p0[0]) / 6.0, p1[1] + (p2[1] - p0[1]) / 6.0)
+        c2 = (p2[0] - (p3[0] - p1[0]) / 6.0, p2[1] - (p3[1] - p1[1]) / 6.0)
+        path.cubicTo(QtCore.QPointF(*c1), QtCore.QPointF(*c2), QtCore.QPointF(*p2))
+    if fechado:
+        path.closeSubpath()
+    return path
+
+
+def _envoltoria(pontos):
+    """Envoltória convexa (cadeia monótona) de poucos pontos (x, y)."""
+    pts = sorted(set((round(x, 4), round(y, 4)) for x, y in pontos))
+    if len(pts) <= 2:
+        return pts
+
+    def cruz(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    baixo, cima = [], []
+    for p in pts:
+        while len(baixo) >= 2 and cruz(baixo[-2], baixo[-1], p) <= 0:
+            baixo.pop()
+        baixo.append(p)
+    for p in reversed(pts):
+        while len(cima) >= 2 and cruz(cima[-2], cima[-1], p) <= 0:
+            cima.pop()
+        cima.append(p)
+    return baixo[:-1] + cima[:-1]
+
+
+def _girar(p, centro, graus):
+    """Gira o ponto p em torno de centro (coordenadas de tela, y para baixo)."""
+    a = math.radians(graus)
+    dx, dy = p[0] - centro[0], p[1] - centro[1]
+    return (centro[0] + dx * math.cos(a) - dy * math.sin(a),
+            centro[1] + dx * math.sin(a) + dy * math.cos(a))
+
+
+# Medidas da figura em "unidades" (comprimento do braço = 1). Perfil, de frente
+# para a direita, ombro na origem, y cresce para baixo.
+_L_BRACO, _L_ANTEBRACO = 1.0, 0.92
+_PALMA_COMPR, _PALMA_LARG, _PALMA_ESP = 0.30, 0.30, 0.10
+_DEDOS = (  # (posição lateral -1..1 na palma, comprimentos das 3 falanges)
+    (0.75, (0.150, 0.095, 0.075)),    # indicador
+    (0.25, (0.165, 0.105, 0.080)),    # médio
+    (-0.25, (0.150, 0.095, 0.075)),   # anular
+    (-0.75, (0.115, 0.075, 0.065)),   # mínimo
+)
+_QUADRIL = (-0.05, 1.55)
+_BOCA = (0.47, -0.80)
+_PORTA_X, _FECHADURA_Y = 1.76, 0.50   # porta/fechadura fixas (tarefa da chave)
+_MESA_Y, _MESA_X0, _MESA_X1 = 1.68, 1.15, 2.50
+_CENA = (-1.30, -1.56, 2.45, 2.55)     # x0, y0, x1, y1 da cena em unidades (mão solta cabe)
+_CENA_X1_OBJETO = {"chave": 2.55, "copo": 2.65}   # a cena alarga para caber porta/mesa
+
+
+class FiguraMovimentoWidget(QtWidgets.QWidget):
+    """Figura humana de perfil que SIMULA o movimento marcado numa gravação.
+
+    Desenha, em código, tronco, cabeça, pernas sugeridas e o braço que trabalha
+    (ombro, braço, antebraço, punho, mão com dedos articulados e polegar) por
+    cinemática direta a partir da pose, acende os músculos conforme a
+    intensidade medida e prende um objeto à mão (halter, chave ou copo).
+    Não é o vídeo da pessoa: um selo fixo no rodapé diz isso.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._pose = dict(POSE_REPOUSO)
+        self._ativacao = {}
+        self._objeto = None
+        self._rotulo = ""
+        self.setMinimumSize(240, 200)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Expanding)
+
+    # ---------------- API pública ----------------
+    def set_pose(self, pose):
+        """Define a pose (dict com as chaves de POSE_REPOUSO; faltantes = repouso)."""
+        nova = dict(POSE_REPOUSO)
+        for k, v in (pose or {}).items():
+            if k in nova:
+                try:
+                    nova[k] = float(v)
+                except (TypeError, ValueError):
+                    pass
+        self._pose = aplicar_deltas({}, nova)
+        self.update()
+
+    def set_ativacao(self, ativacao):
+        """Define a intensidade 0..1 por músculo; músculos fora da figura são ignorados."""
+        nova = {}
+        for m, v in (ativacao or {}).items():
+            if m in MUSCULOS_FIGURA:
+                try:
+                    nova[m] = max(0.0, min(1.0, float(v)))
+                except (TypeError, ValueError):
+                    pass
+        self._ativacao = nova
+        self.update()
+
+    def set_objeto(self, objeto):
+        """Prende um objeto à mão: "halter", "chave", "copo" ou None (sem objeto)."""
+        self._objeto = objeto if objeto in ("halter", "chave", "copo") else None
+        self.update()
+
+    def set_rotulo_movimento(self, texto):
+        """Mostra o nome do movimento em curso (texto já traduzido)."""
+        self._rotulo = str(texto or "")
+        self.update()
+
+    def pose(self):
+        """Pose atual (cópia)."""
+        return dict(self._pose)
+
+    # ---------------- pintura ----------------
+    def paintEvent(self, _ev):
+        p = QtGui.QPainter(self)
+        try:
+            self.pintar(p, self.rect())
+        finally:
+            p.end()
+
+    def _fonte(self, pt, negrito=False):
+        """Fonte da interface (FONT_UI) no tamanho pedido."""
+        f = QtGui.QFont(FONT_UI, pt)
+        f.setBold(negrito)
+        return f
+
+    def _cores(self):
+        """Paleta da figura derivada do tema (COLORS) no momento da pintura."""
+        c = COLORS
+        sup, txt, dim = c["surface"], c["text"], c["text_dim"]
+        return {
+            "fundo": QtGui.QColor(sup),
+            "texto": QtGui.QColor(txt),
+            "dim": QtGui.QColor(dim),
+            "acento": QtGui.QColor(c["accent"]),
+            "borda": QtGui.QColor(c["border"]),
+            "corpo": _misturar(sup, dim, 0.26),      # tronco, cabeça, pernas
+            "braco": _misturar(sup, dim, 0.15),      # braço que trabalha, mais claro
+            "palma": _misturar(sup, dim, 0.05),      # palma clara
+            "dorso": _misturar(sup, dim, 0.40),      # dorso sombreado
+            "contorno": _misturar(dim, txt, 0.35),
+            "objeto": _misturar(dim, txt, 0.45),
+            "cena": _misturar(sup, dim, 0.12),       # porta, mesa
+        }
+
+    def _P(self, x, y):
+        """Unidades da cena -> pixel (QPointF)."""
+        return QtCore.QPointF(self._ox + x * self._esc, self._oy + y * self._esc)
+
+    def _caminho_pts(self, pontos, suave=True):
+        """Caminho em pixels a partir de pontos (x, y) em unidades."""
+        pix = [(self._ox + x * self._esc, self._oy + y * self._esc) for x, y in pontos]
+        if suave:
+            return _caminho_suave(pix)
+        path = QtGui.QPainterPath()
+        path.addPolygon(QtGui.QPolygonF([QtCore.QPointF(*q) for q in pix]))
+        path.closeSubpath()
+        return path
+
+    def _capsula_px(self, p0, r0, p1, r1):
+        """Cápsula afilada em pixels a partir de pontos/raios em unidades."""
+        e = self._esc
+        return _capsula((self._ox + p0[0] * e, self._oy + p0[1] * e), r0 * e,
+                        (self._ox + p1[0] * e, self._oy + p1[1] * e), r1 * e)
+
+    def _preencher(self, p, path, cor, contorno, larg=1.4):
+        """Preenche e contorna um caminho (traço fino, cor do tema)."""
+        p.setPen(QtGui.QPen(contorno, larg))
+        p.setBrush(QtGui.QBrush(cor))
+        p.drawPath(path)
+
+    def _brilho(self, p, clip, centro, raio, v, eixo=None):
+        """Brilho radial do músculo recortado pela forma do segmento.
+
+        Com "eixo" (vetor unitário do segmento) o brilho se alonga no sentido
+        do músculo, como um ventre muscular, em vez de uma bola.
+        """
+        if v <= 0.02:
+            return
+        cor = cor_intensidade(v)
+        a = 0.30 + 0.62 * v
+        c = self._P(*centro)
+        g = QtGui.QRadialGradient(c, raio * self._esc)
+        g.setColorAt(0.0, _com_alfa(cor, a))
+        g.setColorAt(0.5, _com_alfa(cor, a * 0.55))
+        g.setColorAt(1.0, _com_alfa(cor, 0.0))
+        pincel = QtGui.QBrush(g)
+        if eixo is not None:
+            t = QtGui.QTransform()
+            t.translate(c.x(), c.y())
+            t.rotate(math.degrees(math.atan2(eixo[1], eixo[0])))
+            t.scale(1.45, 0.85)
+            t.translate(-c.x(), -c.y())
+            pincel.setTransform(t)
+        p.save()
+        p.setClipPath(clip)
+        p.fillRect(clip.boundingRect(), pincel)
+        p.restore()
+
+    def _polilinha(self, p, pts_px, largs, cor, contorno):
+        """Cadeia de falanges: contorno + miolo, larguras afilando, pontas redondas."""
+        cap, join = QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenJoinStyle.RoundJoin
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        for passo in (0, 1):
+            for i in range(len(pts_px) - 1):
+                w = largs[i] * self._esc
+                pen = QtGui.QPen(contorno if passo == 0 else cor,
+                                 w + (2.4 if passo == 0 else 0.0), QtCore.Qt.PenStyle.SolidLine, cap, join)
+                p.setPen(pen)
+                p.drawLine(QtCore.QPointF(*pts_px[i]), QtCore.QPointF(*pts_px[i + 1]))
+        # Articulações: anel sutil em cada junta interna, para ler as falanges.
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.setPen(QtGui.QPen(_com_alfa(contorno, 0.38), 1.0))
+        for i in range(1, len(pts_px) - 1):
+            r = largs[i] * self._esc * 0.5
+            p.drawEllipse(QtCore.QPointF(*pts_px[i]), r, r)
+
+    def pintar(self, p, rect):
+        """Pinta a figura inteira no retângulo dado (paintEvent e exportação)."""
+        cores = self._cores()
+        pose = self._pose
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+        p.setRenderHint(QtGui.QPainter.RenderHint.TextAntialiasing, True)
+        rect = QtCore.QRectF(rect)
+        p.fillRect(rect, cores["fundo"])
+        W, H = rect.width(), rect.height()
+        pequeno = W < 330 or H < 250
+
+        # --- faixas de texto: cabeçalho (movimento + músculos) e rodapé (selo)
+        f_tit = self._fonte(9 if pequeno else 11, True)
+        f_sub = self._fonte(7 if pequeno else 8)
+        fm_tit, fm_sub = QtGui.QFontMetrics(f_tit), QtGui.QFontMetrics(f_sub)
+        topo = rect.top() + 6 + fm_tit.height() + (0 if pequeno else fm_sub.height() + 2)
+        rodape = rect.bottom() - fm_sub.height() - 8
+
+        # --- escala da cena
+        x0, y0, x1, y1 = _CENA
+        x1 = _CENA_X1_OBJETO.get(self._objeto, x1)
+        area = QtCore.QRectF(rect.left() + 6, topo + 2, W - 12, rodape - topo - 4)
+        self._esc = max(1.0, min(area.width() / (x1 - x0), area.height() / (y1 - y0)))
+        self._ox = area.center().x() - (x0 + x1) / 2.0 * self._esc
+        self._oy = area.center().y() - (y0 + y1) / 2.0 * self._esc
+        e = self._esc
+        self._evitar = []   # formas (px) que o rótulo da palma não deve cobrir
+
+        # --- cinemática direta (unidades): tronco gira em torno do quadril
+        tronco = pose["tronco"]
+
+        def R(pt):
+            return _girar(pt, _QUADRIL, tronco)
+        S = R((0.0, 0.0))
+        a1 = math.radians(pose["ombro"] + tronco)
+        E = (S[0] + _L_BRACO * math.sin(a1), S[1] + _L_BRACO * math.cos(a1))
+        a2 = a1 + math.radians(pose["cotovelo"])
+        Wr = (E[0] + _L_ANTEBRACO * math.sin(a2), E[1] + _L_ANTEBRACO * math.cos(a2))
+        a3 = a2 + math.radians(pose["punho"])
+        d1, f1 = (math.sin(a1), math.cos(a1)), (math.cos(a1), -math.sin(a1))  # eixo, frente
+        d2, f2 = (math.sin(a2), math.cos(a2)), (math.cos(a2), -math.sin(a2))  # eixo, dorso
+
+        # --- cena fixa (porta ou mesa), atrás de tudo
+        p.save()
+        p.setClipRect(area)
+        if self._objeto == "chave":
+            self._desenhar_porta(p, cores)
+        elif self._objeto == "copo":
+            self._desenhar_mesa(p, cores)
+        p.restore()
+
+        # --- pernas sugeridas (esmaecem para baixo), tronco, pescoço, cabeça
+        grad = QtGui.QLinearGradient(self._P(0, 1.92), self._P(0, 2.30))
+        grad.setColorAt(0.0, cores["corpo"])
+        grad.setColorAt(1.0, _com_alfa(cores["corpo"], 0.0))
+        grad_c = QtGui.QLinearGradient(self._P(0, 1.92), self._P(0, 2.30))
+        grad_c.setColorAt(0.0, cores["contorno"])
+        grad_c.setColorAt(1.0, _com_alfa(cores["contorno"], 0.0))
+        for (pa, ra, pb, rb, escuro) in (((-0.14, 1.80), 0.24, (-0.22, 2.45), 0.20, True),
+                                         ((0.14, 1.80), 0.25, (0.20, 2.45), 0.21, False)):
+            path = self._capsula_px(pa, ra, pb, rb)
+            p.setPen(QtGui.QPen(QtGui.QBrush(grad_c), 1.4))
+            if escuro:
+                g2 = QtGui.QLinearGradient(grad)
+                g2.setColorAt(0.0, _misturar(cores["corpo"], cores["contorno"], 0.25))
+                p.setBrush(QtGui.QBrush(g2))
+            else:
+                p.setBrush(QtGui.QBrush(grad))
+            p.drawPath(path)
+
+        torso_pts = [(0.20, -0.30), (0.40, 0.05), (0.46, 0.45), (0.42, 0.95), (0.38, 1.35),
+                     (0.30, 1.72), (0.05, 1.88), (-0.22, 1.84), (-0.38, 1.55), (-0.40, 1.10),
+                     (-0.34, 0.65), (-0.42, 0.20), (-0.36, -0.15), (-0.16, -0.33)]
+        torso = self._caminho_pts([R(q) for q in torso_pts])
+        pescoco = self._capsula_px(R((0.09, -0.70)), 0.15, R((0.06, -0.28)), 0.20)
+        self._preencher(p, pescoco, cores["corpo"], cores["contorno"])
+        self._preencher(p, torso, cores["corpo"], cores["contorno"])
+        # Orelha atrás da cabeça, depois a cabeça e o rosto voltado para a frente.
+        self._preencher(p, self._capsula_px(R((0.02, -1.08)), 0.055, R((0.0, -0.96)), 0.05),
+                        cores["corpo"], cores["contorno"])
+        cab = R((0.13, -1.06))
+        cabeca = QtGui.QPainterPath()
+        cabeca.addEllipse(self._P(*cab), 0.40 * e, 0.46 * e)
+        self._preencher(p, cabeca, cores["corpo"], cores["contorno"])
+        nariz = self._caminho_pts([R((0.49, -1.10)), R((0.58, -0.98)), R((0.49, -0.92))], suave=False)
+        self._preencher(p, nariz, cores["corpo"], cores["contorno"], 1.2)
+        p.setPen(QtGui.QPen(cores["contorno"], 1.6, QtCore.Qt.PenStyle.SolidLine,
+                            QtCore.Qt.PenCapStyle.RoundCap))
+        p.drawLine(self._P(*R((0.41, -0.80))), self._P(*R((0.50, -0.81))))  # boca
+        p.setBrush(QtGui.QBrush(cores["contorno"]))
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.drawEllipse(self._P(*R((0.36, -1.13))), 0.032 * e, 0.032 * e)      # olho
+
+        # --- músculos do tronco (recortados pelo tronco+pescoço)
+        at = self._ativacao
+        if any(at.get(m, 0) > 0.02 for m in ("Peitoral Maior", "Latíssimo do Dorso", "Trapézio")):
+            clip_t = torso.united(pescoco)
+            self._brilho(p, clip_t, R((0.27, 0.30)), 0.38, at.get("Peitoral Maior", 0))
+            self._brilho(p, clip_t, R((-0.27, 0.72)), 0.42, at.get("Latíssimo do Dorso", 0), (0.15, 1.0))
+            self._brilho(p, clip_t, R((-0.12, -0.26)), 0.30, at.get("Trapézio", 0))
+
+        # --- braço que trabalha: ombro arredondado, braço, antebraço
+        ombro = QtGui.QPainterPath()
+        ombro.addEllipse(self._P(*S), 0.25 * e, 0.25 * e)
+        braco = self._capsula_px(S, 0.20, E, 0.145)
+        antebraco = self._capsula_px(E, 0.145, Wr, 0.095)
+        self._preencher(p, ombro, cores["braco"], cores["contorno"])
+        self._preencher(p, braco, cores["braco"], cores["contorno"])
+        self._preencher(p, antebraco, cores["braco"], cores["contorno"])
+        # Articulações: anéis discretos no cotovelo e no punho.
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.setPen(QtGui.QPen(_com_alfa(cores["contorno"], 0.45), 1.2))
+        p.drawEllipse(self._P(*E), 0.095 * e, 0.095 * e)
+        p.drawEllipse(self._P(*Wr), 0.062 * e, 0.062 * e)
+
+        # --- músculos do braço
+        if any(at.get(m, 0) > 0.02 for m in ("Bíceps Braquial", "Tríceps Braquial", "Deltoide Anterior",
+                                             "Deltoide Medio", "Deltoide Posterior")):
+            clip_b = ombro.united(braco)
+            self._brilho(p, clip_b, (S[0] + d1[0] * 0.47 + f1[0] * 0.08, S[1] + d1[1] * 0.47 + f1[1] * 0.08),
+                         0.32, at.get("Bíceps Braquial", 0), d1)
+            self._brilho(p, clip_b, (S[0] + d1[0] * 0.50 - f1[0] * 0.09, S[1] + d1[1] * 0.50 - f1[1] * 0.09),
+                         0.32, at.get("Tríceps Braquial", 0), d1)
+            self._brilho(p, clip_b, (S[0] + f1[0] * 0.15 + d1[0] * 0.06, S[1] + f1[1] * 0.15 + d1[1] * 0.06),
+                         0.24, at.get("Deltoide Anterior", 0))
+            self._brilho(p, clip_b, (S[0] - d1[0] * 0.08, S[1] - d1[1] * 0.08),
+                         0.24, at.get("Deltoide Medio", 0))
+            self._brilho(p, clip_b, (S[0] - f1[0] * 0.15 + d1[0] * 0.06, S[1] - f1[1] * 0.15 + d1[1] * 0.06),
+                         0.24, at.get("Deltoide Posterior", 0))
+        if at.get("Flexor Carpi Radialis", 0) > 0.02 or at.get("Extensor Carpi Radialis", 0) > 0.02:
+            self._brilho(p, antebraco, (E[0] + d2[0] * 0.40 - f2[0] * 0.06, E[1] + d2[1] * 0.40 - f2[1] * 0.06),
+                         0.28, at.get("Flexor Carpi Radialis", 0), d2)
+            self._brilho(p, antebraco, (E[0] + d2[0] * 0.36 + f2[0] * 0.06, E[1] + d2[1] * 0.36 + f2[1] * 0.06),
+                         0.28, at.get("Extensor Carpi Radialis", 0), d2)
+
+        # --- mão (com objeto preso) e rótulo da palma
+        info_mao = self._desenhar_mao(p, cores, Wr, a3, pose)
+        palma_px = QtGui.QPainterPath()
+        palma_px.addRect(QtCore.QRectF(info_mao["x0"], info_mao["y0"],
+                                       info_mao["x1"] - info_mao["x0"], info_mao["y1"] - info_mao["y0"]))
+        r = pose["pronacao"]
+        if abs(r) >= 0.3:
+            texto = tr("palma para cima") if r < 0 else tr("palma para baixo")
+            f_p = self._fonte(7 if pequeno else 8, True)
+            fm_p = QtGui.QFontMetrics(f_p)
+            p.setFont(f_p)
+            p.setPen(cores["acento"])
+            tw, th = fm_p.horizontalAdvance(texto), fm_p.height()
+            hx0, hx1, hy0, hy1, hcx = (info_mao[k] for k in ("x0", "x1", "y0", "y1", "cx"))
+            # Embaixo da mão de preferência; senão à frente, em cima ou atrás,
+            # no primeiro lugar que não cobre o corpo nem o braço.
+            candidatos = [QtCore.QRectF(hcx - tw / 2, hy1 + 4, tw, th),
+                          QtCore.QRectF(hx1 + 6, (hy0 + hy1) / 2 - th / 2, tw, th),
+                          QtCore.QRectF(hcx - tw / 2, hy0 - 4 - th, tw, th),
+                          QtCore.QRectF(hx0 - 6 - tw, (hy0 + hy1) / 2 - th / 2, tw, th)]
+            figura = (torso, braco, antebraco, ombro, cabeca, palma_px) + tuple(self._evitar)
+            escolhido = None
+            for rc in candidatos:
+                rc.moveLeft(max(rect.left() + 4, min(rect.right() - 4 - tw, rc.left())))
+                if rc.top() < topo or rc.bottom() > rodape:
+                    continue
+                if not any(f.intersects(rc) for f in figura):
+                    escolhido = rc
+                    break
+            if escolhido is None:
+                escolhido = candidatos[0]
+                escolhido.moveTop(max(topo, min(rodape - th, escolhido.top())))
+            p.drawText(QtCore.QPointF(escolhido.left(), escolhido.top() + fm_p.ascent()), texto)
+
+        # --- cabeçalho: movimento em curso e músculos ativos
+        larg_legenda = 48 if pequeno else 70
+        p.setFont(f_tit)
+        p.setPen(cores["texto"])
+        rot = self._rotulo or tr("Repouso")
+        larg_txt = W - 16 - larg_legenda - 12
+        p.drawText(QtCore.QPointF(rect.left() + 8, rect.top() + 6 + fm_tit.ascent()),
+                   fm_tit.elidedText(rot, QtCore.Qt.TextElideMode.ElideRight, int(larg_txt)))
+        if not pequeno:
+            ativos = sorted(((v, m) for m, v in at.items() if v > 0.02), reverse=True)
+            sub = "  ·  ".join("%s %d%%" % (tr(m), round(v * 100)) for v, m in ativos)
+            if not sub:
+                sub = tr("nenhum músculo acima de 2%")
+            p.setFont(f_sub)
+            p.setPen(cores["dim"])
+            p.drawText(QtCore.QPointF(rect.left() + 8, rect.top() + 8 + fm_tit.height() + fm_sub.ascent()),
+                       fm_sub.elidedText(sub, QtCore.Qt.TextElideMode.ElideRight, int(larg_txt)))
+
+        # --- legenda da intensidade (canto superior direito)
+        lx = rect.right() - 8 - larg_legenda
+        ly = rect.top() + 6 + (0 if pequeno else fm_sub.height() + 1)
+        g = QtGui.QLinearGradient(QtCore.QPointF(lx, ly), QtCore.QPointF(lx + larg_legenda, ly))
+        for k in range(5):
+            g.setColorAt(k / 4.0, cor_intensidade(k / 4.0))
+        p.setPen(QtGui.QPen(cores["borda"], 1.0))
+        p.setBrush(QtGui.QBrush(g))
+        p.drawRoundedRect(QtCore.QRectF(lx, ly, larg_legenda, 7), 3, 3)
+        p.setFont(f_sub)
+        p.setPen(cores["dim"])
+        if not pequeno:
+            tit = tr("intensidade")
+            p.drawText(QtCore.QPointF(lx + larg_legenda - fm_sub.horizontalAdvance(tit), rect.top() + 4 + fm_sub.ascent()), tit)
+        p.drawText(QtCore.QPointF(lx, ly + 8 + fm_sub.ascent()), "0")
+        p.drawText(QtCore.QPointF(lx + larg_legenda - fm_sub.horizontalAdvance("100%"), ly + 8 + fm_sub.ascent()), "100%")
+
+        # --- selo fixo: a figura simula, não é o vídeo
+        selo = tr("Simulação")
+        f_selo = self._fonte(7 if pequeno else 8, True)
+        fm_selo = QtGui.QFontMetrics(f_selo)
+        chip_w = fm_selo.horizontalAdvance(selo) + 10
+        chip = QtCore.QRectF(rect.left() + 8, rodape, chip_w, fm_sub.height() + 2)
+        p.setPen(QtGui.QPen(_com_alfa(cores["acento"], 0.55), 1.0))
+        p.setBrush(QtGui.QBrush(_com_alfa(cores["acento"], 0.10)))
+        p.drawRoundedRect(chip, 4, 4)
+        p.setFont(f_selo)
+        p.setPen(cores["acento"])
+        p.drawText(QtCore.QPointF(chip.left() + 5, chip.top() + 1 + fm_selo.ascent()), selo)
+        frase = tr("A figura SIMULA o movimento marcado; não é o vídeo da pessoa.")
+        p.setFont(f_sub)
+        p.setPen(cores["dim"])
+        p.drawText(QtCore.QPointF(chip.right() + 8, chip.top() + 1 + fm_sub.ascent()),
+                   fm_sub.elidedText(frase, QtCore.Qt.TextElideMode.ElideRight,
+                                     int(rect.right() - 8 - chip.right() - 8)))
+
+    def _desenhar_mao(self, p, cores, Wr, a3, pose):
+        """Mão articulada: palma/dorso, 4 dedos com 3 falanges, polegar, objeto.
+
+        Modelo 3D simplificado no referencial da mão (x ao longo dos dedos,
+        y para o lado do polegar, z para a palma), girado em torno de x
+        conforme a pronação e projetado no plano de perfil. Assim a supinação
+        mostra a PALMA e a pronação mostra o DORSO, e o polegar troca de lado.
+        Devolve {"cx", "baixo"} em pixels para posicionar o rótulo da palma.
+        """
+        e = self._esc
+        r = pose["pronacao"]
+        # Neutro é uma vista 3/4 (55°): dá para ver os dedos lado a lado; a
+        # supinação vai a 0° (palma de frente) e a pronação a 180° (dorso).
+        alfa = math.radians(55.0 + 55.0 * r) if r <= 0 else math.radians(55.0 + 125.0 * r)
+        ca, sa = math.cos(alfa), math.sin(alfa)
+        xh = (math.sin(a3), math.cos(a3))
+        uh = (math.cos(a3), -math.sin(a3))   # lado dorsal (extensão) no plano
+
+        def proj(x, y, z):
+            up = y * ca - z * sa
+            return (self._ox + (Wr[0] + x * xh[0] + up * uh[0]) * e,
+                    self._oy + (Wr[1] + x * xh[1] + up * uh[1]) * e)
+
+        def prof(y, z):
+            return y * sa + z * ca      # profundidade (+ = mais perto de quem olha)
+
+        w2, t2 = _PALMA_LARG / 2.0, _PALMA_ESP / 2.0
+        cantos = [proj(x, sy, sz) for x in (0.0, _PALMA_COMPR) for sy in (-w2, w2) for sz in (-t2, t2)]
+        palma_poly = QtGui.QPolygonF([QtCore.QPointF(*q) for q in _envoltoria(cantos)])
+        palma_path = QtGui.QPainterPath()
+        palma_path.addPolygon(palma_poly)
+        palma_path.closeSubpath()
+        if ca >= 0:
+            cor_mao = _misturar(cores["braco"], cores["palma"], ca)
+        else:
+            cor_mao = _misturar(cores["braco"], cores["dorso"], -ca)
+        # Cantos arredondados: contorno grosso de junta redonda, depois o miolo.
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.setPen(QtGui.QPen(cores["contorno"], 0.06 * e + 2.8, QtCore.Qt.PenStyle.SolidLine,
+                            QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenJoinStyle.RoundJoin))
+        p.drawPolygon(palma_poly)
+        p.setPen(QtGui.QPen(cor_mao, 0.06 * e, QtCore.Qt.PenStyle.SolidLine,
+                            QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenJoinStyle.RoundJoin))
+        p.setBrush(QtGui.QBrush(cor_mao))
+        p.drawPolygon(palma_poly)
+        if ca > 0.35:   # pregas da palma, mais nítidas quanto mais de frente
+            p.setPen(QtGui.QPen(_com_alfa(cores["contorno"], 0.55 * ca), 1.0))
+            p.drawLine(QtCore.QPointF(*proj(0.10, -0.40 * w2, 0)), QtCore.QPointF(*proj(0.21, 0.55 * w2, 0)))
+            p.drawLine(QtCore.QPointF(*proj(0.16, -0.75 * w2, 0)), QtCore.QPointF(*proj(0.25, 0.10 * w2, 0)))
+
+        # Dedos: 3 falanges, curvando para a palma (+z) conforme "mao"; a pinça
+        # fecha um pouco o indicador para o polegar alcançar.
+        c = pose["mao"]
+        pinca = pose["pinca"]
+        dedos = []
+        for lat, (l1, l2, l3) in _DEDOS:
+            cf = min(1.0, c + (0.42 if lat > 0.5 else 0.30) * pinca)
+            angs = (math.radians(72 * cf), math.radians(88 * cf), math.radians(55 * cf))
+            x, y, z = _PALMA_COMPR, lat * w2 * 0.95, 0.0
+            pts3 = [(x, y, z)]
+            fi = 0.0
+            for l, a in zip((l1, l2, l3), angs):
+                fi += a
+                x, z = x + l * math.cos(fi), z + l * math.sin(fi)
+                pts3.append((x, y, z))
+            dedos.append((prof(y, 0.0), lat, [proj(*q) for q in pts3]))
+        dedos.sort(key=lambda d: d[0])          # de trás para a frente
+        idx_pts = next(d[2] for d in dedos if d[1] > 0.5)
+
+        # Polegar: base no lado radial, cinemática inversa de 2 segmentos até o
+        # alvo (descanso, ponta do indicador na pinça, ou sobre os dedos no punho).
+        base = proj(0.09, w2 * 0.92, 0.25 * t2)
+        dir3 = (0.74, 0.56, 0.34)   # descanso: ~40° do indicador, levemente para a palma
+        L1, L2 = 0.135 * e, 0.105 * e
+        q = proj(0.09 + dir3[0], w2 * 0.92 + dir3[1], 0.25 * t2 + dir3[2])
+        n = max(1e-6, math.hypot(q[0] - base[0], q[1] - base[1]))
+        # Alvo quase no alcance total: polegar reto, sem dobra artificial.
+        ponta_desc = (base[0] + (q[0] - base[0]) / n * 0.97 * (L1 + L2),
+                      base[1] + (q[1] - base[1]) / n * 0.97 * (L1 + L2))
+        alvo = ponta_desc
+        if pinca > 0:
+            alvo = (alvo[0] + (idx_pts[3][0] - alvo[0]) * pinca, alvo[1] + (idx_pts[3][1] - alvo[1]) * pinca)
+        if c > 0.35:
+            k = (c - 0.35) / 0.65 * (1.0 - pinca)
+            alvo = (alvo[0] + (idx_pts[1][0] - alvo[0]) * k, alvo[1] + (idx_pts[1][1] - alvo[1]) * k)
+        dx, dy = alvo[0] - base[0], alvo[1] - base[1]
+        d = max(abs(L1 - L2) + 1e-3, min(L1 + L2 - 1e-3, math.hypot(dx, dy)))
+        cos_a = max(-1.0, min(1.0, (d * d + L1 * L1 - L2 * L2) / (2 * d * L1)))
+        ang0 = math.atan2(dy, dx)
+        centro_mao = proj(_PALMA_COMPR * 0.5, 0.0, 0.0)
+        melhor = None
+        for sinal in (1, -1):
+            a = ang0 + sinal * math.acos(cos_a)
+            j = (base[0] + L1 * math.cos(a), base[1] + L1 * math.sin(a))
+            dist = math.hypot(j[0] - centro_mao[0], j[1] - centro_mao[1])
+            if melhor is None or dist < melhor[0]:   # o polegar dobra para a palma
+                melhor = (dist, j)
+        ponta = (base[0] + dx / max(1e-6, math.hypot(dx, dy)) * d, base[1] + dy / max(1e-6, math.hypot(dx, dy)) * d)
+        polegar = [base, melhor[1], ponta]
+        polegar_atras = prof(w2, 0.25 * t2) < 0
+
+        if polegar_atras:
+            self._polilinha(p, polegar, (0.095, 0.082), cor_mao, cores["contorno"])
+
+        # Objeto que a mão segura: fica entre a palma e os dedos.
+        grip = proj(0.17, 0.0, 0.12)
+        if self._objeto == "halter":
+            self._desenhar_halter(p, cores, grip, proj, xh, uh, ca, sa)
+        elif self._objeto == "copo":
+            self._desenhar_copo(p, cores, grip, a3)
+
+        for _, lat, pts in dedos:
+            self._polilinha(p, pts, (0.088, 0.078, 0.068), cor_mao, cores["contorno"])
+        if ca < -0.35:   # nós dos dedos no dorso
+            p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.setBrush(QtGui.QBrush(_com_alfa(cores["contorno"], 0.35 * -ca)))
+            for _, lat, pts in dedos:
+                p.drawEllipse(QtCore.QPointF(*pts[0]), 0.03 * e, 0.03 * e)
+        if not polegar_atras:
+            self._polilinha(p, polegar, (0.095, 0.082), cor_mao, cores["contorno"])
+
+        if self._objeto == "chave":
+            k = ((ponta[0] + idx_pts[3][0]) / 2.0, (ponta[1] + idx_pts[3][1]) / 2.0)
+            self._desenhar_chave(p, cores, k, xh, uh, ca)
+
+        todos = [QtCore.QPointF(*q) for q in cantos] + [QtCore.QPointF(*q) for _, _, pts in dedos for q in pts]
+        todos += [QtCore.QPointF(*q) for q in polegar]
+        xs, ys = [q.x() for q in todos], [q.y() for q in todos]
+        return {"cx": sum(xs) / len(xs), "cy": sum(ys) / len(ys), "baixo": max(ys),
+                "x0": min(xs) - 0.05 * e, "x1": max(xs) + 0.05 * e,
+                "y0": min(ys) - 0.05 * e, "y1": max(ys) + 0.05 * e}
+
+    def _desenhar_halter(self, p, cores, grip, proj, xh, uh, ca, sa):
+        """Halter preso ao punho fechado: barra pelo eixo da pegada, dois discos."""
+        e = self._esc
+        # A barra atravessa o punho pelo eixo y (do mínimo ao indicador); vista
+        # de perfil ela fica quase perpendicular ao antebraço. Limitamos a
+        # perspectiva para o halter continuar reconhecível na supinação.
+        ca_b = max(0.35, min(0.95, abs(ca)))
+        meia = 0.30 * ca_b
+        p1 = (grip[0] + meia * uh[0] * e, grip[1] + meia * uh[1] * e)
+        p2 = (grip[0] - meia * uh[0] * e, grip[1] - meia * uh[1] * e)
+        p.setPen(QtGui.QPen(cores["objeto"], 0.06 * e, QtCore.Qt.PenStyle.SolidLine,
+                            QtCore.Qt.PenCapStyle.RoundCap))
+        p.drawLine(QtCore.QPointF(*p1), QtCore.QPointF(*p2))
+        ang = math.degrees(math.atan2(xh[1], xh[0]))
+        rd = 0.135 * e
+        ry = rd * max(0.35, math.sqrt(1.0 - ca_b * ca_b))
+        for q in (p1, p2):
+            ev = QtGui.QPainterPath()
+            ev.addEllipse(QtCore.QPointF(*q), rd, rd)
+            self._evitar.append(ev)
+            p.save()
+            p.translate(QtCore.QPointF(*q))
+            p.rotate(ang)
+            p.setPen(QtGui.QPen(cores["contorno"], 1.2))
+            p.setBrush(QtGui.QBrush(cores["objeto"]))
+            p.drawEllipse(QtCore.QPointF(0, 0), rd, ry)
+            p.setPen(QtGui.QPen(_com_alfa(cores["fundo"], 0.35), 1.0))
+            p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+            p.drawEllipse(QtCore.QPointF(0, 0), rd * 0.55, ry * 0.55)
+            p.restore()
+
+    def _desenhar_copo(self, p, cores, grip, a3):
+        """Copo preso à mão, sempre em pé; inclina para a boca quando o antebraço sobe."""
+        e = self._esc
+        incl = max(0.0, min(28.0, (math.degrees(a3) - 100.0) * 0.35))
+        h, b, t = 0.46 * e, 0.11 * e, 0.145 * e
+        pts = [(-b, h / 2), (b, h / 2), (t, -h / 2), (-t, -h / 2)]
+        pts = [_girar((grip[0] + x, grip[1] + y), grip, incl) for x, y in pts]
+        poly = QtGui.QPolygonF([QtCore.QPointF(*q) for q in pts])
+        ev = QtGui.QPainterPath()
+        ev.addPolygon(poly)
+        self._evitar.append(ev)
+        p.setPen(QtGui.QPen(cores["contorno"], 1.3))
+        p.setBrush(QtGui.QBrush(_com_alfa(cores["acento"], 0.20)))
+        p.drawPolygon(poly)
+        # Nível da água: horizontal no mundo, por isso não gira com o copo.
+        p.setPen(QtGui.QPen(_com_alfa(cores["acento"], 0.6), 1.2))
+        nivel = grip[1] + 0.02 * e
+        p.drawLine(QtCore.QPointF(grip[0] - 0.12 * e, nivel), QtCore.QPointF(grip[0] + 0.12 * e, nivel))
+        # Borda do copo
+        p.setPen(QtGui.QPen(cores["contorno"], 1.3))
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.save()
+        p.translate(QtCore.QPointF(*_girar((grip[0], grip[1] - h / 2), grip, incl)))
+        p.rotate(incl)
+        p.drawEllipse(QtCore.QPointF(0, 0), t, 0.035 * e)
+        p.restore()
+
+    def _desenhar_chave(self, p, cores, k, xh, uh, ca):
+        """Chave presa entre polegar e indicador, haste para a frente, dentes giram com a mão."""
+        e = self._esc
+        a = (k[0] - 0.03 * xh[0] * e, k[1] - 0.03 * xh[1] * e)
+        b = (k[0] + 0.33 * xh[0] * e, k[1] + 0.33 * xh[1] * e)
+        p.setPen(QtGui.QPen(cores["objeto"], 0.035 * e, QtCore.Qt.PenStyle.SolidLine,
+                            QtCore.Qt.PenCapStyle.RoundCap))
+        p.drawLine(QtCore.QPointF(*a), QtCore.QPointF(*b))
+        # Dentes no lado do polegar: sobem na supinação e descem na pronação.
+        alt = (0.015 + 0.05 * abs(ca)) * e
+        lado = 1.0 if ca >= 0 else -1.0
+        for s in (0.17, 0.23, 0.29):
+            q = (k[0] + s * xh[0] * e, k[1] + s * xh[1] * e)
+            p.drawLine(QtCore.QPointF(*q), QtCore.QPointF(q[0] + lado * uh[0] * alt, q[1] + lado * uh[1] * alt))
+        # Argola (cabeça da chave)
+        arg = (k[0] - 0.085 * xh[0] * e, k[1] - 0.085 * xh[1] * e)
+        p.setPen(QtGui.QPen(cores["objeto"], 0.03 * e))
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.drawEllipse(QtCore.QPointF(*arg), 0.06 * e, 0.06 * e)
+
+    def _desenhar_porta(self, p, cores):
+        """Porta e fechadura fixas na cena, alvo da tarefa da chave."""
+        e = self._esc
+        x0, y0, x1, y1 = _CENA
+        porta = QtCore.QRectF(self._P(_PORTA_X, y0 - 0.2), self._P(x1 + 0.3, y1 + 0.3))
+        p.setPen(QtGui.QPen(cores["contorno"], 1.4))
+        p.setBrush(QtGui.QBrush(cores["cena"]))
+        p.drawRect(porta)
+        p.setPen(QtGui.QPen(_com_alfa(cores["contorno"], 0.25), 1.0))
+        for k in (0.22, 0.44, 0.66):
+            x = _PORTA_X + k
+            p.drawLine(self._P(x, y0 - 0.2), self._P(x, y1 + 0.3))
+        # Espelho da fechadura com o buraco; maçaneta logo acima.
+        placa = QtCore.QRectF(self._P(_PORTA_X - 0.02, _FECHADURA_Y - 0.17), QtCore.QSizeF(0.13 * e, 0.34 * e))
+        evitar = QtGui.QPainterPath()
+        evitar.addRect(QtCore.QRectF(self._P(_PORTA_X - 0.20, _FECHADURA_Y - 0.42), self._P(_PORTA_X + 0.12, _FECHADURA_Y + 0.20)))
+        self._evitar.append(evitar)
+        p.setPen(QtGui.QPen(cores["contorno"], 1.2))
+        p.setBrush(QtGui.QBrush(cores["objeto"]))
+        p.drawRoundedRect(placa, 3, 3)
+        p.setBrush(QtGui.QBrush(cores["fundo"]))
+        p.drawEllipse(self._P(_PORTA_X + 0.045, _FECHADURA_Y), 0.03 * e, 0.03 * e)
+        p.setBrush(QtGui.QBrush(cores["objeto"]))
+        p.drawPath(self._capsula_px((_PORTA_X, _FECHADURA_Y - 0.33), 0.035, (_PORTA_X - 0.13, _FECHADURA_Y - 0.33), 0.055))
+
+    def _desenhar_mesa(self, p, cores):
+        """Mesa fixa na cena (de onde vem o copo); a boca é o outro alvo."""
+        e = self._esc
+        tampo = QtCore.QRectF(self._P(_MESA_X0, _MESA_Y), self._P(_MESA_X1, _MESA_Y + 0.08))
+        grad = QtGui.QLinearGradient(self._P(0, _MESA_Y), self._P(0, 2.30))
+        grad.setColorAt(0.0, cores["contorno"])
+        grad.setColorAt(1.0, _com_alfa(cores["contorno"], 0.0))
+        p.setPen(QtGui.QPen(QtGui.QBrush(grad), 0.06 * e))
+        for x in (_MESA_X0 + 0.12, _MESA_X1 - 0.12):
+            p.drawLine(self._P(x, _MESA_Y + 0.08), self._P(x, 2.30))
+        p.setPen(QtGui.QPen(cores["contorno"], 1.3))
+        p.setBrush(QtGui.QBrush(cores["cena"]))
+        p.drawRoundedRect(tampo, 2, 2)
+
+
+# ============================================================
+# REPLAY (P8) — cenas por exame e abertura pela aba "Rever uma gravação"
+# ============================================================
+def _replay_global(nome, padrao=None):
+    """globals().get com fallback: as cenas usam peças de outros blocos
+    (figura do P6, pyqtgraph, SignalProcessor) sem depender da ordem de
+    definição no arquivo."""
+    return globals().get(nome, padrao)
+
+
+def replay_exame_da_gravacao(modo, tipos):
+    """Decide para qual exame o Replay abre: "EMG", "ECG", "EoG" ou None.
+
+    Usa o acquisition_mode do summary.json quando é um dos três; senão o tipo
+    de canal predominante entre os canais gravados (gravação multimodal ou
+    antiga). EEG não tem replay (não há o que animar): devolve None.
+    """
+    if modo in ("EMG", "ECG", "EoG"):
+        return modo
+    cont = {}
+    for t in tipos or []:
+        if t in ("EMG", "ECG", "EoG"):
+            cont[t] = cont.get(t, 0) + 1
+    if not cont:
+        return None
+    return max(cont.items(), key=lambda kv: kv[1])[0]
+
+
+def _replay_canais_do_tipo(tipos, tipo, n_total):
+    """Índices dos canais gravados com esse tipo; sem tipos gravados (gravação
+    antiga) devolve todos os canais."""
+    if tipos and len(tipos) == n_total:
+        idx = [i for i, t in enumerate(tipos) if t == tipo]
+        if idx:
+            return idx
+    return list(range(n_total))
+
+
+def _replay_decimar(t, y, max_pts=6000):
+    """Decima um traçado para o gráfico do replay (lttb se existir no
+    programa; senão passo fixo). O cursor usa o tempo real, não o decimado."""
+    if t.size <= max_pts:
+        return t, y
+    f = _replay_global("lttb")
+    if callable(f):
+        try:
+            return f(t, y, max_pts)
+        except Exception:
+            pass
+    passo = int(math.ceil(t.size / float(max_pts)))
+    return t[::passo], y[::passo]
+
+
+class _TracadoReplay(QtWidgets.QWidget):
+    """Gráfico do traçado gravado com um cursor vertical que segue o tocador.
+
+    Envolve um pg.PlotWidget (pyqtgraph já é dependência do programa). Clicar
+    no gráfico move o cursor (sinal cursorMovido) — é o jeito de ir a um
+    ponto do sinal sem mexer na barra.
+    """
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, titulo="", unidade="µV", parent=None):
+        super().__init__(parent)
+        pg = _replay_global("pg")
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(2)
+        if titulo:
+            lbl = QtWidgets.QLabel(titulo)
+            lbl.setStyleSheet("font-weight: bold;")
+            lay.addWidget(lbl)
+        self._pg = pg
+        self._curvas = []
+        self._marcas = []
+        if pg is None:
+            self.plot = QtWidgets.QLabel(tr("Gráfico indisponível."))
+            lay.addWidget(self.plot)
+            self._cursor = None
+            return
+        self.plot = pg.PlotWidget()
+        self.plot.setMinimumHeight(140)
+        self.plot.setLabel("bottom", tr("tempo (s)"))
+        self.plot.setLabel("left", unidade)
+        self.plot.showGrid(x=True, y=True, alpha=0.2)
+        self.plot.setMenuEnabled(False)
+        cores = _replay_global("COLORS", {})
+        self._cursor = pg.InfiniteLine(pos=0.0, angle=90, movable=False,
+                                       pen=pg.mkPen(cores.get("warning", "#e0a000"), width=2))
+        self._cursor.setZValue(50)
+        self.plot.addItem(self._cursor)
+        self.plot.scene().sigMouseClicked.connect(self._on_click)
+        lay.addWidget(self.plot, 1)
+
+    def set_series(self, series):
+        """Desenha as curvas: lista de (t, y, cor, nome)."""
+        if self._pg is None:
+            return
+        for c in self._curvas:
+            self.plot.removeItem(c)
+        self._curvas = []
+        for t, y, cor, nome in series:
+            td, yd = _replay_decimar(np.asarray(t, float), np.asarray(y, float))
+            c = self.plot.plot(td, yd, pen=self._pg.mkPen(cor, width=1), name=nome)
+            self._curvas.append(c)
+        if series:
+            self.plot.setXRange(0.0, float(series[0][0][-1]) if len(series[0][0]) else 1.0, padding=0.01)
+
+    def set_marcas(self, tempos, cor="#888", simbolo="t"):
+        """Pontos (ex.: picos R ou piscadas) sobre a primeira curva."""
+        if self._pg is None:
+            return
+        for m in self._marcas:
+            self.plot.removeItem(m)
+        self._marcas = []
+        if not tempos or not self._curvas:
+            return
+        c0 = self._curvas[0]
+        xs, ys = c0.getData()
+        if xs is None or not len(xs):
+            return
+        tt = np.asarray(tempos, float)
+        yy = np.interp(tt, xs, ys)
+        sc = self._pg.ScatterPlotItem(tt, yy, symbol=simbolo, size=7,
+                                      brush=self._pg.mkBrush(cor), pen=None)
+        sc.setZValue(20)
+        self.plot.addItem(sc)
+        self._marcas.append(sc)
+
+    def set_tempo(self, t):
+        """Move o cursor para t e mantém uma janela de 10 s à vista."""
+        if self._cursor is None:
+            return
+        self._cursor.setPos(float(t))
+        vb = self.plot.getViewBox()
+        (x0, x1), _ = vb.viewRange()
+        larg = max(2.0, x1 - x0)
+        if t < x0 or t > x1:
+            vb.setXRange(max(0.0, t - larg * 0.1), max(0.0, t - larg * 0.1) + larg, padding=0)
+
+    def _on_click(self, ev):
+        if self._cursor is None:
+            return
+        try:
+            pos = self.plot.getPlotItem().vb.mapSceneToView(ev.scenePos())
+            self.cursorMovido.emit(max(0.0, float(pos.x())))
+        except Exception:
+            pass
+
+
+# ------------------------------------------------------------
+# Músculos
+# ------------------------------------------------------------
+class CenaReplayEMG(QtWidgets.QWidget):
+    """Cena do Replay de músculos: a figura articulada refaz o movimento
+    marcado, cada músculo acende com a intensidade medida no instante, e a
+    linha do tempo de movimentos (editável no Completo) fica embaixo.
+
+    Dados: d (dict de _load_session_csv), pasta da gravação, tipos e músculos
+    por canal (summary.json). A intensidade é o envelope RMS de 100 ms de cada
+    canal EMG, normalizado pelo percentil 95 da gravação (não há MVC numa
+    gravação antiga). O modelo de movimentos vem de movimentos.json ou, na
+    primeira vez, dos marcadores/contrações.
+    """
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, d, pasta, tipos=None, musculos=None, simples=False,
+                 nome="", parent=None):
+        super().__init__(parent)
+        self._simples = bool(simples)
+        self.pasta = pasta
+        self.fs = float(d.get("sr") or 250.0)
+        eeg = np.asarray(d.get("eeg"), float)
+        self.n_amostras = eeg.shape[1] if eeg.ndim == 2 else 0
+        self.dur = self.n_amostras / self.fs if self.fs else 0.0
+        self.marcadores = list(d.get("markers") or [])
+        self._objetos = []          # [(t0, t1, "halter"|"chave"|"copo")]
+        self._alterado_extra = False
+        # ---- envelopes por músculo ----
+        canais = _replay_canais_do_tipo(tipos, "EMG", eeg.shape[0] if eeg.ndim == 2 else 0)
+        SP = _replay_global("SignalProcessor")
+        self.envelopes = {}
+        self._canal_principal = canais[0] if canais else None
+        melhor_std = -1.0
+        for ch in canais:
+            sinal = eeg[ch] - float(np.mean(eeg[ch]))
+            env = SP.compute_emg_envelope(sinal, self.fs, 0.10) if SP is not None else np.abs(sinal)
+            nome_m = ""
+            if musculos and ch < len(musculos):
+                nome_m = str(musculos[ch] or "")
+            if nome_m in ("", "(não definido)"):
+                nome_m = "CH%d" % (ch + 1)
+            if nome_m in self.envelopes:
+                self.envelopes[nome_m] = np.maximum(self.envelopes[nome_m], env)
+            else:
+                self.envelopes[nome_m] = env
+            sd = float(np.std(env)) if env.size else 0.0
+            if sd > melhor_std:
+                melhor_std, self._canal_principal = sd, ch
+        # ---- modelo de movimentos ----
+        self.caminho = caminho_movimentos(pasta) if pasta else ""
+        self.modelo = None
+        if self.caminho and os.path.exists(self.caminho):
+            try:
+                self.modelo = ModeloMovimentos.carregar(self.caminho, self.dur)
+                self._objetos = self._ler_objetos(self.caminho)
+            except Exception:
+                self.modelo = None
+        if self.modelo is None:
+            onsets = []
+            if self._canal_principal is not None:
+                try:
+                    onsets = contracoes_da_gravacao(eeg[self._canal_principal], self.fs)
+                except Exception:
+                    onsets = []
+            self.modelo = modelo_inicial(self.marcadores, onsets, self.dur, nome)
+            self.modelo.modificado = False
+        self._monta()
+        self.set_tempo(0.0)
+
+    # ---- montagem ----
+    def _monta(self):
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(6)
+        topo = QtWidgets.QHBoxLayout(); topo.setSpacing(8)
+        Fig = _replay_global("FiguraMovimentoWidget")
+        if Fig is not None:
+            self.figura = Fig()
+        else:
+            # o bloco da figura (P6a) ainda não está no arquivo: mostra o
+            # movimento em palavras para a cena continuar utilizável
+            self.figura = QtWidgets.QLabel(tr("Figura do movimento indisponível."))
+            self.figura.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.figura.setMinimumSize(320, 260)
+        topo.addWidget(self.figura, 3)
+        lado = QtWidgets.QVBoxLayout(); lado.setSpacing(6)
+        self.lbl_mov = QtWidgets.QLabel("")
+        self.lbl_mov.setStyleSheet("font-size: %dpt; font-weight: bold;" % _pt(13))
+        self.lbl_mov.setWordWrap(True)
+        lado.addWidget(self.lbl_mov)
+        self.lbl_ativ = QtWidgets.QLabel("")
+        self.lbl_ativ.setWordWrap(True)
+        lado.addWidget(self.lbl_ativ)
+        self.lbl_aviso = QtWidgets.QLabel("")
+        self.lbl_aviso.setWordWrap(True)
+        self.lbl_aviso.setStyleSheet("color: %s;" % _replay_global("COLORS", {}).get("warning", "#b8730a"))
+        lado.addWidget(self.lbl_aviso)
+        if not self._simples:
+            TAREFAS = _replay_global("TAREFAS", {}) or {}
+            if TAREFAS:
+                tl = QtWidgets.QHBoxLayout()
+                tl.addWidget(QtWidgets.QLabel(tr("Tarefa pronta:")))
+                self.combo_tarefa = QtWidgets.QComboBox()
+                for chave, info in TAREFAS.items():
+                    self.combo_tarefa.addItem(tr(info.get("titulo", chave)), chave)
+                tl.addWidget(self.combo_tarefa, 1)
+                bt = QtWidgets.QPushButton(tr("Inserir no cursor"))
+                bt.setToolTip(tr("Coloca os movimentos da tarefa na linha do tempo a partir "
+                                 "do instante atual, com o objeto preso à mão."))
+                bt.clicked.connect(self._inserir_tarefa)
+                tl.addWidget(bt)
+                lado.addLayout(tl)
+        lado.addStretch(1)
+        topo.addLayout(lado, 2)
+        lay.addLayout(topo, 3)
+        self.linha = LinhaDoTempoMovimentosWidget()
+        self.linha.set_modelo(self.modelo)
+        self.linha.set_marcadores(self.marcadores)
+        self.linha.set_somente_leitura(self._simples)
+        self.linha.cursorMovido.connect(self.cursorMovido)
+        self.linha.modeloMudou.connect(self._modelo_mudou)
+        lay.addWidget(self.linha)
+        self.lista = ListaTrechosWidget()
+        self.lista.set_modelo(self.modelo)
+        self.lista.setMaximumHeight(130)
+        self.lista.cursorMovido.connect(self.cursorMovido)
+        lay.addWidget(self.lista)
+        self._t = 0.0
+
+    # ---- dados ----
+    def _ler_objetos(self, caminho):
+        """Lê a lista "objetos" do movimentos.json (chave extra do P8)."""
+        try:
+            with open(caminho, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            out = []
+            for o in d.get("objetos") or []:
+                out.append((float(o["t0"]), float(o["t1"]), str(o["objeto"])))
+            return out
+        except Exception:
+            return []
+
+    def _modelo_mudou(self):
+        self.lista.set_modelo(self.modelo)
+        self.set_tempo(self._t)
+
+    def _inserir_tarefa(self):
+        """Coloca a tarefa pronta escolhida a partir do cursor (Completo)."""
+        TAREFAS = _replay_global("TAREFAS", {}) or {}
+        chave = self.combo_tarefa.currentData()
+        info = TAREFAS.get(chave)
+        if not info:
+            return
+        dur = float(info.get("duracao_s", 10.0))
+        t0 = self._t
+        if t0 + dur > self.dur:
+            t0 = max(0.0, self.dur - dur)
+        # trechos no modelo: faixa 1 para o primeiro movimento de cada
+        # instante, faixa 2 para os que se sobrepõem
+        self.modelo.marcar_desfazer()
+        for mov, f0, f1 in info.get("trechos", []):
+            a, b = t0 + f0 * dur, t0 + f1 * dur
+            idx = self.modelo.adicionar_trecho(0, a, b, mov, registrar=False)
+            if idx is None and self.modelo.n_faixas() >= 2:
+                self.modelo.adicionar_trecho(1, a, b, mov, registrar=False)
+        obj = info.get("objeto")
+        if obj:
+            self._objetos.append((t0, t0 + dur, obj))
+            self._alterado_extra = True
+        self.linha.set_modelo(self.modelo)
+        self._modelo_mudou()
+
+    def _objeto_em(self, t):
+        for a, b, obj in self._objetos:
+            if a <= t < b:
+                return obj
+        return None
+
+    # ---- API da cena ----
+    def set_tempo(self, t):
+        """Posiciona tudo no instante t: cursor, pose, ativação e avisos."""
+        self._t = float(t)
+        self.linha.set_cursor(self._t)
+        movs = self.modelo.movimentos_em(self._t)
+        titulos = _replay_global("MOVIMENTOS_TITULOS", {}) or {}
+        nomes = [tr(titulos.get(k, k)) for k, _f in movs]
+        self.lbl_mov.setText(" + ".join(nomes) if nomes else tr("Repouso"))
+        ativ = intensidade_no_instante(self.envelopes, self.fs, self._t)
+        fortes = sorted(ativ.items(), key=lambda kv: -kv[1])[:4]
+        self.lbl_ativ.setText("  ·  ".join("%s %d%%" % (tr(m), int(round(v * 100)))
+                                          for m, v in fortes) if fortes else "")
+        aviso = ""
+        for k, _f in movs:
+            aviso = aviso_incompatibilidade(k, ativ)
+            if aviso:
+                break
+        if not aviso and any(k == "repouso" for k, _f in movs):
+            ativos = [tr(m) for m, v in ativ.items() if v >= 0.3]
+            if ativos:
+                aviso = tr("Há músculos ativos ({0}) num trecho marcado como repouso.").format(
+                    ", ".join(ativos))
+        self.lbl_aviso.setText(aviso)
+        fig = self.figura
+        if hasattr(fig, "set_pose"):
+            mesclar = _replay_global("pose_mesclada")
+            if callable(mesclar):
+                try:
+                    fig.set_pose(mesclar([(k, f, 1.0) for k, f in movs]))
+                except Exception:
+                    pass
+            if hasattr(fig, "set_ativacao"):
+                fig.set_ativacao(ativ)
+            if hasattr(fig, "set_objeto"):
+                fig.set_objeto(self._objeto_em(self._t))
+            if hasattr(fig, "set_rotulo_movimento"):
+                fig.set_rotulo_movimento(self.lbl_mov.text())
+
+    def tem_alteracoes(self):
+        """True se a linha do tempo ou os objetos mudaram e não foram salvos."""
+        return bool(getattr(self.modelo, "modificado", False) or self._alterado_extra)
+
+    def salvar(self):
+        """Grava movimentos.json ao lado da gravação (mais a lista de objetos)."""
+        if not self.caminho:
+            return False
+        self.modelo.salvar(self.caminho)
+        if self._objetos:
+            with open(self.caminho, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            d["objetos"] = [{"t0": a, "t1": b, "objeto": o} for a, b, o in self._objetos]
+            tmp = self.caminho + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(d, f, ensure_ascii=False, indent=2)
+            os.replace(tmp, self.caminho)
+        self.modelo.modificado = False
+        self._alterado_extra = False
+        return True
+
+
+# ------------------------------------------------------------
+# Coração
+# ------------------------------------------------------------
+class CenaReplayECG(QtWidgets.QWidget):
+    """Cena do Replay do coração: coração que bate no ritmo gravado, traçado
+    com cursor, bpm, faixa com todas as batidas (adiantada e pausa em cor e
+    forma) e lista clicável. No Completo a faixa aceita correções, salvas em
+    batidas.json.
+    """
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, d, pasta, tipos=None, canal=None, simples=False, parent=None):
+        super().__init__(parent)
+        self._simples = bool(simples)
+        self.pasta = pasta
+        self.fs = float(d.get("sr") or 250.0)
+        eeg = np.asarray(d.get("eeg"), float)
+        n_ch = eeg.shape[0] if eeg.ndim == 2 else 0
+        canais = _replay_canais_do_tipo(tipos, "ECG", n_ch)
+        if canal is None or not (0 <= int(canal) < n_ch):
+            canal = canais[0] if canais else 0
+        self.canal = int(canal)
+        self.sinal = eeg[self.canal] - float(np.mean(eeg[self.canal])) if n_ch else np.zeros(0)
+        self.dur = self.sinal.size / self.fs if self.fs else 0.0
+        self.t = np.arange(self.sinal.size) / self.fs
+        # detecção: batidas.json salvo vence; senão detecta agora (as MESMAS
+        # funções do relatório PDF)
+        self.correcoes = []
+        self.deteccao = None
+        salvo = carregar_batidas(pasta) if pasta else None
+        if isinstance(salvo, dict) and salvo.get("batidas"):
+            self.deteccao = salvo
+            self.correcoes = list(salvo.get("correcoes") or [])
+        else:
+            self.deteccao = detectar_batidas_gravacao(self.sinal, self.fs)
+        self._alterado = False
+        self._monta()
+        self.set_tempo(0.0)
+
+    def _monta(self):
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(6)
+        topo = QtWidgets.QHBoxLayout(); topo.setSpacing(8)
+        self.coracao = CoracaoReplayWidget()
+        self.coracao.setMinimumSize(220, 220)
+        self.coracao.set_batidas(self.deteccao.get("batidas", []))
+        topo.addWidget(self.coracao, 1)
+        self.tracado = _TracadoReplay(tr("Traçado do coração (ECG)"))
+        cor = (_replay_global("SIGNAL_TYPE_COLORS", {}) or {}).get("ECG", "#e0554e")
+        self.tracado.set_series([(self.t, self.sinal, cor, "ECG")])
+        self.tracado.cursorMovido.connect(self.cursorMovido)
+        topo.addWidget(self.tracado, 3)
+        lay.addLayout(topo, 3)
+        self.faixa = FaixaBatidasWidget()
+        self.faixa.set_duracao(self.dur)
+        self.faixa.set_edicao(not self._simples)
+        self.faixa.cursorMovido.connect(self.cursorMovido)
+        self.faixa.correcaoPedida.connect(self._corrigir)
+        lay.addWidget(self.faixa)
+        self.lista = ListaBatidasWidget()
+        self.lista.setMaximumHeight(150)
+        self.lista.cursorMovido.connect(self.cursorMovido)
+        lay.addWidget(self.lista)
+        self._atualiza_widgets()
+
+    def _atualiza_widgets(self):
+        bat = self.deteccao.get("batidas", [])
+        self.coracao.set_batidas(bat)
+        self.faixa.set_batidas(bat)
+        self.lista.set_batidas(bat)
+        self.tracado.set_marcas([b["t"] for b in bat if b.get("tipo") == "normal"], cor="#2ea043", simbolo="t1")
+        self.tracado.set_marcas([b["t"] for b in bat], cor=(_replay_global("COLORS", {}) or {}).get("accent", "#1a23e0"), simbolo="t1")
+
+    def _corrigir(self, correcao):
+        """Aplica uma correção pedida pela faixa (Completo) e refaz os números."""
+        try:
+            novas = aplicar_correcoes(self.deteccao.get("batidas", []), [correcao])
+        except Exception:
+            return
+        self.deteccao["batidas"] = novas
+        self.deteccao.update(resumo_batidas(novas))
+        self.correcoes.append(dict(correcao))
+        self._alterado = True
+        self._atualiza_widgets()
+        self.set_tempo(self._t)
+
+    def set_tempo(self, t):
+        self._t = float(t)
+        self.coracao.set_tempo(self._t)
+        self.faixa.set_tempo(self._t)
+        self.tracado.set_tempo(self._t)
+
+    def tem_alteracoes(self):
+        return self._alterado
+
+    def salvar(self):
+        if not self.pasta:
+            return False
+        salvar_batidas(self.pasta, self.deteccao, self.correcoes)
+        self._alterado = False
+        return True
+
+
+# ------------------------------------------------------------
+# Olhos
+# ------------------------------------------------------------
+class CenaReplayEOG(QtWidgets.QWidget):
+    """Cena do Replay dos olhos: olhos que piscam nas piscadas e olham para
+    onde os sinais mandam, traçado H/V com cursor, "Inverter horizontal/
+    vertical", linha do tempo em palavras e contadores. No Completo a linha
+    do tempo aceita correções (remover evento, trocar a direção), salvas em
+    olhos.json.
+    """
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, d, pasta, tipos=None, canal_h=None, canal_v=None,
+                 limiar_uV=None, simples=False, parent=None):
+        super().__init__(parent)
+        self._simples = bool(simples)
+        self.pasta = pasta
+        self.fs = float(d.get("sr") or 250.0)
+        eeg = np.asarray(d.get("eeg"), float)
+        n_ch = eeg.shape[0] if eeg.ndim == 2 else 0
+        canais = _replay_canais_do_tipo(tipos, "EoG", n_ch)
+        if canal_h is None or not (0 <= int(canal_h) < n_ch):
+            canal_h = canais[0] if canais else 0
+        if canal_v is None or not (0 <= int(canal_v) < n_ch):
+            canal_v = canais[1] if len(canais) > 1 else canal_h
+        self.canal_h, self.canal_v = int(canal_h), int(canal_v)
+        self.h = eeg[self.canal_h] - float(np.median(eeg[self.canal_h])) if n_ch else np.zeros(0)
+        self.v = eeg[self.canal_v] - float(np.median(eeg[self.canal_v])) if n_ch else np.zeros(0)
+        self.dur = self.h.size / self.fs if self.fs else 0.0
+        self.t = np.arange(self.h.size) / self.fs
+        # sensibilidade: a gravada no summary (report_channels.eog_threshold);
+        # sem ela, um limiar robusto pelo próprio sinal vertical
+        if not limiar_uV or limiar_uV <= 0:
+            mad = float(np.median(np.abs(self.v - np.median(self.v)))) if self.v.size else 0.0
+            limiar_uV = max(40.0, 6.0 * 1.4826 * mad)
+        self.limiar = float(limiar_uV)
+        self.inv_h = False
+        self.inv_v = False
+        self.correcoes = []
+        salvo = carregar_olhos(pasta) if pasta else None
+        if isinstance(salvo, dict) and salvo.get("eventos") is not None:
+            self.deteccao = salvo
+            self.correcoes = list(salvo.get("correcoes") or [])
+            self.inv_h = bool(salvo.get("inverter_h", False))
+            self.inv_v = bool(salvo.get("inverter_v", False))
+            self.limiar = float(salvo.get("limiar_uV") or self.limiar)
+        else:
+            self.deteccao = detectar_eventos_olhos(self.h, self.v, self.fs, self.limiar,
+                                                   self.inv_h, self.inv_v)
+        self._alterado = False
+        self._monta()
+        self.set_tempo(0.0)
+
+    def _monta(self):
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(6)
+        topo = QtWidgets.QHBoxLayout(); topo.setSpacing(8)
+        self.olhos = OlhosReplayWidget()
+        self.olhos.setMinimumSize(260, 200)
+        topo.addWidget(self.olhos, 2)
+        self.tracado = _TracadoReplay(tr("Traçado dos olhos (horizontal e vertical)"))
+        cor = (_replay_global("SIGNAL_TYPE_COLORS", {}) or {}).get("EoG", "#4fb3d9")
+        self.tracado.set_series([(self.t, self.h, cor, "H"), (self.t, self.v, "#9a6ad0", "V")])
+        self.tracado.cursorMovido.connect(self.cursorMovido)
+        topo.addWidget(self.tracado, 3)
+        lay.addLayout(topo, 3)
+        ctrl = QtWidgets.QHBoxLayout()
+        self.chk_h = QtWidgets.QCheckBox(tr("Inverter horizontal"))
+        self.chk_h.setToolTip(tr("Use se os olhos olham para o lado contrário do que a pessoa fez "
+                                 "(eletrodos trocados)."))
+        self.chk_h.setChecked(self.inv_h)
+        self.chk_h.toggled.connect(self._inverter)
+        self.chk_v = QtWidgets.QCheckBox(tr("Inverter vertical"))
+        self.chk_v.setChecked(self.inv_v)
+        self.chk_v.toggled.connect(self._inverter)
+        ctrl.addWidget(self.chk_h); ctrl.addWidget(self.chk_v)
+        self.lbl_cont = QtWidgets.QLabel("")
+        ctrl.addWidget(self.lbl_cont, 1)
+        lay.addLayout(ctrl)
+        self.linha = LinhaDoTempoOlhosWidget()
+        self.linha.setMaximumHeight(160)
+        self.linha.cursorMovido.connect(self.cursorMovido)
+        if not self._simples:
+            self.linha.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+            self.linha.customContextMenuRequested.connect(self._menu_evento)
+        lay.addWidget(self.linha)
+        self._atualiza_widgets()
+
+    def _atualiza_widgets(self):
+        ev = self.deteccao.get("eventos", [])
+        self.olhos.set_eventos(self.deteccao)
+        self.linha.set_eventos(self.deteccao)
+        self.tracado.set_marcas([e["t"] for e in ev if e.get("tipo") == "piscada"], cor="#4fb3d9", simbolo="o")
+        r = resumo_eventos_olhos(ev, self.dur)
+        self.lbl_cont.setText(tr("piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}").format(
+            r.get("n_piscadas", self.deteccao.get("n_piscadas", 0)),
+            r.get("n_sacadas", self.deteccao.get("n_sacadas", 0)),
+            r.get("n_sacadas_v", self.deteccao.get("n_sacadas_v", 0))))
+
+    def _inverter(self, _on=None):
+        """Troca as direções sem redetectar (mesmos eventos, outro rótulo)."""
+        self.inv_h, self.inv_v = self.chk_h.isChecked(), self.chk_v.isChecked()
+        try:
+            self.deteccao = inverter_direcoes(self.deteccao, self.inv_h, self.inv_v)
+        except Exception:
+            pass
+        self._alterado = True
+        self._atualiza_widgets()
+        self.set_tempo(self._t)
+
+    def _menu_evento(self, pos):
+        """Correções no Completo: remover o evento ou trocar a direção."""
+        item = self.linha.itemAt(pos)
+        if item is None:
+            return
+        idx = self.linha.row(item)
+        eventos = self.deteccao.get("eventos", [])
+        if not (0 <= idx < len(eventos)):
+            return
+        ev = eventos[idx]
+        menu = QtWidgets.QMenu(self)
+        a_rm = menu.addAction(tr("Remover este evento"))
+        acoes_dir = {}
+        if ev.get("tipo") == "sacada":
+            sub = menu.addMenu(tr("Trocar a direção"))
+            for dnome in ("direita", "esquerda", "cima", "baixo"):
+                acoes_dir[sub.addAction(tr(dnome))] = dnome
+        escolha = menu.exec(self.linha.mapToGlobal(pos))
+        if escolha is None:
+            return
+        if escolha is a_rm:
+            corr = {"acao": "remover", "t": ev["t"]}
+        else:
+            corr = {"acao": "tipo", "t": ev["t"], "tipo": "sacada", "direcao": acoes_dir.get(escolha)}
+        try:
+            self.deteccao["eventos"] = aplicar_correcoes_olhos(eventos, [corr])
+        except Exception:
+            return
+        self.correcoes.append(corr)
+        self._alterado = True
+        self._atualiza_widgets()
+
+    def set_tempo(self, t):
+        self._t = float(t)
+        gx, gy = olhar_no_instante(self.h, self.v, self.fs, self._t, self.inv_h, self.inv_v,
+                                   2.0 * self.limiar)
+        self.olhos.set_olhar(gx, gy)
+        self.olhos.set_tempo(self._t)
+        self.linha.set_tempo(self._t)
+        self.tracado.set_tempo(self._t)
+
+    def tem_alteracoes(self):
+        return self._alterado
+
+    def salvar(self):
+        if not self.pasta:
+            return False
+        self.deteccao["inverter_h"] = self.inv_h
+        self.deteccao["inverter_v"] = self.inv_v
+        salvar_olhos(self.pasta, self.deteccao, self.correcoes, self.dur)
+        self._alterado = False
+        return True
+
+
+def abrir_replay(d, pasta, modo=None, tipos=None, musculos=None, canais_relatorio=None,
+                 simples=False, nome="", parent=None):
+    """Monta a cena certa para a gravação e devolve o ReplayDialog (ou None
+    quando o exame não tem replay).
+
+    `canais_relatorio` é o report_channels do summary.json ({ecg, eog_h,
+    eog_v, eog_threshold}); quando falta, a cena escolhe os canais pelo tipo.
+    """
+    exame = replay_exame_da_gravacao(modo, tipos)
+    if exame is None:
+        return None
+    rc = canais_relatorio or {}
+    if exame == "EMG":
+        cena = CenaReplayEMG(d, pasta, tipos, musculos, simples=simples, nome=nome)
+        titulo = tr("Replay do movimento — {0}").format(nome)
+        aviso = tr("A figura SIMULA o movimento marcado; não é vídeo da pessoa. "
+                   "Não é laudo nem diagnóstico.")
+    elif exame == "ECG":
+        cena = CenaReplayECG(d, pasta, tipos, canal=rc.get("ecg"), simples=simples)
+        titulo = tr("Replay do coração — {0}").format(nome)
+        aviso = tr("O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.")
+    else:
+        cena = CenaReplayEOG(d, pasta, tipos, canal_h=rc.get("eog_h"), canal_v=rc.get("eog_v"),
+                             limiar_uV=rc.get("eog_threshold"), simples=simples)
+        titulo = tr("Replay dos olhos — {0}").format(nome)
+        aviso = tr("Os olhos desenhados SIMULAM as piscadas e o olhar gravados. "
+                   "Não é laudo nem diagnóstico.")
+    dlg = ReplayDialog(cena, cena.dur, titulo, simples=simples, parent=parent, aviso=aviso)
+    dlg.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose, True)
+    return dlg
+
+
 class _VirtualJoystickWidget(QtWidgets.QWidget):
     """Widget que desenha um joystick virtual.
 
@@ -48419,6 +50517,1464 @@ def mi_validate_focal_erd(eeg, fs, ch_names, trials, art_uv=120.0):
 
 
 # ============================================================
+# P2 — Painéis em "gavetas" (nível Completo)
+# ============================================================
+# Cada QGroupBox empilhado numa aba vira uma gaveta: cabeçalho fino com
+# recolher/expandir, menu (mover, tamanho padrão, fechar) e fechar, e uma
+# alça embaixo para arrastar a altura. Painéis lado a lado dividem a largura
+# num QSplitter. No Simples a gaveta se comporta como o QGroupBox de hoje.
+# O arranjo (ordem, visíveis, recolhidos, alturas, divisões) é estado do
+# CatalogoPaineis e vai para a chave "paineis" do config.json.
+
+_GAVETA_ALTURA_MAX = 16777215      # QWIDGETSIZE_MAX
+_GAVETA_ALTURA_MIN = 48            # menor corpo que ainda mostra algo
+_GAVETA_EXAMES = ("EEG", "EMG", "ECG", "EoG")
+_GAVETA_DEBOUNCE_MS = 500          # o arraste da alça muda a altura a cada pixel
+
+
+def _gaveta_cores():
+    """Paleta em vigor: o COLORS do programa, lido na hora (ele é mutado
+    in-place na troca de tema). Sem COLORS por perto (módulo usado sozinho
+    em teste) devolve um cinza neutro para nada estourar."""
+    try:
+        return COLORS
+    except NameError:
+        return {"background": "#f0f0f0", "surface": "#ffffff",
+                "surface_alt": "#e8e8e8", "border": "#c8c8c8",
+                "text": "#202020", "text_dim": "#606060",
+                "accent": "#3050c0", "accent_dim": "#203890",
+                "error": "#c03040", "warning": "#a06000",
+                "expansion": "#108060"}
+
+
+def _gaveta_mistura(cor, fundo, alfa):
+    """Tinta OPACA de `cor` pousada sobre `fundo` com opacidade `alfa`.
+    Opaca de propósito: com rgba o Fusion pinta o realce da paleta por baixo."""
+    a, b = QtGui.QColor(cor), QtGui.QColor(fundo)
+    if not a.isValid() or not b.isValid():
+        return str(cor)
+
+    def m(x, y):
+        return int(round(x * alfa + y * (1 - alfa)))
+    return "#%02x%02x%02x" % (m(a.red(), b.red()), m(a.green(), b.green()),
+                              m(a.blue(), b.blue()))
+
+
+def _gaveta_repolir(w):
+    """Reaplica a folha de estilo num widget cuja propriedade dinâmica mudou
+    (o QSS só relê [prop="x"] depois de unpolish/polish)."""
+    try:
+        st = w.style()
+        st.unpolish(w)
+        st.polish(w)
+        w.update()
+    except Exception:
+        pass
+
+
+def qss_gavetas(c):
+    """Folha de estilo das gavetas a partir do dicionário de cores `c` (as
+    chaves do COLORS). É anexada por build_stylesheet, então acompanha a troca
+    de tema. Só usa cores do tema: nada fixo que quebre no claro ou no escuro."""
+    hover_cab = _gaveta_mistura(c["accent"], c["surface_alt"], 0.08)
+    hover_bt = _gaveta_mistura(c["accent"], c["surface_alt"], 0.14)
+    return f"""
+/* ===== Painéis em gavetas (P2) ===== */
+QFrame#painelGaveta {{ background-color: {c['surface']};
+    border: 1px solid {c['border']}; border-radius: 5px; }}
+QFrame#gavetaCabecalho {{ background-color: {c['surface_alt']}; border: none;
+    border-bottom: 1px solid {c['border']};
+    border-top-left-radius: 4px; border-top-right-radius: 4px; }}
+QFrame#gavetaCabecalho[aberta="false"] {{ border-bottom: none;
+    border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }}
+QFrame#gavetaCabecalho:hover {{ background-color: {hover_cab}; }}
+QLabel#gavetaTitulo {{ color: {c['accent']}; font-weight: 600;
+    background: transparent; border: none; padding: 0px; }}
+QToolButton#gavetaSeta, QToolButton#gavetaMenu, QToolButton#gavetaFechar {{
+    background: transparent; border: none; border-radius: 3px;
+    color: {c['text_dim']}; padding: 0px; margin: 0px; font-weight: bold; }}
+QToolButton#gavetaSeta {{ color: {c['accent']}; font-size: 10pt; }}
+QToolButton#gavetaMenu {{ font-size: 12pt; }}
+QToolButton#gavetaFechar {{ font-size: 12pt; }}
+QToolButton#gavetaSeta:hover, QToolButton#gavetaMenu:hover {{
+    background-color: {hover_bt}; color: {c['accent']}; }}
+QToolButton#gavetaFechar:hover {{ background-color: {hover_bt};
+    color: {c['error']}; }}
+QToolButton#gavetaMenu::menu-indicator {{ image: none; width: 0px; }}
+QFrame#gavetaCorpo {{ background: transparent; border: none; }}
+QFrame#gavetaAlca {{ background: transparent; border: none; }}
+QGroupBox[emGaveta="true"] {{ border: none; border-radius: 0px;
+    margin-top: 0px; padding: 8px 10px 6px 10px; background: transparent; }}
+QGroupBox[emGaveta="true"]::title {{ height: 0px; padding: 0px; margin: 0px; }}
+QSplitter#linhaGavetas::handle {{ background: transparent; }}
+QSplitter#linhaGavetas::handle:hover {{ background: {c['border']}; }}
+QToolButton#botaoPaineis {{ background-color: {c['surface_alt']};
+    color: {c['accent']}; border: 1px solid {c['border']}; border-radius: 4px;
+    padding: 3px 10px; font-weight: 600; }}
+QToolButton#botaoPaineis:hover {{ border-color: {c['accent_dim']};
+    background-color: {hover_bt}; }}
+QToolButton#botaoPaineis::menu-indicator {{ image: none; width: 0px; }}
+"""
+
+
+class CatalogoPaineis:
+    """Registro dos painéis que podem virar gaveta — id, título, aba, exames a
+    que pertencem e estado padrão — mais o estado ATUAL de cada um (visível,
+    recolhido, altura), a ordem por aba e as divisões das linhas lado a lado.
+    Serializa tudo para a chave "paineis" do config.json e é a fonte da verdade
+    tanto para as pilhas (PilhaGavetas) quanto para os perfis de uso (P4)."""
+
+    def __init__(self):
+        self._paineis = {}        # id -> {"titulo", "aba", "exames", "padrao", "fechavel", "assistente"}
+        self._estado = {}         # id -> {"visivel", "recolhido", "altura"}
+        self._ordem = {}          # aba -> [ids] (ordem atual)
+        self._ordem_padrao = {}   # aba -> [ids] (ordem de registro)
+        self._splits = {}         # aba -> {nome: [tamanhos]}
+        self._nomes_aba = {}      # aba -> nome de tela (chave de tr())
+
+    # ---------- registro ----------
+    @staticmethod
+    def _altura_valida(altura):
+        """None, ou um inteiro dentro de limites sãos (um config editado à mão
+        com altura 0 ou 10^9 não pode travar a tela)."""
+        if altura is None or isinstance(altura, bool):
+            return None
+        try:
+            a = int(altura)
+        except (TypeError, ValueError):
+            return None
+        return max(_GAVETA_ALTURA_MIN, min(a, 6000))
+
+    def registrar(self, id_, titulo, aba, exames=(), visivel=True,
+                  recolhido=False, altura=None, fechavel=True, assistente=True):
+        """Cadastra (ou atualiza o cadastro de) um painel e devolve o id.
+        `titulo` é a chave em português (traduzida na hora de exibir);
+        `fechavel=False` marca um painel-núcleo que nunca é fechado;
+        `assistente=False` tira o painel da lista "Escolha os gráficos" do
+        assistente (formulários de configuração não são gráficos).
+        Registrar de novo o mesmo id não apaga o estado atual, para o builder
+        poder rodar mais de uma vez sem perder o arranjo do usuário."""
+        if isinstance(exames, str):
+            exames = [exames]
+        padrao = {"visivel": bool(visivel), "recolhido": bool(recolhido),
+                  "altura": self._altura_valida(altura)}
+        self._paineis[str(id_)] = {"titulo": str(titulo), "aba": str(aba),
+                                   "exames": {str(e) for e in exames},
+                                   "padrao": padrao, "fechavel": bool(fechavel),
+                                   "assistente": bool(assistente)}
+        self._estado.setdefault(str(id_), dict(padrao))
+        for mapa in (self._ordem, self._ordem_padrao):
+            lista = mapa.setdefault(str(aba), [])
+            if str(id_) not in lista:
+                lista.append(str(id_))
+        return str(id_)
+
+    def tem(self, id_):
+        """O id está registrado?"""
+        return id_ in self._paineis
+
+    def nomear_aba(self, aba, nome):
+        """Dá à aba (chave interna, ex.: "emg") um nome de tela em português
+        (ex.: "EMG · Músculos"), que o assistente mostra via tr()."""
+        self._nomes_aba[str(aba)] = str(nome)
+
+    def nome_da_aba(self, aba):
+        """Nome de tela da aba (ou a própria chave, se não foi nomeada)."""
+        return self._nomes_aba.get(aba, aba)
+
+    def fechavel_de(self, id_):
+        """O painel pode ser fechado pelo usuário?"""
+        return bool(self._paineis[id_].get("fechavel", True))
+
+    def itens(self, todos=False):
+        """Lista de dicts {"id", "titulo", "aba", "exames", "padrao", "fechavel"}
+        na ordem de registro, para o assistente de primeiro uso (P4) e para os
+        perfis. Por padrão só os painéis marcados para o assistente (gráficos);
+        todos=True inclui formulários e painéis-núcleo."""
+        saida = []
+        for aba in self._ordem_padrao:
+            for i in self._ordem_padrao[aba]:
+                p = self._paineis[i]
+                if not todos and not p.get("assistente", True):
+                    continue
+                saida.append({"id": i, "titulo": p["titulo"],
+                              "aba": self.nome_da_aba(aba),
+                              "exames": sorted(p["exames"]),
+                              "padrao": dict(p["padrao"]),
+                              "fechavel": bool(p.get("fechavel", True))})
+        return saida
+
+    def ids(self):
+        """Todos os ids, na ordem das abas e, dentro da aba, na ordem atual."""
+        out = []
+        for aba in self._ordem:
+            out.extend(self._ordem[aba])
+        return out
+
+    def abas(self):
+        """Abas que têm pelo menos um painel registrado."""
+        return list(self._ordem.keys())
+
+    def titulo(self, id_):
+        """Título de tela do painel (já em português; quem registra passa tr())."""
+        return self._paineis[id_]["titulo"]
+
+    def aba_de(self, id_):
+        """Aba a que o painel pertence."""
+        return self._paineis[id_]["aba"]
+
+    def exames_de(self, id_):
+        """Exames (EEG/EMG/ECG/EoG) a que o painel pertence."""
+        return set(self._paineis[id_]["exames"])
+
+    def ids_da_aba(self, aba):
+        """Ids da aba, na ordem ATUAL (a que o usuário arrumou)."""
+        return list(self._ordem.get(aba, []))
+
+    def ids_do_exame(self, exame):
+        """Ids dos painéis que pertencem ao exame. "Hibrido" devolve todos."""
+        if exame == "Hibrido":
+            return self.ids()
+        return [i for i in self.ids() if exame in self._paineis[i]["exames"]]
+
+    # ---------- estado ----------
+    def estado_padrao(self, id_):
+        """Cópia do estado padrão do painel ({visivel, recolhido, altura})."""
+        return dict(self._paineis[id_]["padrao"])
+
+    def estado_atual(self, id_):
+        """Cópia do estado atual do painel."""
+        return dict(self._estado.get(id_) or self._paineis[id_]["padrao"])
+
+    def definir_estado(self, id_, **campos):
+        """Atualiza campos do estado atual (visivel, recolhido, altura)."""
+        if id_ not in self._paineis:
+            return
+        e = self._estado.setdefault(id_, self.estado_padrao(id_))
+        if "visivel" in campos:
+            e["visivel"] = bool(campos["visivel"])
+        if "recolhido" in campos:
+            e["recolhido"] = bool(campos["recolhido"])
+        if "altura" in campos:
+            e["altura"] = self._altura_valida(campos["altura"])
+
+    def ordem_da_aba(self, aba):
+        """Ordem atual dos ids da aba."""
+        return list(self._ordem.get(aba, []))
+
+    def ordem_padrao_da_aba(self, aba):
+        """Ordem de registro dos ids da aba (o "padrão")."""
+        return list(self._ordem_padrao.get(aba, []))
+
+    def definir_ordem(self, aba, ids):
+        """Nova ordem para a aba. Ids desconhecidos são descartados e os que
+        faltarem entram no fim, na ordem padrão — um config velho nunca some
+        com um painel novo."""
+        validos = [i for i in ids if i in self._paineis
+                   and self._paineis[i]["aba"] == aba]
+        vistos = set()
+        ordem = []
+        for i in validos:
+            if i not in vistos:
+                vistos.add(i)
+                ordem.append(i)
+        for i in self._ordem_padrao.get(aba, []):
+            if i not in vistos:
+                ordem.append(i)
+        self._ordem[aba] = ordem
+
+    def splits_da_aba(self, aba):
+        """Divisões salvas das linhas lado a lado da aba: {nome: [tamanhos]}."""
+        return {k: list(v) for k, v in self._splits.get(aba, {}).items()}
+
+    def definir_split(self, aba, nome, tamanhos):
+        """Guarda os tamanhos de um QSplitter de linha."""
+        try:
+            lista = [max(0, int(t)) for t in tamanhos]
+        except (TypeError, ValueError):
+            return
+        if lista:
+            self._splits.setdefault(aba, {})[str(nome)] = lista
+
+    def restaurar_padrao(self, aba=None):
+        """Volta estado, ordem e divisões ao padrão (de uma aba ou de todas)."""
+        abas = [aba] if aba is not None else self.abas()
+        for a in abas:
+            for i in self._ordem_padrao.get(a, []):
+                self._estado[i] = self.estado_padrao(i)
+            self._ordem[a] = list(self._ordem_padrao.get(a, []))
+            self._splits.pop(a, None)
+
+    # ---------- serialização ----------
+    def estado_da_aba(self, aba):
+        """O dict de uma aba, no formato que vai para config.paineis[aba]:
+        {"ordem": [...], "paineis": {id: {...}}, "splits": {...}}."""
+        return {"ordem": self.ordem_da_aba(aba),
+                "paineis": {i: self.estado_atual(i)
+                            for i in self._ordem_padrao.get(aba, [])},
+                "splits": self.splits_da_aba(aba)}
+
+    def aplicar_estado_da_aba(self, aba, d):
+        """Lê o dict de uma aba vindo do config.json, com tolerância: tipos
+        errados e ids desconhecidos são ignorados em silêncio."""
+        if not isinstance(d, dict):
+            return
+        paineis = d.get("paineis")
+        if isinstance(paineis, dict):
+            for i, e in paineis.items():
+                if i in self._paineis and isinstance(e, dict):
+                    campos = {}
+                    if isinstance(e.get("visivel"), bool):
+                        campos["visivel"] = e["visivel"]
+                    if isinstance(e.get("recolhido"), bool):
+                        campos["recolhido"] = e["recolhido"]
+                    if "altura" in e:
+                        campos["altura"] = e["altura"]
+                    self.definir_estado(i, **campos)
+        ordem = d.get("ordem")
+        if isinstance(ordem, list):
+            self.definir_ordem(aba, [str(i) for i in ordem])
+        splits = d.get("splits")
+        if isinstance(splits, dict):
+            for nome, tam in splits.items():
+                if isinstance(tam, list):
+                    self.definir_split(aba, nome, tam)
+
+    def para_config(self):
+        """Tudo que vai para a chave "paineis" do config.json: {aba: estado}."""
+        return {aba: self.estado_da_aba(aba) for aba in self.abas()}
+
+    def de_config(self, d):
+        """Lê a chave "paineis" do config.json ({aba: estado}); abas e ids
+        desconhecidos ficam de fora."""
+        if not isinstance(d, dict):
+            return
+        for aba, est in d.items():
+            if aba in self._ordem_padrao:
+                self.aplicar_estado_da_aba(aba, est)
+
+    # ---------- API para o P4 (perfis de uso) ----------
+    def recomendados_para(self, exames):
+        """Ids dos painéis que pertencem a pelo menos um dos `exames` (string
+        ou coleção; "Hibrido" = todos). Painel sem exame declarado conta como
+        de interesse geral e entra sempre."""
+        if isinstance(exames, str):
+            exames = [exames]
+        exames = set(exames)
+        if "Hibrido" in exames:
+            return self.ids()
+        return [i for i in self.ids()
+                if not self._paineis[i]["exames"]
+                or self._paineis[i]["exames"] & exames]
+
+    def estado_para_perfil(self, exames):
+        """Um dict completo ("paineis" do config) em que os painéis dos
+        `exames` ficam no estado padrão e os demais nascem fechados. É o que um
+        perfil de uso (P4) grava para arrumar as abas de uma vez."""
+        rec = set(self.recomendados_para(exames))
+        out = {}
+        for aba in self.abas():
+            paineis = {}
+            for i in self._ordem_padrao.get(aba, []):
+                e = self.estado_padrao(i)
+                # painel-núcleo (fechavel=False) nunca nasce fechado
+                if i not in rec and self._paineis[i].get("fechavel", True):
+                    e["visivel"] = False
+                paineis[i] = e
+            out[aba] = {"ordem": self.ordem_padrao_da_aba(aba),
+                        "paineis": paineis, "splits": {}}
+        return out
+
+
+class _CabecalhoGaveta(QtWidgets.QFrame):
+    """Barra fina no alto da gaveta. Um clique em área livre (inclusive no
+    título) recolhe/expande; os botões filhos tratam os próprios cliques."""
+    clicado = QtCore.Signal()
+
+    def mousePressEvent(self, ev):
+        # Aceita o press para o release chegar aqui (se ignorasse, o Qt
+        # mandaria o par press/release para o pai).
+        if ev.button() == QtCore.Qt.MouseButton.LeftButton:
+            ev.accept()
+            return
+        super().mousePressEvent(ev)
+
+    def mouseReleaseEvent(self, ev):
+        if (ev.button() == QtCore.Qt.MouseButton.LeftButton
+                and self.rect().contains(ev.position().toPoint())):
+            self.clicado.emit()
+            ev.accept()
+            return
+        super().mouseReleaseEvent(ev)
+
+
+class _RotuloElidido(QtWidgets.QLabel):
+    """QLabel que corta o título com "…" quando a gaveta fica estreita (duas
+    gavetas lado a lado numa tela pequena), em vez de vazar por cima dos botões."""
+
+    def __init__(self, texto="", parent=None):
+        super().__init__(texto, parent)
+        self._texto_cheio = texto
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Preferred)
+        self.setMinimumWidth(40)
+
+    def set_texto_cheio(self, texto):
+        """Define o título completo e reelide para a largura atual."""
+        self._texto_cheio = texto
+        self._reelidir()
+
+    def texto_cheio(self):
+        """O título sem corte."""
+        return self._texto_cheio
+
+    def _reelidir(self):
+        fm = self.fontMetrics()
+        larg = max(10, self.width() - 2)
+        super().setText(fm.elidedText(self._texto_cheio,
+                                      QtCore.Qt.TextElideMode.ElideRight, larg))
+        self.setToolTip(self._texto_cheio if self.text() != self._texto_cheio else "")
+
+    def resizeEvent(self, ev):
+        super().resizeEvent(ev)
+        self._reelidir()
+
+    def sizeHint(self):
+        # A dica de tamanho é do texto inteiro, para a gaveta pedir largura
+        # suficiente quando houver espaço.
+        fm = self.fontMetrics()
+        return QtCore.QSize(fm.horizontalAdvance(self._texto_cheio) + 4,
+                            fm.height())
+
+    def minimumSizeHint(self):
+        return QtCore.QSize(40, self.fontMetrics().height())
+
+
+class _AlcaGaveta(QtWidgets.QFrame):
+    """Alça de ~6 px na base da gaveta: arrastar muda a altura do corpo;
+    duplo clique volta ao tamanho padrão. Desenha um traço curto centralizado
+    com as cores do tema (sem imagem externa)."""
+    inicioArrasto = QtCore.Signal()
+    arrastou = QtCore.Signal(int)          # deslocamento em px desde o início
+    fimArrasto = QtCore.Signal()
+    duploClique = QtCore.Signal()
+
+    ALTURA = 7
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("gavetaAlca")
+        self.setFixedHeight(self.ALTURA)
+        self.setCursor(QtCore.Qt.CursorShape.SizeVerCursor)
+        self.setMouseTracking(True)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_Hover, True)
+        self._y0 = None
+        self._quente = False
+
+    def paintEvent(self, ev):
+        super().paintEvent(ev)
+        c = _gaveta_cores()
+        cor = QtGui.QColor(c["accent_dim"] if (self._quente or self._y0 is not None)
+                           else c["border"])
+        p = QtGui.QPainter(self)
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.setBrush(cor)
+        larg = 36
+        x = (self.width() - larg) / 2.0
+        y = (self.height() - 3) / 2.0
+        p.drawRoundedRect(QtCore.QRectF(x, y, larg, 3), 1.5, 1.5)
+        p.end()
+
+    def enterEvent(self, ev):
+        self._quente = True
+        self.update()
+        super().enterEvent(ev)
+
+    def leaveEvent(self, ev):
+        self._quente = False
+        self.update()
+        super().leaveEvent(ev)
+
+    def mousePressEvent(self, ev):
+        if ev.button() == QtCore.Qt.MouseButton.LeftButton:
+            self._y0 = ev.globalPosition().y()
+            self.inicioArrasto.emit()
+            self.update()
+            ev.accept()
+            return
+        super().mousePressEvent(ev)
+
+    def mouseMoveEvent(self, ev):
+        if self._y0 is not None:
+            self.arrastou.emit(int(round(ev.globalPosition().y() - self._y0)))
+            ev.accept()
+            return
+        super().mouseMoveEvent(ev)
+
+    def mouseReleaseEvent(self, ev):
+        if self._y0 is not None and ev.button() == QtCore.Qt.MouseButton.LeftButton:
+            self._y0 = None
+            self.fimArrasto.emit()
+            self.update()
+            ev.accept()
+            return
+        super().mouseReleaseEvent(ev)
+
+    def mouseDoubleClickEvent(self, ev):
+        if ev.button() == QtCore.Qt.MouseButton.LeftButton:
+            self._y0 = None
+            self.duploClique.emit()
+            ev.accept()
+            return
+        super().mouseDoubleClickEvent(ev)
+
+
+class PainelGaveta(QtWidgets.QFrame):
+    """Embrulha um widget de conteúdo (normalmente um QGroupBox já existente)
+    numa gaveta: cabeçalho fino (seta recolher/expandir, título, menu "⋯",
+    fechar "×"), corpo e alça inferior para arrastar a altura. O título do
+    QGroupBox vira o título do cabeçalho e o QGroupBox perde título e borda.
+
+    Com simples=True nada disso existe (nem cabeçalho nem alça): a gaveta é
+    só um invólucro transparente e o QGroupBox fica como hoje, porque no
+    Simples nada do arranjo aparece. set_simples(False) cria o cromo na hora.
+
+    Estado: visível (fechar = esconder, não destruir), recolhido e altura.
+    Toda mudança emite estadoMudou(id). esta_ativo() diz se vale a pena
+    calcular algo para este painel neste instante."""
+    estadoMudou = QtCore.Signal(str)
+    moverPedido = QtCore.Signal(str, int)     # id, -1 (cima) / +1 (baixo)
+
+    def __init__(self, id_, conteudo, titulo=None, simples=False,
+                 aba_visivel=None, altura_padrao=None, fechavel=True,
+                 parent=None):
+        # Antes do super(): setVisible (sobrescrito) pode ser chamado pelo Qt
+        # durante a construção e lê estes campos via getattr.
+        self._visivel_painel = True
+        self._recolhido = False
+        self._simples = bool(simples)
+        super().__init__(parent)
+        self.setObjectName("painelGaveta")
+        self._id = str(id_)
+        self._conteudo = conteudo
+        self._aba_visivel = aba_visivel
+        self._altura_padrao = CatalogoPaineis._altura_valida(altura_padrao)
+        self._fechavel = bool(fechavel)
+        self._altura = None
+        self._pilha = None
+        self._celula = None       # _CelulaLinha que a segura numa linha (ou None)
+        self._h0 = 0
+        self._cab = None
+        self._alca = None
+        self._menu = None
+        self._titulo_original = None
+        if isinstance(conteudo, QtWidgets.QGroupBox):
+            self._titulo_original = conteudo.title()
+            if titulo is None:
+                titulo = self._titulo_original
+        # Título canônico sem escape: o QGroupBox escreve "&" como "&&", o
+        # QLabel do cabeçalho não (e o QAction do menu escapa de novo).
+        self._titulo = (titulo or "").replace("&&", "&")
+
+        self._corpo = QtWidgets.QFrame(self)
+        self._corpo.setObjectName("gavetaCorpo")
+        cl = QtWidgets.QVBoxLayout(self._corpo)
+        cl.setContentsMargins(0, 0, 0, 0)
+        cl.setSpacing(0)
+        cl.addWidget(conteudo)
+
+        self._lay = QtWidgets.QVBoxLayout(self)
+        self._lay.setContentsMargins(0, 0, 0, 0)
+        self._lay.setSpacing(0)
+        self._lay.addWidget(self._corpo, 1)
+        # Sem espaçador interno de propósito: um layout com spacer Expanding
+        # torna o widget "expansivo" para o layout de fora (QWidgetItem herda
+        # expandingDirections do layout filho) e a gaveta recolhida crescia
+        # vazia. Quem segura a altura é a política de tamanho (_aplicar_recolhido).
+
+        self.set_simples(self._simples)
+
+    # ---------- cromo (cabeçalho e alça), criado só no Completo ----------
+    def _garantir_cromo(self):
+        """Cria cabeçalho, menu e alça na primeira vez em que a gaveta sai do
+        Simples. No Simples eles nunca existem (economia e "nada aparece")."""
+        if self._cab is not None:
+            return
+        cab = _CabecalhoGaveta(self)
+        cab.setObjectName("gavetaCabecalho")
+        cab.setProperty("aberta", "true")
+        cab.clicado.connect(self.alternar_recolhido)
+        hl = QtWidgets.QHBoxLayout(cab)
+        hl.setContentsMargins(6, 0, 4, 0)
+        hl.setSpacing(2)
+
+        self._bt_seta = QtWidgets.QToolButton(cab)
+        self._bt_seta.setObjectName("gavetaSeta")
+        self._bt_seta.setText("▾")
+        self._bt_seta.setAutoRaise(True)
+        self._bt_seta.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+        self._bt_seta.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+        self._bt_seta.clicked.connect(self.alternar_recolhido)
+
+        self._lbl_titulo = _RotuloElidido(self._titulo, cab)
+        self._lbl_titulo.setObjectName("gavetaTitulo")
+        self._lbl_titulo.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+
+        self._bt_menu = QtWidgets.QToolButton(cab)
+        self._bt_menu.setObjectName("gavetaMenu")
+        self._bt_menu.setText("⋯")
+        self._bt_menu.setAutoRaise(True)
+        self._bt_menu.setToolTip(tr("Opções do painel"))
+        self._bt_menu.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+        self._bt_menu.setPopupMode(
+            QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)
+        self._menu = QtWidgets.QMenu(self._bt_menu)
+        self._menu.aboutToShow.connect(self._montar_menu)
+        self._bt_menu.setMenu(self._menu)
+
+        self._bt_fechar = QtWidgets.QToolButton(cab)
+        self._bt_fechar.setObjectName("gavetaFechar")
+        self._bt_fechar.setText("×")
+        self._bt_fechar.setAutoRaise(True)
+        self._bt_fechar.setToolTip(tr("Fechar painel (reabra pelo botão Painéis)"))
+        self._bt_fechar.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+        self._bt_fechar.clicked.connect(self.fechar)
+        self._bt_fechar.setVisible(self._fechavel)
+
+        hl.addWidget(self._bt_seta)
+        hl.addWidget(self._lbl_titulo, 1)
+        hl.addWidget(self._bt_menu)
+        hl.addWidget(self._bt_fechar)
+        self._cab = cab
+
+        alca = _AlcaGaveta(self)
+        alca.inicioArrasto.connect(self._ao_iniciar_arrasto)
+        alca.arrastou.connect(self._ao_arrastar)
+        alca.duploClique.connect(self.tamanho_padrao)
+        alca.setToolTip(tr("Arraste para mudar a altura · duplo clique: tamanho padrão"))
+        self._alca = alca
+
+        self._lay.insertWidget(0, cab)
+        self._lay.insertWidget(2, alca)
+        self._ajustar_metrica()
+
+    def _ajustar_metrica(self):
+        """Altura do cabeçalho pela fonte em vigor (acompanha "Tamanho da
+        letra"), sem cair abaixo de 22 px nem passar de ~30."""
+        if self._cab is None:
+            return
+        fm = self._lbl_titulo.fontMetrics()
+        h = max(22, min(30, fm.height() + 7))
+        self._cab.setFixedHeight(h)
+        for bt in (self._bt_seta, self._bt_menu, self._bt_fechar):
+            bt.setFixedSize(h - 4, h - 4)
+
+    def changeEvent(self, ev):
+        super().changeEvent(ev)
+        if ev.type() in (QtCore.QEvent.Type.FontChange,
+                         QtCore.QEvent.Type.StyleChange,
+                         QtCore.QEvent.Type.ApplicationFontChange):
+            self._ajustar_metrica()
+
+    def _montar_menu(self):
+        """Refaz o menu "⋯" a cada abertura, porque "mover" depende da posição
+        atual na pilha e "fechar" depende de fechavel."""
+        m = self._menu
+        m.clear()
+        a_cima = m.addAction(tr("Mover para cima"))
+        a_cima.triggered.connect(lambda: self.moverPedido.emit(self._id, -1))
+        a_baixo = m.addAction(tr("Mover para baixo"))
+        a_baixo.triggered.connect(lambda: self.moverPedido.emit(self._id, +1))
+        if self._pilha is not None:
+            a_cima.setEnabled(self._pilha.pode_mover(self._id, -1))
+            a_baixo.setEnabled(self._pilha.pode_mover(self._id, +1))
+        else:
+            a_cima.setEnabled(False)
+            a_baixo.setEnabled(False)
+        a_pad = m.addAction(tr("Tamanho padrão"))
+        a_pad.triggered.connect(self.tamanho_padrao)
+        a_pad.setEnabled(not self._recolhido)
+        if self._fechavel:
+            m.addSeparator()
+            m.addAction(tr("Fechar")).triggered.connect(self.fechar)
+
+    # ---------- identidade ----------
+    def id(self):
+        """Id do painel no catálogo."""
+        return self._id
+
+    def titulo(self):
+        """Título mostrado no cabeçalho."""
+        return self._titulo
+
+    def set_titulo(self, titulo):
+        """Troca o título (use isto, não setTitle() no QGroupBox: no Completo o
+        QGroupBox fica sem título e é o cabeçalho que o mostra)."""
+        self._titulo = str(titulo).replace("&&", "&")
+        self._titulo_original = self._titulo.replace("&", "&&")
+        if self._cab is not None:
+            self._lbl_titulo.set_texto_cheio(self._titulo)
+        if self._simples and isinstance(self._conteudo, QtWidgets.QGroupBox):
+            self._conteudo.setTitle(self._titulo_original)
+
+    def conteudo(self):
+        """O widget embrulhado."""
+        return self._conteudo
+
+    def fechavel(self):
+        """O painel tem botão/menu "Fechar"?"""
+        return self._fechavel
+
+    def menu(self):
+        """O QMenu do botão "⋯" (None no Simples)."""
+        return self._menu
+
+    def cabecalho(self):
+        """O QFrame do cabeçalho (None no Simples)."""
+        return self._cab
+
+    # ---------- estado ----------
+    def recolhido(self):
+        """Está recolhido (só o cabeçalho à mostra)?"""
+        return self._recolhido
+
+    def visivel_painel(self):
+        """Está aberto (não fechado pelo usuário)? Independe do nível e da aba."""
+        return self._visivel_painel
+
+    def altura(self):
+        """Altura fixada pelo usuário em px, ou None (tamanho natural)."""
+        return self._altura
+
+    def altura_padrao(self):
+        """Altura padrão do catálogo (None = natural)."""
+        return self._altura_padrao
+
+    def estado(self):
+        """{visivel, recolhido, altura} — o que vai para o catálogo."""
+        return {"visivel": self._visivel_painel, "recolhido": self._recolhido,
+                "altura": self._altura}
+
+    def set_recolhido(self, recolhido, avisar=True):
+        """Recolhe (só cabeçalho) ou expande. avisar=False não emite o sinal
+        (usado ao aplicar um estado salvo)."""
+        recolhido = bool(recolhido)
+        mudou = recolhido != self._recolhido
+        self._recolhido = recolhido
+        self._aplicar_recolhido()
+        if mudou and avisar:
+            self.estadoMudou.emit(self._id)
+
+    def alternar_recolhido(self):
+        """Inverte recolhido/expandido (clique na seta ou no título)."""
+        self.set_recolhido(not self._recolhido)
+
+    def _aplicar_recolhido(self):
+        pol = QtWidgets.QSizePolicy.Policy
+        if self._simples:
+            self._corpo.setVisible(True)
+            self.setSizePolicy(pol.Preferred, pol.Preferred)
+            return
+        self._corpo.setVisible(not self._recolhido)
+        # Recolhida, a gaveta não pode crescer: só o cabeçalho.
+        self.setSizePolicy(pol.Preferred, pol.Fixed if self._recolhido else pol.Preferred)
+        if self._alca is not None:
+            self._alca.setVisible(not self._recolhido)
+        if self._cab is not None:
+            self._bt_seta.setText("▸" if self._recolhido else "▾")
+            self._bt_seta.setToolTip(tr("Expandir") if self._recolhido
+                                     else tr("Recolher"))
+            self._cab.setProperty("aberta", "false" if self._recolhido else "true")
+            _gaveta_repolir(self._cab)
+        self.updateGeometry()
+
+    def set_visivel_painel(self, visivel, avisar=True):
+        """Abre ou fecha o painel. Fechar esconde (não destrói): o estado dos
+        widgets continua lá e o botão "Painéis" reabre. Um painel-núcleo
+        (fechavel=False) ignora o pedido de fechar."""
+        visivel = bool(visivel)
+        if not visivel and not self._fechavel:
+            visivel = True
+        mudou = visivel != self._visivel_painel
+        self._visivel_painel = visivel
+        if not self._simples:
+            self._set_visivel_qt(visivel)
+        if mudou and avisar:
+            self.estadoMudou.emit(self._id)
+
+    def fechar(self):
+        """Fecha o painel (botão "×" ou menu)."""
+        if self._fechavel:
+            self.set_visivel_painel(False)
+
+    def _set_visivel_qt(self, visivel):
+        """Visibilidade Qt de verdade, espelhada na célula da linha (se houver):
+        sem isso a célula vazia continuaria ocupando largura no QSplitter."""
+        QtWidgets.QFrame.setVisible(self, visivel)
+        cel = getattr(self, "_celula", None)
+        if cel is not None:
+            try:
+                cel.setVisible(visivel)
+            except RuntimeError:
+                pass
+
+    def setVisible(self, visivel):
+        """Visibilidade Qt. No Completo, um painel fechado pelo usuário não
+        reaparece por um show() vindo de fora (ex.: _apply_detail_level ao
+        trocar de nível): só set_visivel_painel(True) ou o botão Painéis."""
+        if (visivel and not getattr(self, "_simples", False)
+                and not getattr(self, "_visivel_painel", True)):
+            visivel = False
+        self._set_visivel_qt(visivel)
+
+    def altura_minima(self):
+        """Menor altura aceita para o corpo: o mínimo do conteúdo (um formulário
+        não encolhe abaixo do que precisa; para sumir, recolha)."""
+        return max(_GAVETA_ALTURA_MIN, self._corpo.minimumSizeHint().height())
+
+    def set_altura(self, altura, avisar=True):
+        """Fixa a altura do corpo em px, ou None para voltar ao natural."""
+        altura = CatalogoPaineis._altura_valida(altura)
+        if altura is not None:
+            altura = max(self.altura_minima(), altura)
+        mudou = altura != self._altura
+        self._altura = altura
+        self._aplicar_altura()
+        if mudou and avisar:
+            self.estadoMudou.emit(self._id)
+
+    def _aplicar_altura(self):
+        if self._simples or self._altura is None:
+            self._corpo.setMinimumHeight(0)
+            self._corpo.setMaximumHeight(_GAVETA_ALTURA_MAX)
+        else:
+            self._corpo.setFixedHeight(self._altura)
+        self.updateGeometry()
+
+    def tamanho_padrao(self):
+        """Volta à altura padrão do catálogo (menu ou duplo clique na alça)."""
+        self.set_altura(self._altura_padrao)
+
+    def _ao_iniciar_arrasto(self):
+        self._h0 = self._corpo.height()
+
+    def _ao_arrastar(self, dy):
+        self.set_altura(max(self.altura_minima(), self._h0 + dy))
+
+    # ---------- nível ----------
+    def simples(self):
+        """Está no modo Simples (sem cromo)?"""
+        return self._simples
+
+    def set_simples(self, simples):
+        """Alterna entre Simples (nada aparece; o QGroupBox volta a ter título
+        e borda) e Completo (cabeçalho, alça e estado do catálogo valem)."""
+        simples = bool(simples)
+        self._simples = simples
+        gb = self._conteudo if isinstance(self._conteudo, QtWidgets.QGroupBox) else None
+        if simples:
+            if self._cab is not None:
+                self._cab.setVisible(False)
+                self._alca.setVisible(False)
+            if gb is not None:
+                gb.setTitle(self._titulo_original or self._titulo)
+                gb.setProperty("emGaveta", "false")
+                _gaveta_repolir(gb)
+            self.setProperty("emSimples", "true")
+            # Fechado no Completo não é fechado no Simples: ali quem decide é
+            # _register_advanced/_apply_detail_level.
+            if not self._visivel_painel:
+                self._set_visivel_qt(True)
+        else:
+            self._garantir_cromo()
+            self._cab.setVisible(True)
+            if gb is not None:
+                if self._titulo_original is None:
+                    self._titulo_original = gb.title()
+                gb.setTitle("")
+                gb.setProperty("emGaveta", "true")
+                _gaveta_repolir(gb)
+            self.setProperty("emSimples", "false")
+            if not self._visivel_painel:
+                self._set_visivel_qt(False)
+        _gaveta_repolir(self)
+        self._aplicar_recolhido()
+        self._aplicar_altura()
+
+    # ---------- "painel fechado não gasta processamento" ----------
+    def set_aba_visivel(self, func):
+        """Define o callable que diz se a aba dona está em primeiro plano."""
+        self._aba_visivel = func
+
+    def esta_ativo(self, considerar_aba=True):
+        """True só se vale calcular algo para este painel agora: aberto, não
+        recolhido, aba visível (callable aba_visivel) e — com a janela já na
+        tela — não escondido por um ancestral (aba não corrente, Simples...).
+        No Simples o estado da gaveta não conta; só a visibilidade real.
+        considerar_aba=False olha só fechado/recolhido: para painéis cujo
+        conteúdo é gravado em arquivo mesmo fora de vista (snapshot)."""
+        if not self._simples and (not self._visivel_painel or self._recolhido):
+            return False
+        if not considerar_aba:
+            return True
+        if self._aba_visivel is not None:
+            try:
+                if not self._aba_visivel():
+                    return False
+            except Exception:
+                pass
+        jan = self.window()
+        if jan is not None and jan is not self and jan.isVisible() and not self.isVisible():
+            return False
+        return True
+
+
+class _CelulaLinha(QtWidgets.QWidget):
+    """Célula de uma linha lado a lado: segura uma gaveta e um espaçador, para
+    a gaveta recolhida ficar colada no alto em vez de esticar até a altura da
+    vizinha expandida."""
+
+    def __init__(self, gaveta, parent=None):
+        super().__init__(parent)
+        self.gaveta = gaveta
+        gaveta._celula = self          # a gaveta espelha a visibilidade aqui
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+        lay.addWidget(gaveta, 1)
+        lay.addStretch(0)
+        self._lay = lay
+        self.atualizar()
+
+    def atualizar(self):
+        """Dá o espaço extra à gaveta quando expandida e ao espaçador quando
+        recolhida ou com altura fixa."""
+        solta = (not self.gaveta.recolhido() and self.gaveta.altura() is None) \
+            or self.gaveta.simples()
+        self._lay.setStretch(0, 1 if solta else 0)
+        self._lay.setStretch(1, 0 if solta else 1)
+
+
+class PilhaGavetas(QtWidgets.QWidget):
+    """Empilha PainelGaveta num QVBoxLayout (ou em linhas lado a lado com
+    QSplitter), sabe mover para cima/baixo, recolher/expandir todos, restaurar
+    o padrão e cria o botão "Painéis" da aba. Guarda o estado no
+    CatalogoPaineis e emite estadoMudou(dict) com debounce de ~500 ms para o
+    dono gravar em config.paineis[aba] e chamar config.save().
+
+    dono: objeto (a janela) onde a pilha registra as gavetas em `_gavetas`
+    {id: gaveta}, para gaveta_ativa(janela, id) achar cada uma."""
+    estadoMudou = QtCore.Signal(dict)
+
+    def __init__(self, aba, catalogo=None, dono=None, simples=False,
+                 aba_visivel=None, espacamento=6, parent=None):
+        super().__init__(parent)
+        self.setObjectName("pilhaGavetas")
+        self._aba = str(aba)
+        self._catalogo = catalogo if catalogo is not None else CatalogoPaineis()
+        self._dono = dono
+        self._simples = bool(simples)
+        self._aba_visivel = aba_visivel
+        self._gavetas = {}        # id -> PainelGaveta
+        self._itens = []          # [{"widget", "ids", "stretch", "nome", "celulas", "tam_padrao"}]
+        self._botao = None
+        self._menu_paineis = None
+        self._aplicando = False
+        self._lay = QtWidgets.QVBoxLayout(self)
+        self._lay.setContentsMargins(0, 0, 0, 0)
+        self._lay.setSpacing(espacamento)
+        # Espaçador final de stretch 0: só absorve quando nenhum item tem
+        # stretch (todos recolhidos/fixos), para gavetas não esticarem vazias.
+        self._lay.addStretch(0)
+        self._timer = QtCore.QTimer(self)
+        self._timer.setSingleShot(True)
+        self._timer.setInterval(_GAVETA_DEBOUNCE_MS)
+        self._timer.timeout.connect(self._emitir_estado)
+
+    # ---------- acesso ----------
+    def aba(self):
+        """Nome da aba (chave em config.paineis)."""
+        return self._aba
+
+    def catalogo(self):
+        """O CatalogoPaineis compartilhado."""
+        return self._catalogo
+
+    def gaveta(self, id_):
+        """A gaveta de um id (ou None)."""
+        return self._gavetas.get(id_)
+
+    def gavetas(self):
+        """Gavetas na ordem visual atual."""
+        return [self._gavetas[i] for i in self.ordem() if i in self._gavetas]
+
+    def ids(self):
+        """Ids presentes na pilha, na ordem visual."""
+        return self.ordem()
+
+    def ordem(self):
+        """Ordem visual achatada: itens de cima para baixo, linhas da esquerda
+        para a direita."""
+        out = []
+        for it in self._itens:
+            out.extend(it["ids"])
+        return out
+
+    # ---------- montagem ----------
+    def _nova_gaveta(self, id_, conteudo, titulo=None, exames=(), visivel=True,
+                     recolhido=False, altura=None, fechavel=None):
+        """Registra no catálogo (se preciso) e cria a gaveta com os padrões
+        dele. Título de tela: o passado, senão o do QGroupBox (já traduzido),
+        senão tr() do título em português do catálogo. fechavel=None = o do
+        catálogo."""
+        if titulo is None and isinstance(conteudo, QtWidgets.QGroupBox):
+            titulo = conteudo.title().replace("&&", "&")
+        if not self._catalogo.tem(id_):
+            self._catalogo.registrar(id_, titulo or id_, self._aba, exames,
+                                     visivel=visivel, recolhido=recolhido,
+                                     altura=altura,
+                                     fechavel=True if fechavel is None else fechavel)
+        if fechavel is None:
+            fechavel = self._catalogo.fechavel_de(id_)
+        if titulo is None:
+            titulo = tr(self._catalogo.titulo(id_))
+        padrao = self._catalogo.estado_padrao(id_)
+        g = PainelGaveta(id_, conteudo, titulo=titulo,
+                         simples=self._simples, aba_visivel=self._aba_visivel,
+                         altura_padrao=padrao["altura"], fechavel=fechavel)
+        return g
+
+    def _preparar_gaveta(self, g):
+        g._pilha = self
+        g.estadoMudou.connect(self._ao_mudar_gaveta)
+        g.moverPedido.connect(self.mover)
+        self._gavetas[g.id()] = g
+        if self._dono is not None:
+            try:
+                reg = getattr(self._dono, "_gavetas", None)
+                if reg is None:
+                    reg = {}
+                    setattr(self._dono, "_gavetas", reg)
+                reg[g.id()] = g
+            except Exception:
+                pass
+        # Estado atual do catálogo (pode vir de um config já lido).
+        e = self._catalogo.estado_atual(g.id())
+        self._aplicando = True
+        try:
+            g.set_recolhido(e["recolhido"], avisar=False)
+            g.set_altura(e["altura"], avisar=False)
+            g.set_visivel_painel(e["visivel"], avisar=False)
+        finally:
+            self._aplicando = False
+
+    def _inserir_item(self, item):
+        self._itens.append(item)
+        # Antes do espaçador final.
+        self._lay.insertWidget(self._lay.count() - 1, item["widget"],
+                               self._stretch_efetivo(item))
+
+    def adicionar_painel(self, id_, conteudo, titulo=None, exames=(),
+                         visivel=True, recolhido=False, altura=None,
+                         fechavel=None, stretch=0):
+        """Cria e empilha uma gaveta para `conteudo` (um QGroupBox ou qualquer
+        QWidget). Os padrões (visivel/recolhido/altura) só valem se o id ainda
+        não estiver no catálogo. Devolve a gaveta."""
+        g = self._nova_gaveta(id_, conteudo, titulo, exames, visivel,
+                              recolhido, altura, fechavel)
+        return self.adicionar_gaveta(g, stretch=stretch)
+
+    def adicionar_gaveta(self, gaveta, stretch=0):
+        """Empilha uma PainelGaveta pronta (registra no catálogo se faltar)."""
+        if not self._catalogo.tem(gaveta.id()):
+            self._catalogo.registrar(gaveta.id(), gaveta.titulo(), self._aba,
+                                     altura=gaveta.altura_padrao())
+        gaveta.set_aba_visivel(self._aba_visivel)
+        gaveta.set_simples(self._simples)
+        self._preparar_gaveta(gaveta)
+        self._inserir_item({"widget": gaveta, "ids": [gaveta.id()],
+                            "stretch": int(stretch), "nome": None,
+                            "celulas": None, "tam_padrao": None})
+        return gaveta
+
+    def adicionar_linha(self, membros, nome=None, tamanhos=None, stretch=0):
+        """Empilha uma LINHA de gavetas lado a lado que dividem a largura num
+        QSplitter horizontal (tamanhos persistidos em "splits"). Cada membro é
+        uma PainelGaveta pronta, uma tupla (id, conteudo[, titulo]) ou um dict
+        com os argumentos de adicionar_painel. Devolve o QSplitter."""
+        gavetas = []
+        for m in membros:
+            if isinstance(m, PainelGaveta):
+                g = m
+                if not self._catalogo.tem(g.id()):
+                    self._catalogo.registrar(g.id(), g.titulo(), self._aba,
+                                             altura=g.altura_padrao())
+                g.set_aba_visivel(self._aba_visivel)
+                g.set_simples(self._simples)
+            elif isinstance(m, dict):
+                g = self._nova_gaveta(**m)
+            else:
+                g = self._nova_gaveta(*m)
+            gavetas.append(g)
+        if not gavetas:
+            raise ValueError("adicionar_linha precisa de pelo menos uma gaveta")
+        nome = str(nome) if nome else "+".join(g.id() for g in gavetas)
+        split = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
+        split.setObjectName("linhaGavetas")
+        split.setChildrenCollapsible(False)
+        split.setHandleWidth(6)
+        # QSplitter nasce Expanding na vertical e cresceria vazio na pilha
+        # com todas as gavetas da linha recolhidas.
+        split.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                            QtWidgets.QSizePolicy.Policy.Preferred)
+        celulas = []
+        for g in gavetas:
+            cel = _CelulaLinha(g)          # a gaveta espelha sua visibilidade na célula
+            celulas.append(cel)
+            split.addWidget(cel)
+            self._preparar_gaveta(g)
+        salvos = self._catalogo.splits_da_aba(self._aba).get(nome)
+        tam_padrao = list(tamanhos) if tamanhos else None
+        if salvos and len(salvos) == len(gavetas):
+            split.setSizes(salvos)
+        elif tam_padrao:
+            split.setSizes(tam_padrao)
+        split.splitterMoved.connect(
+            lambda *_a, n=nome, s=split: self._ao_mover_split(n, s))
+        self._inserir_item({"widget": split, "ids": [g.id() for g in gavetas],
+                            "stretch": int(stretch), "nome": nome,
+                            "celulas": celulas, "tam_padrao": tam_padrao})
+        return split
+
+    def _item_de(self, id_):
+        for i, it in enumerate(self._itens):
+            if id_ in it["ids"]:
+                return i, it
+        return -1, None
+
+    def _stretch_efetivo(self, item):
+        """Stretch pedido só quando o item pode crescer: recolhido ou com
+        altura fixa, 0 (senão a gaveta esticaria vazia)."""
+        if self._simples:
+            return item["stretch"]
+        for i in item["ids"]:
+            g = self._gavetas.get(i)
+            if g is not None and g.visivel_painel() and not g.recolhido() \
+                    and g.altura() is None:
+                return item["stretch"]
+        return 0
+
+    def _atualizar_stretches(self):
+        for it in self._itens:
+            idx = self._lay.indexOf(it["widget"])
+            if idx >= 0:
+                self._lay.setStretch(idx, self._stretch_efetivo(it))
+            if it["celulas"]:
+                for cel in it["celulas"]:
+                    cel.atualizar()
+
+    # ---------- mudanças ----------
+    def _ao_mudar_gaveta(self, id_):
+        g = self._gavetas.get(id_)
+        if g is None:
+            return
+        self._atualizar_stretches()
+        if self._aplicando:
+            return
+        self._catalogo.definir_estado(id_, **g.estado())
+        self._agendar()
+
+    def _ao_mover_split(self, nome, split):
+        self._catalogo.definir_split(self._aba, nome, split.sizes())
+        self._agendar()
+
+    def _agendar(self):
+        """Debounce: grava uma vez depois que o usuário parou de mexer."""
+        if not self._aplicando:
+            self._timer.start()
+
+    def _emitir_estado(self):
+        self.estadoMudou.emit(self.estado())
+
+    def salvar_agora(self):
+        """Emite estadoMudou já, sem esperar o debounce (ex.: ao fechar)."""
+        if self._timer.isActive():
+            self._timer.stop()
+        self._emitir_estado()
+
+    def pendente(self):
+        """Há mudança esperando o debounce para ser gravada?"""
+        return self._timer.isActive()
+
+    def cancelar_pendente(self):
+        """Desarma o debounce sem emitir (o dono vai ler estado() por conta
+        própria, ex.: no closeEvent, para gravar o config uma vez só)."""
+        self._timer.stop()
+
+    def pode_mover(self, id_, delta):
+        """O item que contém `id_` pode subir (delta<0) ou descer (delta>0)?"""
+        i, _ = self._item_de(id_)
+        if i < 0:
+            return False
+        j = i + (1 if delta > 0 else -1)
+        return 0 <= j < len(self._itens)
+
+    def mover(self, id_, delta):
+        """Move o item (gaveta ou linha inteira) que contém `id_` uma posição
+        para cima (delta<0) ou para baixo (delta>0)."""
+        if not self.pode_mover(id_, delta):
+            return
+        i, _ = self._item_de(id_)
+        j = i + (1 if delta > 0 else -1)
+        self._itens[i], self._itens[j] = self._itens[j], self._itens[i]
+        self._reempilhar()
+        self._catalogo.definir_ordem(self._aba, self.ordem())
+        self._agendar()
+
+    def mover_para_cima(self, id_):
+        """Atalho de mover(id, -1)."""
+        self.mover(id_, -1)
+
+    def mover_para_baixo(self, id_):
+        """Atalho de mover(id, +1)."""
+        self.mover(id_, +1)
+
+    def _reempilhar(self):
+        """Refaz o layout na ordem de self._itens (o espaçador fica no fim)."""
+        for it in self._itens:
+            self._lay.removeWidget(it["widget"])
+        for it in self._itens:
+            self._lay.insertWidget(self._lay.count() - 1, it["widget"],
+                                   self._stretch_efetivo(it))
+
+    def _aplicar_ordem(self, ids):
+        """Ordena os itens pela posição do primeiro id de cada um em `ids`;
+        itens sem id na lista ficam no fim, na ordem atual."""
+        pos = {i: k for k, i in enumerate(ids)}
+        grande = len(ids) + 1
+
+        def chave(par):
+            idx, it = par
+            ps = [pos[i] for i in it["ids"] if i in pos]
+            return (min(ps) if ps else grande, idx)
+        self._itens = [it for _, it in sorted(enumerate(self._itens), key=chave)]
+        self._reempilhar()
+
+    def recolher_todos(self):
+        """Recolhe todas as gavetas abertas."""
+        for g in self._gavetas.values():
+            g.set_recolhido(True)
+
+    def expandir_todos(self):
+        """Expande todas as gavetas."""
+        for g in self._gavetas.values():
+            g.set_recolhido(False)
+
+    def restaurar_padrao(self):
+        """Volta ordem, visibilidade, recolhimento, alturas e divisões ao
+        padrão do catálogo e agenda a gravação."""
+        self._catalogo.restaurar_padrao(self._aba)
+        self._aplicar_do_catalogo()
+        for it in self._itens:
+            if it["celulas"] and it["tam_padrao"]:
+                it["widget"].setSizes(it["tam_padrao"])
+            elif it["celulas"]:
+                n = len(it["celulas"])
+                larg = max(100, it["widget"].width())
+                it["widget"].setSizes([larg // n] * n)
+        self._agendar()
+
+    # ---------- persistência ----------
+    def estado(self):
+        """{"ordem": [...], "paineis": {id: {...}}, "splits": {...}} da aba."""
+        return self._catalogo.estado_da_aba(self._aba)
+
+    def aplicar_estado(self, d):
+        """Aplica um dict salvo (config.paineis[aba]) sem emitir estadoMudou."""
+        self._catalogo.aplicar_estado_da_aba(self._aba, d)
+        self._aplicar_do_catalogo()
+
+    def _aplicar_do_catalogo(self):
+        self._aplicando = True
+        try:
+            for id_, g in self._gavetas.items():
+                e = self._catalogo.estado_atual(id_)
+                g.set_recolhido(e["recolhido"], avisar=False)
+                g.set_altura(e["altura"], avisar=False)
+                g.set_visivel_painel(e["visivel"], avisar=False)
+            self._aplicar_ordem(self._catalogo.ordem_da_aba(self._aba))
+            splits = self._catalogo.splits_da_aba(self._aba)
+            for it in self._itens:
+                if it["nome"] and it["nome"] in splits \
+                        and len(splits[it["nome"]]) == len(it["ids"]):
+                    it["widget"].setSizes(splits[it["nome"]])
+            self._atualizar_stretches()
+        finally:
+            self._aplicando = False
+        self._atualizar_menu_paineis()
+
+    # ---------- nível ----------
+    def set_simples(self, simples):
+        """Propaga o nível a todas as gavetas e esconde o botão "Painéis" no
+        Simples. Chamar no início de _apply_detail_level("ui"), antes do laço
+        que mostra/esconde os widgets avançados."""
+        self._simples = bool(simples)
+        for g in self._gavetas.values():
+            g.set_simples(self._simples)
+        if self._botao is not None:
+            self._botao.setVisible(not self._simples)
+        self._atualizar_stretches()
+
+    def set_aba_visivel(self, func):
+        """Troca o callable de "aba visível" em todas as gavetas."""
+        self._aba_visivel = func
+        for g in self._gavetas.values():
+            g.set_aba_visivel(func)
+
+    # ---------- botão "Painéis" ----------
+    def botao_paineis(self):
+        """O QToolButton "Painéis ▾" da aba (criado uma vez): um item marcável
+        por painel + Recolher todos / Expandir todos / Restaurar o padrão.
+        Invisível no Simples."""
+        if self._botao is None:
+            bt = QtWidgets.QToolButton()
+            bt.setObjectName("botaoPaineis")
+            bt.setText(tr("Painéis") + " ▾")
+            bt.setToolTip(tr("Mostrar, ocultar e arrumar os painéis desta aba"))
+            bt.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+            bt.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)
+            bt.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+            self._menu_paineis = QtWidgets.QMenu(bt)
+            self._menu_paineis.aboutToShow.connect(self._montar_menu_paineis)
+            bt.setMenu(self._menu_paineis)
+            bt.setVisible(not self._simples)
+            self._botao = bt
+        return self._botao
+
+    def _montar_menu_paineis(self):
+        m = self._menu_paineis
+        if m is None:
+            return
+        m.clear()
+        for g in self.gavetas():
+            # QAction trata "&" como mnemônico; o título canônico não é escapado.
+            a = m.addAction(g.titulo().replace("&", "&&"))
+            a.setCheckable(True)
+            a.setChecked(g.visivel_painel())
+            a.setEnabled(g.fechavel() or not g.visivel_painel())
+            a.toggled.connect(lambda marcado, gg=g: gg.set_visivel_painel(marcado))
+        m.addSeparator()
+        m.addAction(tr("Recolher todos")).triggered.connect(self.recolher_todos)
+        m.addAction(tr("Expandir todos")).triggered.connect(self.expandir_todos)
+        m.addAction(tr("Restaurar o padrão")).triggered.connect(self.restaurar_padrao)
+
+    def _atualizar_menu_paineis(self):
+        # O menu é refeito a cada abertura; nada a fazer se estiver fechado.
+        if self._menu_paineis is not None and self._menu_paineis.isVisible():
+            self._montar_menu_paineis()
+
+
+def gaveta_ativa(janela, id_, considerar_aba=True):
+    """Para os laços de atualização (_update_emg_view etc.) pularem o cálculo
+    de painéis fechados, recolhidos ou fora da aba corrente: devolve
+    esta_ativo() da gaveta registrada em janela._gavetas[id]. Sem gaveta com
+    esse id (aba ainda não construída, id antigo) devolve True, para nunca
+    bloquear um cálculo por engano. considerar_aba=False ignora a aba (só
+    fechado/recolhido contam), para painéis que vão ao snapshot."""
+    try:
+        g = getattr(janela, "_gavetas", None)
+        g = g.get(id_) if isinstance(g, dict) else None
+        if g is None:
+            return True
+        return bool(g.esta_ativo(considerar_aba))
+    except RuntimeError:        # widget já destruído pelo Qt
+        return True
+
+
+# ------------------------------------------------------------
+# Catálogo GLOBAL de painéis (P2). Registro ESTÁTICO: o assistente de
+# primeiro uso lista os painéis antes de a janela existir, e a janela usa
+# este mesmo objeto (self._catalogo_paineis = CATALOGO_PAINEIS), nunca outro.
+# Os títulos em português são as chaves de tr() dos QGroupBox das abas.
+# ------------------------------------------------------------
+CATALOGO_PAINEIS = CatalogoPaineis()
+
+
+def _registrar_paineis_padrao(cat):
+    """Cadastra no catálogo todos os painéis que viram gaveta no Completo:
+    id, título (pt), aba, exames e estado padrão. recolhido=True marca o que é
+    pesado ou de uso raro; fechavel=False o painel-núcleo da aba; e
+    assistente=False o que é formulário, não gráfico (fora de "Escolha os
+    gráficos")."""
+    cat.nomear_aba("emg", "EMG · Músculos")
+    cat.nomear_aba("ecg", "ECG · Coração")
+    cat.nomear_aba("eog", "EOG · Olhos")
+    cat.nomear_aba("analises", "Análises")
+    cat.nomear_aba("filtros", "Filtros e Canais")
+    cat.nomear_aba("rede", "Rede e Eventos")
+    r = cat.registrar
+    # --- Músculos (EMG) ---
+    r("emg.config_envelope", "Configuração do Envelope EMG", "emg", {"EMG"},
+      assistente=False)
+    r("emg.atlas", "Atlas Muscular & Posicionamento de Eletrodos", "emg", {"EMG"})
+    r("emg.canais", "Canais EMG — envelope e ativações", "emg", {"EMG"},
+      fechavel=False, assistente=False)
+    r("emg.mvc_fadiga", "Mapeamento Muscular e Análise Avançada (MVC, Fadiga, Co-contração)",
+      "emg", {"EMG"})
+    r("emg.mnf_mdf", "Frequência Mediana (MDF) e Média (MNF) — Rastreamento de Fadiga",
+      "emg", {"EMG"})
+    r("emg.tempo_freq", "Análise Tempo×Frequência (fadiga) e Atividade Muscular no tempo",
+      "emg", {"EMG"}, recolhido=True)
+    r("emg.ergonomia", "Ergonomia (APDF) e Comparação de Fadiga entre Músculos",
+      "emg", {"EMG"}, recolhido=True)
+    # --- Coração (ECG) ---
+    r("ecg.tracado", "Traçado ECG e detecção de picos R", "ecg", {"ECG"},
+      fechavel=False, assistente=False)
+    r("ecg.tacograma", "Tacograma e Poincaré", "ecg", {"ECG"})
+    r("ecg.zonas", "Zonas de Treino (Karvonen) + Detecção de Arritmia + Recuperação",
+      "ecg", {"ECG"})
+    r("ecg.hrv_nao_linear", "HRV não-linear (Kubios-style) — DFA, Entropia, Poincaré",
+      "ecg", {"ECG"}, recolhido=True)
+    r("ecg.hrv_espectral",
+      "HRV Espectral (Welch/FFT) + Geométrica — bandas VLF/LF/HF e índice triangular",
+      "ecg", {"ECG"}, recolhido=True)
+    # --- Olhos (EoG) ---
+    r("eog.tracado", "Traçado H/V — piscadas e sacadas", "eog", {"EoG"},
+      fechavel=False, assistente=False)
+    r("eog.alerta", "Estado de Alerta (sonolência) + Sacadas + Fixação", "eog", {"EoG"})
+    r("eog.oculometria",
+      "Oculometria — sequência principal das sacadas + taxa de piscadas (sonolência)",
+      "eog", {"EoG"}, recolhido=True)
+    # --- Análises (EEG) ---
+    r("ana.fft", "Espectro de Frequência (FFT)", "analises", {"EEG"})
+    r("ana.bandas", "Bandas de Potência EEG", "analises", {"EEG"})
+    r("ana.estatisticas", "Estatísticas — Todos os Canais", "analises", {"EEG"})
+    # --- Filtros e Canais (formulários; sem exame = interesse geral) ---
+    r("filtros.reref", "Re-referenciação (aplicada ANTES dos filtros)", "filtros", {"EEG"},
+      assistente=False)
+    r("filtros.notch", "Filtro Notch (rejeição de banda)", "filtros", (), assistente=False)
+    r("filtros.bandpass", "Filtro Bandpass (Butterworth, ordem 4)", "filtros", (),
+      assistente=False)
+    r("filtros.canais", "Canais — Ativação e Tipo de Sinal (multimodal: EEG / EMG / ECG / EoG)",
+      "filtros", (), assistente=False)
+    r("filtros.canais_ruins", "Detecção Automática de Canais Ruins (variância + correlação)",
+      "filtros", {"EEG"}, assistente=False)
+    r("filtros.modo_exame", "Modo do exame — o que você vai medir", "filtros", (),
+      fechavel=False, assistente=False)
+    # --- Rede e Eventos (só no Multimodal) ---
+    r("rede.udp", "Streaming UDP (JSON)", "rede", (), assistente=False)
+    r("rede.lsl", "Streaming LSL (Lab Streaming Layer)", "rede", (), assistente=False)
+    r("rede.lsl_receber", "Receber via LSL (markers/eventos de PsychoPy, OpenViBE, etc.)",
+      "rede", (), assistente=False)
+    r("rede.marcadores", "Marcadores / Eventos (hotkey global: M)", "rede", (),
+      assistente=False)
+
+
+_registrar_paineis_padrao(CATALOGO_PAINEIS)
+
+
+# ============================================================
 # Janela principal — com suporte ao módulo de expansão (16 canais)
 # ============================================================
 class EEGCollectorWindow(QtWidgets.QMainWindow):
@@ -48560,6 +52116,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # Densidade do Simples antes do primeiro widget (captura e testes
         # criam a janela sem passar pelo main())
         _decide_ui_simples()
+        # Painéis em gavetas (P2): catálogo global compartilhado com o
+        # assistente, pilhas por aba e registro id -> gaveta (gaveta_ativa).
+        self._catalogo_paineis = CATALOGO_PAINEIS
+        self._pilhas = {}
+        self._gavetas = {}
         self._build_ui()
         self._refresh_ports()
         # Aplica mapeamento de canais carregado do config no Head Plot
@@ -48967,6 +52528,12 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 getattr(self.config, "acquisition_mode", "EEG"))
         except Exception:
             pass
+        # Painéis em gavetas (P2): o arranjo salvo vence; aba sem arranjo nasce
+        # do perfil de uso. Antes do nível, que esconde/mostra por cima.
+        try:
+            self._restaurar_paineis()
+        except Exception as exc:
+            self._log(f"Falha restaurando o arranjo dos painéis: {exc}", error=True)
         # Nível global Simples/Avançado. Sem esta chamada o combo "ui" nasce no
         # índice 0 sem emitir sinal e a janela abre completa.
         try:
@@ -49057,6 +52624,74 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             self._detail_widgets = {}
         self._detail_widgets.setdefault(chave, []).extend(
             [w for w in widgets if w is not None])
+
+    # ------------------------------------------------------------------
+    # P2 — painéis em "gavetas": pilhas por aba, catálogo e persistência
+    # ------------------------------------------------------------------
+    def _nova_pilha(self, aba, aba_visivel=None, espacamento=6):
+        """Pilha de gavetas de uma aba, ligada ao catálogo global, a este
+        dono (registro id -> gaveta para gaveta_ativa) e ao config: toda
+        mudança de arranjo vira config.paineis[aba] depois do debounce."""
+        p = PilhaGavetas(aba, catalogo=self._catalogo_paineis, dono=self,
+                         simples=self._nivel_simples(), aba_visivel=aba_visivel,
+                         espacamento=espacamento)
+        p.estadoMudou.connect(lambda d, a=aba: self._salvar_paineis(a, d))
+        self._pilhas[aba] = p
+        return p
+
+    def _salvar_paineis(self, aba, estado):
+        """Grava o arranjo de uma aba em config.paineis e no config.json (o
+        debounce de ~500 ms já foi feito pela pilha)."""
+        try:
+            if not isinstance(getattr(self.config, "paineis", None), dict):
+                self.config.paineis = {}
+            self.config.paineis[aba] = estado
+            self.config.save()
+        except Exception as exc:
+            self._log(f"Falha gravando o arranjo dos painéis: {exc}", error=True)
+
+    def _restaurar_paineis(self):
+        """Ao abrir: aplica às pilhas o arranjo salvo em config.paineis. Uma
+        aba SEM arranjo salvo nasce do perfil de uso (P4): painéis fora dos
+        exames do perfil e os desmarcados no perfil personalizado nascem
+        fechados. O arranjo salvo pela pessoa sempre vence o perfil."""
+        cat = self._catalogo_paineis
+        salvos = getattr(self.config, "paineis", None)
+        if not isinstance(salvos, dict):
+            salvos = {}
+            self.config.paineis = salvos
+        # O catálogo é global ao módulo: zera o que outra janela (testes,
+        # relançamento) possa ter deixado antes de ler ESTE config.
+        cat.restaurar_padrao()
+        cat.de_config(salvos)
+        try:
+            exames = [e for e in exames_do_perfil(self.config) if e != "Hibrido"]
+            perfil = perfil_valido(self.config)
+            paineis_perfil = (perfis_disponiveis(self.config).get(perfil, {})
+                              .get("paineis") or {})
+        except Exception:
+            exames, paineis_perfil = list(_GAVETA_EXAMES), {}
+        do_perfil = cat.estado_para_perfil(exames or list(_GAVETA_EXAMES))
+        for pid, vis in paineis_perfil.items():
+            if vis is False and cat.tem(pid) and cat.fechavel_de(pid):
+                aba = cat.aba_de(pid)
+                do_perfil.setdefault(aba, {"ordem": [], "paineis": {}, "splits": {}})
+                do_perfil[aba]["paineis"].setdefault(
+                    pid, cat.estado_padrao(pid))["visivel"] = False
+        for aba, pilha in self._pilhas.items():
+            est = salvos.get(aba)
+            if isinstance(est, dict) and est:
+                pilha.aplicar_estado(est)
+            else:
+                pilha.aplicar_estado(do_perfil.get(aba, {}))
+
+    def _aba_bio_visivel(self, i):
+        """A sub-aba Bio de índice i (0 Músculos, 1 Coração, 2 Olhos) está em
+        primeiro plano? Alimenta esta_ativo() das gavetas dessas abas."""
+        bt = getattr(self, "bio_tabs", None)
+        if bt is None:
+            return True
+        return self._aba_esta_visivel("view", 3) and bt.currentIndex() == i
 
     def _nivel_simples(self):
         """O nível global da interface é o Simples? Lê o config, não o combo:
@@ -49226,6 +52861,16 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             if combo is None:
                 return
             avancado = (combo.currentData() == "avancado")
+        if chave == "ui":
+            # Painéis em gavetas (P2) ANTES do laço: set_simples(True) reabre o
+            # que a pessoa fechou (no Simples quem decide é este laço) e
+            # set_simples(False) volta a fechar — o setVisible(True) abaixo não
+            # reabre um painel fechado.
+            for p in getattr(self, "_pilhas", {}).values():
+                try:
+                    p.set_simples(not avancado)
+                except RuntimeError:
+                    pass
         for w in getattr(self, "_detail_widgets", {}).get(chave, []):
             try:
                 w.setVisible(avancado)
@@ -49376,9 +53021,15 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             self._emg_hdr_limiar.setText(
                 tr("Sensibilidade (µV)") if simples else tr("Limiar (µV)"))
         if hasattr(self, "_emg_atlas_grp"):
-            self._emg_atlas_grp.setTitle(
-                tr("Onde estão os eletrodos (desenho do corpo)") if simples else
-                tr("Atlas Muscular & Posicionamento de Eletrodos").replace("&", "&&"))
+            _t_atlas = (tr("Onde estão os eletrodos (desenho do corpo)") if simples else
+                        tr("Atlas Muscular & Posicionamento de Eletrodos"))
+            _g_atlas = getattr(self, "_gavetas", {}).get("emg.atlas")
+            if _g_atlas is not None:
+                # Gaveta (P2): no Completo o título mora no cabeçalho; no
+                # Simples ela o devolve ao QGroupBox (já com "&" escapado).
+                _g_atlas.set_titulo(_t_atlas)
+            else:
+                self._emg_atlas_grp.setTitle(_t_atlas.replace("&", "&&"))
             self.emg_atlas_table.setColumnHidden(4, simples)     # % MVC
             self.emg_atlas_table.setColumnHidden(5, simples)     # Qualidade
         if hasattr(self, "_ecg_raw_lbl"):
@@ -49399,9 +53050,13 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                    "Se contar piscadas demais, aumente; se não contar, diminua.")
                 if simples else "")
         if hasattr(self, "_eog_alert_group"):
-            self._eog_alert_group.setTitle(
-                tr("Alerta ou sonolento · movimentos dos olhos") if simples else
-                tr("Estado de Alerta (sonolência) + Sacadas + Fixação"))
+            _t_alerta = (tr("Alerta ou sonolento · movimentos dos olhos") if simples else
+                         tr("Estado de Alerta (sonolência) + Sacadas + Fixação"))
+            _g_alerta = getattr(self, "_gavetas", {}).get("eog.alerta")
+            if _g_alerta is not None:
+                _g_alerta.set_titulo(_t_alerta)       # gaveta (P2), ver o atlas
+            else:
+                self._eog_alert_group.setTitle(_t_alerta)
             self._eog_sac_lbl.setText(
                 tr("movimentos rápidos dos olhos") if simples
                 else tr("sacadas detectadas"))
@@ -52416,6 +56071,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                "com título (paciente, exame e data)."))
         self.offline_fig_btn.clicked.connect(self._offline_salvar_figura)
         ctrl2.addWidget(self.offline_fig_btn)
+        # Replay (1.10.0, P8): a animação do exame gravado — a figura dos
+        # músculos, o coração batendo ou os olhos. Nos dois níveis; só liga
+        # quando a gravação aberta é de músculos, coração ou olhos.
+        self.offline_replay_btn = QtWidgets.QPushButton(tr("▶ Replay"))
+        self.offline_replay_btn.setEnabled(False)
+        self.offline_replay_btn.clicked.connect(self._offline_abrir_replay)
+        ctrl2.addWidget(self.offline_replay_btn)
+        self._offline_atualiza_replay()
         recipe_btn = QtWidgets.QPushButton(tr("Área Maker (receitas)…"))
         recipe_btn.setToolTip(
             tr("Área Maker: monte um pipeline de análise (métrica + banda + canais), "
@@ -52451,6 +56114,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self._offline_botoes = [refresh_btn, load_sel_btn, load_man_btn, edf_btn,
                                 nano_btn, imp_btn, stats_btn, intra_btn, evol_btn,
                                 self.offline_pdf_btn, self.offline_fig_btn,
+                                self.offline_replay_btn,
                                 recipe_btn, bancada_btn, self.offline_ica_btn]
         self._offline_carregar_btn = load_sel_btn
         self._offline_bl = bl
@@ -52963,6 +56627,70 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             # splitter sozinho: e preciso repor as fatias.
             vs.setSizes([200, 500, 300])
             self._offline_reparte()
+
+    def _offline_atualiza_replay(self):
+        """Liga o botão Replay conforme o exame da gravação aberta (músculos,
+        coração ou olhos); para EEG ou sem gravação fica desligado, com a
+        explicação na dica."""
+        bt = getattr(self, "offline_replay_btn", None)
+        if bt is None:
+            return
+        info = getattr(self, "_offline_session_info", None) or {}
+        pasta = info.get("path")
+        if not pasta or getattr(self, "_offline_data", None) is None:
+            bt.setEnabled(False)
+            bt.setToolTip(tr("Abra uma gravação de músculos, coração ou olhos para ver o Replay."))
+            return
+        try:
+            modo, tipos, _musc = self._offline_tipos_da_gravacao(pasta)
+        except Exception:
+            modo, tipos = None, []
+        exame = replay_exame_da_gravacao(modo, tipos)
+        bt.setEnabled(exame is not None)
+        if exame is None:
+            bt.setToolTip(tr("O Replay existe para exames de músculos, coração e olhos; "
+                             "esta gravação é de outro tipo."))
+        else:
+            bt.setToolTip({
+                "EMG": tr("Figura articulada que refaz o movimento marcado, com os músculos "
+                          "acendendo conforme a gravação."),
+                "ECG": tr("Coração que bate no ritmo gravado, com todas as batidas na faixa."),
+                "EoG": tr("Olhos que piscam e olham conforme os sinais gravados."),
+            }.get(exame, ""))
+
+    def _offline_abrir_replay(self):
+        """Abre a janela do Replay para a gravação carregada na aba Offline."""
+        d = getattr(self, "_offline_data", None)
+        info = getattr(self, "_offline_session_info", None) or {}
+        pasta = info.get("path")
+        if d is None or not pasta:
+            QtWidgets.QMessageBox.information(
+                self, tr("Replay"), tr("Escolha uma gravação na lista primeiro."))
+            return
+        try:
+            modo, tipos, musc = self._offline_tipos_da_gravacao(pasta)
+        except Exception:
+            modo, tipos, musc = None, [], []
+        rc = {}
+        try:
+            with open(os.path.join(pasta, "summary.json"), "r", encoding="utf-8") as f:
+                rc = (json.load(f) or {}).get("report_channels") or {}
+        except Exception:
+            rc = {}
+        dlg = abrir_replay(d, pasta, modo, tipos, musc, rc,
+                           simples=self._nivel_simples(), nome=str(info.get("name") or ""),
+                           parent=self)
+        if dlg is None:
+            QtWidgets.QMessageBox.information(
+                self, tr("Replay"),
+                tr("O Replay existe para exames de músculos, coração e olhos; "
+                   "esta gravação é de outro tipo."))
+            return
+        # referência viva: a janela não é modal, para a pessoa poder olhar a
+        # gravação e o replay lado a lado
+        self._replay_dlg = dlg
+        dlg.show()
+        self._audit_event("replay_open", path=pasta)
 
     def _offline_salvar_figura(self):
         """Grava o traçado visível do Offline em
@@ -53833,6 +57561,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             "sr_info": sr_info, "fonte": fonte, "csv": csv_path, "pasta": sess_dir,
             "truncado": d.get("aviso_truncado")}
         self._offline_escreve_status()
+        self._offline_atualiza_replay()
         # Stats por canal
         self.offline_stats_table.setRowCount(n_ch)
         for ch in range(n_ch):
@@ -56589,9 +60318,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             self.analysis_channel.addItem(f"CH{i + 1}")
         self.analysis_channel.setMinimumWidth(120)
         sel_row.addWidget(self.analysis_channel); sel_row.addStretch()
+        # Painéis em gavetas (P2): FFT | bandas numa linha e estatísticas
+        # embaixo; os PNG do snapshot saem destes gráficos mesmo fora de vista,
+        # por isso os gates de _update_analysis não olham a aba.
+        pilha = self._nova_pilha("analises", espacamento=10)
+        sel_row.addWidget(pilha.botao_paineis())
         layout.addLayout(sel_row)
+        layout.addWidget(pilha, stretch=1)
 
-        graph_row = QtWidgets.QHBoxLayout()
         fft_group = QtWidgets.QGroupBox(tr("Espectro de Frequência (FFT)"))
         fft_layout = QtWidgets.QVBoxLayout(fft_group)
         self.fft_plot = pg.PlotWidget(enableMenu=False)
@@ -56605,7 +60339,6 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 pen=pg.mkPen(COLORS["border"], style=QtCore.Qt.PenStyle.DashLine))
             self.fft_plot.addItem(line)
         fft_layout.addWidget(self.fft_plot)
-        graph_row.addWidget(fft_group)
 
         band_group = QtWidgets.QGroupBox(tr("Bandas de Potência EEG"))
         band_layout = QtWidgets.QVBoxLayout(band_group)
@@ -56625,8 +60358,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.band_plot.addItem(self.band_bars)
         self.band_plot.setXRange(-0.5, len(EEG_BANDS) - 0.5)
         band_layout.addWidget(self.band_plot)
-        graph_row.addWidget(band_group)
-        layout.addLayout(graph_row, stretch=2)
+        pilha.adicionar_linha([("ana.fft", fft_group), ("ana.bandas", band_group)],
+                              nome="fft+bandas", stretch=2)
 
         # Tabela de estatísticas — todos os canais (compacta, 16 linhas visíveis sem scroll)
         stats_group = QtWidgets.QGroupBox(tr("Estatísticas — Todos os Canais"))
@@ -56657,7 +60390,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 it.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.stats_table.setItem(ch, col, it)
         stats_layout.addWidget(self.stats_table)
-        layout.addWidget(stats_group, stretch=1)
+        pilha.adicionar_painel("ana.estatisticas", stats_group, stretch=1)
         return widget
 
     # ---- Tab: Topografia ----
@@ -56915,6 +60648,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         widget = QtWidgets.QWidget()
         layout = QtWidgets.QVBoxLayout(widget)
         layout.setContentsMargins(15, 15, 15, 15); layout.setSpacing(12)
+        # Painéis em gavetas (P2): cada bloco recolhe/fecha/move; sem gates
+        # (são formulários). Botão "Painéis" numa linha própria no topo.
+        pilha = self._nova_pilha("filtros", espacamento=12)
+        _row_p = QtWidgets.QHBoxLayout()
+        _row_p.addStretch()
+        _row_p.addWidget(pilha.botao_paineis())
+        layout.addLayout(_row_p)
+        layout.addWidget(pilha)
 
         # ============================================================
         # Re-referenciação (CAR / Laplacian / Mastoide / Bipolar / REST)
@@ -56949,7 +60690,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.reref_channels_edit.setMaximumWidth(160)
         self.reref_channels_edit.editingFinished.connect(self._on_reref_changed)
         reref_l.addWidget(self.reref_channels_edit)
-        layout.addWidget(reref_group)
+        pilha.adicionar_painel("filtros.reref", reref_group)
 
         notch_group = QtWidgets.QGroupBox(tr("Filtro Notch (rejeição de banda)"))
         nl = QtWidgets.QHBoxLayout(notch_group)
@@ -56962,7 +60703,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.notch_freq.currentTextChanged.connect(self._on_filter_change)
         nl.addWidget(self.notch_freq); nl.addStretch()
         nl.addWidget(QtWidgets.QLabel(tr("(Q=30 — remove ruido de rede elétrica)")))
-        layout.addWidget(notch_group)
+        pilha.adicionar_painel("filtros.notch", notch_group)
 
         bp_group = QtWidgets.QGroupBox(tr("Filtro Bandpass (Butterworth, ordem 4)"))
         bp_outer = QtWidgets.QVBoxLayout(bp_group)
@@ -56992,7 +60733,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             presets.addWidget(btn)
         presets.addStretch()
         bp_outer.addLayout(presets)
-        layout.addWidget(bp_group)
+        pilha.adicionar_painel("filtros.bandpass", bp_group)
 
         # Configuração por canal: ativo + tipo de sinal (multimodal)
         ch_group = QtWidgets.QGroupBox(tr("Canais — Ativação e Tipo de Sinal (multimodal: EEG / EMG / ECG / EoG)"))
@@ -57107,7 +60848,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         f_row.addStretch()
         cl_outer.addLayout(f_row)
 
-        layout.addWidget(ch_group)
+        pilha.adicionar_painel("filtros.canais", ch_group)
 
         # ---- Detecção automática de canais ruins ----
         bad_group = QtWidgets.QGroupBox(tr("Detecção Automática de Canais Ruins (variância + correlação)"))
@@ -57123,7 +60864,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.bad_detect_status = QtWidgets.QLabel("--")
         self.bad_detect_status.setStyleSheet(f"color: {COLORS['text_dim']};")
         bgl.addWidget(self.bad_detect_status)
-        layout.addWidget(bad_group)
+        pilha.adicionar_painel("filtros.canais_ruins", bad_group)
 
         # ---- Modo do exame (define o que a interface inteira mostra) ----
         mode_group = QtWidgets.QGroupBox(tr("Modo do exame — o que você vai medir"))
@@ -57157,7 +60898,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.mode_visibility_combo.currentIndexChanged.connect(
             self._on_mode_visibility_apply)
         mode_l.addWidget(self.mode_visibility_combo)
-        layout.addWidget(mode_group)
+        # O seletor de modo tem de continuar à mão: gaveta que não fecha.
+        pilha.adicionar_painel("filtros.modo_exame", mode_group, fechavel=False)
         self._aplicar_perfil_no_combo_modo()
 
         layout.addStretch()
@@ -57418,6 +61160,13 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         widget = QtWidgets.QWidget()
         layout = QtWidgets.QVBoxLayout(widget)
         layout.setContentsMargins(15, 15, 15, 15); layout.setSpacing(12)
+        # Painéis em gavetas (P2): UDP, LSL, LSL receber e marcadores.
+        pilha = self._nova_pilha("rede", espacamento=12)
+        _row_p = QtWidgets.QHBoxLayout()
+        _row_p.addStretch()
+        _row_p.addWidget(pilha.botao_paineis())
+        layout.addLayout(_row_p)
+        layout.addWidget(pilha)
 
         udp_group = QtWidgets.QGroupBox(tr("Streaming UDP (JSON)"))
         ul = QtWidgets.QGridLayout(udp_group)
@@ -57438,7 +61187,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             "Markers viram {'t': float, 'marker': str}."))
         info.setStyleSheet(f"color: {COLORS['text_dim']};"); info.setWordWrap(True)
         ul.addWidget(info, 1, 0, 1, 5)
-        layout.addWidget(udp_group)
+        pilha.adicionar_painel("rede.udp", udp_group)
 
         # ===== LSL (Lab Streaming Layer) — padrão clínico/cientifico =====
         lsl_group = QtWidgets.QGroupBox(tr("Streaming LSL (Lab Streaming Layer)"))
@@ -57460,7 +61209,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         )
         lsl_info.setStyleSheet(f"color: {COLORS['text_dim']};"); lsl_info.setWordWrap(True)
         ll.addWidget(lsl_info, 1, 0, 1, 4)
-        layout.addWidget(lsl_group)
+        pilha.adicionar_painel("rede.lsl", lsl_group)
 
         # ===== LSL Receiver — recebe streams de outros apps =====
         lslr_group = QtWidgets.QGroupBox(tr("Receber via LSL (markers/eventos de PsychoPy, OpenViBE, etc.)"))
@@ -57489,7 +61238,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.lslr_status_lbl.setStyleSheet(f"color: {COLORS['text_dim']};")
         self.lslr_status_lbl.setWordWrap(True)
         lslr_l.addWidget(self.lslr_status_lbl)
-        layout.addWidget(lslr_group)
+        pilha.adicionar_painel("rede.lsl_receber", lslr_group)
 
         # Estado interno do receiver
         self._lslr_streams_found = []   # lista de StreamInfo
@@ -57520,7 +61269,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.markers_view = QtWidgets.QTextEdit()
         self.markers_view.setReadOnly(True); self.markers_view.setMaximumHeight(220)
         ml.addWidget(self.markers_view)
-        layout.addWidget(mk_group)
+        pilha.adicionar_painel("rede.marcadores", mk_group)
         layout.addStretch()
         return widget
 
@@ -57618,9 +61367,15 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             f"border: 1px solid {COLORS['border']}; border-radius: 3px;")
         info_row.addWidget(self.emg_active_count_lbl)
         outer.addLayout(info_row)
-        # Seletor Simples/Avançado desta modalidade
-        outer.addLayout(self._make_detail_toggle(
-            "emg", tr("Exame de músculos — posicione os eletrodos e grave.")))
+        # Painéis em gavetas (P2): tudo abaixo da faixa de nível vai para a
+        # pilha; ordem, recolher, fechar e altura ficam em config.paineis["emg"].
+        pilha = self._nova_pilha("emg", lambda: self._aba_bio_visivel(0))
+        # Seletor Simples/Avançado desta modalidade + botão "Painéis"
+        _row_niv = self._make_detail_toggle(
+            "emg", tr("Exame de músculos — posicione os eletrodos e grave."))
+        _row_niv.addWidget(pilha.botao_paineis())
+        outer.addLayout(_row_niv)
+        outer.addWidget(pilha, stretch=1)
 
         # === Controles globais ===
         ctrl_group = QtWidgets.QGroupBox(tr("Configuração do Envelope EMG"))
@@ -57663,13 +61418,13 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         btn_reset_counters.setToolTip(tr("Zera contadores de ativação muscular por canal."))
         btn_reset_counters.clicked.connect(self._emg_reset_counters)
         ctrl.addWidget(btn_reset_counters)
-        outer.addWidget(ctrl_group)
+        pilha.adicionar_painel("emg.config_envelope", ctrl_group)
 
         # === Atlas muscular — a FIGURA vem primeiro ===
         # Antes ele era o 4º bloco da aba, abaixo de dois painéis grandes: o
         # operador rolava até o fim sem nunca ver a silhueta do corpo. É a peça
         # que se entende sem legenda, então abre a tela.
-        outer.addWidget(self._build_emg_atlas_group())
+        pilha.adicionar_painel("emg.atlas", self._build_emg_atlas_group())
 
         # === Splitter: cards por canal (esquerda) + plot temporal (direita) ===
         split = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
@@ -57796,7 +61551,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         rl.addWidget(self.emg_plot)
         split.addWidget(right)
         split.setSizes([720, 600])
-        outer.addWidget(split, stretch=2)
+        # Painel-núcleo da aba: vira gaveta (alça de altura, ordem) mas não fecha.
+        pilha.adicionar_painel("emg.canais", split,
+                               titulo=tr("Canais EMG — envelope e ativações"),
+                               fechavel=False, stretch=2)
 
         # ===================================================================
         # SEÇÃO: Mapeamento Muscular + Análise Avançada
@@ -57933,7 +61691,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         muscle_grid.setColumnStretch(1, 1); muscle_grid.setColumnStretch(2, 1)
         muscle_grid.setColumnStretch(6, 1); muscle_grid.setColumnStretch(7, 1)
         ag_l.addLayout(muscle_grid)
-        outer.addWidget(analysis_group)
+        pilha.adicionar_painel("emg.mvc_fadiga", analysis_group)
 
         # (O Atlas Muscular foi promovido para o topo da aba — ver acima.)
 
@@ -57999,8 +61757,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.emg_fatigue_metrics_lbl.setWordWrap(True)
         mnfdf_l.addWidget(self.emg_fatigue_metrics_lbl)
         self._emg_dimitrov_history = {ch: [] for ch in range(MAX_CHANNELS)}
-        outer.addWidget(mnfdf_group)
-        self._register_advanced("emg", mnfdf_group)
+        _gv_mnf = pilha.adicionar_painel("emg.mnf_mdf", mnfdf_group)
+        self._register_advanced("emg", _gv_mnf)       # a gaveta, não o QGroupBox
 
         # Buffer adicional para MNF (mean frequency)
         self._emg_mean_freq_history = {ch: [] for ch in range(MAX_CHANNELS)}
@@ -58020,11 +61778,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # ===================================================================
         _g_adv = self._build_emg_advanced_group()
         _g_erg = self._build_emg_ergonomics_group()
-        outer.addWidget(_g_adv)
-        outer.addWidget(_g_erg)
+        _gv_adv = pilha.adicionar_painel("emg.tempo_freq", _g_adv)
+        _gv_erg = pilha.adicionar_painel("emg.ergonomia", _g_erg)
         # Blocos de pesquisa: espectrograma/atividade, APDF e fadiga comparativa,
         # configuração do envelope e a grade de mapeamento muscular (64 linhas).
-        self._register_advanced("emg", _g_adv, _g_erg, ctrl_group, analysis_group)
+        # Registram-se as GAVETAS: no Simples some o invólucro inteiro.
+        self._register_advanced("emg", _gv_adv, _gv_erg,
+                                pilha.gaveta("emg.config_envelope"),
+                                pilha.gaveta("emg.mvc_fadiga"))
         # Modo Simples é o padrão — a tela abre enxuta para o operador.
         self._apply_detail_level("emg")
 
@@ -58601,6 +62362,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         temporal do sinal."""
         if not hasattr(self, "emg_spec_img") or n < SAMPLE_RATE:
             return
+        # O portão do painel fechado (P2) fica em _update_emg_view, que chama
+        # esta função; chamada direta (testes, exportação) sempre calcula.
         fmax = self._emg_adv_fmax; nfreq = self._emg_adv_nfreq
         step_s = self.EMG_ADV_STEP / float(SAMPLE_RATE)
         window = self.EMG_ADV_FRAMES * step_s
@@ -58691,6 +62454,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         fadiga (MDF %vs início) entre os músculos EMG."""
         if not hasattr(self, "emg_apdf_curve"):
             return
+        if not gaveta_ativa(self, "emg.ergonomia"):
+            return                      # P2: painel fechado não gasta processamento
         # ---- APDF ----
         sel = self.emg_apdf_channel.currentData()
         env = env_map.get(sel) if isinstance(sel, int) else None
@@ -59067,6 +62832,12 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             self._emg_adv_last_st = -10 ** 9
         fazer_fadiga = (n > SAMPLE_RATE
                         and st - getattr(self, "_emg_mdf_last_st", -10 ** 9) >= SAMPLE_RATE)
+        # P2: a FFT de fadiga só alimenta painéis; com os três fechados ou
+        # recolhidos ninguém a mostra (a série de MDF fica com um buraco — o
+        # eixo é índice de janela, a regressão continua válida ao reabrir).
+        fazer_fadiga = fazer_fadiga and (gaveta_ativa(self, "emg.mnf_mdf")
+                                         or gaveta_ativa(self, "emg.mvc_fadiga")
+                                         or gaveta_ativa(self, "emg.ergonomia"))
         emg_count_active = 0
         # Armazena envelope atual por canal para análises agregadas
         ch_envelope_current = {}
@@ -59196,6 +62967,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
 
         # ---- Atlas muscular: heatmap %MVC + qualidade/acurácia (~2×/s) ----
         if (hasattr(self, "emg_atlas")
+                and gaveta_ativa(self, "emg.atlas")          # P2: fechado não calcula
                 and st - getattr(self, "_emg_atlas_last_st", -10 ** 9) >= max(1, SAMPLE_RATE // 2)):
             self._emg_atlas_last_st = st
             try:
@@ -59205,6 +62977,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
 
         # ---- Espectrograma EMG + atividade muscular no tempo (~4×/s) ----
         if (hasattr(self, "emg_spec_img")
+                and (gaveta_ativa(self, "emg.tempo_freq")    # P2: cada função
+                     or gaveta_ativa(self, "emg.ergonomia"))  # checa a sua gaveta
                 and st - getattr(self, "_emg_adv_last_st", -10 ** 9)
                 >= getattr(self, "EMG_ADV_STEP", SAMPLE_RATE)):
             self._emg_adv_last_st = st
@@ -59218,7 +62992,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 pass
 
         # ---- Plot MNF/MDF temporal ----
-        if hasattr(self, "emg_mdf_curve"):
+        if hasattr(self, "emg_mdf_curve") and gaveta_ativa(self, "emg.mnf_mdf"):
             sel = self.emg_mnfdf_channel.currentData() if hasattr(self, "emg_mnfdf_channel") else 0
             if isinstance(sel, int) and sel >= 0:
                 mdf = self._emg_median_freq_history.get(sel, [])
@@ -59280,7 +63054,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                         self.emg_mnfdf_status_lbl.setStyleSheet(f"color: {col}; font-weight: bold;")
 
         # ---- Indicadores globais (fadiga + co-contração + movimento) ----
-        if hasattr(self, "emg_fatigue_lbl"):
+        if hasattr(self, "emg_fatigue_lbl") and gaveta_ativa(self, "emg.mvc_fadiga"):
             # Fadiga média: queda % da freq mediana vs baseline
             drops = []
             for ch, hist in self._emg_median_freq_history.items():
@@ -59311,7 +63085,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 self._cocontr_dialog = None
 
         # ---- Co-contração e movimento dominante ----
-        if hasattr(self, "emg_cocontraction_lbl"):
+        if hasattr(self, "emg_cocontraction_lbl") and gaveta_ativa(self, "emg.mvc_fadiga"):
             cocontr_pairs = []
             dominant_moves = []
             for ch, env_val in ch_envelope_current.items():
@@ -59417,11 +63191,18 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         btn_reset.clicked.connect(self._ecg_reset_history)
         ctrl.addWidget(btn_reset)
         outer.addLayout(ctrl)
-        outer.addLayout(self._make_detail_toggle(
-            "ecg", tr("Exame do coração — confira o traçado e a frequência.")))
+        # Painéis em gavetas (P2): traçado | tacograma numa linha, e os blocos
+        # de HRV embaixo; arranjo em config.paineis["ecg"].
+        pilha = self._nova_pilha("ecg", lambda: self._aba_bio_visivel(1))
+        _row_niv = self._make_detail_toggle(
+            "ecg", tr("Exame do coração — confira o traçado e a frequência."))
+        _row_niv.addWidget(pilha.botao_paineis())
+        outer.addLayout(_row_niv)
+        outer.addWidget(pilha, stretch=1)
 
-        # === Splitter: sinal cru + sinal MWA (esquerda) / Poincaré (direita) ===
-        split = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
+        # === Linha: sinal cru + sinal MWA (esquerda) / Poincaré (direita) ===
+        # (era um QSplitter solto; agora é uma linha de gavetas com a divisão
+        # persistida)
 
         # Painel esquerdo: 2 plots empilhados
         left = QtWidgets.QWidget()
@@ -59468,7 +63249,6 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # Sincronizar X dos dois plots
         self.ecg_mwa_plot.setXLink(self.ecg_raw_plot)
 
-        split.addWidget(left)
         self._register_advanced("ecg", _lbl_mwa, self.ecg_mwa_plot)
 
         # Painel direito: tacograma + Poincaré
@@ -59518,9 +63298,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                          style=QtCore.Qt.PenStyle.DotLine))
         rl.addWidget(self.ecg_poincare_plot)
 
-        split.addWidget(right)
-        split.setSizes([720, 600])
-        outer.addWidget(split, stretch=2)
+        # O traçado é o núcleo da aba (não fecha); o tacograma pode fechar e o
+        # traçado ocupa a linha inteira.
+        pilha.adicionar_linha(
+            [{"id_": "ecg.tracado", "conteudo": left,
+              "titulo": tr("Traçado ECG e detecção de picos R"), "fechavel": False},
+             {"id_": "ecg.tacograma", "conteudo": right,
+              "titulo": tr("Tacograma e Poincaré")}],
+            nome="tracado+tacograma", tamanhos=[720, 600], stretch=2)
 
         # ===================================================================
         # SEÇÃO: Zonas Karvonen + Arritmia + Recuperação + LF/HF
@@ -59625,7 +63410,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         zg.addLayout(rec_box)
         zg.addStretch()
 
-        outer.addWidget(zone_group)
+        pilha.adicionar_painel("ecg.zonas", zone_group)
 
         # ===================================================================
         # SEÇÃO: HRV não-linear (Kubios-style) — DFA, Entropia, Poincaré SD1/SD2
@@ -59691,7 +63476,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         nlhrv.addLayout(poin_box)
         nlhrv.addStretch()
 
-        outer.addWidget(nlhrv_group)
+        pilha.adicionar_painel("ecg.hrv_nao_linear", nlhrv_group)
 
         # ===================================================================
         # SEÇÃO: HRV Espectral (PSD) + Geométrica (histograma RR)
@@ -59765,11 +63550,15 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         hist_col.addWidget(self.ecg_hti_lbl)
         sgl.addLayout(hist_col, stretch=2)
 
-        outer.addWidget(spec_group)
+        pilha.adicionar_painel("ecg.hrv_espectral", spec_group)
         # Blocos de pesquisa do ECG: tacograma+Poincaré (painel direito), zonas
         # de treino, HRV não-linear (DFA/entropia) e HRV espectral/geométrica.
         # Vários deles exigem 2-5 min de registro e ficam vazios num exame curto.
-        self._register_advanced("ecg", right, zone_group, nlhrv_group, spec_group)
+        # Registram-se as GAVETAS (P2): no Simples some o invólucro inteiro.
+        self._register_advanced("ecg", pilha.gaveta("ecg.tacograma"),
+                                pilha.gaveta("ecg.zonas"),
+                                pilha.gaveta("ecg.hrv_nao_linear"),
+                                pilha.gaveta("ecg.hrv_espectral"))
         self._apply_detail_level("ecg")
 
         # Estado interno
@@ -60009,10 +63798,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                     f"RMSSD: {s_rm}  SDNN: {s_sd}  pNN50: {s_pn}")
                 # Tacograma e Poincaré são GRÁFICOS, não índices: podem mostrar a
                 # série inteira desde o primeiro batimento, sem mínimo.
-                self.ecg_tacho_curve.setData(np.arange(n_hist), rr_hist)
-                if n_hist >= 2:
-                    self.ecg_poincare_scatter.setData(
-                        rr_hist[:-1].tolist(), rr_hist[1:].tolist())
+                if gaveta_ativa(self, "ecg.tacograma"):     # P2: fechado não desenha
+                    self.ecg_tacho_curve.setData(np.arange(n_hist), rr_hist)
+                    if n_hist >= 2:
+                        self.ecg_poincare_scatter.setData(
+                            rr_hist[:-1].tolist(), rr_hist[1:].tolist())
                 # LED pulsante: se o último pico está nos últimos 200ms da janela
                 last_peak_t = float(t_axis[peaks[-1]])
                 last_t = float(t_axis[-1])
@@ -60040,7 +63830,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 elif pct_hrmax < 80:  zone, zc = "Z3", SIGNAL_TYPE_COLORS["EEG"]
                 elif pct_hrmax < 90:  zone, zc = "Z4", COLORS["warning"]
                 else:                 zone, zc = "Z5", COLORS["error"]
-                if hasattr(self, "ecg_zone_lbl"):
+                if hasattr(self, "ecg_zone_lbl") and gaveta_ativa(self, "ecg.zonas"):
                     self.ecg_zone_lbl.setText(f"{zone}  {pct_hrmax:.0f}%")
                     self.ecg_zone_lbl.setStyleSheet(
                         f"color: {zc}; font-size: 22pt; font-weight: bold;"
@@ -60098,7 +63888,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                     self.ecg_lfhf_lbl.setText(f"LF/HF: {p_lfhf}")
                     if hasattr(self, "ecg_psd_lbl"):
                         self.ecg_psd_lbl.setText(f"VLF/LF/HF: {p_lfhf}")
-                if hasattr(self, "ecg_lfhf_lbl") and not p_lfhf:
+                # P2: o Welch alimenta LF/HF (painel Zonas) e a PSD (painel
+                # Espectral); roda se qualquer um dos dois estiver aberto.
+                if (hasattr(self, "ecg_lfhf_lbl") and not p_lfhf
+                        and (gaveta_ativa(self, "ecg.zonas")
+                             or gaveta_ativa(self, "ecg.hrv_espectral"))):
                     try:
                         # Interpola RR a 4 Hz (tempo regular)
                         t_rr = np.cumsum(rr_hist) / 1000.0  # tempo cumulativo em s
@@ -60129,7 +63923,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                             caveat = "" if mins >= 5.0 else f"  ⚠ {mins:.1f}/5 min"
                             self.ecg_lfhf_lbl.setText(f"LF/HF: {ratio:.2f}{caveat}")
                             # --- Espectro HRV (plot) + potências por banda ---
-                            if hasattr(self, "ecg_psd_curve"):
+                            if hasattr(self, "ecg_psd_curve") and gaveta_ativa(self, "ecg.hrv_espectral"):
                                 vlf_mask = (freqs >= 0.0033) & (freqs < 0.04)
                                 vlf_p = (float(_TRAPEZOID(psd[vlf_mask], freqs[vlf_mask]))
                                          if vlf_mask.any() else 0.0)
@@ -60153,7 +63947,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 p_geom = hrv_pendente(n_hist, "geom")
                 if hasattr(self, "ecg_hti_lbl") and p_geom:
                     self.ecg_hti_lbl.setText(f"HTI: {p_geom}  TINN: —")
-                if hasattr(self, "ecg_rrhist_bars") and not p_geom:
+                if (hasattr(self, "ecg_rrhist_bars") and not p_geom
+                        and gaveta_ativa(self, "ecg.hrv_espectral")):   # P2
                     try:
                         rr_h = np.asarray(rr_hist, dtype=np.float64)
                         binw = 1000.0 / 128.0  # 7,8125 ms (padrão Task Force)
@@ -60199,7 +63994,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                     self.ecg_dfa_lbl.setText(f"DFA α1: {p_dfa1}  α2: —")
                 if hasattr(self, "ecg_entropy_lbl") and p_ent:
                     self.ecg_entropy_lbl.setText(f"ApEn: {p_ent}  SampEn: —")
-                if not p_poin:
+                # P2: SD1/SD2 (barato) também desenha a elipse do Poincaré, por
+                # isso roda com qualquer um dos dois painéis aberto; DFA e
+                # entropia (caros) só com o não-linear aberto, logo abaixo.
+                if not p_poin and (gaveta_ativa(self, "ecg.hrv_nao_linear")
+                                   or gaveta_ativa(self, "ecg.tacograma")):
                     try:
                         rr_arr = np.asarray(rr_hist, dtype=np.float64)
                         # Poincaré SD1, SD2 (Brennan 2001)
@@ -60234,7 +64033,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                         # timer de 20 Hz da GUI — sem teto e sem throttle a
                         # interface travaria assim que a sessão passasse de 1 min.
                         _now = time.time()
-                        if (_now - getattr(self, "_ecg_nl_last_t", 0.0)
+                        if (gaveta_ativa(self, "ecg.hrv_nao_linear")
+                                and _now - getattr(self, "_ecg_nl_last_t", 0.0)
                                 >= ECG_NONLINEAR_PERIOD_S):
                             self._ecg_nl_last_t = _now
                             # DFA α1 / α2 (Peng 1995)
@@ -60433,8 +64233,13 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         eog_reg_btn.clicked.connect(self._eog_regression_demo)
         ctrl.addWidget(eog_reg_btn)
         outer.addLayout(ctrl)
-        outer.addLayout(self._make_detail_toggle(
-            "eog", tr("Exame dos olhos — acompanhe piscadas e direção do olhar.")))
+        # Painéis em gavetas (P2): traçado, alerta e oculometria numa pilha
+        # (entra no layout depois dos cards); arranjo em config.paineis["eog"].
+        pilha = self._nova_pilha("eog", lambda: self._aba_bio_visivel(2))
+        _row_niv = self._make_detail_toggle(
+            "eog", tr("Exame dos olhos — acompanhe piscadas e direção do olhar."))
+        _row_niv.addWidget(pilha.botao_paineis())
+        outer.addLayout(_row_niv)
         self._populate_eog_channel_combos()
         self.eog_h_combo.currentIndexChanged.connect(self._eog_reset)
         self.eog_v_combo.currentIndexChanged.connect(self._eog_reset)
@@ -60501,6 +64306,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.eog_gaze_widget.setMaximumSize(280, 280)
         cards.addWidget(self.eog_gaze_widget)
         outer.addLayout(cards)
+        outer.addWidget(pilha, stretch=1)
 
         # === Plot dos 2 canais ===
         self.eog_plot = pg.PlotWidget(enableMenu=False)
@@ -60532,7 +64338,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             size=8, brush=pg.mkBrush("#ff66ff"),
             pen=pg.mkPen("#ffffff", width=1), symbol="d")
         self.eog_plot.addItem(self.eog_saccade_scatter)
-        outer.addWidget(self.eog_plot, stretch=2)
+        # Painel-núcleo da aba: vira gaveta (alça de altura, ordem) mas não fecha.
+        pilha.adicionar_painel("eog.tracado", self.eog_plot,
+                               titulo=tr("Traçado H/V — piscadas e sacadas"),
+                               fechavel=False, stretch=2)
         # Listener de threshold
         self.eog_threshold_spin.valueChanged.connect(
             lambda v: (self.eog_thresh_pos_line.setPos(v),
@@ -60621,7 +64430,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         )
         ag.addWidget(self.eog_microsleep_lbl)
 
-        outer.addWidget(alert_group)
+        pilha.adicionar_painel("eog.alerta", alert_group)
 
         # ===================================================================
         # SEÇÃO: Sequência principal (main sequence) + taxa de piscadas no tempo
@@ -60691,10 +64500,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         br_col.addWidget(self.eog_perclos_lbl)
         ocg.addLayout(br_col, stretch=1)
 
-        outer.addWidget(oc_group)
+        _gv_oc = pilha.adicionar_painel("eog.oculometria", oc_group)
         # Oculometria de pesquisa: sequência principal das sacadas (lei de
         # potência V=k·A^b) e taxa de piscadas em janela deslizante.
-        self._register_advanced("eog", oc_group)
+        self._register_advanced("eog", _gv_oc)        # a gaveta, não o QGroupBox
         self._apply_detail_level("eog")
         self._aplicar_nomes_bio(self._nivel_simples())
 
@@ -60996,7 +64805,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # legítima (ninguém piscou em 60 s), que é justamente o caso SONOLENTO /
         # olhos fechados: o teste antigo (> 0) descartava esse caso e deixava o
         # rótulo congelado no último estado exibido.
-        if rate >= 0:
+        if rate >= 0 and gaveta_ativa(self, "eog.alerta"):     # P2: fechado não desenha
             if   rate < 8:  state = "SONOLENTO";  color = COLORS["error"]
             elif rate > 22: state = "FADIGA";     color = COLORS["warning"]
             elif rate < 18: state = "ALERTA";     color = SIGNAL_TYPE_COLORS["EoG"]
@@ -61058,7 +64867,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 self.eog_saccade_scatter.setData(vis_sac, ys)
                 self.eog_saccade_count_lbl.setText(str(self._eog_saccade_count))
                 # --- Sequência principal: scatter + ajuste log-log V=k·A^b ---
-                if hasattr(self, "eog_mainseq_scatter") and self._eog_saccade_ampl:
+                if (hasattr(self, "eog_mainseq_scatter") and self._eog_saccade_ampl
+                        and gaveta_ativa(self, "eog.oculometria")):     # P2
                     A = np.asarray(self._eog_saccade_ampl, dtype=np.float64)
                     V = np.asarray(self._eog_saccade_pvel, dtype=np.float64)
                     self.eog_mainseq_scatter.setData(A.tolist(), V.tolist())
@@ -61099,7 +64909,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # ===== FIXAÇÃO (% do tempo sem movimento) =====
         # Heurística: tempo em que |dH/dt| e |dV/dt| ambos < threshold/4
         try:
-            if n > SAMPLE_RATE:
+            if n > SAMPLE_RATE and gaveta_ativa(self, "eog.alerta"):   # P2
                 window_fix = min(n, int(SAMPLE_RATE * BUFFER_SECONDS))
                 wh = sig_h[-window_fix:]
                 wv = sig_v[-window_fix:]
@@ -61126,20 +64936,23 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 self._eog_blinkrate_hist.append((elapsed_s / 60.0, rate_t))
                 if len(self._eog_blinkrate_hist) > 800:
                     self._eog_blinkrate_hist = self._eog_blinkrate_hist[-800:]
-                xs = [p[0] for p in self._eog_blinkrate_hist]
-                ys = [p[1] for p in self._eog_blinkrate_hist]
-                self.eog_blinkrate_curve.setData(xs, ys)
-                # PERCLOS ≈ % do tempo (buffer) com |VEoG-baseline| acima do limiar
-                perclos = float(np.mean(np.abs(resid_v) > thr_blink)) * 100.0
-                # Tendência: inclinação das últimas ~10 amostras
-                trend = tr("estável")
-                if len(ys) >= 6:
-                    yy = np.asarray(ys[-10:]); xx = np.arange(yy.size)
-                    slope = float(np.polyfit(xx, yy, 1)[0])
-                    if slope > 0.4:   trend = tr("subindo (fadiga?)")
-                    elif slope < -0.4: trend = tr("caindo (sonolência?)")
-                self.eog_perclos_lbl.setText(
-                    tr("PERCLOS: {0}%  ·  tendência: {1}").format(num_loc(perclos, 1), trend))
+                # P2: a série acima é acumulada sempre; só o desenho e o
+                # ajuste de tendência esperam o painel estar aberto.
+                if gaveta_ativa(self, "eog.oculometria"):
+                    xs = [p[0] for p in self._eog_blinkrate_hist]
+                    ys = [p[1] for p in self._eog_blinkrate_hist]
+                    self.eog_blinkrate_curve.setData(xs, ys)
+                    # PERCLOS ≈ % do tempo (buffer) com |VEoG-baseline| acima do limiar
+                    perclos = float(np.mean(np.abs(resid_v) > thr_blink)) * 100.0
+                    # Tendência: inclinação das últimas ~10 amostras
+                    trend = tr("estável")
+                    if len(ys) >= 6:
+                        yy = np.asarray(ys[-10:]); xx = np.arange(yy.size)
+                        slope = float(np.polyfit(xx, yy, 1)[0])
+                        if slope > 0.4:   trend = tr("subindo (fadiga?)")
+                        elif slope < -0.4: trend = tr("caindo (sonolência?)")
+                    self.eog_perclos_lbl.setText(
+                        tr("PERCLOS: {0}%  ·  tendência: {1}").format(num_loc(perclos, 1), trend))
         except Exception:
             pass
 
@@ -62941,15 +66754,27 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         calcular. FFT e bandas usam só o canal escolhido no combo; a tabela
         cobre todos os canais e mostra '--' nos que estão além de num_channels.
         """
+        # P2: cada painel só é calculado se estiver aberto e expandido. A aba
+        # não entra na conta (considerar_aba=False) porque o snapshot grava
+        # estes gráficos em PNG mesmo com a aba fora de vista.
+        _fft_on = gaveta_ativa(self, "ana.fft", considerar_aba=False)
+        _band_on = gaveta_ativa(self, "ana.bandas", considerar_aba=False)
+        _stats_on = gaveta_ativa(self, "ana.estatisticas", considerar_aba=False)
+        if not (_fft_on or _band_on or _stats_on):
+            return
         data = self._ordered_buffer()
         if data.shape[1] < SAMPLE_RATE: return
         ch = self.analysis_channel.currentIndex()
         if ch >= self.num_channels: ch = 0
-        freqs, fft_vals = SignalProcessor.compute_fft(data[ch])
-        if freqs.size:
-            self.fft_curve.setData(freqs, fft_vals)
-        powers = SignalProcessor.compute_band_powers(data[ch])
-        self.band_bars.setOpts(height=list(powers.values()))
+        if _fft_on:
+            freqs, fft_vals = SignalProcessor.compute_fft(data[ch])
+            if freqs.size:
+                self.fft_curve.setData(freqs, fft_vals)
+        if _band_on:
+            powers = SignalProcessor.compute_band_powers(data[ch])
+            self.band_bars.setOpts(height=list(powers.values()))
+        if not _stats_on:
+            return
         for c in range(MAX_CHANNELS):
             if c >= self.num_channels:
                 self.stats_table.item(c, 1).setText("--")
@@ -66814,6 +70639,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self._audit_event("app_close")
         self._close_audit_log()
         self._guarda_geometria()
+        # Arranjo dos painéis ainda no debounce (P2) entra neste save.
+        for _aba, _p in getattr(self, "_pilhas", {}).items():
+            try:
+                if _p.pendente():
+                    _p.cancelar_pendente()
+                    self.config.paineis[_aba] = _p.estado()
+            except Exception:
+                pass
         self.config.save()
         event.accept()
 
