@@ -10,6 +10,72 @@ Todas as mudanças notáveis deste projeto. Formato baseado em [Keep a Changelog
 ## [Não lançado]
 
 ### Adicionado
+- **Replay dentro de "Rever uma gravação" (P6, P7, P8).** Botão **▶ Replay**
+  na fileira da aba Offline (nos dois níveis), ligado quando a gravação aberta
+  é de músculos, coração ou olhos; um tocador único (Tocar/Pausar, Início,
+  linha do tempo arrastável, relógio; no Completo velocidade 0,25×–4× e
+  Repetir) alimenta a cena do exame:
+  - **Músculos**: figura articulada de perfil desenhada em código (tronco,
+    ombro, cotovelo, antebraço, punho, mão com dedos e polegar) refaz o
+    movimento marcado e cada músculo acende com a intensidade medida
+    (envelope de 100 ms normalizado pelo percentil 95 da gravação).
+    Movimentos: flexão/extensão do cotovelo, supinação e pronação
+    (inconfundíveis: palma clara para cima × dorso para baixo, polegar de
+    lado e o texto "palma para cima/baixo"), punho, abrir/fechar a mão,
+    pinça, ombro, repouso, "a definir". Tarefas prontas com o objeto preso à
+    mão: levantar o halter, abrir/fechar a porta com a chave, pegar o copo e
+    levar à boca. Linha do tempo com 2 a 4 faixas (arrastar, esticar,
+    dividir, trocar o movimento, apagar, desfazer/refazer; faixas no mesmo
+    instante se somam), que nasce dos marcadores/fases da gravação ou, sem
+    marcador, das contrações detectadas como "a definir"; aviso quando os
+    músculos ativos não combinam com o movimento (e quando há músculo ativo
+    num trecho de repouso). Salvo em `movimentos.json` ao lado do `data.csv`.
+    No Simples: tocador, figura e lista de trechos (linha do tempo só exibe).
+  - **Coração**: coração que bate no ritmo gravado, traçado com cursor, bpm,
+    faixa com todas as batidas (adiantada = triângulo laranja, pausa maior =
+    retângulo vazado vermelho: cor E forma) e lista em palavras simples. As
+    batidas vêm das MESMAS funções do relatório PDF (`ecg_pan_tompkins`,
+    `correct_ectopic_rr` com 30 %); no Completo, clique direito na faixa
+    remove/adiciona/retipa batidas, salvas em `batidas.json`.
+  - **Olhos**: olhos que piscam nas piscadas e olham para onde os sinais
+    mandam (`eog_piscadas_tela`/`eog_sacadas`, as mesmas do PDF), "Inverter
+    horizontal/vertical", linha do tempo em palavras ("0:03 piscou", "0:05
+    olhou para a direita") e contadores; no Completo, clique direito na lista
+    remove o evento ou troca a direção, salvo em `olhos.json`.
+  Em toda cena um selo diz que a animação SIMULA o que foi gravado e que não
+  é laudo nem diagnóstico. Testes: `test_p6_figura`, `test_p6_linha_tempo`,
+  `test_p7_replay`, `test_p8_replay`.
+- **Painéis em gavetas no Completo (P2).** Cada painel das abas Músculos,
+  Coração, Olhos, Análises, Filtros e Canais e Rede e Eventos ganhou um
+  cabeçalho fino (▾ recolher/expandir, ⋯ menu com Mover para cima/baixo,
+  Tamanho padrão e Fechar, × fechar) e uma alça inferior para arrastar a
+  altura; painéis lado a lado (Traçado ECG + Tacograma, FFT + Bandas) dividem
+  a largura num divisor persistido. Botão **Painéis** em cada aba
+  (mostrar/ocultar cada painel, Recolher todos, Expandir todos, Restaurar o
+  padrão). O arranjo é salvo sozinho na chave nova `paineis` do
+  `config.json` (debounce de 0,5 s) e restaurado; `CATALOGO_PAINEIS` guarda
+  id, título, aba, exames e estado padrão de cada painel e serve ao perfil de
+  uso (aba sem arranjo salvo nasce do perfil; painéis fora dos exames do
+  perfil ou desmarcados nascem fechados). Painel fechado ou recolhido não
+  gasta processamento (`gaveta_ativa()` nos laços de EMG/ECG/EOG/Análises;
+  os acumuladores de série continuam). No Simples nada disso aparece. Painéis
+  núcleo (canais EMG, traçado ECG/EOG, modo do exame) não fecham.
+  Teste: `test_p2_gavetas` (unidade + janela real).
+- **Atlas muscular desenhado em código (P3).** O boneco de retângulos deu
+  lugar a um corpo em curvas de Bézier (ilustração médica limpa, linhas dos
+  grupos musculares, volumes suaves) nas vistas Frente, Costas e **Lado**, e
+  em 14 áreas recortadas (rosto, pescoço, peito e abdômen, costas, braço,
+  antebraço e mão, mão, perna e pé, com lado direito/esquerdo). Eletrodos
+  como pontos numerados que colam no ponto SENIAM do ventre do músculo (19
+  músculos antigos, rosto: masseter, temporal, frontal, orbicular do olho,
+  zigomático, e extras SENIAM); a ativação aparece NO ponto do eletrodo como
+  mancha de calor que cresce e esquenta, recortada pelo corpo; eletrodo posto
+  numa área aparece no corpo inteiro. Montagens antigas são convertidas sem
+  perder músculo, canal nem nome (marca `atlas: 2`); o `config.json` aceita a
+  vista `side`. Pintura ~3 ms em 300×470 (corpo em camada cacheada). Três
+  propostas de estilo comparadas em `revisao/p3_atlas/COMPARACAO.md`.
+  Teste: `test_p3_atlas` (27 testes).
+
 - **Perfis de uso (P4).** Conceito novo: o perfil diz com o que a pessoa
   trabalha e decide o que a tela inicial oferece e quais abas aparecem.
   Prontos: "Cérebro (EEG)", "Músculos (EMG)", "Coração (ECG)", "Olhos (EOG)"
