@@ -68,8 +68,54 @@ import serial
 import serial.tools.list_ports
 from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6.QtCore import QThread, QTimer, Signal
-from scipy import signal as scipy_signal
-from scipy.fft import rfft, rfftfreq
+
+# ============================================================
+# scipy.signal e scipy.fft ADIADOS (1.10.0, pedido P9 "abrir rápido")
+# ------------------------------------------------------------
+# `import scipy.signal` custa de 1 a 2 s (puxa scipy.stats, interpolate e
+# optimize) e nada disso é preciso para a tela inicial aparecer. O proxy
+# abaixo só importa o módulo na PRIMEIRA leitura de um atributo (por exemplo
+# scipy_signal.butter) e daí em diante repassa direto: as funções chamadas são
+# as mesmas, só o momento do import muda. rfft/rfftfreq seguem a mesma ideia.
+# ============================================================
+class _ModuloAdiado:
+    """Substituto de um módulo pesado: importa na primeira vez que um atributo
+    é lido e, depois, repassa tudo para o módulo real.
+
+    Uso: scipy_signal = _ModuloAdiado("scipy.signal"); scipy_signal.butter(...)
+    funciona exatamente como antes, mas o import acontece aqui, sob demanda.
+    """
+
+    def __init__(self, nome):
+        """Guarda o nome do módulo; nada é importado aqui."""
+        self._nome = nome
+        self._mod = None
+
+    def _carrega(self):
+        """Importa o módulo real (uma vez) e o devolve."""
+        if self._mod is None:
+            import importlib
+            self._mod = importlib.import_module(self._nome)
+        return self._mod
+
+    def __getattr__(self, attr):
+        # só chega aqui para atributos que o proxy não tem: os do módulo real
+        """Importa o módulo real no primeiro acesso e repassa o atributo."""
+        return getattr(self._carrega(), attr)
+
+
+scipy_signal = _ModuloAdiado("scipy.signal")
+_scipy_fft = _ModuloAdiado("scipy.fft")
+
+
+def rfft(*args, **kwargs):
+    """scipy.fft.rfft, importado só no primeiro uso (ver _ModuloAdiado)."""
+    return _scipy_fft.rfft(*args, **kwargs)
+
+
+def rfftfreq(*args, **kwargs):
+    """scipy.fft.rfftfreq, importado só no primeiro uso (ver _ModuloAdiado)."""
+    return _scipy_fft.rfftfreq(*args, **kwargs)
 
 # ============================================================
 # Dependências opcionais — detecção SEM importar (lazy import)
@@ -449,6 +495,297 @@ class I18N:
 
     # Dicionários ENGLISH — chaves em pt-BR
     _en = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Brain (EEG)",
+        "Músculos (EMG)": "Muscles (EMG)",
+        "Coração (ECG)": "Heart (ECG)",
+        "Olhos (EOG)": "Eyes (EOG)",
+        "Tudo": "Everything",
+        "Minha bancada": "My bench",
+        "Músculos": "Muscles",
+        "Coração": "Heart",
+        "Olhos": "Eyes",
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "The <b>first</b> start after installing or updating prepares a cache (the <b>.roa_cache</b> folder, next to the program or in the user's local ROA data folder) and therefore takes longer; the next ones open in a few seconds. The opening screen with the logo says in words what is being loaded. If it stays slow, check that the antivirus is not scanning the program folder at every start.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "The animation <b>simulates</b> what was recorded from the signals: it is not a video of the person, and it is not a report or a diagnosis.",
+        "A figura não se mexe": "The figure does not move",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Open the Replay of the muscle recording in the <b>Complete</b> level.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Drag the timeline to go to a moment. In the list beside it, click a segment, a beat or an event and the player jumps there.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Drag the point to adjust; double-click renames; <b>Delete</b> removes the selected one.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Drag a block to move it and pull its edge to stretch it. <b>Split here</b> cuts a segment in two; <b>Add track</b> creates another track for movements at the same time (up to four).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "The beats and the eye events are the same as in the PDF report; correcting them (Complete level) does not change the recording, only the Replay file next to it.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "The channel lists show only the channels <b>in use</b> in the chosen exam. When reviewing a recording, the lists follow the channels of that recording, not those of the device connected now.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "The channel lists show only the channels <b>in use</b>: switched on and of the exam's type (a channel marked as heart does not appear in the muscle list). To change the type or switch a channel back on, use <b>Filters and Channels</b> in the Complete level. When reviewing a recording, the lists follow the channels of that recording.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Click <b>Add electrode</b> and then on the body: the point snaps to the recommended spot of the nearest muscle (muscle belly, SENIAM reference).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Click <b>▶ Replay</b>. The window opens with the player: <b>▶ Play</b>, <b>⏸ Pause</b>, <b>⏮ Start</b>, the timeline and the clock.",
+        "Colocar os eletrodos no desenho do corpo": "Placing the electrodes on the body drawing",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z undoes. Click <b>Save</b>: the movimentos.json file stays next to the recording and is read next time.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "From the front, the person's <b>right</b> side is on the <b>left</b> of the drawing, as in a photo; check the R/L in the muscle name.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "During the exam, the heat spot at the electrode point shows the intensity measured there; the ring around the number shows the signal quality.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "In <b>Review a recording</b>, choose a muscle, heart or eye recording and click <b>▶ Replay</b>. A figure redoes the marked movement, a heart beats at the recorded rhythm or two eyes blink and look according to the signals. Use <b>▶ Play</b>, <b>⏸ Pause</b> and drag the timeline. The animation <b>simulates</b> what was recorded: it is not a video of the person nor a report or diagnosis. For brain recordings the button is disabled.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Choosing the usage profile (which tabs appear)",
+        "Fechei a janela e perdi as marcações": "I closed the window and lost my marks",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Older installations start in <b>Everything</b>: nothing disappears unless you choose so.",
+        "Manual: Abertura rápida": "Manual: Fast start",
+        "Manual: Canais em uso": "Manual: Channels in use",
+        "Manual: Exame de músculos → Atlas muscular": "Manual: Muscle exam → Muscle atlas",
+        "Manual: Nível Completo → Painéis em gavetas": "Manual: Complete level → Panels as drawers",
+        "Manual: Perfis de uso": "Manual: Usage profiles",
+        "Manual: Rever uma gravação → Replay": "Manual: Review a recording → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Manual: Review a recording → Replay → Muscles",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Marking or correcting the Replay movements (muscles)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "Montages from earlier versions are converted on their own; just check that the points landed where you expected.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "On the <b>home screen</b>, open the <b>Usage profile</b> box and choose <b>Brain</b>, <b>Muscles</b>, <b>Heart</b>, <b>Eyes</b> or <b>Everything</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "In the <b>Muscles</b> tab, choose the <b>View</b>: front, back, side or a zoomed area (face, forearm and hand, leg…).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "In the <b>Muscles</b> tab, the body drawing (front, back, side and zoomed areas) shows each electrode as a numbered point. Click <b>Add electrode</b> and then on the body: the point snaps to the recommended spot (muscle belly, SENIAM reference) or stays where you clicked. During the exam, a heat spot at the electrode point shows the intensity measured there.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "For the heart, the beat strip uses colour <b>and</b> shape: thin line = regular, orange triangle = early, red rectangle = longer pause.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "In the Complete level each panel is a <b>drawer</b>: <b>▾</b> collapses, <b>⋯</b> opens the menu (move, default size, close) and <b>×</b> closes. To reopen a panel or return to the original arrangement, use the <b>Panels ▾</b> button at the top of the tab and tick it, or choose <b>Restore default</b>. The handle on the bottom edge changes the height. The arrangement is saved for next time.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "For the eyes, if the sides come out swapped, tick <b>Invert horizontal</b> or <b>Invert vertical</b>.",
+        "O botão ▶ Replay está apagado": "The ▶ Replay button is greyed out",
+        "O eletrodo caiu no músculo errado": "The electrode landed on the wrong muscle",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "The profile says what you work with and hides the tabs that are not part of it. Change it on the <b>home screen</b> (<b>Usage profile</b> box) or in <b>System → Usage profile</b>, where you can also create <b>My bench</b> with exactly the exams and charts you want. <b>Everything</b> shows the whole program. A recording of another exam opens normally in any profile.",
+        "O programa demora para abrir": "The program takes long to open",
+        "Onde está cada eletrodo (desenho do corpo)": "Where each electrode is (body drawing)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "Segments are born from the recording's markers; without markers, the detected contractions appear as <b>to define</b>. Right-click a segment and choose <b>Change movement</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "For a profile of your own, go to <b>System → Usage profile</b>, click <b>New…</b> (My bench) and tick the exams and, in Complete, the charts you want to see.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "For a whole sequence, use <b>Ready-made task</b> (lift the dumbbell, open the door with the key, pick up the cup): it is inserted from the cursor on.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Usage profile: Brain, Muscles, Heart, Eyes or Everything",
+        "Replay (animação da gravação)": "Replay (animation of the recording)",
+        "Replay: ver a gravação como uma animação": "Replay: watching the recording as an animation",
+        "Rever uma gravação → ▶ Replay": "Review a recording → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "Only the channels in use appear in the lists",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "A warning appears when the active muscles do not match the chosen movement (triceps active in a flexion segment, for example). It is a hint, not an automatic correction.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "A panel disappeared or I want to rearrange the panels (drawers)",
+        "Uma aba sumiu": "A tab disappeared",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "A recording of another exam opens the same in any profile; the profile only organises the screen.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Watching the Replay of a muscle, heart or eye recording",
+        "Visualizar → Músculos → desenho do corpo": "View → Muscles → body drawing",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Go back to the acquisition: the tabs outside the profile disappear and the others stay in place.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Go to <b>Review a recording</b> and choose the recording in the list: the animation exists only for muscle, heart and eye exams.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "the recording has no movement markers and no detected contractions. In the Complete level, mark the segments on the timeline with the right button.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "the recording playing as an animation: the figure that moves, the heart that beats or the eyes that blink and look.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "the recording is of the brain or has not finished loading yet. Choose a muscle, heart or eye recording.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "an animation that redoes, from the recorded signals, the marked movement, the heart rhythm or the gaze. It simulates what was recorded: it is not a video nor a report.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "drag it: when released near another recommended point it snaps to it. In a zoomed area it is easier to get right.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "each electrode on the right muscle, with the activation heat appearing in its place.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "the current profile does not include it. Switch to <b>Everything</b> or edit your profile in <b>System → Usage profile</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "the program asks whether there are unsaved marks when closing; answer <b>Save</b>. If you already closed it, redo and save.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "European recommendations on where to place surface electrodes for each muscle (over the muscle belly, away from the tendon). The body drawing snaps the electrode to those points.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "only the tabs of your work on screen, without losing any recording.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "a timeline with the right movement in each segment, saved next to the recording.",
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Biceps",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Click 'Add electrode' and then click on the body: the electrode snaps to the\nnearest SENIAM point (muscle belly) or stays where you clicked.\nDRAG the electrode: the heat follows it and shows the intensity measured there.\nMouse wheel zooms; right button drags the zoomed view.\nDouble-click renames · Delete removes the selected one.",
+        "Delt. ant.": "Ant. delt.",
+        "Delt. médio": "Mid. delt.",
+        "Delt. post.": "Post. delt.",
+        "ECM": "SCM",
+        "ECR": "ECR",
+        "Eretor esp.": "Erector sp.",
+        "Ext. dedos": "Finger ext.",
+        "FCR": "FCR",
+        "Fibular": "Peroneus",
+        "Flex. dedos": "Finger flex.",
+        "Frontal": "Frontalis",
+        "Gastroc. med.": "Med. gastroc.",
+        "Glúteo máx.": "Glut. max.",
+        "Glúteo méd.": "Glut. med.",
+        "Isquiotib.": "Hamstrings",
+        "Lado": "Side",
+        "Lateral": "Lateral",
+        "Latíssimo": "Latissimus",
+        "Masseter": "Masseter",
+        "Orbicular": "Orbicularis",
+        "Peitoral": "Pectoralis",
+        "Reto abd.": "Rectus abd.",
+        "Reto fem.": "Rectus fem.",
+        "Temporal": "Temporalis",
+        "Tibial ant.": "Tib. ant.",
+        "Trap. sup.": "Upper trap.",
+        "Tríceps": "Triceps",
+        "Vasto lat.": "Vastus lat.",
+        "Vasto med.": "Vastus med.",
+        "Vista Lateral (perfil esquerdo)": "Side View (left profile)",
+        "Zigomático": "Zygomaticus",
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Drag to change the height · double-click: default size",
+        "Canais EMG — envelope e ativações": "EMG channels — envelope and activations",
+        "Expandir": "Expand",
+        "Expandir todos": "Expand all",
+        "Fechar painel (reabra pelo botão Painéis)": "Close panel (reopen from the Panels button)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Show, hide and arrange this tab's panels",
+        "Mover para baixo": "Move down",
+        "Mover para cima": "Move up",
+        "Opções do painel": "Panel options",
+        "Painéis": "Panels",
+        "Recolher": "Collapse",
+        "Recolher todos": "Collapse all",
+        "Restaurar o padrão": "Restore default",
+        "Tacograma e Poincaré": "Tachogram and Poincaré",
+        "Tamanho padrão": "Default size",
+        "Traçado ECG e detecção de picos R": "ECG trace and R-peak detection",
+        "Traçado H/V — piscadas e sacadas": "H/V traces — blinks and saccades",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "The figure SIMULATES the marked movement; it is not a video of the person.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "The figure SIMULATES the marked movement; it is not a video of the person. This is not a medical report or a diagnosis.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Open a muscle, heart or eye recording to see the Replay.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Places the task's movements on the timeline from the current instant, with the object held in the hand.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "A heart that beats at the recorded rhythm, with every beat on the strip.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "An articulated figure that redoes the marked movement, with the muscles lighting up as recorded.",
+        "Figura do movimento indisponível.": "Movement figure unavailable.",
+        "Gráfico indisponível.": "Chart unavailable.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "There are active muscles ({0}) in a segment marked as rest.",
+        "Inserir no cursor": "Insert at cursor",
+        "Inverter horizontal": "Flip horizontal",
+        "Inverter vertical": "Flip vertical",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "The Replay exists for muscle, heart and eye exams; this recording is of another kind.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "The drawn heart SIMULATES the recorded rhythm. This is not a medical report or a diagnosis.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Eyes that blink and look according to the recorded signals.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "The drawn eyes SIMULATE the recorded blinks and gaze. This is not a medical report or a diagnosis.",
+        "Remover este evento": "Remove this event",
+        "Replay do coração — {0}": "Heart replay — {0}",
+        "Replay do movimento — {0}": "Movement replay — {0}",
+        "Replay dos olhos — {0}": "Eye replay — {0}",
+        "Simulação": "Simulation",
+        "Tarefa pronta:": "Ready-made task:",
+        "Traçado do coração (ECG)": "Heart trace (ECG)",
+        "Traçado dos olhos (horizontal e vertical)": "Eye traces (horizontal and vertical)",
+        "Trocar a direção": "Change the direction",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "Use it if the eyes look to the opposite side of what the person did (swapped electrodes).",
+        "intensidade": "intensity",
+        "nenhum músculo acima de 2%": "no muscle above 2%",
+        "palma para baixo": "palm down",
+        "palma para cima": "palm up",
+        "▶ Replay": "▶ Replay",
+        # ===== replay_p6p7 (1.10.0) =====
+        "(corrigida à mão)": "(hand-corrected)",
+        "(corrigido à mão)": "(hand-corrected)",
+        "A animação SIMULA o que foi gravado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "The animation SIMULATES what was recorded; it is not a video of the person. Not a medical report nor a diagnosis.",
+        "A definir": "To be defined",
+        "Abrir a mão": "Open the hand",
+        "Abrir mão": "Open hand",
+        "Adicionar batida aqui": "Add beat here",
+        "Adicionar faixa": "Add track",
+        "Apagar": "Delete",
+        "Arraste para ir a um instante da gravação.": "Drag to go to a moment in the recording.",
+        "Desfazer": "Undo",
+        "Dividir aqui": "Split here",
+        "Ext. cotovelo": "Elbow ext.",
+        "Ext. ombro": "Shoulder ext.",
+        "Ext. punho": "Wrist ext.",
+        "Extensão do cotovelo": "Elbow extension",
+        "Extensão do ombro": "Shoulder extension",
+        "Extensão do punho": "Wrist extension",
+        "Faixa {0}": "Track {0}",
+        "Fechar a mão": "Close the hand",
+        "Fechar mão": "Close hand",
+        "Flex. cotovelo": "Elbow flex.",
+        "Flex. ombro": "Shoulder flex.",
+        "Flex. punho": "Wrist flex.",
+        "Flexão do cotovelo": "Elbow flexion",
+        "Flexão do ombro": "Shoulder flexion",
+        "Flexão do punho": "Wrist flexion",
+        "Grava as marcações ao lado da gravação.": "Saves the marks next to the recording.",
+        "Há marcações não salvas. Salvar antes de fechar?": "There are unsaved marks. Save before closing?",
+        "Isto não é laudo nem diagnóstico.": "This is not a medical report nor a diagnosis.",
+        "Marcar como batida adiantada": "Mark as early beat",
+        "Marcar como batida regular": "Mark as regular beat",
+        "Marcar como pausa maior": "Mark as longer pause",
+        "Nenhum trecho de movimento marcado nesta gravação.": "No movement segment marked in this recording.",
+        "Nenhuma gravação carregada.": "No recording loaded.",
+        "Nenhuma piscada ou movimento dos olhos encontrado.": "No blink or eye movement found.",
+        "Novo trecho aqui": "New segment here",
+        "Não foi possível salvar: {0}": "Could not save: {0}",
+        "Os músculos ativos ({0}) não combinam com o movimento escolhido ({1}); esperado: {2}.": "The active muscles ({0}) do not match the chosen movement ({1}); expected: {2}.",
+        "Pinça": "Pinch",
+        "Pronação": "Pronation",
+        "Pronação (palma para baixo)": "Pronation (palm down)",
+        "Protocolo: fim": "Protocol: end",
+        "Protocolo: início": "Protocol: start",
+        "Refazer": "Redo",
+        "Remover batida": "Remove beat",
+        "Remover faixa": "Remove track",
+        "Repetir": "Repeat",
+        "Replay": "Replay",
+        "Supinação": "Supination",
+        "Supinação (palma para cima)": "Supination (palm up)",
+        "Toca ou pausa o replay (barra de espaço).": "Plays or pauses the replay (space bar).",
+        "Todas as batidas foram regulares.": "All beats were regular.",
+        "Trocar o movimento": "Change movement",
+        "Velocidade do replay (não muda a gravação).": "Replay speed (does not change the recording).",
+        "Volta para o começo da gravação.": "Goes back to the start of the recording.",
+        "adiantada": "early",
+        "aguardando a primeira batida": "waiting for the first beat",
+        "baixo": "down",
+        "batida adiantada": "early beat",
+        "batida regular": "regular beat",
+        "bpm em média: —": "bpm on average: —",
+        "cima": "up",
+        "direita": "right",
+        "esquerda": "left",
+        "faixa {0}": "track {0}",
+        "nenhuma adiantada": "no early beats",
+        "nenhuma batida": "no beats",
+        "nenhuma pausa": "no pauses",
+        "olhando para a direita": "looking right",
+        "olhando para a esquerda": "looking left",
+        "olhando para baixo": "looking down",
+        "olhando para cima": "looking up",
+        "olhando para frente": "looking straight ahead",
+        "pausa": "pause",
+        "pausa maior": "longer pause",
+        "piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}": "blinks: {0} · sideways: {1} · up or down: {2}",
+        "piscando": "blinking",
+        "regular": "regular",
+        "{0} adiantada": "{0} early",
+        "{0} adiantadas": "{0} early",
+        "{0} batida": "{0} beat",
+        "{0} batidas": "{0} beats",
+        "{0} bpm em média": "{0} bpm on average",
+        "{0} evento": "{0} event",
+        "{0} ficou olhando para a direita": "{0} kept looking right",
+        "{0} ficou olhando para a esquerda": "{0} kept looking left",
+        "{0} ficou olhando para baixo": "{0} kept looking down",
+        "{0} ficou olhando para cima": "{0} kept looking up",
+        "{0} ficou olhando para frente": "{0} kept looking straight ahead",
+        "{0} moveu os olhos": "{0} moved the eyes",
+        "{0} olhou para a direita": "{0} looked right",
+        "{0} olhou para a esquerda": "{0} looked left",
+        "{0} olhou para baixo": "{0} looked down",
+        "{0} olhou para cima": "{0} looked up",
+        "{0} pausa": "{0} pause",
+        "{0} pausas": "{0} pauses",
+        "{0} piscou": "{0} blinked",
+        "{0} por {1} s": "{0} for {1} s",
+        "⏮ Início": "⏮ Start",
+        "⏸ Pausar": "⏸ Pause",
+        "▶ Tocar": "▶ Play",
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "What do you work with?",
+        "Duplicar perfil": "Duplicate profile",
+        "Escolha os gráficos": "Choose the charts",
+        "Exames deste perfil:": "Exams in this profile:",
+        "Excluir o perfil \"{0}\"?": "Delete the profile \"{0}\"?",
+        "Já existe um perfil com esse nome.": "A profile with that name already exists.",
+        "Marque pelo menos um.": "Check at least one.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Check everything you use. Whoever does only one kind of exam does not see the others on screen. You can change this later on the home screen or in System → Usage profile.",
+        "Nenhum gráfico a escolher para estes exames.": "No charts to choose for these exams.",
+        "Nome do perfil:": "Profile name:",
+        "Novo perfil de uso": "New usage profile",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "The ones recommended for your profile are already checked; uncheck what you do not want to see. This applies to the Full level and can be changed at any time with the Panels button on each tab.",
+        "Perfil de uso": "Usage profile",
+        "Perfil de uso: {0}.": "Usage profile: {0}.",
+        "Perfil:": "Profile:",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "Ready-made profiles cannot be renamed or deleted; duplicate one to edit it.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Whoever does only one kind of exam does not need to see the others: the profile decides what the home screen offers and which tabs appear.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Whoever does only one kind of exam does not need to see the others: the profile decides what the home screen offers and which tabs appear. Create yours in System → Usage profile.",
+        "Renomear perfil": "Rename profile",
+        "Renomear…": "Rename…",
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Opening the program…",
+        "Montando a tela inicial…": "Building the home screen…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "The launcher (EEG_Data_Collector.py) could not be updated; the program keeps working with the current one.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "midline",
         "lado esquerdo": "left side",
@@ -2065,7 +2402,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Terms of Use acceptance not persisted",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "You accepted the terms, but the acceptance could not be recorded on disk. The wizard will reappear the next time the program is opened. Check disk space/permissions.",
         "Termo de Uso completo ausente (resumo exibido)": "Full Terms of Use missing (summary shown)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "The full text of the Terms of Use was not found; showing the summary version. The full document is at https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "The full text of the Terms of Use was not found; showing the summary version. The full document is at https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Settings not saved on exit",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "Your settings could not be saved on exit. Check space/permissions. Do you want to close anyway?",
         "Manifesto de update inválido/incompleto": "Invalid/incomplete update manifest",
@@ -2073,11 +2410,11 @@ class I18N:
         "SHA-256 do download não confere": "Download SHA-256 does not match",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "The downloaded update is corrupted or tampered with and was not applied. Check your connection and try again; the current version was preserved.",
         "Update sem assinatura SHA-256": "Update without SHA-256 signature",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "This update does not include a verification signature (SHA-256). For safety, download the new version manually at https://github.com/rodrigooa43-create/OpenBionica.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "This update does not include a verification signature (SHA-256). For safety, download the new version manually at https://github.com/rodrigooa43-create/ROA.",
         "Falha ao gravar o arquivo atualizado": "Failed to write the updated file",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "The update could not be written (no permission in the program folder, or the app is open in another window). Close other copies / run as administrator, or download it manually at https://github.com/rodrigooa43-create/OpenBionica.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "The update could not be written (no permission in the program folder, or the app is open in another window). Close other copies / run as administrator, or download it manually at https://github.com/rodrigooa43-create/ROA.",
         "update_config.json corrompido": "update_config.json corrupted",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "The update configuration file is corrupted. Update checking was disabled; download updates manually at https://github.com/rodrigooa43-create/OpenBionica.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "The update configuration file is corrupted. Update checking was disabled; download updates manually at https://github.com/rodrigooa43-create/ROA.",
         "Exportação EDF indisponível (pyedflib ausente)": "EDF export unavailable (pyedflib missing)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "EDF export unavailable: the pyedflib library is not installed. Install it with pip install pyedflib or use another format (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "FIF export unavailable (MNE missing)",
@@ -4254,6 +4591,297 @@ class I18N:
 
     # Dicionários ESPAÑOL — chaves em pt-BR
     _es = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Cerebro (EEG)",
+        "Músculos (EMG)": "Músculos (EMG)",
+        "Coração (ECG)": "Corazón (ECG)",
+        "Olhos (EOG)": "Ojos (EOG)",
+        "Tudo": "Todo",
+        "Minha bancada": "Mi banco",
+        "Músculos": "Músculos",
+        "Coração": "Corazón",
+        "Olhos": "Ojos",
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "La <b>primera</b> apertura después de instalar o actualizar prepara una caché (carpeta <b>.roa_cache</b>, junto al programa o en la carpeta ROA de los datos locales del usuario) y por eso tarda más; las siguientes abren en pocos segundos. La pantalla de apertura con el logo dice con palabras qué se está cargando. Si sigue tardando, compruebe que el antivirus no examine la carpeta del programa en cada apertura.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "La animación <b>simula</b> lo que se grabó a partir de las señales: no es un vídeo de la persona, y no es informe ni diagnóstico.",
+        "A figura não se mexe": "La figura no se mueve",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Abra el Replay de la grabación de músculos en el nivel <b>Completo</b>.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Arrastre la línea de tiempo para ir a un instante. En la lista de al lado, haga clic en un tramo, un latido o un evento para que el reproductor salte hasta allí.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Arrastre el punto para ajustar; doble clic renombra; <b>Supr</b> elimina el seleccionado.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Arrastre un bloque para moverlo y tire del borde para estirarlo. <b>Dividir aquí</b> corta un tramo en dos; <b>Añadir pista</b> crea otra pista para movimientos simultáneos (hasta cuatro).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "Los latidos y los eventos de los ojos son los mismos del informe PDF; corregirlos (nivel Completo) no altera la grabación, solo el archivo del Replay junto a ella.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "Las listas de canales muestran solo los canales <b>en uso</b> en el examen elegido. Al revisar una grabación, las listas siguen los canales de esa grabación, no los del aparato conectado ahora.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "Las listas de canales muestran solo los canales <b>en uso</b>: encendidos y del tipo del examen (un canal marcado como corazón no aparece en la lista de músculos). Para cambiar el tipo o volver a encender un canal, use <b>Filtros y Canales</b> en el nivel Completo. Al revisar una grabación, las listas siguen los canales de esa grabación.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Haga clic en <b>Añadir electrodo</b> y luego en el cuerpo: el punto se pega al lugar recomendado del músculo más cercano (vientre del músculo, referencia SENIAM).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Haga clic en <b>▶ Replay</b>. La ventana se abre con el reproductor: <b>▶ Reproducir</b>, <b>⏸ Pausar</b>, <b>⏮ Inicio</b>, la línea de tiempo y el reloj.",
+        "Colocar os eletrodos no desenho do corpo": "Colocar los electrodos en el dibujo del cuerpo",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z deshace. Haga clic en <b>Guardar</b>: el archivo movimentos.json queda junto a la grabación y se lee la próxima vez.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "De frente, el lado <b>derecho</b> de la persona queda a la <b>izquierda</b> del dibujo, como en una foto; compruebe la D/I en el nombre del músculo.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "Durante el examen, la mancha de calor en el punto del electrodo muestra la intensidad medida allí; el anillo alrededor del número muestra la calidad de la señal.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "En <b>Revisar una grabación</b>, elija una grabación de músculos, corazón u ojos y haga clic en <b>▶ Replay</b>. Una figura rehace el movimiento marcado, un corazón late al ritmo grabado o dos ojos parpadean y miran según las señales. Use <b>▶ Reproducir</b>, <b>⏸ Pausar</b> y arrastre la línea de tiempo. La animación <b>simula</b> lo grabado: no es un vídeo de la persona ni informe o diagnóstico. Para grabaciones de cerebro el botón queda desactivado.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Elegir el perfil de uso (qué pestañas aparecen)",
+        "Fechei a janela e perdi as marcações": "Cerré la ventana y perdí las marcas",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Las instalaciones antiguas empiezan en <b>Todo</b>: nada desaparece sin que usted lo elija.",
+        "Manual: Abertura rápida": "Manual: Apertura rápida",
+        "Manual: Canais em uso": "Manual: Canales en uso",
+        "Manual: Exame de músculos → Atlas muscular": "Manual: Examen de músculos → Atlas muscular",
+        "Manual: Nível Completo → Painéis em gavetas": "Manual: Nivel Completo → Paneles en cajones",
+        "Manual: Perfis de uso": "Manual: Perfiles de uso",
+        "Manual: Rever uma gravação → Replay": "Manual: Revisar una grabación → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Manual: Revisar una grabación → Replay → Músculos",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Marcar o corregir los movimientos del Replay (músculos)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "Los montajes de versiones anteriores se convierten solos; compruebe únicamente que los puntos cayeron donde esperaba.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "En la <b>pantalla inicial</b>, abra la casilla <b>Perfil de uso</b> y elija <b>Cerebro</b>, <b>Músculos</b>, <b>Corazón</b>, <b>Ojos</b> o <b>Todo</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "En la pestaña <b>Músculos</b>, elija la <b>Vista</b>: frente, espalda, lado o un área ampliada (cara, antebrazo y mano, pierna…).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "En la pestaña <b>Músculos</b>, el dibujo del cuerpo (frente, espalda, lado y áreas ampliadas) muestra cada electrodo como un punto numerado. Haga clic en <b>Añadir electrodo</b> y luego en el cuerpo: el punto se pega al lugar recomendado (vientre del músculo, referencia SENIAM) o queda donde hizo clic. Durante el examen, una mancha de calor en el punto del electrodo muestra la intensidad medida allí.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "En el corazón, la franja de latidos usa color <b>y</b> forma: trazo fino = regular, triángulo naranja = adelantado, rectángulo rojo = pausa mayor.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "En el nivel Completo cada panel es un <b>cajón</b>: <b>▾</b> lo pliega, <b>⋯</b> abre el menú (mover, tamaño por defecto, cerrar) y <b>×</b> lo cierra. Para reabrir un panel o volver a la disposición original, use el botón <b>Paneles ▾</b> en lo alto de la pestaña y márquelo, o elija <b>Restaurar el predeterminado</b>. El asa del borde inferior cambia la altura. La disposición queda guardada para la próxima vez.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "En los ojos, si los lados salen cambiados, marque <b>Invertir horizontal</b> o <b>Invertir vertical</b>.",
+        "O botão ▶ Replay está apagado": "El botón ▶ Replay está apagado",
+        "O eletrodo caiu no músculo errado": "El electrodo cayó en el músculo equivocado",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "El perfil dice con qué trabaja usted y oculta las pestañas que no forman parte. Cámbielo en la <b>pantalla inicial</b> (casilla <b>Perfil de uso</b>) o en <b>Sistema → Perfil de uso</b>, donde también se crea <b>Mi banco</b> con exactamente los exámenes y gráficos que quiera. <b>Todo</b> muestra el programa entero. Una grabación de otro examen se abre normalmente en cualquier perfil.",
+        "O programa demora para abrir": "El programa tarda en abrir",
+        "Onde está cada eletrodo (desenho do corpo)": "Dónde está cada electrodo (dibujo del cuerpo)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "Los tramos nacen de los marcadores de la grabación; sin marcador, las contracciones detectadas aparecen como <b>por definir</b>. Haga clic derecho en un tramo y elija <b>Cambiar el movimiento</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "Para un perfil solo suyo, vaya a <b>Sistema → Perfil de uso</b>, haga clic en <b>Nuevo…</b> (Mi banco) y marque los exámenes y, en Completo, los gráficos que quiere ver.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "Para una secuencia entera, use <b>Tarea lista</b> (levantar la mancuerna, abrir la puerta con la llave, coger el vaso): entra a partir del cursor.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Perfil de uso: Cerebro, Músculos, Corazón, Ojos o Todo",
+        "Replay (animação da gravação)": "Replay (animación de la grabación)",
+        "Replay: ver a gravação como uma animação": "Replay: ver la grabación como una animación",
+        "Rever uma gravação → ▶ Replay": "Revisar una grabación → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "Solo los canales en uso aparecen en las listas",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "Aparece un aviso cuando los músculos activos no coinciden con el movimiento elegido (tríceps activo en un tramo de flexión, por ejemplo). Es una pista, no una corrección automática.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "Un panel desapareció o quiero reorganizar los paneles (cajones)",
+        "Uma aba sumiu": "Una pestaña desapareció",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "Una grabación de otro examen se abre igual en cualquier perfil; el perfil solo organiza la pantalla.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Ver el Replay de una grabación de músculos, corazón u ojos",
+        "Visualizar → Músculos → desenho do corpo": "Visualizar → Músculos → dibujo del cuerpo",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Vuelva a la adquisición: las pestañas fuera del perfil desaparecen y las demás quedan en su lugar.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Vaya a <b>Revisar una grabación</b> y elija la grabación en la lista: la animación solo existe para exámenes de músculos, corazón y ojos.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "la grabación no tiene marcadores de movimiento ni contracciones detectadas. En el nivel Completo, marque los tramos en la línea de tiempo con el botón derecho.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "la grabación reproduciéndose como animación: la figura que se mueve, el corazón que late o los ojos que parpadean y miran.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "la grabación es de cerebro o aún no terminó de cargar. Elija una grabación de músculos, corazón u ojos.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "animación que rehace, a partir de las señales grabadas, el movimiento marcado, el ritmo del corazón o la mirada. Simula lo grabado: no es vídeo ni informe.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "arrástrelo: al soltarlo cerca de otro punto recomendado se pega a él. En un área ampliada es más fácil acertar.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "cada electrodo en el músculo correcto, con el calor de la activación apareciendo en su lugar.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "el perfil actual no la incluye. Cambie a <b>Todo</b> o edite su perfil en <b>Sistema → Perfil de uso</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "el programa pregunta si hay marcas sin guardar al cerrar; responda <b>Guardar</b>. Si ya cerró, rehágalas y guarde.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "recomendaciones europeas sobre dónde colocar los electrodos de superficie en cada músculo (sobre el vientre del músculo, lejos del tendón). El dibujo del cuerpo pega el electrodo en esos puntos.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "solo las pestañas de su trabajo en pantalla, sin perder ninguna grabación.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "una línea de tiempo con el movimiento correcto en cada tramo, guardada junto a la grabación.",
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Bíceps",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Haga clic en 'Añadir electrodo' y luego en el cuerpo: el electrodo se pega al\npunto SENIAM más cercano (vientre del músculo) o queda donde hizo clic.\nARRASTRE el electrodo: el calor lo acompaña y muestra la intensidad medida allí.\nLa rueda del ratón amplía; el botón derecho arrastra la vista ampliada.\nDoble clic renombra · Supr elimina el seleccionado.",
+        "Delt. ant.": "Delt. ant.",
+        "Delt. médio": "Delt. medio",
+        "Delt. post.": "Delt. post.",
+        "ECM": "ECM",
+        "ECR": "ECR",
+        "Eretor esp.": "Erector esp.",
+        "Ext. dedos": "Ext. dedos",
+        "FCR": "FCR",
+        "Fibular": "Peroneo",
+        "Flex. dedos": "Flex. dedos",
+        "Frontal": "Frontal",
+        "Gastroc. med.": "Gastroc. med.",
+        "Glúteo máx.": "Glúteo máx.",
+        "Glúteo méd.": "Glúteo med.",
+        "Isquiotib.": "Isquiotib.",
+        "Lado": "Lado",
+        "Lateral": "Lateral",
+        "Latíssimo": "Dorsal ancho",
+        "Masseter": "Masetero",
+        "Orbicular": "Orbicular",
+        "Peitoral": "Pectoral",
+        "Reto abd.": "Recto abd.",
+        "Reto fem.": "Recto fem.",
+        "Temporal": "Temporal",
+        "Tibial ant.": "Tibial ant.",
+        "Trap. sup.": "Trap. sup.",
+        "Tríceps": "Tríceps",
+        "Vasto lat.": "Vasto lat.",
+        "Vasto med.": "Vasto med.",
+        "Vista Lateral (perfil esquerdo)": "Vista lateral (perfil izquierdo)",
+        "Zigomático": "Cigomático",
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Arrastre para cambiar la altura · doble clic: tamaño predeterminado",
+        "Canais EMG — envelope e ativações": "Canales EMG — envolvente y activaciones",
+        "Expandir": "Expandir",
+        "Expandir todos": "Expandir todos",
+        "Fechar painel (reabra pelo botão Painéis)": "Cerrar panel (vuelva a abrirlo con el botón Paneles)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Mostrar, ocultar y ordenar los paneles de esta pestaña",
+        "Mover para baixo": "Bajar",
+        "Mover para cima": "Subir",
+        "Opções do painel": "Opciones del panel",
+        "Painéis": "Paneles",
+        "Recolher": "Contraer",
+        "Recolher todos": "Contraer todos",
+        "Restaurar o padrão": "Restaurar el predeterminado",
+        "Tacograma e Poincaré": "Tacograma y Poincaré",
+        "Tamanho padrão": "Tamaño predeterminado",
+        "Traçado ECG e detecção de picos R": "Trazado ECG y detección de picos R",
+        "Traçado H/V — piscadas e sacadas": "Trazados H/V — parpadeos y sacadas",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "La figura SIMULA el movimiento marcado; no es el vídeo de la persona.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "La figura SIMULA el movimiento marcado; no es un vídeo de la persona. No es un informe médico ni un diagnóstico.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Abra una grabación de músculos, corazón u ojos para ver la Reproducción.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Coloca los movimientos de la tarea en la línea de tiempo a partir del instante actual, con el objeto sujeto en la mano.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "Un corazón que late al ritmo grabado, con todos los latidos en la franja.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "Una figura articulada que repite el movimiento marcado, con los músculos encendiéndose según la grabación.",
+        "Figura do movimento indisponível.": "Figura del movimiento no disponible.",
+        "Gráfico indisponível.": "Gráfico no disponible.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "Hay músculos activos ({0}) en un tramo marcado como reposo.",
+        "Inserir no cursor": "Insertar en el cursor",
+        "Inverter horizontal": "Invertir horizontal",
+        "Inverter vertical": "Invertir vertical",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "La Reproducción existe para exámenes de músculos, corazón y ojos; esta grabación es de otro tipo.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "El corazón dibujado SIMULA el ritmo grabado. No es un informe médico ni un diagnóstico.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Ojos que parpadean y miran según las señales grabadas.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "Los ojos dibujados SIMULAN los parpadeos y la mirada grabados. No es un informe médico ni un diagnóstico.",
+        "Remover este evento": "Quitar este evento",
+        "Replay do coração — {0}": "Reproducción del corazón — {0}",
+        "Replay do movimento — {0}": "Reproducción del movimiento — {0}",
+        "Replay dos olhos — {0}": "Reproducción de los ojos — {0}",
+        "Simulação": "Simulación",
+        "Tarefa pronta:": "Tarea predefinida:",
+        "Traçado do coração (ECG)": "Trazado del corazón (ECG)",
+        "Traçado dos olhos (horizontal e vertical)": "Trazados de los ojos (horizontal y vertical)",
+        "Trocar a direção": "Cambiar la dirección",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "Úselo si los ojos miran hacia el lado contrario de lo que hizo la persona (electrodos intercambiados).",
+        "intensidade": "intensidad",
+        "nenhum músculo acima de 2%": "ningún músculo por encima del 2%",
+        "palma para baixo": "palma hacia abajo",
+        "palma para cima": "palma hacia arriba",
+        "▶ Replay": "▶ Reproducción",
+        # ===== replay_p6p7 (1.10.0) =====
+        "(corrigida à mão)": "(corregido a mano)",
+        "(corrigido à mão)": "(corregido a mano)",
+        "A animação SIMULA o que foi gravado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "La animación SIMULA lo que se grabó; no es un vídeo de la persona. No es un informe médico ni un diagnóstico.",
+        "A definir": "Por definir",
+        "Abrir a mão": "Abrir la mano",
+        "Abrir mão": "Abrir mano",
+        "Adicionar batida aqui": "Añadir latido aquí",
+        "Adicionar faixa": "Añadir pista",
+        "Apagar": "Borrar",
+        "Arraste para ir a um instante da gravação.": "Arrastre para ir a un instante de la grabación.",
+        "Desfazer": "Deshacer",
+        "Dividir aqui": "Dividir aquí",
+        "Ext. cotovelo": "Ext. codo",
+        "Ext. ombro": "Ext. hombro",
+        "Ext. punho": "Ext. muñeca",
+        "Extensão do cotovelo": "Extensión de codo",
+        "Extensão do ombro": "Extensión de hombro",
+        "Extensão do punho": "Extensión de muñeca",
+        "Faixa {0}": "Pista {0}",
+        "Fechar a mão": "Cerrar la mano",
+        "Fechar mão": "Cerrar mano",
+        "Flex. cotovelo": "Flex. codo",
+        "Flex. ombro": "Flex. hombro",
+        "Flex. punho": "Flex. muñeca",
+        "Flexão do cotovelo": "Flexión de codo",
+        "Flexão do ombro": "Flexión de hombro",
+        "Flexão do punho": "Flexión de muñeca",
+        "Grava as marcações ao lado da gravação.": "Guarda las marcas junto a la grabación.",
+        "Há marcações não salvas. Salvar antes de fechar?": "Hay marcas sin guardar. ¿Guardar antes de cerrar?",
+        "Isto não é laudo nem diagnóstico.": "Esto no es un informe médico ni un diagnóstico.",
+        "Marcar como batida adiantada": "Marcar como latido adelantado",
+        "Marcar como batida regular": "Marcar como latido regular",
+        "Marcar como pausa maior": "Marcar como pausa mayor",
+        "Nenhum trecho de movimento marcado nesta gravação.": "Ningún tramo de movimiento marcado en esta grabación.",
+        "Nenhuma gravação carregada.": "Ninguna grabación cargada.",
+        "Nenhuma piscada ou movimento dos olhos encontrado.": "No se encontró ningún parpadeo ni movimiento de los ojos.",
+        "Novo trecho aqui": "Nuevo tramo aquí",
+        "Não foi possível salvar: {0}": "No se pudo guardar: {0}",
+        "Os músculos ativos ({0}) não combinam com o movimento escolhido ({1}); esperado: {2}.": "Los músculos activos ({0}) no coinciden con el movimiento elegido ({1}); esperado: {2}.",
+        "Pinça": "Pinza",
+        "Pronação": "Pronación",
+        "Pronação (palma para baixo)": "Pronación (palma hacia abajo)",
+        "Protocolo: fim": "Protocolo: fin",
+        "Protocolo: início": "Protocolo: inicio",
+        "Refazer": "Rehacer",
+        "Remover batida": "Eliminar latido",
+        "Remover faixa": "Eliminar pista",
+        "Repetir": "Repetir",
+        "Replay": "Reproducción",
+        "Supinação": "Supinación",
+        "Supinação (palma para cima)": "Supinación (palma hacia arriba)",
+        "Toca ou pausa o replay (barra de espaço).": "Reproduce o pausa la reproducción (barra espaciadora).",
+        "Todas as batidas foram regulares.": "Todos los latidos fueron regulares.",
+        "Trocar o movimento": "Cambiar el movimiento",
+        "Velocidade do replay (não muda a gravação).": "Velocidad de la reproducción (no cambia la grabación).",
+        "Volta para o começo da gravação.": "Vuelve al comienzo de la grabación.",
+        "adiantada": "adelantado",
+        "aguardando a primeira batida": "esperando el primer latido",
+        "baixo": "abajo",
+        "batida adiantada": "latido adelantado",
+        "batida regular": "latido regular",
+        "bpm em média: —": "bpm de media: —",
+        "cima": "arriba",
+        "direita": "derecha",
+        "esquerda": "izquierda",
+        "faixa {0}": "pista {0}",
+        "nenhuma adiantada": "ninguno adelantado",
+        "nenhuma batida": "ningún latido",
+        "nenhuma pausa": "ninguna pausa",
+        "olhando para a direita": "mirando a la derecha",
+        "olhando para a esquerda": "mirando a la izquierda",
+        "olhando para baixo": "mirando hacia abajo",
+        "olhando para cima": "mirando hacia arriba",
+        "olhando para frente": "mirando al frente",
+        "pausa": "pausa",
+        "pausa maior": "pausa mayor",
+        "piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}": "parpadeos: {0} · a los lados: {1} · arriba o abajo: {2}",
+        "piscando": "parpadeando",
+        "regular": "regular",
+        "{0} adiantada": "{0} adelantado",
+        "{0} adiantadas": "{0} adelantados",
+        "{0} batida": "{0} latido",
+        "{0} batidas": "{0} latidos",
+        "{0} bpm em média": "{0} bpm de media",
+        "{0} evento": "{0} evento",
+        "{0} ficou olhando para a direita": "{0} se quedó mirando a la derecha",
+        "{0} ficou olhando para a esquerda": "{0} se quedó mirando a la izquierda",
+        "{0} ficou olhando para baixo": "{0} se quedó mirando hacia abajo",
+        "{0} ficou olhando para cima": "{0} se quedó mirando hacia arriba",
+        "{0} ficou olhando para frente": "{0} se quedó mirando al frente",
+        "{0} moveu os olhos": "{0} movió los ojos",
+        "{0} olhou para a direita": "{0} miró a la derecha",
+        "{0} olhou para a esquerda": "{0} miró a la izquierda",
+        "{0} olhou para baixo": "{0} miró hacia abajo",
+        "{0} olhou para cima": "{0} miró hacia arriba",
+        "{0} pausa": "{0} pausa",
+        "{0} pausas": "{0} pausas",
+        "{0} piscou": "{0} parpadeó",
+        "{0} por {1} s": "{0} durante {1} s",
+        "⏮ Início": "⏮ Inicio",
+        "⏸ Pausar": "⏸ Pausar",
+        "▶ Tocar": "▶ Reproducir",
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "¿Con qué trabaja usted?",
+        "Duplicar perfil": "Duplicar perfil",
+        "Escolha os gráficos": "Elija los gráficos",
+        "Exames deste perfil:": "Exámenes de este perfil:",
+        "Excluir o perfil \"{0}\"?": "¿Eliminar el perfil \"{0}\"?",
+        "Já existe um perfil com esse nome.": "Ya existe un perfil con ese nombre.",
+        "Marque pelo menos um.": "Marque al menos uno.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Marque todo lo que usa. Quien solo hace un tipo de examen no ve los demás en la pantalla. Puede cambiarlo después en la pantalla inicial o en Sistema → Perfil de uso.",
+        "Nenhum gráfico a escolher para estes exames.": "No hay gráficos para elegir para estos exámenes.",
+        "Nome do perfil:": "Nombre del perfil:",
+        "Novo perfil de uso": "Nuevo perfil de uso",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "Los recomendados para su perfil ya están marcados; desmarque lo que no quiera ver. Esto vale para el nivel Completo y puede cambiarse en cualquier momento con el botón Paneles de cada pestaña.",
+        "Perfil de uso": "Perfil de uso",
+        "Perfil de uso: {0}.": "Perfil de uso: {0}.",
+        "Perfil:": "Perfil:",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "Los perfiles predefinidos no se pueden renombrar ni eliminar; duplique uno para editarlo.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Quien solo hace un tipo de examen no necesita ver los demás: el perfil decide qué ofrece la pantalla inicial y qué pestañas aparecen.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Quien solo hace un tipo de examen no necesita ver los demás: el perfil decide qué ofrece la pantalla inicial y qué pestañas aparecen. Cree el suyo en Sistema → Perfil de uso.",
+        "Renomear perfil": "Renombrar perfil",
+        "Renomear…": "Renombrar…",
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Abriendo el programa…",
+        "Montando a tela inicial…": "Montando la pantalla inicial…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "El lanzador (EEG_Data_Collector.py) no pudo actualizarse; el programa sigue funcionando con el actual.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "línea media",
         "lado esquerdo": "lado izquierdo",
@@ -5870,7 +6498,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Aceptación de los Términos de Uso no guardada",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "Aceptó los términos, pero no se pudo registrar la aceptación en disco. El asistente volverá a aparecer en la próxima apertura. Compruebe espacio/permisos.",
         "Termo de Uso completo ausente (resumo exibido)": "Términos de Uso completos ausentes (se muestra el resumen)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "No se encontró el texto completo de los Términos de Uso; se muestra la versión resumida. El documento completo está en https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "No se encontró el texto completo de los Términos de Uso; se muestra la versión resumida. El documento completo está en https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Configuración no guardada al salir",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "No se pudo guardar su configuración al salir. Compruebe espacio/permisos. ¿Desea cerrar de todos modos?",
         "Manifesto de update inválido/incompleto": "Manifiesto de actualización inválido/incompleto",
@@ -5878,11 +6506,11 @@ class I18N:
         "SHA-256 do download não confere": "El SHA-256 de la descarga no coincide",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "La actualización descargada está corrupta o manipulada y no se aplicó. Compruebe su conexión e inténtelo de nuevo; se conservó la versión actual.",
         "Update sem assinatura SHA-256": "Actualización sin firma SHA-256",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Esta actualización no incluye firma de verificación (SHA-256). Por seguridad, descargue la nueva versión manualmente en https://github.com/rodrigooa43-create/OpenBionica.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "Esta actualización no incluye firma de verificación (SHA-256). Por seguridad, descargue la nueva versión manualmente en https://github.com/rodrigooa43-create/ROA.",
         "Falha ao gravar o arquivo atualizado": "Fallo al escribir el archivo actualizado",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "No se pudo escribir la actualización (sin permiso en la carpeta del programa, o la app está abierta en otra ventana). Cierre otras copias / ejecute como administrador, o descárguela manualmente en https://github.com/rodrigooa43-create/OpenBionica.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "No se pudo escribir la actualización (sin permiso en la carpeta del programa, o la app está abierta en otra ventana). Cierre otras copias / ejecute como administrador, o descárguela manualmente en https://github.com/rodrigooa43-create/ROA.",
         "update_config.json corrompido": "update_config.json corrupto",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "El archivo de configuración de actualización está corrupto. La comprobación se desactivó; descargue las actualizaciones manualmente en https://github.com/rodrigooa43-create/OpenBionica.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "El archivo de configuración de actualización está corrupto. La comprobación se desactivó; descargue las actualizaciones manualmente en https://github.com/rodrigooa43-create/ROA.",
         "Exportação EDF indisponível (pyedflib ausente)": "Exportación EDF no disponible (pyedflib ausente)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "Exportación EDF no disponible: la biblioteca pyedflib no está instalada. Instálela con pip install pyedflib o use otro formato (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "Exportación FIF no disponible (MNE ausente)",
@@ -8059,6 +8687,297 @@ class I18N:
 
     # Dicionários ITALIANO / FRANCÊS / CHINÊS — gerados na revisão ago/2026
     _it = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Cervello (EEG)",
+        "Músculos (EMG)": "Muscoli (EMG)",
+        "Coração (ECG)": "Cuore (ECG)",
+        "Olhos (EOG)": "Occhi (EOG)",
+        "Tudo": "Tutto",
+        "Minha bancada": "Il mio banco",
+        "Músculos": "Muscoli",
+        "Coração": "Cuore",
+        "Olhos": "Occhi",
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "La <b>prima</b> apertura dopo l'installazione o l'aggiornamento prepara una cache (cartella <b>.roa_cache</b>, accanto al programma o nella cartella ROA dei dati locali dell'utente) e per questo richiede più tempo; le successive si aprono in pochi secondi. La schermata di apertura con il logo dice a parole che cosa si sta caricando. Se continua a essere lenta, controlla che l'antivirus non esamini la cartella del programma a ogni apertura.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "L'animazione <b>simula</b> ciò che è stato registrato a partire dai segnali: non è un video della persona, e non è un referto né una diagnosi.",
+        "A figura não se mexe": "La figura non si muove",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Apri il Replay della registrazione dei muscoli nel livello <b>Completo</b>.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Trascina la linea del tempo per andare a un istante. Nell'elenco accanto, clicca su un tratto, un battito o un evento e il lettore salta lì.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Trascina il punto per regolarlo; il doppio clic rinomina; <b>Canc</b> rimuove quello selezionato.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Trascina un blocco per spostarlo e tira il bordo per allungarlo. <b>Dividi qui</b> taglia un tratto in due; <b>Aggiungi traccia</b> crea un'altra traccia per movimenti contemporanei (fino a quattro).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "I battiti e gli eventi degli occhi sono gli stessi del rapporto PDF; correggerli (livello Completo) non modifica la registrazione, solo il file del Replay accanto a essa.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "Gli elenchi dei canali mostrano solo i canali <b>in uso</b> nell'esame scelto. Rivedendo una registrazione, gli elenchi seguono i canali di quella registrazione, non quelli dell'apparecchio collegato ora.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "Gli elenchi dei canali mostrano solo i canali <b>in uso</b>: accesi e del tipo dell'esame (un canale segnato come cuore non compare nell'elenco dei muscoli). Per cambiare il tipo o riaccendere un canale, usa <b>Filtri e Canali</b> nel livello Completo. Rivedendo una registrazione, gli elenchi seguono i canali di quella registrazione.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Clicca su <b>Aggiungi elettrodo</b> e poi sul corpo: il punto si aggancia alla posizione consigliata del muscolo più vicino (ventre muscolare, riferimento SENIAM).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Clicca su <b>▶ Replay</b>. La finestra si apre con il lettore: <b>▶ Riproduci</b>, <b>⏸ Pausa</b>, <b>⏮ Inizio</b>, la linea del tempo e l'orologio.",
+        "Colocar os eletrodos no desenho do corpo": "Posizionare gli elettrodi sul disegno del corpo",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z annulla. Clicca su <b>Salva</b>: il file movimentos.json resta accanto alla registrazione e viene letto la prossima volta.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "Di fronte, il lato <b>destro</b> della persona sta a <b>sinistra</b> del disegno, come in una foto; controlla la D/S nel nome del muscolo.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "Durante l'esame, la macchia di calore sul punto dell'elettrodo mostra l'intensità misurata lì; l'anello intorno al numero mostra la qualità del segnale.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "In <b>Rivedi una registrazione</b>, scegli una registrazione di muscoli, cuore o occhi e clicca su <b>▶ Replay</b>. Una figura rifà il movimento segnato, un cuore batte al ritmo registrato o due occhi sbattono le palpebre e guardano secondo i segnali. Usa <b>▶ Riproduci</b>, <b>⏸ Pausa</b> e trascina la linea del tempo. L'animazione <b>simula</b> ciò che è stato registrato: non è un video della persona né un referto o una diagnosi. Per le registrazioni del cervello il pulsante resta disattivato.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Scegliere il profilo d'uso (quali schede compaiono)",
+        "Fechei a janela e perdi as marcações": "Ho chiuso la finestra e ho perso le marcature",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Le installazioni precedenti partono in <b>Tutto</b>: niente sparisce senza che tu lo scelga.",
+        "Manual: Abertura rápida": "Manuale: Apertura rapida",
+        "Manual: Canais em uso": "Manuale: Canali in uso",
+        "Manual: Exame de músculos → Atlas muscular": "Manuale: Esame dei muscoli → Atlante muscolare",
+        "Manual: Nível Completo → Painéis em gavetas": "Manuale: Livello Completo → Pannelli a cassetto",
+        "Manual: Perfis de uso": "Manuale: Profili d'uso",
+        "Manual: Rever uma gravação → Replay": "Manuale: Rivedi una registrazione → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Manuale: Rivedi una registrazione → Replay → Muscoli",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Segnare o correggere i movimenti del Replay (muscoli)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "I montaggi delle versioni precedenti vengono convertiti da soli; controlla solo che i punti siano finiti dove ti aspettavi.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "Nella <b>schermata iniziale</b>, apri la casella <b>Profilo d'uso</b> e scegli <b>Cervello</b>, <b>Muscoli</b>, <b>Cuore</b>, <b>Occhi</b> o <b>Tutto</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "Nella scheda <b>Muscoli</b>, scegli la <b>Vista</b>: fronte, schiena, lato o un'area ingrandita (viso, avambraccio e mano, gamba…).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "Nella scheda <b>Muscoli</b>, il disegno del corpo (fronte, schiena, lato e aree ingrandite) mostra ogni elettrodo come un punto numerato. Clicca su <b>Aggiungi elettrodo</b> e poi sul corpo: il punto si aggancia alla posizione consigliata (ventre muscolare, riferimento SENIAM) o resta dove hai cliccato. Durante l'esame, una macchia di calore sul punto dell'elettrodo mostra l'intensità misurata lì.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "Nel cuore, la striscia dei battiti usa colore <b>e</b> forma: tratto sottile = regolare, triangolo arancione = anticipato, rettangolo rosso = pausa più lunga.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "Nel livello Completo ogni pannello è un <b>cassetto</b>: <b>▾</b> lo ripiega, <b>⋯</b> apre il menu (sposta, dimensione predefinita, chiudi) e <b>×</b> lo chiude. Per riaprire un pannello o tornare alla disposizione originale, usa il pulsante <b>Pannelli ▾</b> in alto nella scheda e spuntalo, oppure scegli <b>Ripristina predefinito</b>. La maniglia sul bordo inferiore cambia l'altezza. La disposizione resta salvata per la prossima volta.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "Negli occhi, se i lati risultano invertiti, spunta <b>Inverti orizzontale</b> o <b>Inverti verticale</b>.",
+        "O botão ▶ Replay está apagado": "Il pulsante ▶ Replay è spento",
+        "O eletrodo caiu no músculo errado": "L'elettrodo è finito sul muscolo sbagliato",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "Il profilo dice con che cosa lavori e nasconde le schede che non ne fanno parte. Cambialo nella <b>schermata iniziale</b> (casella <b>Profilo d'uso</b>) o in <b>Sistema → Profilo d'uso</b>, dove si crea anche <b>Il mio banco</b> con esattamente gli esami e i grafici che vuoi. <b>Tutto</b> mostra il programma intero. Una registrazione di un altro esame si apre normalmente in qualsiasi profilo.",
+        "O programa demora para abrir": "Il programma ci mette molto ad aprirsi",
+        "Onde está cada eletrodo (desenho do corpo)": "Dove si trova ogni elettrodo (disegno del corpo)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "I tratti nascono dai marcatori della registrazione; senza marcatori, le contrazioni rilevate compaiono come <b>da definire</b>. Clicca con il tasto destro su un tratto e scegli <b>Cambia movimento</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "Per un profilo tutto tuo, vai in <b>Sistema → Profilo d'uso</b>, clicca su <b>Nuovo…</b> (Il mio banco) e spunta gli esami e, nel Completo, i grafici che vuoi vedere.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "Per una sequenza intera, usa <b>Compito pronto</b> (sollevare il manubrio, aprire la porta con la chiave, prendere il bicchiere): viene inserita a partire dal cursore.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Profilo d'uso: Cervello, Muscoli, Cuore, Occhi o Tutto",
+        "Replay (animação da gravação)": "Replay (animazione della registrazione)",
+        "Replay: ver a gravação como uma animação": "Replay: vedere la registrazione come un'animazione",
+        "Rever uma gravação → ▶ Replay": "Rivedi una registrazione → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "Negli elenchi compaiono solo i canali in uso",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "Compare un avviso quando i muscoli attivi non corrispondono al movimento scelto (tricipite attivo in un tratto di flessione, per esempio). È un suggerimento, non una correzione automatica.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "Un pannello è sparito o voglio riorganizzare i pannelli (cassetti)",
+        "Uma aba sumiu": "Una scheda è sparita",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "Una registrazione di un altro esame si apre allo stesso modo in qualsiasi profilo; il profilo organizza solo lo schermo.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Vedere il Replay di una registrazione di muscoli, cuore o occhi",
+        "Visualizar → Músculos → desenho do corpo": "Visualizza → Muscoli → disegno del corpo",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Torna all'acquisizione: le schede fuori dal profilo spariscono e le altre restano al loro posto.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Vai in <b>Rivedi una registrazione</b> e scegli la registrazione nell'elenco: l'animazione esiste solo per esami di muscoli, cuore e occhi.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "la registrazione non ha marcatori di movimento né contrazioni rilevate. Nel livello Completo, segna i tratti sulla linea del tempo con il tasto destro.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "la registrazione riprodotta come animazione: la figura che si muove, il cuore che batte o gli occhi che sbattono le palpebre e guardano.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "la registrazione è del cervello o non ha ancora finito di caricarsi. Scegli una registrazione di muscoli, cuore o occhi.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "animazione che rifà, a partire dai segnali registrati, il movimento segnato, il ritmo del cuore o lo sguardo. Simula ciò che è stato registrato: non è un video né un referto.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "trascinalo: rilasciandolo vicino a un altro punto consigliato si aggancia a quello. In un'area ingrandita è più facile centrarlo.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "ogni elettrodo sul muscolo giusto, con il calore dell'attivazione che compare al suo posto.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "il profilo attuale non la include. Passa a <b>Tutto</b> o modifica il tuo profilo in <b>Sistema → Profilo d'uso</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "alla chiusura il programma chiede se ci sono marcature non salvate; rispondi <b>Salva</b>. Se hai già chiuso, rifalle e salva.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "raccomandazioni europee su dove posizionare gli elettrodi di superficie per ogni muscolo (sul ventre muscolare, lontano dal tendine). Il disegno del corpo aggancia l'elettrodo a quei punti.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "solo le schede del tuo lavoro sullo schermo, senza perdere nessuna registrazione.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "una linea del tempo con il movimento giusto in ogni tratto, salvata accanto alla registrazione.",
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Bicipite",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Clicca su 'Aggiungi elettrodo' e poi sul corpo: l'elettrodo si aggancia al\npunto SENIAM più vicino (ventre muscolare) o resta dove hai cliccato.\nTRASCINA l'elettrodo: il calore lo segue e mostra l'intensità misurata lì.\nLa rotella del mouse ingrandisce; il tasto destro trascina la vista ingrandita.\nDoppio clic rinomina · Canc rimuove quello selezionato.",
+        "Delt. ant.": "Delt. ant.",
+        "Delt. médio": "Delt. medio",
+        "Delt. post.": "Delt. post.",
+        "ECM": "SCM",
+        "ECR": "ECR",
+        "Eretor esp.": "Erettore sp.",
+        "Ext. dedos": "Est. dita",
+        "FCR": "FCR",
+        "Fibular": "Peroneo",
+        "Flex. dedos": "Fless. dita",
+        "Frontal": "Frontale",
+        "Gastroc. med.": "Gastroc. med.",
+        "Glúteo máx.": "Gluteo max.",
+        "Glúteo méd.": "Gluteo med.",
+        "Isquiotib.": "Ischiocrur.",
+        "Lado": "Lato",
+        "Lateral": "Laterale",
+        "Latíssimo": "Gran dorsale",
+        "Masseter": "Massetere",
+        "Orbicular": "Orbicolare",
+        "Peitoral": "Pettorale",
+        "Reto abd.": "Retto addom.",
+        "Reto fem.": "Retto fem.",
+        "Temporal": "Temporale",
+        "Tibial ant.": "Tibiale ant.",
+        "Trap. sup.": "Trap. sup.",
+        "Tríceps": "Tricipite",
+        "Vasto lat.": "Vasto lat.",
+        "Vasto med.": "Vasto med.",
+        "Vista Lateral (perfil esquerdo)": "Vista laterale (profilo sinistro)",
+        "Zigomático": "Zigomatico",
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Trascina per cambiare l'altezza · doppio clic: dimensione predefinita",
+        "Canais EMG — envelope e ativações": "Canali EMG — inviluppo e attivazioni",
+        "Expandir": "Espandi",
+        "Expandir todos": "Espandi tutti",
+        "Fechar painel (reabra pelo botão Painéis)": "Chiudi pannello (riaprilo dal pulsante Pannelli)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Mostra, nascondi e sistema i pannelli di questa scheda",
+        "Mover para baixo": "Sposta in basso",
+        "Mover para cima": "Sposta in alto",
+        "Opções do painel": "Opzioni del pannello",
+        "Painéis": "Pannelli",
+        "Recolher": "Comprimi",
+        "Recolher todos": "Comprimi tutti",
+        "Restaurar o padrão": "Ripristina predefinito",
+        "Tacograma e Poincaré": "Tacogramma e Poincaré",
+        "Tamanho padrão": "Dimensione predefinita",
+        "Traçado ECG e detecção de picos R": "Tracciato ECG e rilevamento dei picchi R",
+        "Traçado H/V — piscadas e sacadas": "Tracciati H/V — ammiccamenti e saccadi",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "La figura SIMULA il movimento marcato; non è il video della persona.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "La figura SIMULA il movimento marcato; non è un video della persona. Non è un referto né una diagnosi.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Apri una registrazione di muscoli, cuore o occhi per vedere il Replay.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Inserisce i movimenti del compito nella linea del tempo a partire dall'istante attuale, con l'oggetto tenuto in mano.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "Un cuore che batte al ritmo registrato, con tutti i battiti sulla striscia.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "Una figura articolata che ripete il movimento marcato, con i muscoli che si accendono come registrato.",
+        "Figura do movimento indisponível.": "Figura del movimento non disponibile.",
+        "Gráfico indisponível.": "Grafico non disponibile.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "Ci sono muscoli attivi ({0}) in un tratto marcato come riposo.",
+        "Inserir no cursor": "Inserisci al cursore",
+        "Inverter horizontal": "Inverti orizzontale",
+        "Inverter vertical": "Inverti verticale",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "Il Replay esiste per gli esami di muscoli, cuore e occhi; questa registrazione è di un altro tipo.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "Il cuore disegnato SIMULA il ritmo registrato. Non è un referto né una diagnosi.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Occhi che sbattono le palpebre e guardano secondo i segnali registrati.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "Gli occhi disegnati SIMULANO gli ammiccamenti e lo sguardo registrati. Non è un referto né una diagnosi.",
+        "Remover este evento": "Rimuovi questo evento",
+        "Replay do coração — {0}": "Replay del cuore — {0}",
+        "Replay do movimento — {0}": "Replay del movimento — {0}",
+        "Replay dos olhos — {0}": "Replay degli occhi — {0}",
+        "Simulação": "Simulazione",
+        "Tarefa pronta:": "Compito predefinito:",
+        "Traçado do coração (ECG)": "Tracciato del cuore (ECG)",
+        "Traçado dos olhos (horizontal e vertical)": "Tracciati degli occhi (orizzontale e verticale)",
+        "Trocar a direção": "Cambia la direzione",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "Usalo se gli occhi guardano dal lato opposto a quello che la persona ha fatto (elettrodi scambiati).",
+        "intensidade": "intensità",
+        "nenhum músculo acima de 2%": "nessun muscolo sopra il 2%",
+        "palma para baixo": "palmo in giù",
+        "palma para cima": "palmo in su",
+        "▶ Replay": "▶ Replay",
+        # ===== replay_p6p7 (1.10.0) =====
+        "(corrigida à mão)": "(corretto a mano)",
+        "(corrigido à mão)": "(corretto a mano)",
+        "A animação SIMULA o que foi gravado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "L'animazione SIMULA ciò che è stato registrato; non è un video della persona. Non è un referto né una diagnosi.",
+        "A definir": "Da definire",
+        "Abrir a mão": "Aprire la mano",
+        "Abrir mão": "Apertura mano",
+        "Adicionar batida aqui": "Aggiungi battito qui",
+        "Adicionar faixa": "Aggiungi traccia",
+        "Apagar": "Elimina",
+        "Arraste para ir a um instante da gravação.": "Trascina per andare a un istante della registrazione.",
+        "Desfazer": "Annulla",
+        "Dividir aqui": "Dividi qui",
+        "Ext. cotovelo": "Est. gomito",
+        "Ext. ombro": "Est. spalla",
+        "Ext. punho": "Est. polso",
+        "Extensão do cotovelo": "Estensione del gomito",
+        "Extensão do ombro": "Estensione della spalla",
+        "Extensão do punho": "Estensione del polso",
+        "Faixa {0}": "Traccia {0}",
+        "Fechar a mão": "Chiudere la mano",
+        "Fechar mão": "Chiusura mano",
+        "Flex. cotovelo": "Fless. gomito",
+        "Flex. ombro": "Fless. spalla",
+        "Flex. punho": "Fless. polso",
+        "Flexão do cotovelo": "Flessione del gomito",
+        "Flexão do ombro": "Flessione della spalla",
+        "Flexão do punho": "Flessione del polso",
+        "Grava as marcações ao lado da gravação.": "Salva le marcature accanto alla registrazione.",
+        "Há marcações não salvas. Salvar antes de fechar?": "Ci sono marcature non salvate. Salvare prima di chiudere?",
+        "Isto não é laudo nem diagnóstico.": "Questo non è un referto né una diagnosi.",
+        "Marcar como batida adiantada": "Segna come battito anticipato",
+        "Marcar como batida regular": "Segna come battito regolare",
+        "Marcar como pausa maior": "Segna come pausa più lunga",
+        "Nenhum trecho de movimento marcado nesta gravação.": "Nessun tratto di movimento contrassegnato in questa registrazione.",
+        "Nenhuma gravação carregada.": "Nessuna registrazione caricata.",
+        "Nenhuma piscada ou movimento dos olhos encontrado.": "Nessun ammiccamento o movimento degli occhi trovato.",
+        "Novo trecho aqui": "Nuovo tratto qui",
+        "Não foi possível salvar: {0}": "Impossibile salvare: {0}",
+        "Os músculos ativos ({0}) não combinam com o movimento escolhido ({1}); esperado: {2}.": "I muscoli attivi ({0}) non corrispondono al movimento scelto ({1}); atteso: {2}.",
+        "Pinça": "Pinza",
+        "Pronação": "Pronazione",
+        "Pronação (palma para baixo)": "Pronazione (palmo in giù)",
+        "Protocolo: fim": "Protocollo: fine",
+        "Protocolo: início": "Protocollo: inizio",
+        "Refazer": "Ripeti",
+        "Remover batida": "Rimuovi battito",
+        "Remover faixa": "Rimuovi traccia",
+        "Repetir": "In loop",
+        "Replay": "Replay",
+        "Supinação": "Supinazione",
+        "Supinação (palma para cima)": "Supinazione (palmo in su)",
+        "Toca ou pausa o replay (barra de espaço).": "Avvia o mette in pausa il replay (barra spaziatrice).",
+        "Todas as batidas foram regulares.": "Tutti i battiti sono stati regolari.",
+        "Trocar o movimento": "Cambia movimento",
+        "Velocidade do replay (não muda a gravação).": "Velocità del replay (non modifica la registrazione).",
+        "Volta para o começo da gravação.": "Torna all'inizio della registrazione.",
+        "adiantada": "anticipato",
+        "aguardando a primeira batida": "in attesa del primo battito",
+        "baixo": "giù",
+        "batida adiantada": "battito anticipato",
+        "batida regular": "battito regolare",
+        "bpm em média: —": "bpm in media: —",
+        "cima": "su",
+        "direita": "destra",
+        "esquerda": "sinistra",
+        "faixa {0}": "traccia {0}",
+        "nenhuma adiantada": "nessuno anticipato",
+        "nenhuma batida": "nessun battito",
+        "nenhuma pausa": "nessuna pausa",
+        "olhando para a direita": "guarda a destra",
+        "olhando para a esquerda": "guarda a sinistra",
+        "olhando para baixo": "guarda in basso",
+        "olhando para cima": "guarda in alto",
+        "olhando para frente": "guarda avanti",
+        "pausa": "pausa",
+        "pausa maior": "pausa più lunga",
+        "piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}": "ammiccamenti: {0} · di lato: {1} · in alto o in basso: {2}",
+        "piscando": "sbatte le palpebre",
+        "regular": "regolare",
+        "{0} adiantada": "{0} anticipato",
+        "{0} adiantadas": "{0} anticipati",
+        "{0} batida": "{0} battito",
+        "{0} batidas": "{0} battiti",
+        "{0} bpm em média": "{0} bpm in media",
+        "{0} evento": "{0} evento",
+        "{0} ficou olhando para a direita": "{0} ha tenuto lo sguardo a destra",
+        "{0} ficou olhando para a esquerda": "{0} ha tenuto lo sguardo a sinistra",
+        "{0} ficou olhando para baixo": "{0} ha tenuto lo sguardo in basso",
+        "{0} ficou olhando para cima": "{0} ha tenuto lo sguardo in alto",
+        "{0} ficou olhando para frente": "{0} ha tenuto lo sguardo avanti",
+        "{0} moveu os olhos": "{0} ha mosso gli occhi",
+        "{0} olhou para a direita": "{0} ha guardato a destra",
+        "{0} olhou para a esquerda": "{0} ha guardato a sinistra",
+        "{0} olhou para baixo": "{0} ha guardato in basso",
+        "{0} olhou para cima": "{0} ha guardato in alto",
+        "{0} pausa": "{0} pausa",
+        "{0} pausas": "{0} pause",
+        "{0} piscou": "{0} ha sbattuto le palpebre",
+        "{0} por {1} s": "{0} per {1} s",
+        "⏮ Início": "⏮ Inizio",
+        "⏸ Pausar": "⏸ Pausa",
+        "▶ Tocar": "▶ Riproduci",
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "Con cosa lavori?",
+        "Duplicar perfil": "Duplica profilo",
+        "Escolha os gráficos": "Scegli i grafici",
+        "Exames deste perfil:": "Esami di questo profilo:",
+        "Excluir o perfil \"{0}\"?": "Eliminare il profilo \"{0}\"?",
+        "Já existe um perfil com esse nome.": "Esiste già un profilo con questo nome.",
+        "Marque pelo menos um.": "Seleziona almeno uno.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Seleziona tutto ciò che usi. Chi fa un solo tipo di esame non vede gli altri sullo schermo. Puoi cambiarlo in seguito nella schermata iniziale o in Sistema → Profilo d'uso.",
+        "Nenhum gráfico a escolher para estes exames.": "Nessun grafico da scegliere per questi esami.",
+        "Nome do perfil:": "Nome del profilo:",
+        "Novo perfil de uso": "Nuovo profilo d'uso",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "Quelli consigliati per il tuo profilo sono già selezionati; deseleziona ciò che non vuoi vedere. Vale per il livello Completo e può essere cambiato in qualsiasi momento con il pulsante Pannelli di ogni scheda.",
+        "Perfil de uso": "Profilo d'uso",
+        "Perfil de uso: {0}.": "Profilo d'uso: {0}.",
+        "Perfil:": "Profilo:",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "I profili predefiniti non possono essere rinominati né eliminati; duplicane uno per modificarlo.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Chi fa un solo tipo di esame non ha bisogno di vedere gli altri: il profilo decide cosa offre la schermata iniziale e quali schede compaiono.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Chi fa un solo tipo di esame non ha bisogno di vedere gli altri: il profilo decide cosa offre la schermata iniziale e quali schede compaiono. Crea il tuo in Sistema → Profilo d'uso.",
+        "Renomear perfil": "Rinomina profilo",
+        "Renomear…": "Rinomina…",
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Apertura del programma…",
+        "Montando a tela inicial…": "Preparazione della schermata iniziale…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "Il lanciatore (EEG_Data_Collector.py) non ha potuto essere aggiornato; il programma continua a funzionare con quello attuale.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "linea mediana",
         "lado esquerdo": "lato sinistro",
@@ -9675,7 +10594,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Accettazione dei Termini d'Uso non salvata",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "Hai accettato i termini, ma non è stato possibile registrare l'accettazione su disco. La procedura guidata riapparirà alla prossima apertura. Verifica spazio/permessi.",
         "Termo de Uso completo ausente (resumo exibido)": "Termini d'Uso completi mancanti (mostrato il riassunto)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "Il testo completo dei Termini d'Uso non è stato trovato; viene mostrata la versione riassunta. Il documento completo è su https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "Il testo completo dei Termini d'Uso non è stato trovato; viene mostrata la versione riassunta. Il documento completo è su https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Impostazioni non salvate all'uscita",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "Non è stato possibile salvare le tue impostazioni all'uscita. Verifica spazio/permessi. Vuoi chiudere comunque?",
         "Manifesto de update inválido/incompleto": "Manifesto di aggiornamento non valido/incompleto",
@@ -9683,11 +10602,11 @@ class I18N:
         "SHA-256 do download não confere": "Lo SHA-256 del download non corrisponde",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "L'aggiornamento scaricato è corrotto o manomesso e non è stato applicato. Verifica la connessione e riprova; la versione attuale è stata conservata.",
         "Update sem assinatura SHA-256": "Aggiornamento senza firma SHA-256",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Questo aggiornamento non include la firma di verifica (SHA-256). Per sicurezza, scarica la nuova versione manualmente da https://github.com/rodrigooa43-create/OpenBionica.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "Questo aggiornamento non include la firma di verifica (SHA-256). Per sicurezza, scarica la nuova versione manualmente da https://github.com/rodrigooa43-create/ROA.",
         "Falha ao gravar o arquivo atualizado": "Impossibile scrivere il file aggiornato",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Non è stato possibile scrivere l'aggiornamento (permesso negato nella cartella del programma, oppure l'app è aperta in un'altra finestra). Chiudi le altre copie / esegui come amministratore, oppure scarica manualmente da https://github.com/rodrigooa43-create/OpenBionica.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "Non è stato possibile scrivere l'aggiornamento (permesso negato nella cartella del programma, oppure l'app è aperta in un'altra finestra). Chiudi le altre copie / esegui come amministratore, oppure scarica manualmente da https://github.com/rodrigooa43-create/ROA.",
         "update_config.json corrompido": "update_config.json corrotto",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Il file di configurazione dell'aggiornamento è corrotto. La verifica è stata disattivata; scarica gli aggiornamenti manualmente da https://github.com/rodrigooa43-create/OpenBionica.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "Il file di configurazione dell'aggiornamento è corrotto. La verifica è stata disattivata; scarica gli aggiornamenti manualmente da https://github.com/rodrigooa43-create/ROA.",
         "Exportação EDF indisponível (pyedflib ausente)": "Esportazione EDF non disponibile (pyedflib mancante)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "Esportazione EDF non disponibile: la libreria pyedflib non è installata. Installala con pip install pyedflib o usa un altro formato (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "Esportazione FIF non disponibile (MNE mancante)",
@@ -11824,6 +12743,297 @@ class I18N:
     }
 
     _fr = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Cerveau (EEG)",
+        "Músculos (EMG)": "Muscles (EMG)",
+        "Coração (ECG)": "Cœur (ECG)",
+        "Olhos (EOG)": "Yeux (EOG)",
+        "Tudo": "Tout",
+        "Minha bancada": "Mon établi",
+        "Músculos": "Muscles",
+        "Coração": "Cœur",
+        "Olhos": "Yeux",
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "La <b>première</b> ouverture après l'installation ou une mise à jour prépare un cache (dossier <b>.roa_cache</b>, à côté du programme ou dans le dossier ROA des données locales de l'utilisateur) et prend donc plus de temps ; les suivantes s'ouvrent en quelques secondes. L'écran d'ouverture avec le logo dit en mots ce qui est en cours de chargement. Si la lenteur persiste, vérifiez que l'antivirus n'examine pas le dossier du programme à chaque ouverture.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "L'animation <b>simule</b> ce qui a été enregistré à partir des signaux : ce n'est pas une vidéo de la personne, et ce n'est ni un compte rendu ni un diagnostic.",
+        "A figura não se mexe": "La silhouette ne bouge pas",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Ouvrez le Replay de l'enregistrement des muscles au niveau <b>Complet</b>.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Faites glisser la ligne de temps pour aller à un instant. Dans la liste à côté, cliquez sur un segment, un battement ou un événement : le lecteur y saute.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Faites glisser le point pour l'ajuster ; un double-clic renomme ; <b>Suppr</b> retire le point sélectionné.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Faites glisser un bloc pour le déplacer et tirez son bord pour l'étirer. <b>Diviser ici</b> coupe un segment en deux ; <b>Ajouter une piste</b> crée une autre piste pour des mouvements simultanés (jusqu'à quatre).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "Les battements et les événements des yeux sont les mêmes que dans le rapport PDF ; les corriger (niveau Complet) ne modifie pas l'enregistrement, seulement le fichier du Replay à côté.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "Les listes de canaux n'affichent que les canaux <b>utilisés</b> dans l'examen choisi. En revoyant un enregistrement, les listes suivent les canaux de cet enregistrement, pas ceux de l'appareil branché maintenant.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "Les listes de canaux n'affichent que les canaux <b>utilisés</b> : allumés et du type de l'examen (un canal marqué cœur n'apparaît pas dans la liste des muscles). Pour changer le type ou rallumer un canal, utilisez <b>Filtres et Canaux</b> au niveau Complet. En revoyant un enregistrement, les listes suivent les canaux de cet enregistrement.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Cliquez sur <b>Ajouter une électrode</b> puis sur le corps : le point se cale sur l'emplacement recommandé du muscle le plus proche (ventre du muscle, référence SENIAM).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Cliquez sur <b>▶ Replay</b>. La fenêtre s'ouvre avec le lecteur : <b>▶ Lecture</b>, <b>⏸ Pause</b>, <b>⏮ Début</b>, la ligne de temps et l'horloge.",
+        "Colocar os eletrodos no desenho do corpo": "Placer les électrodes sur le dessin du corps",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z annule. Cliquez sur <b>Enregistrer</b> : le fichier movimentos.json reste à côté de l'enregistrement et est lu la prochaine fois.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "De face, le côté <b>droit</b> de la personne est à <b>gauche</b> du dessin, comme sur une photo ; vérifiez le D/G dans le nom du muscle.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "Pendant l'examen, la tache de chaleur au point de l'électrode montre l'intensité mesurée là ; l'anneau autour du numéro montre la qualité du signal.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "Dans <b>Revoir un enregistrement</b>, choisissez un enregistrement de muscles, de cœur ou d'yeux et cliquez sur <b>▶ Replay</b>. Une silhouette refait le mouvement marqué, un cœur bat au rythme enregistré ou deux yeux clignent et regardent selon les signaux. Utilisez <b>▶ Lecture</b>, <b>⏸ Pause</b> et faites glisser la ligne de temps. L'animation <b>simule</b> ce qui a été enregistré : ce n'est ni une vidéo de la personne ni un compte rendu ou un diagnostic. Pour les enregistrements du cerveau, le bouton est désactivé.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Choisir le profil d'utilisation (quels onglets apparaissent)",
+        "Fechei a janela e perdi as marcações": "J'ai fermé la fenêtre et perdu mes marquages",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Les installations anciennes démarrent sur <b>Tout</b> : rien ne disparaît sans votre choix.",
+        "Manual: Abertura rápida": "Manuel : Ouverture rapide",
+        "Manual: Canais em uso": "Manuel : Canaux utilisés",
+        "Manual: Exame de músculos → Atlas muscular": "Manuel : Examen des muscles → Atlas musculaire",
+        "Manual: Nível Completo → Painéis em gavetas": "Manuel : Niveau Complet → Panneaux en tiroirs",
+        "Manual: Perfis de uso": "Manuel : Profils d'utilisation",
+        "Manual: Rever uma gravação → Replay": "Manuel : Revoir un enregistrement → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Manuel : Revoir un enregistrement → Replay → Muscles",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Marquer ou corriger les mouvements du Replay (muscles)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "Les montages des versions précédentes sont convertis automatiquement ; vérifiez seulement que les points sont tombés où vous l'attendiez.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "Sur l'<b>écran d'accueil</b>, ouvrez la case <b>Profil d'utilisation</b> et choisissez <b>Cerveau</b>, <b>Muscles</b>, <b>Cœur</b>, <b>Yeux</b> ou <b>Tout</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "Dans l'onglet <b>Muscles</b>, choisissez la <b>Vue</b> : face, dos, côté ou une zone agrandie (visage, avant-bras et main, jambe…).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "Dans l'onglet <b>Muscles</b>, le dessin du corps (face, dos, côté et zones agrandies) montre chaque électrode comme un point numéroté. Cliquez sur <b>Ajouter une électrode</b> puis sur le corps : le point se cale sur l'emplacement recommandé (ventre du muscle, référence SENIAM) ou reste où vous avez cliqué. Pendant l'examen, une tache de chaleur au point de l'électrode montre l'intensité mesurée là.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "Pour le cœur, la bande des battements utilise la couleur <b>et</b> la forme : trait fin = régulier, triangle orange = prématuré, rectangle rouge = pause plus longue.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "Au niveau Complet, chaque panneau est un <b>tiroir</b> : <b>▾</b> le replie, <b>⋯</b> ouvre le menu (déplacer, taille par défaut, fermer) et <b>×</b> le ferme. Pour rouvrir un panneau ou revenir à la disposition d'origine, utilisez le bouton <b>Panneaux ▾</b> en haut de l'onglet et cochez-le, ou choisissez <b>Rétablir la disposition par défaut</b>. La poignée du bord inférieur change la hauteur. La disposition est conservée pour la prochaine fois.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "Pour les yeux, si les côtés sortent inversés, cochez <b>Inverser l'horizontale</b> ou <b>Inverser la verticale</b>.",
+        "O botão ▶ Replay está apagado": "Le bouton ▶ Replay est grisé",
+        "O eletrodo caiu no músculo errado": "L'électrode est tombée sur le mauvais muscle",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "Le profil dit avec quoi vous travaillez et masque les onglets qui n'en font pas partie. Changez-le sur l'<b>écran d'accueil</b> (case <b>Profil d'utilisation</b>) ou dans <b>Système → Profil d'utilisation</b>, où l'on crée aussi <b>Mon établi</b> avec exactement les examens et les graphiques voulus. <b>Tout</b> affiche le programme entier. Un enregistrement d'un autre examen s'ouvre normalement dans n'importe quel profil.",
+        "O programa demora para abrir": "Le programme met longtemps à s'ouvrir",
+        "Onde está cada eletrodo (desenho do corpo)": "Où se trouve chaque électrode (dessin du corps)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "Les segments naissent des marqueurs de l'enregistrement ; sans marqueur, les contractions détectées apparaissent comme <b>à définir</b>. Cliquez avec le bouton droit sur un segment et choisissez <b>Changer le mouvement</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "Pour un profil rien qu'à vous, allez dans <b>Système → Profil d'utilisation</b>, cliquez sur <b>Nouveau…</b> (Mon établi) et cochez les examens et, en Complet, les graphiques à afficher.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "Pour une séquence entière, utilisez <b>Tâche prête</b> (soulever l'haltère, ouvrir la porte avec la clé, prendre le verre) : elle s'insère à partir du curseur.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Profil d'utilisation : Cerveau, Muscles, Cœur, Yeux ou Tout",
+        "Replay (animação da gravação)": "Replay (animation de l'enregistrement)",
+        "Replay: ver a gravação como uma animação": "Replay : voir l'enregistrement comme une animation",
+        "Rever uma gravação → ▶ Replay": "Revoir un enregistrement → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "Seuls les canaux utilisés apparaissent dans les listes",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "Un avertissement apparaît quand les muscles actifs ne correspondent pas au mouvement choisi (triceps actif dans un segment de flexion, par exemple). C'est une indication, pas une correction automatique.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "Un panneau a disparu ou je veux réorganiser les panneaux (tiroirs)",
+        "Uma aba sumiu": "Un onglet a disparu",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "Un enregistrement d'un autre examen s'ouvre de la même façon dans n'importe quel profil ; le profil ne fait qu'organiser l'écran.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Voir le Replay d'un enregistrement de muscles, de cœur ou d'yeux",
+        "Visualizar → Músculos → desenho do corpo": "Visualiser → Muscles → dessin du corps",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Revenez à l'acquisition : les onglets hors du profil disparaissent et les autres restent en place.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Allez dans <b>Revoir un enregistrement</b> et choisissez l'enregistrement dans la liste : l'animation n'existe que pour les examens des muscles, du cœur et des yeux.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "l'enregistrement n'a ni marqueurs de mouvement ni contractions détectées. Au niveau Complet, marquez les segments sur la ligne de temps avec le bouton droit.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "l'enregistrement joué comme une animation : la silhouette qui bouge, le cœur qui bat ou les yeux qui clignent et regardent.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "l'enregistrement concerne le cerveau ou n'a pas fini de se charger. Choisissez un enregistrement de muscles, de cœur ou d'yeux.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "animation qui refait, à partir des signaux enregistrés, le mouvement marqué, le rythme du cœur ou le regard. Elle simule ce qui a été enregistré : ce n'est ni une vidéo ni un compte rendu.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "faites-la glisser : relâchée près d'un autre point recommandé, elle s'y cale. Dans une zone agrandie, c'est plus facile de viser juste.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "chaque électrode sur le bon muscle, avec la chaleur de l'activation qui apparaît à sa place.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "le profil actuel ne l'inclut pas. Passez à <b>Tout</b> ou modifiez votre profil dans <b>Système → Profil d'utilisation</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "à la fermeture, le programme demande s'il y a des marquages non enregistrés ; répondez <b>Enregistrer</b>. Si c'est déjà fermé, refaites-les et enregistrez.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "recommandations européennes sur l'emplacement des électrodes de surface pour chaque muscle (sur le ventre du muscle, loin du tendon). Le dessin du corps cale l'électrode sur ces points.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "seulement les onglets de votre travail à l'écran, sans perdre aucun enregistrement.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "une ligne de temps avec le bon mouvement dans chaque segment, enregistrée à côté de l'enregistrement.",
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Biceps",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Cliquez sur « Ajouter une électrode » puis sur le corps : l'électrode se cale sur le\npoint SENIAM le plus proche (ventre du muscle) ou reste où vous avez cliqué.\nFAITES GLISSER l'électrode : la chaleur la suit et montre l'intensité mesurée là.\nLa molette agrandit ; le bouton droit déplace la vue agrandie.\nDouble-clic renomme · Suppr retire l'électrode sélectionnée.",
+        "Delt. ant.": "Delt. ant.",
+        "Delt. médio": "Delt. moyen",
+        "Delt. post.": "Delt. post.",
+        "ECM": "SCM",
+        "ECR": "ECR",
+        "Eretor esp.": "Érecteur rach.",
+        "Ext. dedos": "Ext. doigts",
+        "FCR": "FCR",
+        "Fibular": "Fibulaire",
+        "Flex. dedos": "Fléch. doigts",
+        "Frontal": "Frontal",
+        "Gastroc. med.": "Gastroc. méd.",
+        "Glúteo máx.": "Grand fessier",
+        "Glúteo méd.": "Moyen fessier",
+        "Isquiotib.": "Ischio-jamb.",
+        "Lado": "Côté",
+        "Lateral": "Latéral",
+        "Latíssimo": "Grand dorsal",
+        "Masseter": "Masséter",
+        "Orbicular": "Orbiculaire",
+        "Peitoral": "Pectoral",
+        "Reto abd.": "Droit abd.",
+        "Reto fem.": "Droit fém.",
+        "Temporal": "Temporal",
+        "Tibial ant.": "Tibial ant.",
+        "Trap. sup.": "Trap. sup.",
+        "Tríceps": "Triceps",
+        "Vasto lat.": "Vaste lat.",
+        "Vasto med.": "Vaste méd.",
+        "Vista Lateral (perfil esquerdo)": "Vue latérale (profil gauche)",
+        "Zigomático": "Zygomatique",
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Glisser pour changer la hauteur · double-clic : taille par défaut",
+        "Canais EMG — envelope e ativações": "Canaux EMG — enveloppe et activations",
+        "Expandir": "Déplier",
+        "Expandir todos": "Tout déplier",
+        "Fechar painel (reabra pelo botão Painéis)": "Fermer le panneau (rouvrir via le bouton Panneaux)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Afficher, masquer et ranger les panneaux de cet onglet",
+        "Mover para baixo": "Descendre",
+        "Mover para cima": "Monter",
+        "Opções do painel": "Options du panneau",
+        "Painéis": "Panneaux",
+        "Recolher": "Replier",
+        "Recolher todos": "Tout replier",
+        "Restaurar o padrão": "Rétablir la disposition par défaut",
+        "Tacograma e Poincaré": "Tachogramme et Poincaré",
+        "Tamanho padrão": "Taille par défaut",
+        "Traçado ECG e detecção de picos R": "Tracé ECG et détection des pics R",
+        "Traçado H/V — piscadas e sacadas": "Tracés H/V — clignements et saccades",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "La figure SIMULE le mouvement marqué ; ce n'est pas la vidéo de la personne.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "La figure SIMULE le mouvement marqué ; ce n'est pas une vidéo de la personne. Ce n'est ni un compte rendu médical ni un diagnostic.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Ouvrez un enregistrement de muscles, de cœur ou d'yeux pour voir le Replay.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Place les mouvements de la tâche sur la ligne de temps à partir de l'instant actuel, l'objet tenu dans la main.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "Un cœur qui bat au rythme enregistré, avec tous les battements sur la bande.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "Une figure articulée qui refait le mouvement marqué, les muscles s'allumant selon l'enregistrement.",
+        "Figura do movimento indisponível.": "Figure du mouvement indisponible.",
+        "Gráfico indisponível.": "Graphique indisponible.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "Des muscles sont actifs ({0}) dans un segment marqué comme repos.",
+        "Inserir no cursor": "Insérer au curseur",
+        "Inverter horizontal": "Inverser l'horizontal",
+        "Inverter vertical": "Inverser le vertical",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "Le Replay existe pour les examens des muscles, du cœur et des yeux ; cet enregistrement est d'un autre type.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "Le cœur dessiné SIMULE le rythme enregistré. Ce n'est ni un compte rendu médical ni un diagnostic.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Des yeux qui clignent et regardent selon les signaux enregistrés.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "Les yeux dessinés SIMULENT les clignements et le regard enregistrés. Ce n'est ni un compte rendu médical ni un diagnostic.",
+        "Remover este evento": "Supprimer cet événement",
+        "Replay do coração — {0}": "Replay du cœur — {0}",
+        "Replay do movimento — {0}": "Replay du mouvement — {0}",
+        "Replay dos olhos — {0}": "Replay des yeux — {0}",
+        "Simulação": "Simulation",
+        "Tarefa pronta:": "Tâche prête :",
+        "Traçado do coração (ECG)": "Tracé du cœur (ECG)",
+        "Traçado dos olhos (horizontal e vertical)": "Tracés des yeux (horizontal et vertical)",
+        "Trocar a direção": "Changer la direction",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "À utiliser si les yeux regardent du côté opposé à ce que la personne a fait (électrodes inversées).",
+        "intensidade": "intensité",
+        "nenhum músculo acima de 2%": "aucun muscle au-dessus de 2 %",
+        "palma para baixo": "paume vers le bas",
+        "palma para cima": "paume vers le haut",
+        "▶ Replay": "▶ Replay",
+        # ===== replay_p6p7 (1.10.0) =====
+        "(corrigida à mão)": "(corrigé à la main)",
+        "(corrigido à mão)": "(corrigé à la main)",
+        "A animação SIMULA o que foi gravado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "L'animation SIMULE ce qui a été enregistré ; ce n'est pas une vidéo de la personne. Ce n'est ni un compte rendu médical ni un diagnostic.",
+        "A definir": "À définir",
+        "Abrir a mão": "Ouvrir la main",
+        "Abrir mão": "Main ouverte",
+        "Adicionar batida aqui": "Ajouter un battement ici",
+        "Adicionar faixa": "Ajouter une piste",
+        "Apagar": "Effacer",
+        "Arraste para ir a um instante da gravação.": "Faites glisser pour aller à un instant de l'enregistrement.",
+        "Desfazer": "Annuler",
+        "Dividir aqui": "Scinder ici",
+        "Ext. cotovelo": "Ext. coude",
+        "Ext. ombro": "Ext. épaule",
+        "Ext. punho": "Ext. poignet",
+        "Extensão do cotovelo": "Extension du coude",
+        "Extensão do ombro": "Extension de l'épaule",
+        "Extensão do punho": "Extension du poignet",
+        "Faixa {0}": "Piste {0}",
+        "Fechar a mão": "Fermer la main",
+        "Fechar mão": "Main fermée",
+        "Flex. cotovelo": "Flex. coude",
+        "Flex. ombro": "Flex. épaule",
+        "Flex. punho": "Flex. poignet",
+        "Flexão do cotovelo": "Flexion du coude",
+        "Flexão do ombro": "Flexion de l'épaule",
+        "Flexão do punho": "Flexion du poignet",
+        "Grava as marcações ao lado da gravação.": "Enregistre les marquages à côté de l'enregistrement.",
+        "Há marcações não salvas. Salvar antes de fechar?": "Il y a des marquages non sauvegardés. Sauvegarder avant de fermer ?",
+        "Isto não é laudo nem diagnóstico.": "Ceci n'est ni un compte rendu médical ni un diagnostic.",
+        "Marcar como batida adiantada": "Marquer comme battement en avance",
+        "Marcar como batida regular": "Marquer comme battement régulier",
+        "Marcar como pausa maior": "Marquer comme pause plus longue",
+        "Nenhum trecho de movimento marcado nesta gravação.": "Aucun segment de mouvement marqué dans cet enregistrement.",
+        "Nenhuma gravação carregada.": "Aucun enregistrement chargé.",
+        "Nenhuma piscada ou movimento dos olhos encontrado.": "Aucun clignement ni mouvement des yeux trouvé.",
+        "Novo trecho aqui": "Nouveau segment ici",
+        "Não foi possível salvar: {0}": "Impossible de sauvegarder : {0}",
+        "Os músculos ativos ({0}) não combinam com o movimento escolhido ({1}); esperado: {2}.": "Les muscles actifs ({0}) ne correspondent pas au mouvement choisi ({1}) ; attendu : {2}.",
+        "Pinça": "Pince",
+        "Pronação": "Pronation",
+        "Pronação (palma para baixo)": "Pronation (paume vers le bas)",
+        "Protocolo: fim": "Protocole : fin",
+        "Protocolo: início": "Protocole : début",
+        "Refazer": "Rétablir",
+        "Remover batida": "Supprimer le battement",
+        "Remover faixa": "Supprimer la piste",
+        "Repetir": "Répéter",
+        "Replay": "Replay",
+        "Supinação": "Supination",
+        "Supinação (palma para cima)": "Supination (paume vers le haut)",
+        "Toca ou pausa o replay (barra de espaço).": "Lance ou met en pause le replay (barre d'espace).",
+        "Todas as batidas foram regulares.": "Tous les battements ont été réguliers.",
+        "Trocar o movimento": "Changer le mouvement",
+        "Velocidade do replay (não muda a gravação).": "Vitesse du replay (ne modifie pas l'enregistrement).",
+        "Volta para o começo da gravação.": "Revient au début de l'enregistrement.",
+        "adiantada": "en avance",
+        "aguardando a primeira batida": "en attente du premier battement",
+        "baixo": "bas",
+        "batida adiantada": "battement en avance",
+        "batida regular": "battement régulier",
+        "bpm em média: —": "bpm en moyenne : —",
+        "cima": "haut",
+        "direita": "droite",
+        "esquerda": "gauche",
+        "faixa {0}": "piste {0}",
+        "nenhuma adiantada": "aucun en avance",
+        "nenhuma batida": "aucun battement",
+        "nenhuma pausa": "aucune pause",
+        "olhando para a direita": "regarde à droite",
+        "olhando para a esquerda": "regarde à gauche",
+        "olhando para baixo": "regarde en bas",
+        "olhando para cima": "regarde en haut",
+        "olhando para frente": "regarde devant",
+        "pausa": "pause",
+        "pausa maior": "pause plus longue",
+        "piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}": "clignements : {0} · sur les côtés : {1} · en haut ou en bas : {2}",
+        "piscando": "cligne des yeux",
+        "regular": "régulier",
+        "{0} adiantada": "{0} en avance",
+        "{0} adiantadas": "{0} en avance",
+        "{0} batida": "{0} battement",
+        "{0} batidas": "{0} battements",
+        "{0} bpm em média": "{0} bpm en moyenne",
+        "{0} evento": "{0} événement",
+        "{0} ficou olhando para a direita": "{0} a gardé le regard à droite",
+        "{0} ficou olhando para a esquerda": "{0} a gardé le regard à gauche",
+        "{0} ficou olhando para baixo": "{0} a gardé le regard en bas",
+        "{0} ficou olhando para cima": "{0} a gardé le regard en haut",
+        "{0} ficou olhando para frente": "{0} a gardé le regard devant",
+        "{0} moveu os olhos": "{0} a bougé les yeux",
+        "{0} olhou para a direita": "{0} a regardé à droite",
+        "{0} olhou para a esquerda": "{0} a regardé à gauche",
+        "{0} olhou para baixo": "{0} a regardé en bas",
+        "{0} olhou para cima": "{0} a regardé en haut",
+        "{0} pausa": "{0} pause",
+        "{0} pausas": "{0} pauses",
+        "{0} piscou": "{0} a cligné des yeux",
+        "{0} por {1} s": "{0} pendant {1} s",
+        "⏮ Início": "⏮ Début",
+        "⏸ Pausar": "⏸ Pause",
+        "▶ Tocar": "▶ Lecture",
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "Avec quoi travaillez-vous ?",
+        "Duplicar perfil": "Dupliquer le profil",
+        "Escolha os gráficos": "Choisissez les graphiques",
+        "Exames deste perfil:": "Examens de ce profil :",
+        "Excluir o perfil \"{0}\"?": "Supprimer le profil « {0} » ?",
+        "Já existe um perfil com esse nome.": "Un profil porte déjà ce nom.",
+        "Marque pelo menos um.": "Cochez au moins un élément.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Cochez tout ce que vous utilisez. Qui ne fait qu'un type d'examen ne voit pas les autres à l'écran. Vous pourrez changer plus tard sur l'écran d'accueil ou dans Système → Profil d'utilisation.",
+        "Nenhum gráfico a escolher para estes exames.": "Aucun graphique à choisir pour ces examens.",
+        "Nome do perfil:": "Nom du profil :",
+        "Novo perfil de uso": "Nouveau profil d'utilisation",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "Ceux recommandés pour votre profil sont déjà cochés ; décochez ce que vous ne voulez pas voir. Cela vaut pour le niveau Complet et peut être modifié à tout moment avec le bouton Panneaux de chaque onglet.",
+        "Perfil de uso": "Profil d'utilisation",
+        "Perfil de uso: {0}.": "Profil d'utilisation : {0}.",
+        "Perfil:": "Profil :",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "Les profils prédéfinis ne peuvent être ni renommés ni supprimés ; dupliquez-en un pour le modifier.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Qui ne fait qu'un type d'examen n'a pas besoin de voir les autres : le profil décide ce que l'écran d'accueil propose et quels onglets apparaissent.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Qui ne fait qu'un type d'examen n'a pas besoin de voir les autres : le profil décide ce que l'écran d'accueil propose et quels onglets apparaissent. Créez le vôtre dans Système → Profil d'utilisation.",
+        "Renomear perfil": "Renommer le profil",
+        "Renomear…": "Renommer…",
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Ouverture du programme…",
+        "Montando a tela inicial…": "Préparation de l'écran d'accueil…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "Le lanceur (EEG_Data_Collector.py) n'a pas pu être mis à jour ; le programme continue de fonctionner avec l'actuel.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "ligne médiane",
         "lado esquerdo": "côté gauche",
@@ -13440,7 +14650,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Acceptation des Conditions d'utilisation non enregistrée",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "Vous avez accepté les conditions, mais l'acceptation n'a pas pu être enregistrée sur le disque. L'assistant réapparaîtra au prochain démarrage. Vérifiez l'espace disque et les permissions.",
         "Termo de Uso completo ausente (resumo exibido)": "Conditions d'utilisation complètes absentes (résumé affiché)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "Le texte complet des Conditions d'utilisation est introuvable ; la version résumée est affichée. Le document complet est sur https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "Le texte complet des Conditions d'utilisation est introuvable ; la version résumée est affichée. Le document complet est sur https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Réglages non enregistrés à la fermeture",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "Vos réglages n'ont pas pu être enregistrés à la fermeture. Vérifiez l'espace disque et les permissions. Voulez-vous fermer quand même ?",
         "Manifesto de update inválido/incompleto": "Manifeste de mise à jour invalide/incomplet",
@@ -13448,11 +14658,11 @@ class I18N:
         "SHA-256 do download não confere": "Le SHA-256 du téléchargement ne correspond pas",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "La mise à jour téléchargée est corrompue ou altérée et n'a pas été appliquée. Vérifiez votre connexion et réessayez ; la version actuelle a été préservée.",
         "Update sem assinatura SHA-256": "Mise à jour sans signature SHA-256",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Cette mise à jour n'inclut pas de signature de vérification (SHA-256). Par sécurité, téléchargez la nouvelle version manuellement sur https://github.com/rodrigooa43-create/OpenBionica.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "Cette mise à jour n'inclut pas de signature de vérification (SHA-256). Par sécurité, téléchargez la nouvelle version manuellement sur https://github.com/rodrigooa43-create/ROA.",
         "Falha ao gravar o arquivo atualizado": "Échec de l'écriture du fichier mis à jour",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "La mise à jour n'a pas pu être écrite (pas de permission dans le dossier du programme, ou l'application est ouverte dans une autre fenêtre). Fermez les autres copies / exécutez-le en tant qu'administrateur, ou téléchargez manuellement sur https://github.com/rodrigooa43-create/OpenBionica.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "La mise à jour n'a pas pu être écrite (pas de permission dans le dossier du programme, ou l'application est ouverte dans une autre fenêtre). Fermez les autres copies / exécutez-le en tant qu'administrateur, ou téléchargez manuellement sur https://github.com/rodrigooa43-create/ROA.",
         "update_config.json corrompido": "update_config.json corrompu",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Le fichier de configuration de mise à jour est corrompu. La vérification a été désactivée ; téléchargez les mises à jour manuellement sur https://github.com/rodrigooa43-create/OpenBionica.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "Le fichier de configuration de mise à jour est corrompu. La vérification a été désactivée ; téléchargez les mises à jour manuellement sur https://github.com/rodrigooa43-create/ROA.",
         "Exportação EDF indisponível (pyedflib ausente)": "Export EDF indisponible (pyedflib absente)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "Export EDF indisponible : la bibliothèque pyedflib n'est pas installée. Installez-la avec pip install pyedflib ou utilisez un autre format (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "Export FIF indisponible (MNE absente)",
@@ -15589,6 +16799,297 @@ class I18N:
     }
 
     _zh = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "大脑 (EEG)",
+        "Músculos (EMG)": "肌肉 (EMG)",
+        "Coração (ECG)": "心脏 (ECG)",
+        "Olhos (EOG)": "眼睛 (EOG)",
+        "Tudo": "全部",
+        "Minha bancada": "我的工作台",
+        "Músculos": "肌肉",
+        "Coração": "心脏",
+        "Olhos": "眼睛",
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "安装或更新后的<b>第一次</b>打开会准备缓存（<b>.roa_cache</b> 文件夹，位于程序旁边或用户本地数据的 ROA 文件夹中），因此时间较长；之后几秒即可打开。带标志的启动画面会用文字说明正在加载的内容。如果仍然很慢，请检查杀毒软件是否在每次打开时扫描程序文件夹。",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "动画根据信号<b>模拟</b>所记录的内容：它不是本人的视频，也不是报告或诊断。",
+        "A figura não se mexe": "人形不动",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "在<b>完整</b>级别打开肌肉记录的回放。",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "拖动时间线到某一时刻。在旁边的列表中点击一个片段、一次心跳或一个事件，播放器会跳到那里。",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "拖动点以调整；双击重命名；<b>Delete</b> 删除所选电极。",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "拖动色块可移动，拉动边缘可拉长。<b>在此分割</b>把一段切成两段；<b>添加轨道</b>为同时发生的动作新建一条轨道（最多四条）。",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "心跳和眼部事件与 PDF 报告中的相同；修正它们（完整级别）不会改变记录，只会改变记录旁边的回放文件。",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "通道列表只显示所选检查中<b>正在使用</b>的通道。回看记录时，列表跟随该记录的通道，而不是当前连接的设备。",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "通道列表只显示<b>正在使用</b>的通道：已开启且属于该检查类型（标记为心脏的通道不会出现在肌肉列表中）。要更改类型或重新开启通道，请在完整级别使用<b>滤波器与通道</b>。回看记录时，列表跟随该记录的通道。",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "点击<b>添加电极</b>，再点击身体：电极会贴到最近肌肉的推荐位置（肌腹，SENIAM 参考）。",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "点击<b>▶ 回放</b>。窗口随播放器打开：<b>▶ 播放</b>、<b>⏸ 暂停</b>、<b>⏮ 开始</b>、时间线和时钟。",
+        "Colocar os eletrodos no desenho do corpo": "在身体图上放置电极",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z 撤销。点击<b>保存</b>：movimentos.json 文件保存在记录旁边，下次自动读取。",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "正面视图中，本人的<b>右</b>侧位于图的<b>左</b>侧，如同照片；请核对肌肉名称中的左/右。",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "检查过程中，电极点处的热斑显示该处测得的强度；数字周围的圆环显示信号质量。",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "在<b>回看记录</b>中选择一条肌肉、心脏或眼睛的记录，点击<b>▶ 回放</b>。人形重现标记的动作，心脏按记录的节律跳动，或两只眼睛按信号眨眼和转动。使用<b>▶ 播放</b>、<b>⏸ 暂停</b>并拖动时间线。动画<b>模拟</b>所记录的内容：不是本人的视频，也不是报告或诊断。脑部记录的该按钮不可用。",
+        "Escolher o perfil de uso (quais abas aparecem)": "选择使用配置（显示哪些标签页）",
+        "Fechei a janela e perdi as marcações": "我关闭了窗口，标记丢失了",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "旧安装从<b>全部</b>开始：没有您的选择，什么都不会消失。",
+        "Manual: Abertura rápida": "手册：快速启动",
+        "Manual: Canais em uso": "手册：使用中的通道",
+        "Manual: Exame de músculos → Atlas muscular": "手册：肌肉检查 → 肌肉图谱",
+        "Manual: Nível Completo → Painéis em gavetas": "手册：完整级别 → 抽屉式面板",
+        "Manual: Perfis de uso": "手册：使用配置",
+        "Manual: Rever uma gravação → Replay": "手册：回看记录 → 回放",
+        "Manual: Rever uma gravação → Replay → Músculos": "手册：回看记录 → 回放 → 肌肉",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "标记或修正回放中的动作（肌肉）",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "旧版本的电极布局会自动转换；只需确认各点落在预期位置。",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "在<b>主屏幕</b>打开<b>使用配置</b>框，选择<b>大脑</b>、<b>肌肉</b>、<b>心脏</b>、<b>眼睛</b>或<b>全部</b>。",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "在<b>肌肉</b>标签页选择<b>视图</b>：正面、背面、侧面或放大区域（面部、前臂与手、腿……）。",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "在<b>肌肉</b>标签页，身体图（正面、背面、侧面和放大区域）把每个电极显示为带编号的点。点击<b>添加电极</b>，再点击身体：点会贴到推荐位置（肌腹，SENIAM 参考）或停在您点击的位置。检查过程中，电极点处的热斑显示该处测得的强度。",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "心脏部分，心跳条同时用颜色<b>和</b>形状：细线 = 规律，橙色三角 = 提前，红色矩形 = 较长停顿。",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "在完整级别，每个面板都是一个<b>抽屉</b>：<b>▾</b> 折叠，<b>⋯</b> 打开菜单（移动、默认大小、关闭），<b>×</b> 关闭。要重新打开面板或恢复原来的布局，请使用标签页顶部的<b>面板 ▾</b> 按钮勾选它，或选择<b>恢复默认</b>。底边的把手改变高度。布局会保存到下次使用。",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "眼睛部分，如果左右颠倒，请勾选<b>水平反转</b>或<b>垂直反转</b>。",
+        "O botão ▶ Replay está apagado": "▶ 回放按钮是灰色的",
+        "O eletrodo caiu no músculo errado": "电极落在了错误的肌肉上",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "使用配置说明您的工作内容，并隐藏不属于它的标签页。在<b>主屏幕</b>（<b>使用配置</b>框）或<b>系统 → 使用配置</b>中更改，那里还可以创建<b>我的工作台</b>，精确选择想要的检查和图表。<b>全部</b>显示整个程序。其他检查的记录在任何配置下都能正常打开。",
+        "O programa demora para abrir": "程序打开很慢",
+        "Onde está cada eletrodo (desenho do corpo)": "每个电极在哪里（身体图）",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "片段来自记录的标记；没有标记时，检测到的收缩显示为<b>待定</b>。右键点击一个片段，选择<b>更改动作</b>。",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "要创建自己的配置，请进入<b>系统 → 使用配置</b>，点击<b>新建…</b>（我的工作台），勾选检查项目，在完整级别还可勾选想看的图表。",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "要插入整套动作，请使用<b>预设任务</b>（举哑铃、用钥匙开门、拿杯子）：从光标处开始插入。",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "使用配置：大脑、肌肉、心脏、眼睛或全部",
+        "Replay (animação da gravação)": "回放（记录的动画）",
+        "Replay: ver a gravação como uma animação": "回放：把记录看成动画",
+        "Rever uma gravação → ▶ Replay": "回看记录 → ▶ 回放",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "列表中只显示正在使用的通道",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "当活动的肌肉与所选动作不符时（例如屈曲片段中肱三头肌活动）会出现提示。它只是提示，不会自动修正。",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "有个面板不见了，或者我想重新排列面板（抽屉）",
+        "Uma aba sumiu": "有个标签页不见了",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "其他检查的记录在任何配置下都同样打开；配置只是整理屏幕。",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "观看肌肉、心脏或眼睛记录的回放",
+        "Visualizar → Músculos → desenho do corpo": "查看 → 肌肉 → 身体图",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "回到采集：配置之外的标签页消失，其余保持原位。",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "进入<b>回看记录</b>并在列表中选择记录：动画只适用于肌肉、心脏和眼睛检查。",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "该记录没有动作标记，也没有检测到收缩。在完整级别，用右键在时间线上标记片段。",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "记录以动画播放：会动的人形、跳动的心脏或眨眼转动的眼睛。",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "该记录是脑部记录，或尚未加载完成。请选择肌肉、心脏或眼睛的记录。",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "根据记录的信号重现标记的动作、心脏节律或视线的动画。它模拟所记录的内容：不是视频，也不是报告。",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "拖动它：在另一个推荐点附近松开时会贴上去。在放大区域更容易放准。",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "每个电极都在正确的肌肉上，激活的热斑出现在它的位置。",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "当前配置不包含它。切换到<b>全部</b>，或在<b>系统 → 使用配置</b>中编辑您的配置。",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "关闭时程序会询问是否有未保存的标记；请选择<b>保存</b>。如果已经关闭，请重做并保存。",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "欧洲关于每块肌肉表面电极放置位置的建议（放在肌腹上，远离肌腱）。身体图会把电极贴到这些点上。",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "屏幕上只显示您工作所需的标签页，不丢失任何记录。",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "每个片段都有正确动作的时间线，保存在记录旁边。",
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "肱二头肌",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "点击“添加电极”，再点击身体：电极会贴到最近的 SENIAM 点（肌腹），\n或停在您点击的位置。\n拖动电极：热区会跟随并显示该处测得的强度。\n鼠标滚轮缩放；右键拖动放大后的视图。\n双击重命名 · Delete 删除所选电极。",
+        "Delt. ant.": "三角肌前束",
+        "Delt. médio": "三角肌中束",
+        "Delt. post.": "三角肌后束",
+        "ECM": "胸锁乳突肌",
+        "ECR": "桡侧腕伸肌",
+        "Eretor esp.": "竖脊肌",
+        "Ext. dedos": "指伸肌",
+        "FCR": "桡侧腕屈肌",
+        "Fibular": "腓骨长肌",
+        "Flex. dedos": "指屈肌",
+        "Frontal": "额肌",
+        "Gastroc. med.": "腓肠肌内侧",
+        "Glúteo máx.": "臀大肌",
+        "Glúteo méd.": "臀中肌",
+        "Isquiotib.": "腘绳肌",
+        "Lado": "侧面",
+        "Lateral": "外侧",
+        "Latíssimo": "背阔肌",
+        "Masseter": "咬肌",
+        "Orbicular": "眼轮匝肌",
+        "Peitoral": "胸大肌",
+        "Reto abd.": "腹直肌",
+        "Reto fem.": "股直肌",
+        "Temporal": "颞肌",
+        "Tibial ant.": "胫骨前肌",
+        "Trap. sup.": "上斜方肌",
+        "Tríceps": "肱三头肌",
+        "Vasto lat.": "股外侧肌",
+        "Vasto med.": "股内侧肌",
+        "Vista Lateral (perfil esquerdo)": "侧视图（左侧面）",
+        "Zigomático": "颧肌",
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "拖动调整高度 · 双击：默认大小",
+        "Canais EMG — envelope e ativações": "EMG 通道 — 包络与激活",
+        "Expandir": "展开",
+        "Expandir todos": "全部展开",
+        "Fechar painel (reabra pelo botão Painéis)": "关闭面板（可通过“面板”按钮重新打开）",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "显示、隐藏和整理此标签页的面板",
+        "Mover para baixo": "下移",
+        "Mover para cima": "上移",
+        "Opções do painel": "面板选项",
+        "Painéis": "面板",
+        "Recolher": "折叠",
+        "Recolher todos": "全部折叠",
+        "Restaurar o padrão": "恢复默认",
+        "Tacograma e Poincaré": "心动周期图与庞加莱图",
+        "Tamanho padrão": "默认大小",
+        "Traçado ECG e detecção de picos R": "ECG 曲线与 R 波检测",
+        "Traçado H/V — piscadas e sacadas": "水平/垂直曲线 — 眨眼与扫视",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "该人像仅是对所标记动作的模拟，并非本人的视频。",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "该人像仅是对所标记动作的模拟，并非本人的视频。这不是诊断报告，也不是诊断。",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "请打开一条肌肉、心脏或眼睛的记录以查看回放。",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "从当前时刻起，把该任务的动作放到时间线上，物体握在手中。",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "按所记录的节律跳动的心脏，所有心跳都显示在条带上。",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "按所标记动作活动的关节人像，肌肉按记录依次点亮。",
+        "Figura do movimento indisponível.": "动作人像不可用。",
+        "Gráfico indisponível.": "图表不可用。",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "在标记为休息的片段中有活动的肌肉（{0}）。",
+        "Inserir no cursor": "在光标处插入",
+        "Inverter horizontal": "水平反转",
+        "Inverter vertical": "垂直反转",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "回放仅适用于肌肉、心脏和眼睛检查；这条记录属于其他类型。",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "所绘的心脏仅是对所记录节律的模拟。这不是诊断报告，也不是诊断。",
+        "Olhos que piscam e olham conforme os sinais gravados.": "按所记录的信号眨眼并转动目光的眼睛。",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "所绘的眼睛仅是对所记录的眨眼和目光的模拟。这不是诊断报告，也不是诊断。",
+        "Remover este evento": "删除此事件",
+        "Replay do coração — {0}": "心脏回放 — {0}",
+        "Replay do movimento — {0}": "动作回放 — {0}",
+        "Replay dos olhos — {0}": "眼睛回放 — {0}",
+        "Simulação": "模拟",
+        "Tarefa pronta:": "预设任务：",
+        "Traçado do coração (ECG)": "心脏曲线（ECG）",
+        "Traçado dos olhos (horizontal e vertical)": "眼睛曲线（水平与垂直）",
+        "Trocar a direção": "更改方向",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "如果眼睛看向与本人实际相反的一侧（电极接反），请使用此项。",
+        "intensidade": "强度",
+        "nenhum músculo acima de 2%": "没有肌肉超过 2%",
+        "palma para baixo": "掌心向下",
+        "palma para cima": "掌心向上",
+        "▶ Replay": "▶ 回放",
+        # ===== replay_p6p7 (1.10.0) =====
+        "(corrigida à mão)": "（手动修正）",
+        "(corrigido à mão)": "（手动修正）",
+        "A animação SIMULA o que foi gravado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "动画只是模拟所记录的内容，并非本人的视频。不是诊断报告，也不是诊断。",
+        "A definir": "待定",
+        "Abrir a mão": "张开手",
+        "Abrir mão": "张手",
+        "Adicionar batida aqui": "在此添加心跳",
+        "Adicionar faixa": "添加轨道",
+        "Apagar": "删除",
+        "Arraste para ir a um instante da gravação.": "拖动以跳到记录中的某一时刻。",
+        "Desfazer": "撤销",
+        "Dividir aqui": "在此拆分",
+        "Ext. cotovelo": "伸肘",
+        "Ext. ombro": "伸肩",
+        "Ext. punho": "伸腕",
+        "Extensão do cotovelo": "肘关节伸展",
+        "Extensão do ombro": "肩关节伸展",
+        "Extensão do punho": "腕关节伸展",
+        "Faixa {0}": "轨道 {0}",
+        "Fechar a mão": "握紧手",
+        "Fechar mão": "握拳",
+        "Flex. cotovelo": "屈肘",
+        "Flex. ombro": "屈肩",
+        "Flex. punho": "屈腕",
+        "Flexão do cotovelo": "肘关节屈曲",
+        "Flexão do ombro": "肩关节屈曲",
+        "Flexão do punho": "腕关节屈曲",
+        "Grava as marcações ao lado da gravação.": "将标记保存在记录旁边。",
+        "Há marcações não salvas. Salvar antes de fechar?": "有未保存的标记。关闭前先保存吗？",
+        "Isto não é laudo nem diagnóstico.": "这不是诊断报告，也不是诊断。",
+        "Marcar como batida adiantada": "标记为提前心跳",
+        "Marcar como batida regular": "标记为规律心跳",
+        "Marcar como pausa maior": "标记为较长停顿",
+        "Nenhum trecho de movimento marcado nesta gravação.": "此记录中未标记任何动作片段。",
+        "Nenhuma gravação carregada.": "未加载任何记录。",
+        "Nenhuma piscada ou movimento dos olhos encontrado.": "未发现眨眼或眼球运动。",
+        "Novo trecho aqui": "在此新建片段",
+        "Não foi possível salvar: {0}": "无法保存：{0}",
+        "Os músculos ativos ({0}) não combinam com o movimento escolhido ({1}); esperado: {2}.": "活动的肌肉（{0}）与所选动作（{1}）不匹配；预期：{2}。",
+        "Pinça": "捏取",
+        "Pronação": "旋前",
+        "Pronação (palma para baixo)": "旋前（掌心向下）",
+        "Protocolo: fim": "协议：结束",
+        "Protocolo: início": "协议：开始",
+        "Refazer": "重做",
+        "Remover batida": "移除心跳",
+        "Remover faixa": "移除轨道",
+        "Repetir": "循环",
+        "Replay": "回放",
+        "Supinação": "旋后",
+        "Supinação (palma para cima)": "旋后（掌心向上）",
+        "Toca ou pausa o replay (barra de espaço).": "播放或暂停回放（空格键）。",
+        "Todas as batidas foram regulares.": "所有心跳均规律。",
+        "Trocar o movimento": "更换动作",
+        "Velocidade do replay (não muda a gravação).": "回放速度（不改变记录）。",
+        "Volta para o começo da gravação.": "回到记录的开头。",
+        "adiantada": "提前",
+        "aguardando a primeira batida": "等待第一次心跳",
+        "baixo": "下",
+        "batida adiantada": "提前心跳",
+        "batida regular": "规律心跳",
+        "bpm em média: —": "平均 bpm：—",
+        "cima": "上",
+        "direita": "右",
+        "esquerda": "左",
+        "faixa {0}": "轨道 {0}",
+        "nenhuma adiantada": "无提前",
+        "nenhuma batida": "无心跳",
+        "nenhuma pausa": "无停顿",
+        "olhando para a direita": "看向右边",
+        "olhando para a esquerda": "看向左边",
+        "olhando para baixo": "看向下方",
+        "olhando para cima": "看向上方",
+        "olhando para frente": "看向正前方",
+        "pausa": "停顿",
+        "pausa maior": "较长停顿",
+        "piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}": "眨眼：{0} · 左右：{1} · 上下：{2}",
+        "piscando": "正在眨眼",
+        "regular": "规律",
+        "{0} adiantada": "{0} 次提前",
+        "{0} adiantadas": "{0} 次提前",
+        "{0} batida": "{0} 次心跳",
+        "{0} batidas": "{0} 次心跳",
+        "{0} bpm em média": "平均 {0} bpm",
+        "{0} evento": "{0} 事件",
+        "{0} ficou olhando para a direita": "{0} 一直看着右边",
+        "{0} ficou olhando para a esquerda": "{0} 一直看着左边",
+        "{0} ficou olhando para baixo": "{0} 一直看着下方",
+        "{0} ficou olhando para cima": "{0} 一直看着上方",
+        "{0} ficou olhando para frente": "{0} 一直看着正前方",
+        "{0} moveu os olhos": "{0} 眼睛动了",
+        "{0} olhou para a direita": "{0} 向右看",
+        "{0} olhou para a esquerda": "{0} 向左看",
+        "{0} olhou para baixo": "{0} 向下看",
+        "{0} olhou para cima": "{0} 向上看",
+        "{0} pausa": "{0} 次停顿",
+        "{0} pausas": "{0} 次停顿",
+        "{0} piscou": "{0} 眨眼",
+        "{0} por {1} s": "{0}，持续 {1} 秒",
+        "⏮ Início": "⏮ 开头",
+        "⏸ Pausar": "⏸ 暂停",
+        "▶ Tocar": "▶ 播放",
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "您从事哪类检查？",
+        "Duplicar perfil": "复制配置",
+        "Escolha os gráficos": "选择图表",
+        "Exames deste perfil:": "此配置包含的检查：",
+        "Excluir o perfil \"{0}\"?": "要删除配置“{0}”吗？",
+        "Já existe um perfil com esse nome.": "已存在同名配置。",
+        "Marque pelo menos um.": "请至少勾选一项。",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "勾选您会用到的全部项目。只做一种检查的人不会在屏幕上看到其他检查。以后可在初始界面或“系统 → 使用配置”中更改。",
+        "Nenhum gráfico a escolher para estes exames.": "这些检查没有可选的图表。",
+        "Nome do perfil:": "配置名称：",
+        "Novo perfil de uso": "新建使用配置",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "推荐给您配置的图表已勾选；取消勾选不想看到的即可。这适用于“完整”级别，并可随时通过每个选项卡的“面板”按钮更改。",
+        "Perfil de uso": "使用配置",
+        "Perfil de uso: {0}.": "使用配置：{0}。",
+        "Perfil:": "配置：",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "预设配置不能重命名或删除；请复制后再编辑。",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "只做一种检查的人无需看到其他检查：配置决定初始界面提供哪些检查以及显示哪些选项卡。",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "只做一种检查的人无需看到其他检查：配置决定初始界面提供哪些检查以及显示哪些选项卡。请在“系统 → 使用配置”中创建您自己的配置。",
+        "Renomear perfil": "重命名配置",
+        "Renomear…": "重命名…",
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "正在打开程序…",
+        "Montando a tela inicial…": "正在生成初始界面…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "启动器（EEG_Data_Collector.py）无法更新；程序将继续使用当前的启动器运行。",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "中线",
         "lado esquerdo": "左侧",
@@ -17205,7 +18706,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "未能保存对使用条款的接受",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "您已接受条款，但无法将接受记录写入磁盘。下次启动时向导将再次出现。请检查空间／权限。",
         "Termo de Uso completo ausente (resumo exibido)": "缺少完整使用条款（显示摘要）",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "未找到使用条款全文；显示摘要版本。完整文档位于 https://github.com/rodrigooa43-create/OpenBionica。",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "未找到使用条款全文；显示摘要版本。完整文档位于 https://github.com/rodrigooa43-create/ROA。",
         "Configurações não salvas ao sair": "退出时设置未保存",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "退出时无法保存您的设置。请检查空间／权限。是否仍要关闭？",
         "Manifesto de update inválido/incompleto": "更新清单无效／不完整",
@@ -17213,11 +18714,11 @@ class I18N:
         "SHA-256 do download não confere": "下载的SHA-256不匹配",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "下载的更新已损坏或被篡改，未被应用。请检查网络连接并重试；已保留当前版本。",
         "Update sem assinatura SHA-256": "更新没有SHA-256签名",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "此更新不包含验证签名（SHA-256）。为安全起见，请从 https://github.com/rodrigooa43-create/OpenBionica 手动下载新版本。",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "此更新不包含验证签名（SHA-256）。为安全起见，请从 https://github.com/rodrigooa43-create/ROA 手动下载新版本。",
         "Falha ao gravar o arquivo atualizado": "写入更新文件失败",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "无法写入更新（程序文件夹无权限，或应用在另一个窗口中打开）。请关闭其他副本／以管理员身份运行，或从 https://github.com/rodrigooa43-create/OpenBionica 手动下载。",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "无法写入更新（程序文件夹无权限，或应用在另一个窗口中打开）。请关闭其他副本／以管理员身份运行，或从 https://github.com/rodrigooa43-create/ROA 手动下载。",
         "update_config.json corrompido": "update_config.json损坏",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "更新配置文件已损坏。更新检查已被禁用；请从 https://github.com/rodrigooa43-create/OpenBionica 手动下载更新。",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "更新配置文件已损坏。更新检查已被禁用；请从 https://github.com/rodrigooa43-create/ROA 手动下载更新。",
         "Exportação EDF indisponível (pyedflib ausente)": "EDF导出不可用（缺少pyedflib）",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "EDF导出不可用：未安装pyedflib库。请用 pip install pyedflib 安装，或使用其他格式（FIF/BIDS）。",
         "Exportação FIF indisponível (MNE ausente)": "FIF导出不可用（缺少MNE）",
@@ -19356,6 +20857,297 @@ class I18N:
 
     # Dicionários DEUTSCH — chaves em pt-BR
     _de = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Gehirn (EEG)",
+        "Músculos (EMG)": "Muskeln (EMG)",
+        "Coração (ECG)": "Herz (ECG)",
+        "Olhos (EOG)": "Augen (EOG)",
+        "Tudo": "Alles",
+        "Minha bancada": "Meine Werkbank",
+        "Músculos": "Muskeln",
+        "Coração": "Herz",
+        "Olhos": "Augen",
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "Der <b>erste</b> Start nach der Installation oder einem Update legt einen Cache an (Ordner <b>.roa_cache</b>, neben dem Programm oder im ROA-Ordner der lokalen Benutzerdaten) und dauert deshalb länger; die folgenden öffnen in wenigen Sekunden. Der Startbildschirm mit dem Logo sagt in Worten, was gerade geladen wird. Bleibt es langsam, prüfen Sie, ob das Antivirenprogramm den Programmordner bei jedem Start durchsucht.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "Die Animation <b>simuliert</b> anhand der Signale, was aufgezeichnet wurde: Sie ist kein Video der Person und weder Befund noch Diagnose.",
+        "A figura não se mexe": "Die Figur bewegt sich nicht",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Öffnen Sie das Replay der Muskelaufzeichnung in der Stufe <b>Vollständig</b>.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Ziehen Sie die Zeitleiste, um zu einem Zeitpunkt zu gehen. Klicken Sie in der Liste daneben auf einen Abschnitt, einen Schlag oder ein Ereignis, springt der Player dorthin.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Ziehen Sie den Punkt zum Anpassen; Doppelklick benennt um; <b>Entf</b> entfernt den ausgewählten.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Ziehen Sie einen Block, um ihn zu verschieben, und ziehen Sie am Rand, um ihn zu strecken. <b>Hier teilen</b> schneidet einen Abschnitt in zwei; <b>Spur hinzufügen</b> erzeugt eine weitere Spur für gleichzeitige Bewegungen (bis zu vier).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "Die Schläge und die Augenereignisse sind dieselben wie im PDF-Bericht; sie zu korrigieren (Stufe Vollständig) ändert die Aufzeichnung nicht, nur die Replay-Datei daneben.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "Die Kanallisten zeigen nur die im gewählten Untersuchungstyp <b>verwendeten</b> Kanäle. Beim Ansehen einer Aufzeichnung folgen die Listen den Kanälen dieser Aufzeichnung, nicht denen des jetzt angeschlossenen Geräts.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "Die Kanallisten zeigen nur die <b>verwendeten</b> Kanäle: eingeschaltet und vom Typ der Untersuchung (ein als Herz markierter Kanal erscheint nicht in der Muskelliste). Um den Typ zu ändern oder einen Kanal wieder einzuschalten, nutzen Sie <b>Filter und Kanäle</b> in der Stufe Vollständig. Beim Ansehen einer Aufzeichnung folgen die Listen den Kanälen dieser Aufzeichnung.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Klicken Sie auf <b>Elektrode hinzufügen</b> und dann auf den Körper: Der Punkt rastet an der empfohlenen Stelle des nächsten Muskels ein (Muskelbauch, SENIAM-Referenz).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Klicken Sie auf <b>▶ Replay</b>. Das Fenster öffnet sich mit dem Player: <b>▶ Abspielen</b>, <b>⏸ Pause</b>, <b>⏮ Anfang</b>, die Zeitleiste und die Uhr.",
+        "Colocar os eletrodos no desenho do corpo": "Elektroden auf der Körperzeichnung platzieren",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Strg+Z macht rückgängig. Klicken Sie auf <b>Speichern</b>: Die Datei movimentos.json liegt neben der Aufzeichnung und wird beim nächsten Mal gelesen.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "Von vorn liegt die <b>rechte</b> Seite der Person <b>links</b> in der Zeichnung, wie auf einem Foto; prüfen Sie das R/L im Muskelnamen.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "Während der Untersuchung zeigt der Wärmefleck am Elektrodenpunkt die dort gemessene Intensität; der Ring um die Nummer zeigt die Signalqualität.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "Wählen Sie in <b>Aufzeichnung ansehen</b> eine Muskel-, Herz- oder Augenaufzeichnung und klicken Sie auf <b>▶ Replay</b>. Eine Figur wiederholt die markierte Bewegung, ein Herz schlägt im aufgezeichneten Rhythmus oder zwei Augen blinzeln und blicken gemäß den Signalen. Nutzen Sie <b>▶ Abspielen</b>, <b>⏸ Pause</b> und ziehen Sie die Zeitleiste. Die Animation <b>simuliert</b>, was aufgezeichnet wurde: kein Video der Person, kein Befund, keine Diagnose. Bei Gehirnaufzeichnungen ist die Schaltfläche deaktiviert.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Das Nutzungsprofil wählen (welche Reiter erscheinen)",
+        "Fechei a janela e perdi as marcações": "Ich habe das Fenster geschlossen und die Markierungen verloren",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Ältere Installationen starten mit <b>Alles</b>: Nichts verschwindet ohne Ihre Wahl.",
+        "Manual: Abertura rápida": "Handbuch: Schnellstart",
+        "Manual: Canais em uso": "Handbuch: Verwendete Kanäle",
+        "Manual: Exame de músculos → Atlas muscular": "Handbuch: Muskeluntersuchung → Muskelatlas",
+        "Manual: Nível Completo → Painéis em gavetas": "Handbuch: Stufe Vollständig → Panels als Schubladen",
+        "Manual: Perfis de uso": "Handbuch: Nutzungsprofile",
+        "Manual: Rever uma gravação → Replay": "Handbuch: Aufzeichnung ansehen → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Handbuch: Aufzeichnung ansehen → Replay → Muskeln",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Bewegungen im Replay markieren oder korrigieren (Muskeln)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "Montagen aus früheren Versionen werden automatisch umgewandelt; prüfen Sie nur, ob die Punkte dort gelandet sind, wo Sie es erwartet haben.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "Öffnen Sie auf dem <b>Startbildschirm</b> das Feld <b>Nutzungsprofil</b> und wählen Sie <b>Gehirn</b>, <b>Muskeln</b>, <b>Herz</b>, <b>Augen</b> oder <b>Alles</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "Wählen Sie im Reiter <b>Muskeln</b> die <b>Ansicht</b>: vorn, hinten, seitlich oder einen vergrößerten Bereich (Gesicht, Unterarm und Hand, Bein …).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "Im Reiter <b>Muskeln</b> zeigt die Körperzeichnung (vorn, hinten, seitlich und vergrößerte Bereiche) jede Elektrode als nummerierten Punkt. Klicken Sie auf <b>Elektrode hinzufügen</b> und dann auf den Körper: Der Punkt rastet an der empfohlenen Stelle ein (Muskelbauch, SENIAM-Referenz) oder bleibt, wo Sie geklickt haben. Während der Untersuchung zeigt ein Wärmefleck am Elektrodenpunkt die dort gemessene Intensität.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "Beim Herzen nutzt der Schlagstreifen Farbe <b>und</b> Form: dünner Strich = regelmäßig, oranges Dreieck = vorzeitig, rotes Rechteck = längere Pause.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "In der Stufe Vollständig ist jedes Panel eine <b>Schublade</b>: <b>▾</b> klappt ein, <b>⋯</b> öffnet das Menü (verschieben, Standardgröße, schließen) und <b>×</b> schließt. Um ein Panel wieder zu öffnen oder zur ursprünglichen Anordnung zurückzukehren, nutzen Sie die Schaltfläche <b>Panels ▾</b> oben im Reiter und haken es an, oder wählen Sie <b>Standard wiederherstellen</b>. Der Griff am unteren Rand ändert die Höhe. Die Anordnung bleibt fürs nächste Mal gespeichert.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "Bei den Augen: Sind die Seiten vertauscht, haken Sie <b>Horizontal umkehren</b> oder <b>Vertikal umkehren</b> an.",
+        "O botão ▶ Replay está apagado": "Die Schaltfläche ▶ Replay ist ausgegraut",
+        "O eletrodo caiu no músculo errado": "Die Elektrode ist auf dem falschen Muskel gelandet",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "Das Profil sagt, womit Sie arbeiten, und blendet die Reiter aus, die nicht dazugehören. Ändern Sie es auf dem <b>Startbildschirm</b> (Feld <b>Nutzungsprofil</b>) oder unter <b>System → Nutzungsprofil</b>, wo Sie auch <b>Meine Werkbank</b> mit genau den gewünschten Untersuchungen und Diagrammen anlegen. <b>Alles</b> zeigt das ganze Programm. Eine Aufzeichnung einer anderen Untersuchung öffnet sich in jedem Profil normal.",
+        "O programa demora para abrir": "Das Programm braucht lange zum Öffnen",
+        "Onde está cada eletrodo (desenho do corpo)": "Wo jede Elektrode sitzt (Körperzeichnung)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "Die Abschnitte entstehen aus den Markern der Aufzeichnung; ohne Marker erscheinen die erkannten Kontraktionen als <b>festzulegen</b>. Klicken Sie mit der rechten Maustaste auf einen Abschnitt und wählen Sie <b>Bewegung ändern</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "Für ein eigenes Profil gehen Sie zu <b>System → Nutzungsprofil</b>, klicken auf <b>Neu…</b> (Meine Werkbank) und haken die Untersuchungen und, in Vollständig, die gewünschten Diagramme an.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "Für eine ganze Sequenz nutzen Sie <b>Fertige Aufgabe</b> (Hantel heben, Tür mit dem Schlüssel öffnen, Becher greifen): Sie wird ab dem Cursor eingefügt.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Nutzungsprofil: Gehirn, Muskeln, Herz, Augen oder Alles",
+        "Replay (animação da gravação)": "Replay (Animation der Aufzeichnung)",
+        "Replay: ver a gravação como uma animação": "Replay: die Aufzeichnung als Animation ansehen",
+        "Rever uma gravação → ▶ Replay": "Aufzeichnung ansehen → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "Nur die verwendeten Kanäle erscheinen in den Listen",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "Ein Hinweis erscheint, wenn die aktiven Muskeln nicht zur gewählten Bewegung passen (z. B. aktiver Trizeps in einem Beugeabschnitt). Er ist ein Hinweis, keine automatische Korrektur.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "Ein Panel ist verschwunden oder ich möchte die Panels neu anordnen (Schubladen)",
+        "Uma aba sumiu": "Ein Reiter ist verschwunden",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "Eine Aufzeichnung einer anderen Untersuchung öffnet sich in jedem Profil gleich; das Profil ordnet nur den Bildschirm.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Das Replay einer Muskel-, Herz- oder Augenaufzeichnung ansehen",
+        "Visualizar → Músculos → desenho do corpo": "Anzeigen → Muskeln → Körperzeichnung",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Zurück zur Aufnahme: Die Reiter außerhalb des Profils verschwinden, die anderen bleiben an ihrem Platz.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Gehen Sie zu <b>Aufzeichnung ansehen</b> und wählen Sie die Aufzeichnung in der Liste: Die Animation gibt es nur für Muskel-, Herz- und Augenuntersuchungen.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "die Aufzeichnung hat weder Bewegungsmarker noch erkannte Kontraktionen. Markieren Sie in der Stufe Vollständig die Abschnitte auf der Zeitleiste mit der rechten Maustaste.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "die Aufzeichnung als Animation: die Figur, die sich bewegt, das Herz, das schlägt, oder die Augen, die blinzeln und blicken.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "die Aufzeichnung ist vom Gehirn oder noch nicht fertig geladen. Wählen Sie eine Muskel-, Herz- oder Augenaufzeichnung.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "Animation, die aus den aufgezeichneten Signalen die markierte Bewegung, den Herzrhythmus oder den Blick nachbildet. Sie simuliert, was aufgezeichnet wurde: weder Video noch Befund.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "ziehen Sie sie: Wird sie nahe einem anderen empfohlenen Punkt losgelassen, rastet sie dort ein. In einem vergrößerten Bereich trifft man leichter.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "jede Elektrode auf dem richtigen Muskel, mit der Aktivierungswärme an ihrer Stelle.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "das aktuelle Profil enthält ihn nicht. Wechseln Sie zu <b>Alles</b> oder bearbeiten Sie Ihr Profil unter <b>System → Nutzungsprofil</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "beim Schließen fragt das Programm, ob es ungespeicherte Markierungen gibt; antworten Sie <b>Speichern</b>. Falls schon geschlossen, wiederholen und speichern.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "europäische Empfehlungen, wo Oberflächenelektroden für jeden Muskel sitzen sollen (über dem Muskelbauch, fern der Sehne). Die Körperzeichnung lässt die Elektrode an diesen Punkten einrasten.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "nur die Reiter Ihrer Arbeit auf dem Bildschirm, ohne eine Aufzeichnung zu verlieren.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "eine Zeitleiste mit der richtigen Bewegung in jedem Abschnitt, gespeichert neben der Aufzeichnung.",
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Bizeps",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Klicken Sie auf „Elektrode hinzufügen“ und dann auf den Körper: die Elektrode rastet am\nnächsten SENIAM-Punkt (Muskelbauch) ein oder bleibt dort, wo Sie geklickt haben.\nZIEHEN Sie die Elektrode: die Wärme folgt ihr und zeigt die dort gemessene Intensität.\nMausrad zoomt; rechte Taste verschiebt die vergrößerte Ansicht.\nDoppelklick benennt um · Entf entfernt die ausgewählte.",
+        "Delt. ant.": "Vord. Delt.",
+        "Delt. médio": "Mittl. Delt.",
+        "Delt. post.": "Hint. Delt.",
+        "ECM": "SCM",
+        "ECR": "ECR",
+        "Eretor esp.": "Rückenstr.",
+        "Ext. dedos": "Fingerstr.",
+        "FCR": "FCR",
+        "Fibular": "Peroneus",
+        "Flex. dedos": "Fingerbeuger",
+        "Frontal": "Frontalis",
+        "Gastroc. med.": "Med. Gastroc.",
+        "Glúteo máx.": "Glut. max.",
+        "Glúteo méd.": "Glut. med.",
+        "Isquiotib.": "Ischiocrurale",
+        "Lado": "Seite",
+        "Lateral": "Lateral",
+        "Latíssimo": "Latissimus",
+        "Masseter": "Masseter",
+        "Orbicular": "Orbicularis",
+        "Peitoral": "Pectoralis",
+        "Reto abd.": "Rectus abd.",
+        "Reto fem.": "Rectus fem.",
+        "Temporal": "Temporalis",
+        "Tibial ant.": "Tib. ant.",
+        "Trap. sup.": "Ob. Trapez",
+        "Tríceps": "Trizeps",
+        "Vasto lat.": "Vastus lat.",
+        "Vasto med.": "Vastus med.",
+        "Vista Lateral (perfil esquerdo)": "Seitenansicht (linkes Profil)",
+        "Zigomático": "Zygomaticus",
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Ziehen ändert die Höhe · Doppelklick: Standardgröße",
+        "Canais EMG — envelope e ativações": "EMG-Kanäle — Hüllkurve und Aktivierungen",
+        "Expandir": "Ausklappen",
+        "Expandir todos": "Alle ausklappen",
+        "Fechar painel (reabra pelo botão Painéis)": "Bereich schließen (über die Schaltfläche Bereiche wieder öffnen)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Bereiche dieses Reiters anzeigen, ausblenden und anordnen",
+        "Mover para baixo": "Nach unten",
+        "Mover para cima": "Nach oben",
+        "Opções do painel": "Bereichsoptionen",
+        "Painéis": "Bereiche",
+        "Recolher": "Einklappen",
+        "Recolher todos": "Alle einklappen",
+        "Restaurar o padrão": "Standard wiederherstellen",
+        "Tacograma e Poincaré": "Tachogramm und Poincaré",
+        "Tamanho padrão": "Standardgröße",
+        "Traçado ECG e detecção de picos R": "EKG-Kurve und R-Zacken-Erkennung",
+        "Traçado H/V — piscadas e sacadas": "H/V-Kurven — Lidschläge und Sakkaden",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "Die Figur SIMULIERT die markierte Bewegung; sie ist kein Video der Person.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "Die Figur SIMULIERT die markierte Bewegung; sie ist kein Video der Person. Dies ist weder ein Befund noch eine Diagnose.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Öffnen Sie eine Aufnahme von Muskeln, Herz oder Augen, um das Replay zu sehen.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Setzt die Bewegungen der Aufgabe ab dem aktuellen Zeitpunkt auf die Zeitleiste, mit dem Gegenstand in der Hand.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "Ein Herz, das im aufgezeichneten Rhythmus schlägt, mit allen Schlägen auf dem Streifen.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "Eine Gliederfigur, die die markierte Bewegung nachmacht; die Muskeln leuchten wie aufgezeichnet auf.",
+        "Figura do movimento indisponível.": "Bewegungsfigur nicht verfügbar.",
+        "Gráfico indisponível.": "Diagramm nicht verfügbar.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "In einem als Ruhe markierten Abschnitt sind Muskeln aktiv ({0}).",
+        "Inserir no cursor": "Am Cursor einfügen",
+        "Inverter horizontal": "Horizontal spiegeln",
+        "Inverter vertical": "Vertikal spiegeln",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "Das Replay gibt es für Muskel-, Herz- und Augenuntersuchungen; diese Aufnahme ist von anderer Art.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "Das gezeichnete Herz SIMULIERT den aufgezeichneten Rhythmus. Dies ist weder ein Befund noch eine Diagnose.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Augen, die gemäß den aufgezeichneten Signalen blinzeln und blicken.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "Die gezeichneten Augen SIMULIEREN die aufgezeichneten Lidschläge und den Blick. Dies ist weder ein Befund noch eine Diagnose.",
+        "Remover este evento": "Dieses Ereignis entfernen",
+        "Replay do coração — {0}": "Herz-Replay — {0}",
+        "Replay do movimento — {0}": "Bewegungs-Replay — {0}",
+        "Replay dos olhos — {0}": "Augen-Replay — {0}",
+        "Simulação": "Simulation",
+        "Tarefa pronta:": "Vorgefertigte Aufgabe:",
+        "Traçado do coração (ECG)": "Herzkurve (EKG)",
+        "Traçado dos olhos (horizontal e vertical)": "Augenkurven (horizontal und vertikal)",
+        "Trocar a direção": "Richtung ändern",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "Verwenden, wenn die Augen zur entgegengesetzten Seite blicken als die Person es tat (vertauschte Elektroden).",
+        "intensidade": "Intensität",
+        "nenhum músculo acima de 2%": "kein Muskel über 2 %",
+        "palma para baixo": "Handfläche nach unten",
+        "palma para cima": "Handfläche nach oben",
+        "▶ Replay": "▶ Replay",
+        # ===== replay_p6p7 (1.10.0) =====
+        "(corrigida à mão)": "(von Hand korrigiert)",
+        "(corrigido à mão)": "(von Hand korrigiert)",
+        "A animação SIMULA o que foi gravado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "Die Animation SIMULIERT das Aufgezeichnete; sie ist kein Video der Person. Kein Befund und keine Diagnose.",
+        "A definir": "Noch festzulegen",
+        "Abrir a mão": "Hand öffnen",
+        "Abrir mão": "Hand öffnen",
+        "Adicionar batida aqui": "Schlag hier hinzufügen",
+        "Adicionar faixa": "Spur hinzufügen",
+        "Apagar": "Löschen",
+        "Arraste para ir a um instante da gravação.": "Ziehen, um zu einem Zeitpunkt der Aufzeichnung zu springen.",
+        "Desfazer": "Rückgängig",
+        "Dividir aqui": "Hier teilen",
+        "Ext. cotovelo": "Ext. Ellenbogen",
+        "Ext. ombro": "Ext. Schulter",
+        "Ext. punho": "Ext. Handgelenk",
+        "Extensão do cotovelo": "Ellenbogenextension",
+        "Extensão do ombro": "Schulterextension",
+        "Extensão do punho": "Handgelenkextension",
+        "Faixa {0}": "Spur {0}",
+        "Fechar a mão": "Hand schließen",
+        "Fechar mão": "Hand schließen",
+        "Flex. cotovelo": "Flex. Ellenbogen",
+        "Flex. ombro": "Flex. Schulter",
+        "Flex. punho": "Flex. Handgelenk",
+        "Flexão do cotovelo": "Ellenbogenflexion",
+        "Flexão do ombro": "Schulterflexion",
+        "Flexão do punho": "Handgelenkflexion",
+        "Grava as marcações ao lado da gravação.": "Speichert die Markierungen neben der Aufzeichnung.",
+        "Há marcações não salvas. Salvar antes de fechar?": "Es gibt ungespeicherte Markierungen. Vor dem Schließen speichern?",
+        "Isto não é laudo nem diagnóstico.": "Dies ist kein Befund und keine Diagnose.",
+        "Marcar como batida adiantada": "Als verfrühten Schlag markieren",
+        "Marcar como batida regular": "Als regelmäßigen Schlag markieren",
+        "Marcar como pausa maior": "Als längere Pause markieren",
+        "Nenhum trecho de movimento marcado nesta gravação.": "In dieser Aufzeichnung ist kein Bewegungsabschnitt markiert.",
+        "Nenhuma gravação carregada.": "Keine Aufzeichnung geladen.",
+        "Nenhuma piscada ou movimento dos olhos encontrado.": "Kein Lidschlag und keine Augenbewegung gefunden.",
+        "Novo trecho aqui": "Neuer Abschnitt hier",
+        "Não foi possível salvar: {0}": "Speichern nicht möglich: {0}",
+        "Os músculos ativos ({0}) não combinam com o movimento escolhido ({1}); esperado: {2}.": "Die aktiven Muskeln ({0}) passen nicht zur gewählten Bewegung ({1}); erwartet: {2}.",
+        "Pinça": "Pinzettengriff",
+        "Pronação": "Pronation",
+        "Pronação (palma para baixo)": "Pronation (Handfläche nach unten)",
+        "Protocolo: fim": "Protokoll: Ende",
+        "Protocolo: início": "Protokoll: Anfang",
+        "Refazer": "Wiederherstellen",
+        "Remover batida": "Schlag entfernen",
+        "Remover faixa": "Spur entfernen",
+        "Repetir": "Wiederholen",
+        "Replay": "Replay",
+        "Supinação": "Supination",
+        "Supinação (palma para cima)": "Supination (Handfläche nach oben)",
+        "Toca ou pausa o replay (barra de espaço).": "Startet oder pausiert das Replay (Leertaste).",
+        "Todas as batidas foram regulares.": "Alle Schläge waren regelmäßig.",
+        "Trocar o movimento": "Bewegung wechseln",
+        "Velocidade do replay (não muda a gravação).": "Replay-Geschwindigkeit (ändert die Aufzeichnung nicht).",
+        "Volta para o começo da gravação.": "Springt zum Anfang der Aufzeichnung zurück.",
+        "adiantada": "verfrüht",
+        "aguardando a primeira batida": "warte auf den ersten Schlag",
+        "baixo": "unten",
+        "batida adiantada": "verfrühter Schlag",
+        "batida regular": "regelmäßiger Schlag",
+        "bpm em média: —": "bpm im Mittel: —",
+        "cima": "oben",
+        "direita": "rechts",
+        "esquerda": "links",
+        "faixa {0}": "Spur {0}",
+        "nenhuma adiantada": "keine verfrühten",
+        "nenhuma batida": "keine Schläge",
+        "nenhuma pausa": "keine Pausen",
+        "olhando para a direita": "blickt nach rechts",
+        "olhando para a esquerda": "blickt nach links",
+        "olhando para baixo": "blickt nach unten",
+        "olhando para cima": "blickt nach oben",
+        "olhando para frente": "blickt geradeaus",
+        "pausa": "Pause",
+        "pausa maior": "längere Pause",
+        "piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}": "Lidschläge: {0} · zur Seite: {1} · nach oben oder unten: {2}",
+        "piscando": "blinzelt",
+        "regular": "regelmäßig",
+        "{0} adiantada": "{0} verfrüht",
+        "{0} adiantadas": "{0} verfrüht",
+        "{0} batida": "{0} Schlag",
+        "{0} batidas": "{0} Schläge",
+        "{0} bpm em média": "{0} bpm im Mittel",
+        "{0} evento": "{0} Ereignis",
+        "{0} ficou olhando para a direita": "{0} hält den Blick nach rechts",
+        "{0} ficou olhando para a esquerda": "{0} hält den Blick nach links",
+        "{0} ficou olhando para baixo": "{0} hält den Blick nach unten",
+        "{0} ficou olhando para cima": "{0} hält den Blick nach oben",
+        "{0} ficou olhando para frente": "{0} hält den Blick geradeaus",
+        "{0} moveu os olhos": "{0} bewegt die Augen",
+        "{0} olhou para a direita": "{0} blickt nach rechts",
+        "{0} olhou para a esquerda": "{0} blickt nach links",
+        "{0} olhou para baixo": "{0} blickt nach unten",
+        "{0} olhou para cima": "{0} blickt nach oben",
+        "{0} pausa": "{0} Pause",
+        "{0} pausas": "{0} Pausen",
+        "{0} piscou": "{0} blinzelt",
+        "{0} por {1} s": "{0} für {1} s",
+        "⏮ Início": "⏮ Anfang",
+        "⏸ Pausar": "⏸ Pause",
+        "▶ Tocar": "▶ Abspielen",
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "Womit arbeiten Sie?",
+        "Duplicar perfil": "Profil duplizieren",
+        "Escolha os gráficos": "Diagramme auswählen",
+        "Exames deste perfil:": "Untersuchungen dieses Profils:",
+        "Excluir o perfil \"{0}\"?": "Profil „{0}“ löschen?",
+        "Já existe um perfil com esse nome.": "Ein Profil mit diesem Namen gibt es bereits.",
+        "Marque pelo menos um.": "Mindestens eines ankreuzen.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Kreuzen Sie alles an, was Sie nutzen. Wer nur eine Art von Untersuchung macht, sieht die anderen nicht auf dem Bildschirm. Das lässt sich später auf dem Startbildschirm oder unter System → Nutzungsprofil ändern.",
+        "Nenhum gráfico a escolher para estes exames.": "Keine Diagramme für diese Untersuchungen auswählbar.",
+        "Nome do perfil:": "Name des Profils:",
+        "Novo perfil de uso": "Neues Nutzungsprofil",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "Die für Ihr Profil empfohlenen sind schon angekreuzt; entfernen Sie das Häkchen bei dem, was Sie nicht sehen möchten. Das gilt für die Stufe Vollständig und kann jederzeit über die Schaltfläche Panels jeder Registerkarte geändert werden.",
+        "Perfil de uso": "Nutzungsprofil",
+        "Perfil de uso: {0}.": "Nutzungsprofil: {0}.",
+        "Perfil:": "Profil:",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "Vorgefertigte Profile können weder umbenannt noch gelöscht werden; duplizieren Sie eines, um es zu bearbeiten.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Wer nur eine Art von Untersuchung macht, braucht die anderen nicht zu sehen: das Profil bestimmt, was der Startbildschirm anbietet und welche Registerkarten erscheinen.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Wer nur eine Art von Untersuchung macht, braucht die anderen nicht zu sehen: das Profil bestimmt, was der Startbildschirm anbietet und welche Registerkarten erscheinen. Legen Sie Ihres unter System → Nutzungsprofil an.",
+        "Renomear perfil": "Profil umbenennen",
+        "Renomear…": "Umbenennen…",
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Das Programm wird geöffnet…",
+        "Montando a tela inicial…": "Startbildschirm wird aufgebaut…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "Der Starter (EEG_Data_Collector.py) konnte nicht aktualisiert werden; das Programm läuft mit dem bisherigen weiter.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "Mittellinie",
         "lado esquerdo": "linke Seite",
@@ -20972,7 +22764,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Annahme der Nutzungsbedingungen nicht gespeichert",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "Sie haben die Bedingungen angenommen, aber die Annahme konnte nicht auf der Festplatte gespeichert werden. Der Assistent erscheint beim nächsten Start erneut. Prüfen Sie Speicherplatz/Berechtigungen.",
         "Termo de Uso completo ausente (resumo exibido)": "Vollständige Nutzungsbedingungen fehlen (Zusammenfassung angezeigt)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "Der vollständige Text der Nutzungsbedingungen wurde nicht gefunden; die Kurzfassung wird angezeigt. Das vollständige Dokument liegt unter https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "Der vollständige Text der Nutzungsbedingungen wurde nicht gefunden; die Kurzfassung wird angezeigt. Das vollständige Dokument liegt unter https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Einstellungen beim Beenden nicht gespeichert",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "Ihre Einstellungen konnten beim Beenden nicht gespeichert werden. Prüfen Sie Speicherplatz/Berechtigungen. Trotzdem schließen?",
         "Manifesto de update inválido/incompleto": "Update-Manifest ungültig/unvollständig",
@@ -20980,11 +22772,11 @@ class I18N:
         "SHA-256 do download não confere": "SHA-256 des Downloads stimmt nicht überein",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "Das heruntergeladene Update ist beschädigt oder manipuliert und wurde nicht angewendet. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut; die aktuelle Version blieb erhalten.",
         "Update sem assinatura SHA-256": "Update ohne SHA-256-Signatur",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Dieses Update enthält keine Prüfsignatur (SHA-256). Laden Sie die neue Version zur Sicherheit manuell unter https://github.com/rodrigooa43-create/OpenBionica herunter.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "Dieses Update enthält keine Prüfsignatur (SHA-256). Laden Sie die neue Version zur Sicherheit manuell unter https://github.com/rodrigooa43-create/ROA herunter.",
         "Falha ao gravar o arquivo atualizado": "Aktualisierte Datei konnte nicht geschrieben werden",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Das Update konnte nicht geschrieben werden (keine Berechtigung im Programmordner, oder die App ist in einem anderen Fenster geöffnet). Schließen Sie andere Kopien / führen Sie das Programm als Administrator aus, oder laden Sie es manuell unter https://github.com/rodrigooa43-create/OpenBionica herunter.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "Das Update konnte nicht geschrieben werden (keine Berechtigung im Programmordner, oder die App ist in einem anderen Fenster geöffnet). Schließen Sie andere Kopien / führen Sie das Programm als Administrator aus, oder laden Sie es manuell unter https://github.com/rodrigooa43-create/ROA herunter.",
         "update_config.json corrompido": "update_config.json beschädigt",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Die Update-Konfigurationsdatei ist beschädigt. Die Prüfung wurde deaktiviert; laden Sie Updates manuell unter https://github.com/rodrigooa43-create/OpenBionica herunter.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "Die Update-Konfigurationsdatei ist beschädigt. Die Prüfung wurde deaktiviert; laden Sie Updates manuell unter https://github.com/rodrigooa43-create/ROA herunter.",
         "Exportação EDF indisponível (pyedflib ausente)": "EDF-Export nicht verfügbar (pyedflib fehlt)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "EDF-Export nicht verfügbar: die Bibliothek pyedflib ist nicht installiert. Installieren Sie sie mit pip install pyedflib oder verwenden Sie ein anderes Format (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "FIF-Export nicht verfügbar (MNE fehlt)",
@@ -23121,6 +24913,297 @@ class I18N:
 
     # Dicionários JAPANESE — chaves em pt-BR
     _ja = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "脳 (EEG)",
+        "Músculos (EMG)": "筋肉 (EMG)",
+        "Coração (ECG)": "心臓 (ECG)",
+        "Olhos (EOG)": "目 (EOG)",
+        "Tudo": "すべて",
+        "Minha bancada": "マイベンチ",
+        "Músculos": "筋肉",
+        "Coração": "心臓",
+        "Olhos": "目",
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "インストールや更新後の<b>最初</b>の起動ではキャッシュ（プログラムの隣、またはユーザーのローカルデータの ROA フォルダー内の <b>.roa_cache</b> フォルダー）を準備するため時間がかかります。次回からは数秒で開きます。ロゴ付きの起動画面には、読み込み中の内容が言葉で表示されます。遅いままなら、ウイルス対策ソフトが起動のたびにプログラムのフォルダーを検査していないか確認してください。",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "アニメーションは信号から記録内容を<b>再現（シミュレーション）</b>したものです。本人の映像ではなく、報告書でも診断でもありません。",
+        "A figura não se mexe": "人形が動かない",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "<b>完全</b>レベルで筋肉の記録のリプレイを開きます。",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "タイムラインをドラッグして任意の時点へ移動します。横のリストで区間・拍・イベントをクリックすると、プレーヤーがそこへ飛びます。",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "点をドラッグして調整します。ダブルクリックで名前変更、<b>Delete</b> で選択した電極を削除します。",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "ブロックをドラッグして移動し、端を引いて伸ばします。<b>ここで分割</b>は区間を二つに切り、<b>トラックを追加</b>は同時に起こる動作のための別トラックを作ります（最大 4 本）。",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "拍と目のイベントは PDF 報告書と同じものです。修正（完全レベル）しても記録は変わらず、記録の隣にあるリプレイのファイルだけが変わります。",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "チャンネル一覧には、選んだ検査で<b>使用中</b>のチャンネルだけが表示されます。記録を見直すときは、一覧は今つながっている機器ではなく、その記録のチャンネルに従います。",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "チャンネル一覧には<b>使用中</b>のチャンネルだけが表示されます。オンで、検査の種類に合うもの（心臓と指定したチャンネルは筋肉の一覧に出ません）。種類の変更やチャンネルの再オンは、完全レベルの<b>フィルターとチャンネル</b>で行います。記録を見直すときは、一覧はその記録のチャンネルに従います。",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "<b>電極を追加</b>をクリックしてから体をクリックします。点は最も近い筋肉の推奨位置（筋腹、SENIAM 基準）に吸着します。",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "<b>▶ リプレイ</b>をクリックします。プレーヤー付きのウィンドウが開きます：<b>▶ 再生</b>、<b>⏸ 一時停止</b>、<b>⏮ 先頭</b>、タイムライン、時計。",
+        "Colocar os eletrodos no desenho do corpo": "体の図に電極を配置する",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z で元に戻します。<b>保存</b>をクリックすると、movimentos.json ファイルが記録の隣に保存され、次回読み込まれます。",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "正面から見ると、本人の<b>右</b>側は図の<b>左</b>側にあります（写真と同じ）。筋肉名の右/左を確認してください。",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "検査中、電極の点の熱い斑点はそこで測った強さを示し、番号の周りのリングは信号の質を示します。",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "<b>記録を見直す</b>で筋肉・心臓・目の記録を選び、<b>▶ リプレイ</b>をクリックします。人形がマークされた動作を再現し、心臓が記録されたリズムで鼓動し、あるいは二つの目が信号に合わせてまばたきし視線を動かします。<b>▶ 再生</b>、<b>⏸ 一時停止</b>を使い、タイムラインをドラッグしてください。アニメーションは記録内容を<b>再現</b>したもので、本人の映像でも報告書・診断でもありません。脳の記録ではボタンは無効です。",
+        "Escolher o perfil de uso (quais abas aparecem)": "使用プロファイルを選ぶ（表示されるタブ）",
+        "Fechei a janela e perdi as marcações": "ウィンドウを閉じてマークが消えた",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "以前からのインストールは<b>すべて</b>で始まります。あなたが選ばない限り何も消えません。",
+        "Manual: Abertura rápida": "マニュアル：高速起動",
+        "Manual: Canais em uso": "マニュアル：使用中のチャンネル",
+        "Manual: Exame de músculos → Atlas muscular": "マニュアル：筋肉の検査 → 筋肉アトラス",
+        "Manual: Nível Completo → Painéis em gavetas": "マニュアル：完全レベル → 引き出し式パネル",
+        "Manual: Perfis de uso": "マニュアル：使用プロファイル",
+        "Manual: Rever uma gravação → Replay": "マニュアル：記録を見直す → リプレイ",
+        "Manual: Rever uma gravação → Replay → Músculos": "マニュアル：記録を見直す → リプレイ → 筋肉",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "リプレイの動作をマーク・修正する（筋肉）",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "以前のバージョンの配置は自動で変換されます。点が想定どおりの位置にあるかだけ確認してください。",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "<b>ホーム画面</b>で<b>使用プロファイル</b>のボックスを開き、<b>脳</b>、<b>筋肉</b>、<b>心臓</b>、<b>目</b>、<b>すべて</b>のいずれかを選びます。",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "<b>筋肉</b>タブで<b>ビュー</b>を選びます：正面、背面、側面、または拡大領域（顔、前腕と手、脚…）。",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "<b>筋肉</b>タブの体の図（正面、背面、側面、拡大領域）は、各電極を番号付きの点で示します。<b>電極を追加</b>をクリックしてから体をクリックすると、点は推奨位置（筋腹、SENIAM 基準）に吸着するか、クリックした位置に置かれます。検査中は電極の点の熱い斑点がそこで測った強さを示します。",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "心臓では、拍の帯は色<b>と</b>形の両方を使います：細い線 = 規則的、オレンジの三角 = 早期、赤い長方形 = 長い休止。",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "完全レベルでは各パネルが<b>引き出し</b>です：<b>▾</b> で折りたたみ、<b>⋯</b> でメニュー（移動、既定サイズ、閉じる）、<b>×</b> で閉じます。パネルを再び開く、または元の配置に戻すには、タブ上部の<b>パネル ▾</b> ボタンでチェックを入れるか、<b>既定に戻す</b>を選びます。下端のハンドルで高さを変えます。配置は次回のために保存されます。",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "目では、左右が逆に出る場合、<b>水平反転</b>または<b>垂直反転</b>にチェックを入れます。",
+        "O botão ▶ Replay está apagado": "▶ リプレイのボタンが灰色",
+        "O eletrodo caiu no músculo errado": "電極が違う筋肉に置かれた",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "プロファイルはあなたが何を扱うかを示し、それ以外のタブを隠します。<b>ホーム画面</b>（<b>使用プロファイル</b>のボックス）または<b>システム → 使用プロファイル</b>で切り替えられ、そこでは欲しい検査とグラフだけを選んだ<b>マイベンチ</b>も作れます。<b>すべて</b>はプログラム全体を表示します。別の検査の記録はどのプロファイルでも普通に開けます。",
+        "O programa demora para abrir": "プログラムの起動が遅い",
+        "Onde está cada eletrodo (desenho do corpo)": "各電極の位置（体の図）",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "区間は記録のマーカーから生まれます。マーカーがない場合、検出された収縮は<b>未定</b>として表示されます。区間を右クリックして<b>動作を変更</b>を選びます。",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "自分専用のプロファイルは、<b>システム → 使用プロファイル</b>で<b>新規…</b>（マイベンチ）をクリックし、検査と、完全レベルでは表示したいグラフにチェックを入れます。",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "一連の動作をまとめて入れるには<b>既定のタスク</b>（ダンベルを持ち上げる、鍵でドアを開ける、コップを取る）を使います。カーソル位置から挿入されます。",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "使用プロファイル：脳、筋肉、心臓、目、すべて",
+        "Replay (animação da gravação)": "リプレイ（記録のアニメーション）",
+        "Replay: ver a gravação como uma animação": "リプレイ：記録をアニメーションとして見る",
+        "Rever uma gravação → ▶ Replay": "記録を見直す → ▶ リプレイ",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "一覧には使用中のチャンネルだけが表示される",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "活動している筋肉が選んだ動作と合わないとき（例：屈曲の区間で上腕三頭筋が活動）に注意が表示されます。これはヒントであり、自動修正ではありません。",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "パネルが消えた、またはパネルを並べ替えたい（引き出し）",
+        "Uma aba sumiu": "タブが消えた",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "別の検査の記録はどのプロファイルでも同じように開けます。プロファイルは画面を整理するだけです。",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "筋肉・心臓・目の記録のリプレイを見る",
+        "Visualizar → Músculos → desenho do corpo": "表示 → 筋肉 → 体の図",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "計測に戻ります。プロファイル外のタブは消え、ほかはそのまま残ります。",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "<b>記録を見直す</b>へ行き、一覧から記録を選びます。アニメーションは筋肉・心臓・目の検査にだけあります。",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "その記録には動作のマーカーも検出された収縮もありません。完全レベルで、タイムライン上を右クリックして区間をマークしてください。",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "記録がアニメーションとして再生される：動く人形、鼓動する心臓、まばたきし視線を動かす目。",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "その記録は脳のものか、まだ読み込みが終わっていません。筋肉・心臓・目の記録を選んでください。",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "記録された信号から、マークされた動作、心臓のリズム、視線を再現するアニメーション。記録内容を再現したもので、映像でも報告書でもありません。",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "ドラッグしてください。別の推奨点の近くで離すとそこに吸着します。拡大領域のほうが正確に置けます。",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "各電極が正しい筋肉の上にあり、活動の熱がその位置に表示される。",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "現在のプロファイルに含まれていません。<b>すべて</b>に切り替えるか、<b>システム → 使用プロファイル</b>でプロファイルを編集してください。",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "閉じるときに未保存のマークがあるか尋ねられます。<b>保存</b>と答えてください。すでに閉じた場合はやり直して保存してください。",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "各筋肉の表面電極をどこに置くかについての欧州の推奨（筋腹の上、腱から離れた位置）。体の図は電極をこれらの点に吸着させます。",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "自分の仕事に必要なタブだけが画面にあり、記録は一つも失われない。",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "各区間に正しい動作が入ったタイムラインが、記録の隣に保存される。",
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "上腕二頭筋",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "「電極を追加」をクリックしてから体をクリック：電極は最も近い SENIAM 点（筋腹）に\n吸着するか、クリックした位置に置かれます。\n電極をドラッグ：熱表示が追従し、その位置で測った強さを示します。\nマウスホイールで拡大、右ボタンで拡大表示をドラッグ。\nダブルクリックで名前変更 · Delete で選択した電極を削除。",
+        "Delt. ant.": "三角筋前部",
+        "Delt. médio": "三角筋中部",
+        "Delt. post.": "三角筋後部",
+        "ECM": "胸鎖乳突筋",
+        "ECR": "橈側手根伸筋",
+        "Eretor esp.": "脊柱起立筋",
+        "Ext. dedos": "指伸筋",
+        "FCR": "橈側手根屈筋",
+        "Fibular": "長腓骨筋",
+        "Flex. dedos": "指屈筋",
+        "Frontal": "前頭筋",
+        "Gastroc. med.": "内側腓腹筋",
+        "Glúteo máx.": "大殿筋",
+        "Glúteo méd.": "中殿筋",
+        "Isquiotib.": "ハムストリング",
+        "Lado": "側面",
+        "Lateral": "外側",
+        "Latíssimo": "広背筋",
+        "Masseter": "咬筋",
+        "Orbicular": "眼輪筋",
+        "Peitoral": "大胸筋",
+        "Reto abd.": "腹直筋",
+        "Reto fem.": "大腿直筋",
+        "Temporal": "側頭筋",
+        "Tibial ant.": "前脛骨筋",
+        "Trap. sup.": "僧帽筋上部",
+        "Tríceps": "上腕三頭筋",
+        "Vasto lat.": "外側広筋",
+        "Vasto med.": "内側広筋",
+        "Vista Lateral (perfil esquerdo)": "側面図（左側）",
+        "Zigomático": "頬骨筋",
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "ドラッグで高さを変更 · ダブルクリック：既定サイズ",
+        "Canais EMG — envelope e ativações": "EMG チャネル — 包絡線と活動",
+        "Expandir": "展開",
+        "Expandir todos": "すべて展開",
+        "Fechar painel (reabra pelo botão Painéis)": "パネルを閉じる（「パネル」ボタンで再表示）",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "このタブのパネルを表示・非表示・整理",
+        "Mover para baixo": "下へ移動",
+        "Mover para cima": "上へ移動",
+        "Opções do painel": "パネルのオプション",
+        "Painéis": "パネル",
+        "Recolher": "折りたたむ",
+        "Recolher todos": "すべて折りたたむ",
+        "Restaurar o padrão": "既定に戻す",
+        "Tacograma e Poincaré": "タコグラムとポアンカレ",
+        "Tamanho padrão": "既定サイズ",
+        "Traçado ECG e detecção de picos R": "ECG 波形と R 波検出",
+        "Traçado H/V — piscadas e sacadas": "水平/垂直波形 — まばたきとサッカード",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "この人物像は、マークした動きをシミュレーションしたものです。本人の映像ではありません。",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "この人物像は、マークした動きをシミュレーションしたものです。本人の映像ではなく、診断書でも診断でもありません。",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "リプレイを見るには、筋肉・心臓・目の記録を開いてください。",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "現在の時刻から、タスクの動きを物を手に持った状態でタイムラインに配置します。",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "記録されたリズムで拍動する心臓。すべての拍がバンドに表示されます。",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "マークした動きを再現する関節付きの人物像。筋肉は記録どおりに光ります。",
+        "Figura do movimento indisponível.": "動きの人物像は利用できません。",
+        "Gráfico indisponível.": "グラフは利用できません。",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "休息としてマークした区間に活動中の筋肉（{0}）があります。",
+        "Inserir no cursor": "カーソル位置に挿入",
+        "Inverter horizontal": "水平反転",
+        "Inverter vertical": "垂直反転",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "リプレイは筋肉・心臓・目の検査用です。この記録は別の種類です。",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "描かれた心臓は、記録されたリズムをシミュレーションしたものです。診断書でも診断でもありません。",
+        "Olhos que piscam e olham conforme os sinais gravados.": "記録された信号に合わせてまばたきし、視線を動かす目。",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "描かれた目は、記録されたまばたきと視線をシミュレーションしたものです。診断書でも診断でもありません。",
+        "Remover este evento": "このイベントを削除",
+        "Replay do coração — {0}": "心臓のリプレイ — {0}",
+        "Replay do movimento — {0}": "動きのリプレイ — {0}",
+        "Replay dos olhos — {0}": "目のリプレイ — {0}",
+        "Simulação": "シミュレーション",
+        "Tarefa pronta:": "既定のタスク：",
+        "Traçado do coração (ECG)": "心臓の波形（ECG）",
+        "Traçado dos olhos (horizontal e vertical)": "目の波形（水平・垂直）",
+        "Trocar a direção": "方向を変更",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "本人の動きと反対側を見ている場合（電極の入れ替わり）に使います。",
+        "intensidade": "強さ",
+        "nenhum músculo acima de 2%": "2% を超える筋肉はありません",
+        "palma para baixo": "手のひらを下に",
+        "palma para cima": "手のひらを上に",
+        "▶ Replay": "▶ リプレイ",
+        # ===== replay_p6p7 (1.10.0) =====
+        "(corrigida à mão)": "（手動で修正）",
+        "(corrigido à mão)": "（手動で修正）",
+        "A animação SIMULA o que foi gravado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "このアニメーションは記録された内容を再現（シミュレーション）したもので、本人の映像ではありません。診断書でも診断でもありません。",
+        "A definir": "未設定",
+        "Abrir a mão": "手を開く",
+        "Abrir mão": "手を開く",
+        "Adicionar batida aqui": "ここに拍を追加",
+        "Adicionar faixa": "トラックを追加",
+        "Apagar": "削除",
+        "Arraste para ir a um instante da gravação.": "ドラッグして記録内の時点へ移動します。",
+        "Desfazer": "元に戻す",
+        "Dividir aqui": "ここで分割",
+        "Ext. cotovelo": "肘伸展",
+        "Ext. ombro": "肩伸展",
+        "Ext. punho": "手首伸展",
+        "Extensão do cotovelo": "肘の伸展",
+        "Extensão do ombro": "肩の伸展",
+        "Extensão do punho": "手関節の伸展",
+        "Faixa {0}": "トラック {0}",
+        "Fechar a mão": "手を閉じる",
+        "Fechar mão": "手を閉じる",
+        "Flex. cotovelo": "肘屈曲",
+        "Flex. ombro": "肩屈曲",
+        "Flex. punho": "手首屈曲",
+        "Flexão do cotovelo": "肘の屈曲",
+        "Flexão do ombro": "肩の屈曲",
+        "Flexão do punho": "手関節の屈曲",
+        "Grava as marcações ao lado da gravação.": "マークを記録と同じ場所に保存します。",
+        "Há marcações não salvas. Salvar antes de fechar?": "保存していないマークがあります。閉じる前に保存しますか？",
+        "Isto não é laudo nem diagnóstico.": "これは診断書でも診断でもありません。",
+        "Marcar como batida adiantada": "早い拍として印を付ける",
+        "Marcar como batida regular": "規則的な拍として印を付ける",
+        "Marcar como pausa maior": "長めの休止として印を付ける",
+        "Nenhum trecho de movimento marcado nesta gravação.": "この記録には動作の区間が1つもマークされていません。",
+        "Nenhuma gravação carregada.": "記録が読み込まれていません。",
+        "Nenhuma piscada ou movimento dos olhos encontrado.": "まばたきも目の動きも見つかりませんでした。",
+        "Novo trecho aqui": "ここに新しい区間",
+        "Não foi possível salvar: {0}": "保存できませんでした：{0}",
+        "Os músculos ativos ({0}) não combinam com o movimento escolhido ({1}); esperado: {2}.": "活動している筋（{0}）が選んだ動作（{1}）と合いません。想定：{2}。",
+        "Pinça": "つまみ",
+        "Pronação": "回内",
+        "Pronação (palma para baixo)": "回内（手のひらを下に）",
+        "Protocolo: fim": "プロトコル：終了",
+        "Protocolo: início": "プロトコル：開始",
+        "Refazer": "やり直す",
+        "Remover batida": "拍を削除",
+        "Remover faixa": "トラックを削除",
+        "Repetir": "リピート",
+        "Replay": "リプレイ",
+        "Supinação": "回外",
+        "Supinação (palma para cima)": "回外（手のひらを上に）",
+        "Toca ou pausa o replay (barra de espaço).": "リプレイを再生または一時停止します（スペースキー）。",
+        "Todas as batidas foram regulares.": "すべての拍が規則的でした。",
+        "Trocar o movimento": "動作を変更",
+        "Velocidade do replay (não muda a gravação).": "リプレイの速度（記録は変わりません）。",
+        "Volta para o começo da gravação.": "記録の先頭に戻ります。",
+        "adiantada": "早い",
+        "aguardando a primeira batida": "最初の拍を待っています",
+        "baixo": "下",
+        "batida adiantada": "早い拍",
+        "batida regular": "規則的な拍",
+        "bpm em média: —": "平均 bpm：—",
+        "cima": "上",
+        "direita": "右",
+        "esquerda": "左",
+        "faixa {0}": "トラック {0}",
+        "nenhuma adiantada": "早い拍なし",
+        "nenhuma batida": "拍なし",
+        "nenhuma pausa": "休止なし",
+        "olhando para a direita": "右を見ている",
+        "olhando para a esquerda": "左を見ている",
+        "olhando para baixo": "下を見ている",
+        "olhando para cima": "上を見ている",
+        "olhando para frente": "正面を見ている",
+        "pausa": "休止",
+        "pausa maior": "長めの休止",
+        "piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}": "まばたき：{0} · 左右：{1} · 上下：{2}",
+        "piscando": "まばたき中",
+        "regular": "規則的",
+        "{0} adiantada": "早い拍 {0} 回",
+        "{0} adiantadas": "早い拍 {0} 回",
+        "{0} batida": "{0} 拍",
+        "{0} batidas": "{0} 拍",
+        "{0} bpm em média": "平均 {0} bpm",
+        "{0} evento": "{0} イベント",
+        "{0} ficou olhando para a direita": "{0} 右を見続けた",
+        "{0} ficou olhando para a esquerda": "{0} 左を見続けた",
+        "{0} ficou olhando para baixo": "{0} 下を見続けた",
+        "{0} ficou olhando para cima": "{0} 上を見続けた",
+        "{0} ficou olhando para frente": "{0} 正面を見続けた",
+        "{0} moveu os olhos": "{0} 目を動かした",
+        "{0} olhou para a direita": "{0} 右を見た",
+        "{0} olhou para a esquerda": "{0} 左を見た",
+        "{0} olhou para baixo": "{0} 下を見た",
+        "{0} olhou para cima": "{0} 上を見た",
+        "{0} pausa": "休止 {0} 回",
+        "{0} pausas": "休止 {0} 回",
+        "{0} piscou": "{0} まばたき",
+        "{0} por {1} s": "{0}（{1} 秒間）",
+        "⏮ Início": "⏮ 先頭",
+        "⏸ Pausar": "⏸ 一時停止",
+        "▶ Tocar": "▶ 再生",
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "どの検査を行いますか？",
+        "Duplicar perfil": "プロファイルを複製",
+        "Escolha os gráficos": "グラフを選ぶ",
+        "Exames deste perfil:": "このプロファイルの検査：",
+        "Excluir o perfil \"{0}\"?": "プロファイル「{0}」を削除しますか？",
+        "Já existe um perfil com esse nome.": "同じ名前のプロファイルがすでにあります。",
+        "Marque pelo menos um.": "少なくとも1つ選んでください。",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "使うものをすべて選んでください。1種類の検査しか行わない人には、ほかの検査は画面に表示されません。あとでホーム画面または「システム → 使用プロファイル」で変更できます。",
+        "Nenhum gráfico a escolher para estes exames.": "これらの検査で選べるグラフはありません。",
+        "Nome do perfil:": "プロファイル名：",
+        "Novo perfil de uso": "新しい使用プロファイル",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "お使いのプロファイルに推奨されるものはすでに選択されています。見たくないものはチェックを外してください。これは「完全」レベルに適用され、各タブの「パネル」ボタンでいつでも変更できます。",
+        "Perfil de uso": "使用プロファイル",
+        "Perfil de uso: {0}.": "使用プロファイル：{0}。",
+        "Perfil:": "プロファイル：",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "既定のプロファイルは名前の変更も削除もできません。複製して編集してください。",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "1種類の検査しか行わない人は、ほかの検査を見る必要がありません。プロファイルが、ホーム画面に表示する検査とタブを決めます。",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "1種類の検査しか行わない人は、ほかの検査を見る必要がありません。プロファイルが、ホーム画面に表示する検査とタブを決めます。「システム → 使用プロファイル」で自分のプロファイルを作成できます。",
+        "Renomear perfil": "プロファイル名の変更",
+        "Renomear…": "名前を変更…",
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "プログラムを開いています…",
+        "Montando a tela inicial…": "ホーム画面を準備しています…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "ランチャー（EEG_Data_Collector.py）を更新できませんでした。プログラムは現在のランチャーで引き続き動作します。",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "正中線",
         "lado esquerdo": "左側",
@@ -24737,7 +26820,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "利用規約の同意が保存されませんでした",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "規約に同意しましたが、同意をディスクに記録できませんでした。次回起動時にウィザードが再表示されます。容量／権限を確認してください。",
         "Termo de Uso completo ausente (resumo exibido)": "利用規約の全文がありません（要約を表示）",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "利用規約の全文が見つからないため、要約版を表示しています。全文は https://github.com/rodrigooa43-create/OpenBionica にあります。",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "利用規約の全文が見つからないため、要約版を表示しています。全文は https://github.com/rodrigooa43-create/ROA にあります。",
         "Configurações não salvas ao sair": "終了時に設定が保存されませんでした",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "終了時に設定を保存できませんでした。容量／権限を確認してください。それでも閉じますか？",
         "Manifesto de update inválido/incompleto": "更新マニフェストが無効／不完全",
@@ -24745,11 +26828,11 @@ class I18N:
         "SHA-256 do download não confere": "ダウンロードのSHA-256が一致しません",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "ダウンロードした更新は破損または改ざんされており、適用されませんでした。接続を確認してやり直してください。現在のバージョンは保持されました。",
         "Update sem assinatura SHA-256": "SHA-256署名のない更新",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "この更新には検証署名（SHA-256）が含まれていません。安全のため、新バージョンを https://github.com/rodrigooa43-create/OpenBionica から手動でダウンロードしてください。",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "この更新には検証署名（SHA-256）が含まれていません。安全のため、新バージョンを https://github.com/rodrigooa43-create/ROA から手動でダウンロードしてください。",
         "Falha ao gravar o arquivo atualizado": "更新ファイルの書き込みに失敗しました",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "更新を書き込めませんでした（プログラムフォルダに権限がない、またはアプリが別のウィンドウで開いています）。他のコピーを閉じるか、管理者として実行するか、または https://github.com/rodrigooa43-create/OpenBionica から手動でダウンロードしてください。",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "更新を書き込めませんでした（プログラムフォルダに権限がない、またはアプリが別のウィンドウで開いています）。他のコピーを閉じるか、管理者として実行するか、または https://github.com/rodrigooa43-create/ROA から手動でダウンロードしてください。",
         "update_config.json corrompido": "update_config.jsonが破損",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "更新設定ファイルが破損しています。確認は無効化されました。更新は https://github.com/rodrigooa43-create/OpenBionica から手動でダウンロードしてください。",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "更新設定ファイルが破損しています。確認は無効化されました。更新は https://github.com/rodrigooa43-create/ROA から手動でダウンロードしてください。",
         "Exportação EDF indisponível (pyedflib ausente)": "EDFエクスポート利用不可（pyedflibなし）",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "EDFエクスポートは利用できません。pyedflibライブラリがインストールされていません。pip install pyedflib でインストールするか、別の形式（FIF/BIDS）を使用してください。",
         "Exportação FIF indisponível (MNE ausente)": "FIFエクスポート利用不可（MNEなし）",
@@ -26886,6 +28969,297 @@ class I18N:
 
     # Dicionários RUSSIAN — chaves em pt-BR
     _ru = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Мозг (EEG)",
+        "Músculos (EMG)": "Мышцы (EMG)",
+        "Coração (ECG)": "Сердце (ECG)",
+        "Olhos (EOG)": "Глаза (EOG)",
+        "Tudo": "Всё",
+        "Minha bancada": "Моя лаборатория",
+        "Músculos": "Мышцы",
+        "Coração": "Сердце",
+        "Olhos": "Глаза",
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "<b>Первый</b> запуск после установки или обновления готовит кэш (папка <b>.roa_cache</b> рядом с программой или в папке ROA локальных данных пользователя) и поэтому длится дольше; следующие открываются за несколько секунд. Заставка с логотипом словами сообщает, что загружается. Если медленно по-прежнему, проверьте, не сканирует ли антивирус папку программы при каждом запуске.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "Анимация <b>имитирует</b> записанное по сигналам: это не видео человека и не заключение или диагноз.",
+        "A figura não se mexe": "Фигура не двигается",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Откройте Replay записи мышц на уровне <b>Полный</b>.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Перетащите шкалу времени, чтобы перейти к моменту. В списке рядом щёлкните отрезок, удар или событие — проигрыватель перейдёт туда.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Перетащите точку, чтобы подправить; двойной щелчок переименовывает; <b>Delete</b> удаляет выбранный.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Перетащите блок, чтобы сдвинуть, и потяните край, чтобы растянуть. <b>Разделить здесь</b> режет отрезок надвое; <b>Добавить дорожку</b> создаёт ещё одну дорожку для одновременных движений (до четырёх).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "Удары и события глаз те же, что в отчёте PDF; их исправление (уровень Полный) не меняет запись, только файл Replay рядом с ней.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "Списки каналов показывают только каналы, <b>используемые</b> в выбранном обследовании. При просмотре записи списки следуют каналам этой записи, а не подключённого сейчас прибора.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "Списки каналов показывают только <b>используемые</b> каналы: включённые и соответствующие типу обследования (канал, отмеченный как сердце, не появится в списке мышц). Чтобы сменить тип или снова включить канал, используйте <b>Фильтры и каналы</b> на уровне Полный. При просмотре записи списки следуют каналам этой записи.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Нажмите <b>Добавить электрод</b>, затем щёлкните по телу: точка прилипнет к рекомендуемому месту ближайшей мышцы (брюшко мышцы, ориентир SENIAM).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Нажмите <b>▶ Replay</b>. Откроется окно с проигрывателем: <b>▶ Воспроизвести</b>, <b>⏸ Пауза</b>, <b>⏮ Начало</b>, шкала времени и часы.",
+        "Colocar os eletrodos no desenho do corpo": "Разместить электроды на рисунке тела",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z отменяет. Нажмите <b>Сохранить</b>: файл movimentos.json остаётся рядом с записью и читается в следующий раз.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "Спереди <b>правая</b> сторона человека находится <b>слева</b> на рисунке, как на фото; сверьте П/Л в названии мышцы.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "Во время обследования тепловое пятно в точке электрода показывает измеренную там интенсивность; кольцо вокруг номера показывает качество сигнала.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "В <b>Просмотреть запись</b> выберите запись мышц, сердца или глаз и нажмите <b>▶ Replay</b>. Фигура повторяет отмеченное движение, сердце бьётся в записанном ритме, а два глаза моргают и смотрят согласно сигналам. Используйте <b>▶ Воспроизвести</b>, <b>⏸ Пауза</b> и перетаскивайте шкалу времени. Анимация <b>имитирует</b> записанное: это не видео человека и не заключение или диагноз. Для записей мозга кнопка выключена.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Выбрать профиль использования (какие вкладки показывать)",
+        "Fechei a janela e perdi as marcações": "Я закрыл(а) окно и потерял(а) отметки",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Старые установки начинают с <b>Всё</b>: ничего не исчезает без вашего выбора.",
+        "Manual: Abertura rápida": "Руководство: Быстрый запуск",
+        "Manual: Canais em uso": "Руководство: Используемые каналы",
+        "Manual: Exame de músculos → Atlas muscular": "Руководство: Обследование мышц → Мышечный атлас",
+        "Manual: Nível Completo → Painéis em gavetas": "Руководство: Уровень Полный → Панели-ящики",
+        "Manual: Perfis de uso": "Руководство: Профили использования",
+        "Manual: Rever uma gravação → Replay": "Руководство: Просмотреть запись → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Руководство: Просмотреть запись → Replay → Мышцы",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Отметить или исправить движения в Replay (мышцы)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "Монтажи прежних версий преобразуются сами; проверьте только, что точки попали туда, куда вы ожидали.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "На <b>начальном экране</b> откройте поле <b>Профиль использования</b> и выберите <b>Мозг</b>, <b>Мышцы</b>, <b>Сердце</b>, <b>Глаза</b> или <b>Всё</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "На вкладке <b>Мышцы</b> выберите <b>Вид</b>: спереди, сзади, сбоку или увеличенную область (лицо, предплечье и кисть, нога…).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "На вкладке <b>Мышцы</b> рисунок тела (спереди, сзади, сбоку и увеличенные области) показывает каждый электрод пронумерованной точкой. Нажмите <b>Добавить электрод</b>, затем щёлкните по телу: точка прилипнет к рекомендуемому месту (брюшко мышцы, ориентир SENIAM) или останется там, где вы щёлкнули. Во время обследования тепловое пятно в точке электрода показывает измеренную там интенсивность.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "У сердца полоса ударов использует цвет <b>и</b> форму: тонкая черта = обычный, оранжевый треугольник = преждевременный, красный прямоугольник = длинная пауза.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "На уровне Полный каждая панель — это <b>ящик</b>: <b>▾</b> сворачивает, <b>⋯</b> открывает меню (переместить, размер по умолчанию, закрыть), <b>×</b> закрывает. Чтобы снова открыть панель или вернуть исходное расположение, нажмите кнопку <b>Панели ▾</b> вверху вкладки и отметьте её или выберите <b>Восстановить по умолчанию</b>. Ручка на нижнем крае меняет высоту. Расположение сохраняется до следующего раза.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "У глаз, если стороны перепутаны, отметьте <b>Инвертировать по горизонтали</b> или <b>Инвертировать по вертикали</b>.",
+        "O botão ▶ Replay está apagado": "Кнопка ▶ Replay погашена",
+        "O eletrodo caiu no músculo errado": "Электрод попал не на ту мышцу",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "Профиль говорит, с чем вы работаете, и скрывает вкладки, которые к этому не относятся. Смените его на <b>начальном экране</b> (поле <b>Профиль использования</b>) или в <b>Система → Профиль использования</b>, где также создаётся <b>Моя лаборатория</b> ровно с теми обследованиями и графиками, которые вам нужны. <b>Всё</b> показывает программу целиком. Запись другого обследования открывается в любом профиле как обычно.",
+        "O programa demora para abrir": "Программа долго открывается",
+        "Onde está cada eletrodo (desenho do corpo)": "Где находится каждый электрод (рисунок тела)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "Отрезки рождаются из маркеров записи; без маркеров обнаруженные сокращения появляются как <b>не определено</b>. Щёлкните отрезок правой кнопкой и выберите <b>Сменить движение</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "Для собственного профиля перейдите в <b>Система → Профиль использования</b>, нажмите <b>Новый…</b> (Моя лаборатория) и отметьте обследования и, на уровне Полный, графики, которые хотите видеть.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "Для целой последовательности используйте <b>Готовая задача</b> (поднять гантель, открыть дверь ключом, взять стакан): она вставляется от курсора.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Профиль использования: Мозг, Мышцы, Сердце, Глаза или Всё",
+        "Replay (animação da gravação)": "Replay (анимация записи)",
+        "Replay: ver a gravação como uma animação": "Replay: смотреть запись как анимацию",
+        "Rever uma gravação → ▶ Replay": "Просмотреть запись → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "В списках появляются только используемые каналы",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "Предупреждение появляется, когда активные мышцы не соответствуют выбранному движению (например, активный трицепс в отрезке сгибания). Это подсказка, а не автоматическое исправление.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "Панель исчезла, или я хочу переставить панели (ящики)",
+        "Uma aba sumiu": "Вкладка исчезла",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "Запись другого обследования открывается одинаково в любом профиле; профиль лишь упорядочивает экран.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Смотреть Replay записи мышц, сердца или глаз",
+        "Visualizar → Músculos → desenho do corpo": "Просмотр → Мышцы → рисунок тела",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Вернитесь к сбору: вкладки вне профиля исчезают, остальные остаются на месте.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Перейдите в <b>Просмотреть запись</b> и выберите запись в списке: анимация есть только для обследований мышц, сердца и глаз.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "в записи нет ни маркеров движения, ни обнаруженных сокращений. На уровне Полный отметьте отрезки на шкале времени правой кнопкой.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "запись, проигрываемая как анимация: движущаяся фигура, бьющееся сердце или моргающие и смотрящие глаза.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "запись относится к мозгу или ещё не загрузилась. Выберите запись мышц, сердца или глаз.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "анимация, которая по записанным сигналам повторяет отмеченное движение, ритм сердца или взгляд. Она имитирует записанное: это не видео и не заключение.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "перетащите его: отпущенный рядом с другой рекомендуемой точкой, он прилипнет к ней. В увеличенной области попасть легче.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "каждый электрод на нужной мышце, и тепло активации появляется на его месте.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "текущий профиль её не включает. Переключитесь на <b>Всё</b> или измените свой профиль в <b>Система → Профиль использования</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "при закрытии программа спрашивает, есть ли несохранённые отметки; ответьте <b>Сохранить</b>. Если уже закрыли, повторите и сохраните.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "европейские рекомендации, куда ставить поверхностные электроды на каждой мышце (над брюшком мышцы, подальше от сухожилия). Рисунок тела прилепляет электрод к этим точкам.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "на экране только вкладки вашей работы, без потери записей.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "шкала времени с верным движением в каждом отрезке, сохранённая рядом с записью.",
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Бицепс",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Нажмите «Добавить электрод», затем щёлкните по телу: электрод прилипнет к\nближайшей точке SENIAM (брюшко мышцы) или останется там, где вы щёлкнули.\nПЕРЕТАЩИТЕ электрод: тепло следует за ним и показывает измеренную там интенсивность.\nКолесо мыши увеличивает; правая кнопка перетаскивает увеличенный вид.\nДвойной щелчок переименовывает · Delete удаляет выбранный.",
+        "Delt. ant.": "Пер. дельта",
+        "Delt. médio": "Ср. дельта",
+        "Delt. post.": "Задн. дельта",
+        "ECM": "ГКС",
+        "ECR": "ЛРК",
+        "Eretor esp.": "Разгиб. спины",
+        "Ext. dedos": "Разгиб. пальцев",
+        "FCR": "ЛСК",
+        "Fibular": "Малоберц.",
+        "Flex. dedos": "Сгиб. пальцев",
+        "Frontal": "Лобная",
+        "Gastroc. med.": "Мед. икронож.",
+        "Glúteo máx.": "Больш. ягод.",
+        "Glúteo méd.": "Сред. ягод.",
+        "Isquiotib.": "Задн. бедра",
+        "Lado": "Сбоку",
+        "Lateral": "Латеральная",
+        "Latíssimo": "Широчайшая",
+        "Masseter": "Жевательная",
+        "Orbicular": "Круговая глаза",
+        "Peitoral": "Грудная",
+        "Reto abd.": "Прямая живота",
+        "Reto fem.": "Прямая бедра",
+        "Temporal": "Височная",
+        "Tibial ant.": "Передн. большеберц.",
+        "Trap. sup.": "Верх. трапец.",
+        "Tríceps": "Трицепс",
+        "Vasto lat.": "Лат. широкая",
+        "Vasto med.": "Мед. широкая",
+        "Vista Lateral (perfil esquerdo)": "Вид сбоку (левый профиль)",
+        "Zigomático": "Скуловая",
+        # ===== p2_gavetas (1.10.0) =====
+        "Arraste para mudar a altura · duplo clique: tamanho padrão": "Перетащите, чтобы изменить высоту · двойной щелчок: размер по умолчанию",
+        "Canais EMG — envelope e ativações": "Каналы ЭМГ — огибающая и активации",
+        "Expandir": "Развернуть",
+        "Expandir todos": "Развернуть все",
+        "Fechar painel (reabra pelo botão Painéis)": "Закрыть панель (открыть снова кнопкой «Панели»)",
+        "Mostrar, ocultar e arrumar os painéis desta aba": "Показать, скрыть и упорядочить панели этой вкладки",
+        "Mover para baixo": "Переместить вниз",
+        "Mover para cima": "Переместить вверх",
+        "Opções do painel": "Параметры панели",
+        "Painéis": "Панели",
+        "Recolher": "Свернуть",
+        "Recolher todos": "Свернуть все",
+        "Restaurar o padrão": "Восстановить по умолчанию",
+        "Tacograma e Poincaré": "Тахограмма и Пуанкаре",
+        "Tamanho padrão": "Размер по умолчанию",
+        "Traçado ECG e detecção de picos R": "Кривая ЭКГ и обнаружение R-зубцов",
+        "Traçado H/V — piscadas e sacadas": "Кривые Г/В — моргания и саккады",
+        # ===== p6_figura_p8 (1.10.0) =====
+        "A figura SIMULA o movimento marcado; não é o vídeo da pessoa.": "Фигура ИМИТИРУЕТ отмеченное движение; это не видео человека.",
+        "A figura SIMULA o movimento marcado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "Фигура ИМИТИРУЕТ отмеченное движение; это не видео человека. Это не заключение и не диагноз.",
+        "Abra uma gravação de músculos, coração ou olhos para ver o Replay.": "Откройте запись мышц, сердца или глаз, чтобы увидеть воспроизведение.",
+        "Coloca os movimentos da tarefa na linha do tempo a partir do instante atual, com o objeto preso à mão.": "Размещает движения задания на шкале времени начиная с текущего момента, с предметом в руке.",
+        "Coração que bate no ritmo gravado, com todas as batidas na faixa.": "Сердце, бьющееся в записанном ритме; все удары показаны на полосе.",
+        "Figura articulada que refaz o movimento marcado, com os músculos acendendo conforme a gravação.": "Шарнирная фигура, повторяющая отмеченное движение; мышцы подсвечиваются, как записано.",
+        "Figura do movimento indisponível.": "Фигура движения недоступна.",
+        "Gráfico indisponível.": "График недоступен.",
+        "Há músculos ativos ({0}) num trecho marcado como repouso.": "В участке, отмеченном как покой, есть активные мышцы ({0}).",
+        "Inserir no cursor": "Вставить у курсора",
+        "Inverter horizontal": "Отразить по горизонтали",
+        "Inverter vertical": "Отразить по вертикали",
+        "O Replay existe para exames de músculos, coração e olhos; esta gravação é de outro tipo.": "Воспроизведение есть для обследований мышц, сердца и глаз; эта запись другого типа.",
+        "O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.": "Нарисованное сердце ИМИТИРУЕТ записанный ритм. Это не заключение и не диагноз.",
+        "Olhos que piscam e olham conforme os sinais gravados.": "Глаза, которые моргают и смотрят в соответствии с записанными сигналами.",
+        "Os olhos desenhados SIMULAM as piscadas e o olhar gravados. Não é laudo nem diagnóstico.": "Нарисованные глаза ИМИТИРУЮТ записанные моргания и взгляд. Это не заключение и не диагноз.",
+        "Remover este evento": "Удалить это событие",
+        "Replay do coração — {0}": "Воспроизведение сердца — {0}",
+        "Replay do movimento — {0}": "Воспроизведение движения — {0}",
+        "Replay dos olhos — {0}": "Воспроизведение глаз — {0}",
+        "Simulação": "Имитация",
+        "Tarefa pronta:": "Готовое задание:",
+        "Traçado do coração (ECG)": "Кривая сердца (ЭКГ)",
+        "Traçado dos olhos (horizontal e vertical)": "Кривые глаз (горизонталь и вертикаль)",
+        "Trocar a direção": "Изменить направление",
+        "Use se os olhos olham para o lado contrário do que a pessoa fez (eletrodos trocados).": "Используйте, если глаза смотрят в противоположную сторону от того, что делал человек (электроды перепутаны).",
+        "intensidade": "интенсивность",
+        "nenhum músculo acima de 2%": "нет мышц выше 2%",
+        "palma para baixo": "ладонь вниз",
+        "palma para cima": "ладонь вверх",
+        "▶ Replay": "▶ Воспроизведение",
+        # ===== replay_p6p7 (1.10.0) =====
+        "(corrigida à mão)": "(исправлено вручную)",
+        "(corrigido à mão)": "(исправлено вручную)",
+        "A animação SIMULA o que foi gravado; não é vídeo da pessoa. Não é laudo nem diagnóstico.": "Анимация ИМИТИРУЕТ записанное; это не видео человека. Это не заключение и не диагноз.",
+        "A definir": "Не задано",
+        "Abrir a mão": "Раскрыть кисть",
+        "Abrir mão": "Раскрыть кисть",
+        "Adicionar batida aqui": "Добавить удар здесь",
+        "Adicionar faixa": "Добавить дорожку",
+        "Apagar": "Удалить",
+        "Arraste para ir a um instante da gravação.": "Перетащите, чтобы перейти к нужному моменту записи.",
+        "Desfazer": "Отменить",
+        "Dividir aqui": "Разделить здесь",
+        "Ext. cotovelo": "Разг. предпл.",
+        "Ext. ombro": "Разг. плеча",
+        "Ext. punho": "Разг. кисти",
+        "Extensão do cotovelo": "Разгибание предплечья",
+        "Extensão do ombro": "Разгибание плеча",
+        "Extensão do punho": "Разгибание кисти",
+        "Faixa {0}": "Дорожка {0}",
+        "Fechar a mão": "Сжать кисть",
+        "Fechar mão": "Сжать кисть",
+        "Flex. cotovelo": "Сгиб. предпл.",
+        "Flex. ombro": "Сгиб. плеча",
+        "Flex. punho": "Сгиб. кисти",
+        "Flexão do cotovelo": "Сгибание предплечья",
+        "Flexão do ombro": "Сгибание плеча",
+        "Flexão do punho": "Сгибание кисти",
+        "Grava as marcações ao lado da gravação.": "Сохраняет отметки рядом с записью.",
+        "Há marcações não salvas. Salvar antes de fechar?": "Есть несохранённые отметки. Сохранить перед закрытием?",
+        "Isto não é laudo nem diagnóstico.": "Это не заключение и не диагноз.",
+        "Marcar como batida adiantada": "Отметить как ранний удар",
+        "Marcar como batida regular": "Отметить как обычный удар",
+        "Marcar como pausa maior": "Отметить как длинную паузу",
+        "Nenhum trecho de movimento marcado nesta gravação.": "В этой записи не отмечено ни одного участка движения.",
+        "Nenhuma gravação carregada.": "Запись не загружена.",
+        "Nenhuma piscada ou movimento dos olhos encontrado.": "Моргания и движения глаз не найдены.",
+        "Novo trecho aqui": "Новый участок здесь",
+        "Não foi possível salvar: {0}": "Не удалось сохранить: {0}",
+        "Os músculos ativos ({0}) não combinam com o movimento escolhido ({1}); esperado: {2}.": "Активные мышцы ({0}) не соответствуют выбранному движению ({1}); ожидалось: {2}.",
+        "Pinça": "Щипок",
+        "Pronação": "Пронация",
+        "Pronação (palma para baixo)": "Пронация (ладонью вниз)",
+        "Protocolo: fim": "Протокол: конец",
+        "Protocolo: início": "Протокол: начало",
+        "Refazer": "Вернуть",
+        "Remover batida": "Удалить удар",
+        "Remover faixa": "Удалить дорожку",
+        "Repetir": "Повтор",
+        "Replay": "Воспроизведение",
+        "Supinação": "Супинация",
+        "Supinação (palma para cima)": "Супинация (ладонью вверх)",
+        "Toca ou pausa o replay (barra de espaço).": "Запускает или приостанавливает воспроизведение (пробел).",
+        "Todas as batidas foram regulares.": "Все удары были обычными.",
+        "Trocar o movimento": "Сменить движение",
+        "Velocidade do replay (não muda a gravação).": "Скорость воспроизведения (запись не меняется).",
+        "Volta para o começo da gravação.": "Возвращает к началу записи.",
+        "adiantada": "ранний",
+        "aguardando a primeira batida": "ожидание первого удара",
+        "baixo": "вниз",
+        "batida adiantada": "ранний удар",
+        "batida regular": "обычный удар",
+        "bpm em média: —": "средний bpm: —",
+        "cima": "вверх",
+        "direita": "вправо",
+        "esquerda": "влево",
+        "faixa {0}": "дорожка {0}",
+        "nenhuma adiantada": "ранних нет",
+        "nenhuma batida": "ударов нет",
+        "nenhuma pausa": "пауз нет",
+        "olhando para a direita": "смотрит вправо",
+        "olhando para a esquerda": "смотрит влево",
+        "olhando para baixo": "смотрит вниз",
+        "olhando para cima": "смотрит вверх",
+        "olhando para frente": "смотрит прямо",
+        "pausa": "пауза",
+        "pausa maior": "длинная пауза",
+        "piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}": "морганий: {0} · в стороны: {1} · вверх или вниз: {2}",
+        "piscando": "моргает",
+        "regular": "обычный",
+        "{0} adiantada": "{0} ранний",
+        "{0} adiantadas": "ранних: {0}",
+        "{0} batida": "{0} удар",
+        "{0} batidas": "ударов: {0}",
+        "{0} bpm em média": "в среднем {0} bpm",
+        "{0} evento": "{0} событие",
+        "{0} ficou olhando para a direita": "{0} смотрит вправо",
+        "{0} ficou olhando para a esquerda": "{0} смотрит влево",
+        "{0} ficou olhando para baixo": "{0} смотрит вниз",
+        "{0} ficou olhando para cima": "{0} смотрит вверх",
+        "{0} ficou olhando para frente": "{0} смотрит прямо",
+        "{0} moveu os olhos": "{0} движение глаз",
+        "{0} olhou para a direita": "{0} взгляд вправо",
+        "{0} olhou para a esquerda": "{0} взгляд влево",
+        "{0} olhou para baixo": "{0} взгляд вниз",
+        "{0} olhou para cima": "{0} взгляд вверх",
+        "{0} pausa": "{0} пауза",
+        "{0} pausas": "пауз: {0}",
+        "{0} piscou": "{0} моргание",
+        "{0} por {1} s": "{0} в течение {1} с",
+        "⏮ Início": "⏮ Начало",
+        "⏸ Pausar": "⏸ Пауза",
+        "▶ Tocar": "▶ Пуск",
+        # ===== p4_perfis (1.10.0) =====
+        "Com o que você trabalha?": "С чем вы работаете?",
+        "Duplicar perfil": "Дублировать профиль",
+        "Escolha os gráficos": "Выберите графики",
+        "Exames deste perfil:": "Обследования этого профиля:",
+        "Excluir o perfil \"{0}\"?": "Удалить профиль «{0}»?",
+        "Já existe um perfil com esse nome.": "Профиль с таким именем уже существует.",
+        "Marque pelo menos um.": "Отметьте хотя бы одно.",
+        "Marque tudo o que você usa. Quem só faz um tipo de exame não vê os outros na tela. Dá para mudar depois na tela inicial ou em Sistema → Perfil de uso.": "Отметьте всё, чем вы пользуетесь. Тот, кто делает только один вид обследования, не видит остальные на экране. Изменить это можно позже на начальном экране или в разделе Система → Профиль использования.",
+        "Nenhum gráfico a escolher para estes exames.": "Для этих обследований нет графиков на выбор.",
+        "Nome do perfil:": "Имя профиля:",
+        "Novo perfil de uso": "Новый профиль использования",
+        "Os recomendados para o seu perfil já estão marcados; desmarque o que não quer ver. Isto vale para o nível Completo e pode ser mudado a qualquer hora pelo botão Painéis de cada aba.": "Рекомендованные для вашего профиля уже отмечены; снимите отметку с того, что не хотите видеть. Это относится к уровню «Полный» и может быть изменено в любой момент кнопкой «Панели» на каждой вкладке.",
+        "Perfil de uso": "Профиль использования",
+        "Perfil de uso: {0}.": "Профиль использования: {0}.",
+        "Perfil:": "Профиль:",
+        "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar.": "Готовые профили нельзя переименовать или удалить; продублируйте профиль, чтобы изменить его.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem.": "Тому, кто делает только один вид обследования, не нужно видеть остальные: профиль определяет, что предлагает начальный экран и какие вкладки отображаются.",
+        "Quem só faz um tipo de exame não precisa ver os outros: o perfil decide o que a tela inicial oferece e quais abas aparecem. Crie o seu em Sistema → Perfil de uso.": "Тому, кто делает только один вид обследования, не нужно видеть остальные: профиль определяет, что предлагает начальный экран и какие вкладки отображаются. Создайте свой в разделе Система → Профиль использования.",
+        "Renomear perfil": "Переименовать профиль",
+        "Renomear…": "Переименовать…",
+        # ===== p9_arranque (1.10.0) =====
+        "Abrindo o programa…": "Открытие программы…",
+        "Montando a tela inicial…": "Подготовка начального экрана…",
+        "O lançador (EEG_Data_Collector.py) não pôde ser atualizado; o programa continua funcionando com o atual.": "Загрузчик (EEG_Data_Collector.py) не удалось обновить; программа продолжает работать с текущим.",
         # ===== Validação de uso com leigos, etapa final: barra, caixas, consultor, EMG, PDF e telas (1.9.0) =====
         "linha do meio": "средняя линия",
         "lado esquerdo": "левая сторона",
@@ -28502,7 +30876,7 @@ class I18N:
         "Aceite do Termo de Uso não persistido": "Принятие Условий использования не сохранено",
         "Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.": "Вы приняли условия, но принятие не удалось записать на диск. Мастер появится снова при следующем запуске. Проверьте место/права.",
         "Termo de Uso completo ausente (resumo exibido)": "Отсутствует полный текст Условий использования (показана сводка)",
-        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.": "Полный текст Условий использования не найден; показана краткая версия. Полный документ: https://github.com/rodrigooa43-create/OpenBionica.",
+        "O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.": "Полный текст Условий использования не найден; показана краткая версия. Полный документ: https://github.com/rodrigooa43-create/ROA.",
         "Configurações não salvas ao sair": "Настройки не сохранены при выходе",
         "Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?": "Не удалось сохранить ваши настройки при выходе. Проверьте место/права. Всё равно закрыть?",
         "Manifesto de update inválido/incompleto": "Манифест обновления недопустим/неполон",
@@ -28510,11 +30884,11 @@ class I18N:
         "SHA-256 do download não confere": "SHA-256 загрузки не совпадает",
         "A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.": "Загруженное обновление повреждено или подменено и не применено. Проверьте соединение и повторите; текущая версия сохранена.",
         "Update sem assinatura SHA-256": "Обновление без подписи SHA-256",
-        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Это обновление не содержит проверочной подписи (SHA-256). Для безопасности загрузите новую версию вручную: https://github.com/rodrigooa43-create/OpenBionica.",
+        "Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.": "Это обновление не содержит проверочной подписи (SHA-256). Для безопасности загрузите новую версию вручную: https://github.com/rodrigooa43-create/ROA.",
         "Falha ao gravar o arquivo atualizado": "Сбой записи обновлённого файла",
-        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Не удалось записать обновление (нет прав на папку программы или приложение открыто в другом окне). Закройте другие копии / запустите от имени администратора или загрузите обновление вручную: https://github.com/rodrigooa43-create/OpenBionica.",
+        "Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.": "Не удалось записать обновление (нет прав на папку программы или приложение открыто в другом окне). Закройте другие копии / запустите от имени администратора или загрузите обновление вручную: https://github.com/rodrigooa43-create/ROA.",
         "update_config.json corrompido": "update_config.json повреждён",
-        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.": "Файл конфигурации обновления повреждён. Проверка отключена; загружайте обновления вручную: https://github.com/rodrigooa43-create/OpenBionica.",
+        "O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.": "Файл конфигурации обновления повреждён. Проверка отключена; загружайте обновления вручную: https://github.com/rodrigooa43-create/ROA.",
         "Exportação EDF indisponível (pyedflib ausente)": "Экспорт EDF недоступен (нет pyedflib)",
         "Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).": "Экспорт EDF недоступен: библиотека pyedflib не установлена. Установите её (pip install pyedflib) или используйте другой формат (FIF/BIDS).",
         "Exportação FIF indisponível (MNE ausente)": "Экспорт FIF недоступен (нет MNE)",
@@ -31289,6 +33663,28 @@ def layout_multimodal(n):
     return (base + ["EEG"] * MAX_CHANNELS)[:MAX_CHANNELS]
 
 
+def canais_por_tipo(tipos, n_em_uso, tipo):
+    """Índices dos canais EM USO (0..n_em_uso-1) cujo tipo configurado é `tipo`.
+
+    Função pura, sem janela: a tela ao vivo chega aqui pelos helpers da
+    EEGCollectorWindow (_canais_em_uso_tipo), o offline/PDF podem passar os
+    tipos do summary.json e os testes a chamam direto. Canal sem tipo na lista
+    conta como "EEG", como no resto do programa; `tipo` None devolve todos os
+    canais em uso. Com 8 canais e exame EMG o launcher marca os 64 como EMG:
+    sem este corte o mapa canais×tempo e os combos listavam CH1..CH64 (P1)."""
+    try:
+        n = int(n_em_uso or 0)
+    except (TypeError, ValueError):
+        n = 0
+    tipos = list(tipos or [])
+    saida = []
+    for ch in range(max(0, n)):
+        t = tipos[ch] if ch < len(tipos) else "EEG"
+        if tipo is None or t == tipo:
+            saida.append(ch)
+    return saida
+
+
 def descreve_layout_multimodal(n):
     """A divisão de layout_multimodal em palavras comuns (tela inicial e
     aviso do cabeçalho)."""
@@ -31439,6 +33835,12 @@ class AppConfig:
         # pasta do último paciente usado (a tela inicial já vem com ele)
         self.last_volunteer_dir = ""
         self.window_maximized = False
+        # Perfil de uso (P4): "Tudo" é o padrão para quem já usava o programa;
+        # usage_profiles guarda só os personalizados ({nome: {"exames", "paineis"}})
+        self.usage_profile = PERFIL_TUDO
+        self.usage_profiles = {}
+        # Arranjo dos painéis em gavetas (P2): {aba: {"ordem", "paineis", "splits"}}
+        self.paineis = {}
         self.load()
         # Registra temas customizados em THEMES
         for name, palette in self.custom_themes.items():
@@ -31539,15 +33941,22 @@ class AppConfig:
                     if not isinstance(e, dict):
                         continue
                     try:
-                        clean.append({
+                        item = {
                             "id":      int(e.get("id", len(clean) + 1)),
                             "name":    str(e.get("name", f"E{len(clean)+1}")),
                             "x":       float(e.get("x", 0.5)),
                             "y":       float(e.get("y", 0.5)),
-                            "view":    "back" if e.get("view") == "back" else "front",
+                            # "side" é a vista lateral do atlas novo (P3)
+                            "view":    (e.get("view") if e.get("view") in ("front", "back", "side")
+                                        else "front"),
                             "channel": int(e.get("channel", -1)),
                             "muscle":  str(e.get("muscle", "")),
-                        })
+                        }
+                        # atlas=2 marca coordenadas já no corpo novo; sem a
+                        # marca o widget converte a montagem antiga ao carregar
+                        if isinstance(e.get("atlas"), int) and not isinstance(e.get("atlas"), bool):
+                            item["atlas"] = int(e["atlas"])
+                        clean.append(item)
                     except Exception:
                         continue
                 self.emg_electrode_montage = clean
@@ -31591,6 +34000,26 @@ class AppConfig:
             lv = d.get("last_volunteer_dir")
             if isinstance(lv, str):
                 self.last_volunteer_dir = lv
+            # --- perfil de uso (P4): só aceita o que tem forma válida ---
+            ups = d.get("usage_profiles")
+            if isinstance(ups, dict):
+                limpos = {}
+                for nome, dados in ups.items():
+                    if not isinstance(nome, str) or not nome or not isinstance(dados, dict):
+                        continue
+                    exames = [e for e in (dados.get("exames") or []) if e in EXAMES_PERFIL]
+                    paineis = dados.get("paineis") if isinstance(dados.get("paineis"), dict) else {}
+                    if exames:
+                        limpos[nome] = {"exames": exames, "paineis": paineis}
+                self.usage_profiles = limpos
+            up = d.get("usage_profile")
+            if isinstance(up, str) and up:
+                self.usage_profile = up
+            # --- painéis em gavetas (P2): só o dict; ids e tipos são
+            # validados pelo CatalogoPaineis ao aplicar ---
+            pa = d.get("paineis")
+            if isinstance(pa, dict):
+                self.paineis = pa
             # --- cores das bandas ---
             bc = d.get("band_colors")
             if isinstance(bc, dict):
@@ -31709,6 +34138,9 @@ class AppConfig:
                     "window_maximized":     self.window_maximized,
                     "launcher_channels":    self.launcher_channels,
                     "last_volunteer_dir":   self.last_volunteer_dir,
+                    "usage_profile":        self.usage_profile,
+                    "usage_profiles":       self.usage_profiles,
+                    "paineis":              self.paineis,
                 }, ensure_ascii=False, indent=2)
         except Exception as exc:
             print(f"[AppConfig] falha serializando config: {exc}")
@@ -32737,7 +35169,11 @@ APP_YEAR    = 2026
 TERMS_VERSION = "1.0"   # versao do Termo de Uso; bump => assistente reaparece p/ re-aceite
 # Repositorio do codigo (mesmo fluxo do GitHub-pull / version.json) — usado para
 # carimbar PROVENIENCIA nos arquivos gerados (reprodutibilidade/auditoria).
-CODE_URL    = "https://github.com/rodrigooa43-create/OpenBionica"
+# O repositório se chamava OpenBionica; a URL antiga redireciona para esta.
+CODE_URL    = "https://github.com/rodrigooa43-create/ROA"
+# Manifesto de versão usado quando a instalação não tem update_config.json
+# (1.10.0). Quando o arquivo existe, o que está nele continua mandando.
+VERSION_URL_PADRAO = "https://raw.githubusercontent.com/rodrigooa43-create/ROA/main/version.json"
 
 
 # ============================================================
@@ -32959,7 +35395,11 @@ QToolTip {{ background-color: {c['surface_alt']}; color: {c['text']};
     # O bloco do Simples entra sempre que a densidade já foi decidida: as
     # regras dele só valem sob a janela com nivelUi="simples", então trocar de
     # nível não refaz a folha do app (repolir os ~14 mil widgets leva ~10 s).
-    return _escala_fontes_qss(qss + _qss_simples(c)) + _qss_barra_escala()
+    # As gavetas (P2) entram antes da escala: a folha delas tem font-size em pt.
+    # A folha das gavetas (P2) é definida mais abaixo no arquivo; build_stylesheet
+    # também roda na importação (STYLESHEET), por isso a busca é tardia.
+    _qg = globals().get("qss_gavetas")
+    return _escala_fontes_qss(qss + _qss_simples(c) + (_qg(c) if callable(_qg) else "")) + _qss_barra_escala()
 
 
 # ============================================================
@@ -40001,23 +42441,32 @@ class CoContractionMapDialog(QtWidgets.QDialog):
 
     # ------------------------------------------------------------------
     def _popular_canais(self):
-        """Lista os canais marcados como EMG, com o músculo quando definido."""
-        for cb in (self.cb_flex, self.cb_ext):
-            cb.clear()
+        """Lista só os canais EMG em uso, com o músculo quando definido,
+        mantendo o par escolhido quando os canais ainda existem.
+
+        A janela principal chama de novo (_refresh_listas_canais) quando o
+        número ou o tipo dos canais muda com o mapa aberto (P1)."""
         tipos = getattr(self.main.config, "channel_signal_types", [])
         musc = getattr(self.main.config, "emg_channel_muscle", [])
-        achou = 0
-        for ch in range(MAX_CHANNELS):
-            if ch < len(tipos) and tipos[ch] != "EMG":
-                continue
-            if ch >= self.main.num_channels:
-                continue
+        n = int(getattr(self.main, "num_channels", BASE_CHANNELS) or BASE_CHANNELS)
+        canais = canais_por_tipo(tipos, n, "EMG")
+        anteriores = (self.cb_flex.currentData(), self.cb_ext.currentData())
+        for cb in (self.cb_flex, self.cb_ext):
+            cb.blockSignals(True)
+            cb.clear()
+        for ch in canais:
             nome = musc[ch] if ch < len(musc) and musc[ch] != "(não definido)" else ""
-            rot = f"CH{ch + 1}" + (f" — {nome}" if nome else "")
+            rot = f"CH{ch + 1}" + (f" — {tr(nome)}" if nome else "")
             self.cb_flex.addItem(rot, ch)
             self.cb_ext.addItem(rot, ch)
-            achou += 1
-        if achou >= 2:
+        restaurou = []
+        for cb, ant in zip((self.cb_flex, self.cb_ext), anteriores):
+            i = cb.findData(ant) if isinstance(ant, int) and ant >= 0 else -1
+            if i >= 0:
+                cb.setCurrentIndex(i)
+            restaurou.append(i >= 0)
+            cb.blockSignals(False)
+        if len(canais) >= 2 and not restaurou[1]:
             self.cb_ext.setCurrentIndex(1)
 
     def _norm(self, ch, valor):
@@ -40241,6 +42690,1692 @@ class CoContractionMapDialog(QtWidgets.QDialog):
         if getattr(self.main, "_cocontr_dialog", None) is self:
             self.main._cocontr_dialog = None
         super().closeEvent(ev)
+
+
+# ============================================================
+# P3 — Atlas muscular desenhado em código (AtlasCorpoWidget)
+# Corpo humano em Bézier (frente, costas, perfil), áreas recortadas,
+# pontos SENIAM e calor no ponto do eletrodo. Substitui o
+# MuscleAtlasWidget na aba Músculos; a classe antiga fica logo abaixo
+# por compatibilidade (não é mais instanciada).
+# ============================================================
+# === INÍCIO DO BLOCO PARA O ROA.py ===
+# ----------------------------------------------------------------------------
+# ATLAS MUSCULAR (P3) — corpo humano desenhado em código (QPainter + Bézier),
+# três vistas, áreas recortadas, pontos SENIAM e calor no ponto do eletrodo.
+# ----------------------------------------------------------------------------
+# Caixa do corpo: 4 "unidades de cabeça" (UC) de largura por 8 de altura.
+# Coordenadas normalizadas do corpo inteiro: nx = 0.5 + ux/4, ny = uy/8.
+_ATLAS_UC_LARG = 4.0
+_ATLAS_UC_ALT = 8.0
+ATLAS_ASPECTO = _ATLAS_UC_LARG / _ATLAS_UC_ALT     # largura/altura da caixa
+
+# "front"/"back" mantidos como hoje para os arquivos salvos continuarem válidos.
+ATLAS_VISTAS = ("front", "back", "side")
+
+# Títulos em português DE PROPÓSITO (dado, não texto de tela): quem exibe
+# chama tr() na hora, senão um tr() aqui congelaria o idioma no import.
+ATLAS_TITULOS_VISTA = {
+    "front": "Vista Frontal (anterior)",
+    "back": "Vista Posterior",
+    "side": "Vista Lateral (perfil esquerdo)",
+}
+
+
+def _atlas_rec(ux0, uy0, ux1, uy1):
+    """Recorte em UC -> (x0, y0, x1, y1) normalizados do corpo inteiro."""
+    return (0.5 + ux0 / _ATLAS_UC_LARG, uy0 / _ATLAS_UC_ALT,
+            0.5 + ux1 / _ATLAS_UC_LARG, uy1 / _ATLAS_UC_ALT)
+
+
+# Áreas = ZOOMS da vista inteira. Um eletrodo colocado numa área tem
+# coordenadas no espaço do corpo inteiro, por isso aparece também nele.
+# Lado D (direito do paciente) fica à ESQUERDA de quem olha na vista frontal.
+ATLAS_AREAS = {
+    "rosto":            {"titulo": "Rosto",            "vista": "front", "lado": None,
+                         "recorte": _atlas_rec(-0.80, -0.10, 0.80, 1.28)},
+    "pescoco":          {"titulo": "Pescoço",          "vista": "front", "lado": None,
+                         "recorte": _atlas_rec(-0.95, 0.70, 0.95, 1.80)},
+    "peito_abdomen":    {"titulo": "Peito e abdômen",  "vista": "front", "lado": None,
+                         "recorte": _atlas_rec(-1.15, 1.20, 1.15, 4.30)},
+    "costas":           {"titulo": "Costas",           "vista": "back",  "lado": None,
+                         "recorte": _atlas_rec(-1.15, 1.10, 1.15, 4.70)},
+    "braco_D":          {"titulo": "Braço",            "vista": "front", "lado": "D",
+                         "recorte": _atlas_rec(-1.60, 1.30, -0.55, 3.40)},
+    "braco_E":          {"titulo": "Braço",            "vista": "front", "lado": "E",
+                         "recorte": _atlas_rec(0.55, 1.30, 1.60, 3.40)},
+    "antebraco_mao_D":  {"titulo": "Antebraço e mão",  "vista": "front", "lado": "D",
+                         "recorte": _atlas_rec(-1.80, 2.80, -0.75, 5.30)},
+    "antebraco_mao_E":  {"titulo": "Antebraço e mão",  "vista": "front", "lado": "E",
+                         "recorte": _atlas_rec(0.75, 2.80, 1.80, 5.30)},
+    "mao_D":            {"titulo": "Mão",              "vista": "front", "lado": "D",
+                         "recorte": _atlas_rec(-1.75, 4.05, -0.80, 5.30)},
+    "mao_E":            {"titulo": "Mão",              "vista": "front", "lado": "E",
+                         "recorte": _atlas_rec(0.80, 4.05, 1.75, 5.30)},
+    "perna_D":          {"titulo": "Perna",            "vista": "front", "lado": "D",
+                         "recorte": _atlas_rec(-1.15, 3.80, 0.10, 8.15)},
+    "perna_E":          {"titulo": "Perna",            "vista": "front", "lado": "E",
+                         "recorte": _atlas_rec(-0.10, 3.80, 1.15, 8.15)},
+    "pe_D":             {"titulo": "Pé",               "vista": "front", "lado": "D",
+                         "recorte": _atlas_rec(-0.95, 7.15, 0.00, 8.15)},
+    "pe_E":             {"titulo": "Pé",               "vista": "front", "lado": "E",
+                         "recorte": _atlas_rec(0.00, 7.15, 0.95, 8.15)},
+}
+
+
+def _atlas_pt(ux, uy):
+    """Ponto em UC -> (nx, ny) normalizado."""
+    return (0.5 + ux / _ATLAS_UC_LARG, uy / _ATLAS_UC_ALT)
+
+
+def _seniam(vista, ux, uy, area, nota, lado="ambos", lateral=None, alias_de=None):
+    """Monta uma entrada de ELETRODOS_SENIAM a partir de UC.
+
+    (ux, uy) é o ponto do lado DIREITO do paciente na vista indicada (à
+    esquerda de quem olha na frontal, à direita na posterior); o esquerdo é o
+    espelho em x. `lateral` é a posição alternativa no perfil esquerdo.
+    """
+    nx, ny = _atlas_pt(ux, uy)
+    e = {"vista": vista, "x": nx, "y": ny, "lado": lado, "area": area, "nota": nota}
+    if lateral is not None:
+        e["lateral"] = _atlas_pt(*lateral)
+    if alias_de:
+        e["alias_de"] = alias_de
+    return e
+
+
+# Posições do VENTRE do músculo conforme as recomendações SENIAM (e, para o
+# rosto, Fridlund & Cacioppo 1986). Chaves iguais às de COMMON_MUSCLES.
+ELETRODOS_SENIAM = {
+    # ---- membro superior (frontal) ----
+    "Bíceps Braquial": _seniam(
+        "front", -1.04, 2.55, "braco_D",
+        "ventre do músculo, a 1/3 da linha fossa cubital–acrômio medial",
+        lateral=(-0.11, 2.55)),
+    "Deltoide Anterior": _seniam(
+        "front", -0.93, 1.82, "braco_D",
+        "um dedo distal e anterior ao acrômio", lateral=(-0.16, 1.85)),
+    "Deltoide Medio": _seniam(
+        "front", -1.12, 1.95, "braco_D",
+        "ponto mais lateral entre o acrômio e o epicôndilo lateral",
+        lateral=(0.08, 1.88)),
+    "Peitoral Maior": _seniam(
+        "front", -0.52, 2.05, "peito_abdomen",
+        "porção esternal, ~2 cm medial à prega axilar anterior",
+        lateral=(-0.44, 2.05)),
+    "Flexor Carpi Radialis": _seniam(
+        "front", -1.17, 3.45, "antebraco_mao_D",
+        "a 1/3 da linha epicôndilo medial–estiloide do rádio (face anterior)"),
+    "Flexor dos dedos": _seniam(
+        "front", -1.04, 3.52, "antebraco_mao_D",
+        "flexor superficial dos dedos, 1/3 proximal do antebraço anterior medial"),
+    "Iliopsoas": _seniam(
+        "front", -0.42, 4.12, "peito_abdomen",
+        "trígono femoral, lateral à artéria femoral (acesso de superfície limitado)"),
+    "Reto abdominal": _seniam(
+        "front", -0.22, 3.15, "peito_abdomen",
+        "2–3 cm lateral ao umbigo, fibras verticais", lateral=(-0.38, 3.15)),
+    "Esternocleidomastóideo": _seniam(
+        "front", -0.17, 1.12, "pescoco",
+        "a 1/3 da linha mastoide–incisura esternal", lateral=(0.02, 1.15)),
+    # ---- membro inferior (frontal) ----
+    "Quadríceps (Reto Femoral)": _seniam(
+        "front", -0.56, 4.85, "perna_D",
+        "50% da linha espinha ilíaca ântero-superior–borda superior da patela",
+        lateral=(-0.38, 4.85)),
+    "Vasto Lateral": _seniam(
+        "front", -0.74, 5.15, "perna_D",
+        "2/3 da linha espinha ilíaca ântero-superior–borda lateral da patela",
+        lateral=(-0.26, 5.10)),
+    "Vasto Medial": _seniam(
+        "front", -0.36, 5.45, "perna_D",
+        "80% da linha espinha ilíaca ântero-superior–interlinha articular medial"),
+    "Tibial Anterior": _seniam(
+        "front", -0.50, 6.55, "perna_D",
+        "a 1/3 da linha ponta da fíbula–maléolo medial", lateral=(-0.20, 6.55)),
+    "Fibular longo": _seniam(
+        "front", -0.60, 6.50, "perna_D",
+        "25% da linha cabeça da fíbula–maléolo lateral (face lateral)",
+        lateral=(0.06, 6.50)),
+    # ---- rosto (frontal) ----
+    "Masseter": _seniam(
+        "front", -0.31, 0.78, "rosto",
+        "ventre, entre o arco zigomático e o ângulo da mandíbula",
+        lateral=(-0.16, 0.80)),
+    "Temporal": _seniam(
+        "front", -0.34, 0.40, "rosto",
+        "porção anterior, acima do arco zigomático, à frente da orelha",
+        lateral=(-0.10, 0.40)),
+    "Frontal": _seniam(
+        "front", -0.15, 0.28, "rosto",
+        "~2 cm acima da sobrancelha, na linha da pupila", lateral=(-0.30, 0.28)),
+    "Orbicular do olho": _seniam(
+        "front", -0.27, 0.56, "rosto",
+        "borda ínfero-lateral da órbita", lateral=(-0.36, 0.55)),
+    "Zigomático": _seniam(
+        "front", -0.22, 0.70, "rosto",
+        "metade da linha canto da boca–osso zigomático", lateral=(-0.30, 0.68)),
+    # ---- tronco e membro superior (posterior; D à direita de quem olha) ----
+    "Trapézio": _seniam(
+        "back", 0.50, 1.50, "costas",
+        "fibras descendentes (superior): 50% da linha acrômio–C7",
+        lateral=(0.30, 1.50)),
+    "Trapézio superior": _seniam(
+        "back", 0.50, 1.50, "costas",
+        "mesmo ponto de 'Trapézio' (50% da linha acrômio–C7)",
+        lateral=(0.30, 1.50), alias_de="Trapézio"),
+    "Deltoide Posterior": _seniam(
+        "back", 0.96, 1.86, "costas",
+        "dois dedos atrás do ângulo do acrômio", lateral=(0.26, 1.88)),
+    "Tríceps Braquial": _seniam(
+        "back", 1.02, 2.42, "costas",
+        "cabeça longa: 50% da linha acrômio posterior–olécrano, 2 dedos medial",
+        lateral=(0.22, 2.50)),
+    "Latíssimo do Dorso": _seniam(
+        "back", 0.46, 2.75, "costas",
+        "~4 cm abaixo do ângulo inferior da escápula, meio caminho até a borda",
+        lateral=(0.36, 2.72)),
+    "Eretor da espinha": _seniam(
+        "back", 0.18, 3.10, "costas",
+        "longuíssimo: dois dedos lateral ao processo espinhoso de L1"),
+    "Extensor Carpi Radialis": _seniam(
+        "back", 1.20, 3.30, "costas",
+        "a 1/3 da linha epicôndilo lateral–estiloide do rádio (face dorsal)"),
+    "Extensor dos dedos": _seniam(
+        "back", 1.10, 3.56, "costas",
+        "extensor comum dos dedos, 1/3 proximal do antebraço dorsal",
+        lateral=(0.10, 3.55)),
+    # ---- quadril e membro inferior (posterior) ----
+    "Glúteo Máximo": _seniam(
+        "back", 0.46, 4.05, "costas",
+        "50% da linha sacro–trocânter maior", lateral=(0.42, 4.05)),
+    "Glúteo médio": _seniam(
+        "back", 0.72, 3.70, "costas",
+        "50% da linha crista ilíaca–trocânter maior", lateral=(0.28, 3.72)),
+    "Isquiotibiais (Bíceps F.)": _seniam(
+        "back", 0.60, 5.05, "perna_D",
+        "50% da linha tuberosidade isquiática–epicôndilo lateral da tíbia",
+        lateral=(0.26, 5.05)),
+    "Gastrocnêmio (medial)": _seniam(
+        "back", 0.34, 6.45, "perna_D",
+        "parte mais proeminente do ventre medial"),
+    "Sóleo": _seniam(
+        "back", 0.32, 7.05, "perna_D",
+        "2/3 da linha côndilo medial do fêmur–maléolo medial", lateral=(0.14, 7.05)),
+}
+
+
+# Nomes curtos para o rótulo ao lado do marcador (o nome completo não cabe
+# ao lado de um braço em 300 px de largura). Dado em pt; exibido via tr().
+ATLAS_NOMES_CURTOS = {
+    "Bíceps Braquial": "Bíceps", "Tríceps Braquial": "Tríceps",
+    "Deltoide Anterior": "Delt. ant.", "Deltoide Medio": "Delt. médio",
+    "Deltoide Posterior": "Delt. post.", "Trapézio": "Trapézio",
+    "Trapézio superior": "Trap. sup.", "Latíssimo do Dorso": "Latíssimo",
+    "Peitoral Maior": "Peitoral", "Flexor Carpi Radialis": "FCR",
+    "Extensor Carpi Radialis": "ECR", "Quadríceps (Reto Femoral)": "Reto fem.",
+    "Vasto Lateral": "Vasto lat.", "Vasto Medial": "Vasto med.",
+    "Isquiotibiais (Bíceps F.)": "Isquiotib.", "Glúteo Máximo": "Glúteo máx.",
+    "Glúteo médio": "Glúteo méd.", "Iliopsoas": "Iliopsoas",
+    "Gastrocnêmio (medial)": "Gastroc. med.", "Sóleo": "Sóleo",
+    "Tibial Anterior": "Tibial ant.", "Fibular longo": "Fibular",
+    "Reto abdominal": "Reto abd.", "Eretor da espinha": "Eretor esp.",
+    "Extensor dos dedos": "Ext. dedos", "Flexor dos dedos": "Flex. dedos",
+    "Esternocleidomastóideo": "ECM", "Masseter": "Masseter", "Temporal": "Temporal",
+    "Frontal": "Frontal", "Orbicular do olho": "Orbicular", "Zigomático": "Zigomático",
+}
+
+
+def atlas_nome_curto(musculo):
+    """Nome curto do músculo para rótulos (cai no nome completo se não houver)."""
+    return ATLAS_NOMES_CURTOS.get(musculo, musculo)
+
+
+# ---------------- acesso tardio às globais do ROA.py ----------------
+_ATLAS_CORES_PADRAO = {
+    "background": "#f6f8fc", "surface": "#ffffff", "surface_alt": "#eef2fb",
+    "border": "#d6deef", "text": "#141a33", "text_dim": "#5a6480",
+    "accent": "#1a23e0", "accent_dim": "#131aa6", "error": "#d4364f",
+    "warning": "#b8730a", "expansion": "#0f9d75",
+}
+
+
+def _atlas_cores():
+    """COLORS do programa (lido na hora de pintar, para o tema trocar) ou a
+    paleta padrão quando o módulo roda sozinho."""
+    c = globals().get("COLORS")
+    return c if isinstance(c, dict) and "surface" in c else _ATLAS_CORES_PADRAO
+
+
+def _atlas_tr(s):
+    """tr() do programa para chaves DINÂMICAS (títulos de vista/área, nomes
+    curtos), ou identidade quando tr não existe no escopo. Os textos literais
+    de tela usam tr("...") direto, para o coletor de traduções enxergá-los."""
+    f = globals().get("tr")
+    return f(s) if callable(f) else s
+
+
+def _atlas_fonte(ui=True):
+    """Nome da fonte da interface (FONT_UI) ou de dados (FONT_DATA)."""
+    return str(globals().get("FONT_UI" if ui else "FONT_DATA")
+               or ("Inter" if ui else "JetBrains Mono"))
+
+
+def _atlas_cores_canais():
+    """CHANNEL_COLORS do programa ou lista vazia."""
+    c = globals().get("CHANNEL_COLORS")
+    return c if isinstance(c, (list, tuple)) else []
+
+
+# ---------------- spline Catmull-Rom centrípeta -> Bézier ----------------
+def _atlas_bezier_cr(p0, p1, p2, p3):
+    """Pontos de controle Bézier do trecho p1->p2 de uma Catmull-Rom
+    centrípeta. Centrípeta porque não faz laço nem cúspide com pontos
+    desigualmente espaçados — o normal num contorno anatômico."""
+    a = 0.5
+    d1 = max(1e-6, math.hypot(p1[0] - p0[0], p1[1] - p0[1]) ** a)
+    d2 = max(1e-6, math.hypot(p2[0] - p1[0], p2[1] - p1[1]) ** a)
+    d3 = max(1e-6, math.hypot(p3[0] - p2[0], p3[1] - p2[1]) ** a)
+    k1 = 3 * d1 * (d1 + d2)
+    k2 = 3 * d3 * (d3 + d2)
+    b1 = ((d1 * d1 * p2[0] - d2 * d2 * p0[0] + (2 * d1 * d1 + 3 * d1 * d2 + d2 * d2) * p1[0]) / k1,
+          (d1 * d1 * p2[1] - d2 * d2 * p0[1] + (2 * d1 * d1 + 3 * d1 * d2 + d2 * d2) * p1[1]) / k1)
+    b2 = ((d3 * d3 * p1[0] - d2 * d2 * p3[0] + (2 * d3 * d3 + 3 * d3 * d2 + d2 * d2) * p2[0]) / k2,
+          (d3 * d3 * p1[1] - d2 * d2 * p3[1] + (2 * d3 * d3 + 3 * d3 * d2 + d2 * d2) * p2[1]) / k2)
+    return b1, b2
+
+
+def _atlas_pts(pontos, esc, des):
+    """(x, y[, "c"]) em UC -> (px, py, canto) em px da caixa."""
+    sx, sy = esc
+    dx, dy = des
+    return [(float(p[0]) * sx + dx, float(p[1]) * sy + dy, len(p) > 2 and "c" in p[2])
+            for p in pontos]
+
+
+def atlas_spline_fechada(pontos, esc=(1.0, 1.0), des=(0.0, 0.0)):
+    """QPainterPath fechado e suave por todos os pontos; "c" marca canto
+    (axila, virilha, vão dos dedos), onde a curva não deve arredondar."""
+    pts = _atlas_pts(pontos, esc, des)
+    n = len(pts)
+    path = QtGui.QPainterPath()
+    if n < 3:
+        return path
+    path.moveTo(pts[0][0], pts[0][1])
+    for i in range(n):
+        p0, p1, p2, p3 = pts[i - 1], pts[i], pts[(i + 1) % n], pts[(i + 2) % n]
+        b1, b2 = _atlas_bezier_cr(p0, p1, p2, p3)
+        if p1[2]:
+            b1 = (p1[0], p1[1])
+        if p2[2]:
+            b2 = (p2[0], p2[1])
+        path.cubicTo(b1[0], b1[1], b2[0], b2[1], p2[0], p2[1])
+    path.closeSubpath()
+    return path
+
+
+def atlas_spline_aberta(pontos, esc=(1.0, 1.0), des=(0.0, 0.0)):
+    """Mesma spline, aberta (linhas internas dos músculos e do rosto)."""
+    pts = _atlas_pts(pontos, esc, des)
+    path = QtGui.QPainterPath()
+    if len(pts) < 2:
+        return path
+    path.moveTo(pts[0][0], pts[0][1])
+    if len(pts) == 2:
+        path.lineTo(pts[1][0], pts[1][1])
+        return path
+    ext = [pts[0]] + pts + [pts[-1]]
+    for i in range(1, len(ext) - 2):
+        b1, b2 = _atlas_bezier_cr(ext[i - 1], ext[i], ext[i + 1], ext[i + 2])
+        path.cubicTo(b1[0], b1[1], b2[0], b2[1], ext[i + 1][0], ext[i + 1][1])
+    return path
+
+
+# ---------------- pontos-guia anatômicos (UC) ----------------
+# Metade esquerda (de quem olha) do contorno frontal/posterior, do topo da
+# cabeça à virilha; a outra metade é espelhada. Posição anatômica: palmas
+# para a frente, polegares para fora. Proporção de 8 cabeças.
+_ATLAS_META_FRENTE = [
+    (0.00, 0.00),
+    (-0.24, 0.05), (-0.36, 0.22), (-0.40, 0.42),
+    (-0.40, 0.48), (-0.45, 0.52), (-0.45, 0.60), (-0.39, 0.67),      # orelha
+    (-0.35, 0.76), (-0.29, 0.88), (-0.20, 0.98),                     # mandíbula
+    (-0.18, 1.06), (-0.19, 1.18), (-0.25, 1.29),                     # pescoço
+    (-0.50, 1.37), (-0.78, 1.46), (-1.00, 1.56),                     # trapézio, acrômio
+    (-1.15, 1.72), (-1.21, 1.92), (-1.19, 2.22),                     # deltoide
+    (-1.17, 2.52), (-1.21, 2.82), (-1.26, 3.04),                     # braço lat., cotovelo
+    (-1.33, 3.30), (-1.35, 3.58), (-1.32, 3.92), (-1.28, 4.22),      # antebraço, punho
+    (-1.37, 4.38), (-1.47, 4.55), (-1.50, 4.68), (-1.44, 4.75),      # polegar
+    (-1.36, 4.67, "c"), (-1.34, 4.86), (-1.28, 5.08),                # vão, indicador
+    (-1.17, 5.12), (-1.05, 5.04), (-0.99, 4.80),                     # dedos, mínimo
+    (-1.00, 4.48), (-1.06, 4.22),                                    # punho medial
+    (-1.03, 3.95), (-0.98, 3.60), (-0.95, 3.30),                     # antebraço medial
+    (-0.90, 3.02), (-0.86, 2.80), (-0.88, 2.55), (-0.92, 2.25),      # braço medial
+    (-0.82, 2.10, "c"),                                              # axila
+    (-0.80, 2.40), (-0.74, 2.75), (-0.68, 3.05),                     # tórax, cintura
+    (-0.72, 3.38), (-0.84, 3.64), (-0.92, 3.95),                     # ilíaco, trocânter
+    (-0.90, 4.35), (-0.84, 4.85), (-0.74, 5.35),                     # coxa lateral
+    (-0.65, 5.75), (-0.62, 6.05),                                    # joelho
+    (-0.66, 6.40), (-0.63, 6.80), (-0.55, 7.20), (-0.51, 7.52),      # panturrilha, tornozelo
+    (-0.58, 7.70), (-0.62, 7.88), (-0.52, 8.00),                     # pé
+    (-0.28, 7.98), (-0.16, 7.86, "c"),                               # dedos mediais
+    (-0.26, 7.52), (-0.25, 7.15), (-0.29, 6.75), (-0.31, 6.42),      # perna medial
+    (-0.25, 6.05), (-0.24, 5.75),                                    # joelho medial
+    (-0.29, 5.25), (-0.35, 4.65), (-0.32, 4.25),                     # coxa medial
+    (-0.14, 4.06),
+    (0.00, 4.00, "c"),                                               # virilha
+]
+
+# Perfil esquerdo (rosto para a esquerda de quem olha), sem o braço.
+_ATLAS_PERFIL_CORPO = [
+    (0.02, 0.00), (0.28, 0.08), (0.44, 0.32), (0.43, 0.60),          # crânio
+    (0.33, 0.80), (0.27, 1.02), (0.27, 1.26), (0.33, 1.42),          # nuca
+    (0.42, 1.68), (0.50, 2.05), (0.46, 2.50), (0.34, 2.98),          # dorso, lombar
+    (0.34, 3.32), (0.45, 3.62), (0.58, 3.95), (0.53, 4.30),          # sacro, glúteo
+    (0.41, 4.48), (0.36, 4.90), (0.28, 5.40), (0.19, 5.92),          # coxa post., poplítea
+    (0.23, 6.22), (0.36, 6.52), (0.30, 6.92), (0.15, 7.30),          # panturrilha, aquiles
+    (0.13, 7.62), (0.23, 7.84), (0.14, 8.00, "c"),                   # calcanhar
+    (-0.62, 8.00), (-0.78, 7.90), (-0.70, 7.74),                     # dedos
+    (-0.44, 7.60), (-0.25, 7.50, "c"),                               # dorso do pé
+    (-0.22, 7.02), (-0.26, 6.42), (-0.31, 6.10), (-0.35, 5.84),      # canela, patela
+    (-0.33, 5.58), (-0.41, 5.10), (-0.47, 4.60), (-0.43, 4.20),      # coxa anterior
+    (-0.37, 3.88), (-0.43, 3.50), (-0.45, 3.10), (-0.42, 2.70),      # pelve, abdômen
+    (-0.51, 2.25), (-0.54, 1.92), (-0.41, 1.52), (-0.23, 1.38),      # peito, manúbrio
+    (-0.19, 1.20), (-0.23, 1.04), (-0.31, 0.97),                     # pescoço anterior
+    (-0.40, 0.92), (-0.42, 0.81), (-0.40, 0.75), (-0.44, 0.69),      # queixo, lábios
+    (-0.46, 0.63), (-0.52, 0.56), (-0.42, 0.45),                     # nariz
+    (-0.40, 0.36), (-0.38, 0.22), (-0.27, 0.07),                     # testa
+]
+
+# Braço em perfil: contorno próprio, pintado por cima do tronco.
+_ATLAS_PERFIL_BRACO = [
+    (0.05, 1.50), (0.30, 1.60), (0.37, 1.86), (0.31, 2.16),
+    (0.29, 2.50), (0.27, 2.86), (0.25, 3.06),
+    (0.21, 3.40), (0.13, 3.82), (0.07, 4.24),
+    (0.07, 4.56), (0.03, 4.90), (-0.06, 5.06), (-0.15, 4.96),
+    (-0.19, 4.70, "c"), (-0.27, 4.60), (-0.31, 4.44), (-0.22, 4.34),
+    (-0.15, 4.22), (-0.15, 3.90), (-0.13, 3.50), (-0.09, 3.14),
+    (-0.07, 2.94), (-0.11, 2.60), (-0.15, 2.20), (-0.21, 1.90),
+    (-0.22, 1.70), (-0.10, 1.52),
+]
+
+# Linhas internas: referências ósseas/pregas (sempre) e grupos musculares
+# principais (traço mais leve) — ajudam a achar o ventre do músculo.
+_ATLAS_LINHAS = {
+    "front": [
+        [(-0.06, 1.40), (-0.42, 1.46), (-0.84, 1.50)], [(0.06, 1.40), (0.42, 1.46), (0.84, 1.50)],   # clavículas
+        [(-0.08, 2.32), (-0.42, 2.38), (-0.78, 2.18)], [(0.08, 2.32), (0.42, 2.38), (0.78, 2.18)],   # peitoral
+        [(0.00, 1.55), (0.00, 2.30)], [(0.00, 2.45), (0.00, 3.70)],                                  # esterno, linha alba
+        [(-0.05, 3.28), (0.00, 3.33), (0.05, 3.28)],                                                  # umbigo
+        [(-0.84, 3.74), (-0.42, 3.98), (-0.08, 4.04)], [(0.84, 3.74), (0.42, 3.98), (0.08, 4.04)],   # virilha
+        [(-0.60, 5.78), (-0.45, 5.72), (-0.30, 5.80)], [(0.60, 5.78), (0.45, 5.72), (0.30, 5.80)],   # patelas
+        [(-1.24, 4.84), (-1.22, 5.06)], [(-1.16, 4.86), (-1.14, 5.10)], [(-1.08, 4.84), (-1.06, 5.04)],
+        [(1.24, 4.84), (1.22, 5.06)], [(1.16, 4.86), (1.14, 5.10)], [(1.08, 4.84), (1.06, 5.04)],     # dedos
+        [(-0.60, 7.82), (-0.46, 7.86), (-0.30, 7.84)], [(0.60, 7.82), (0.46, 7.86), (0.30, 7.84)],   # dedos dos pés
+    ],
+    "back": [
+        [(0.00, 1.26), (0.00, 3.72)],                                                                 # coluna
+        [(-0.22, 1.62), (-0.26, 2.05), (-0.20, 2.42)], [(0.22, 1.62), (0.26, 2.05), (0.20, 2.42)],   # escápulas
+        [(-0.26, 1.72), (-0.60, 1.62), (-0.86, 1.56)], [(0.26, 1.72), (0.60, 1.62), (0.86, 1.56)],
+        [(-0.24, 1.32), (-0.12, 2.20), (0.00, 2.55), (0.12, 2.20), (0.24, 1.32)],                    # trapézio
+        [(0.00, 3.72), (0.00, 4.42)],                                                                 # fenda glútea
+        [(-0.78, 4.30), (-0.46, 4.52), (-0.14, 4.42)], [(0.78, 4.30), (0.46, 4.52), (0.14, 4.42)],   # pregas glúteas
+        [(-0.58, 5.98), (-0.44, 6.04), (-0.30, 5.98)], [(0.58, 5.98), (0.44, 6.04), (0.30, 5.98)],   # poplítea
+        [(-1.16, 2.98), (-1.07, 3.03), (-0.98, 2.98)], [(1.16, 2.98), (1.07, 3.03), (0.98, 2.98)],   # olécrano
+        [(-0.32, 0.22), (0.00, 0.17), (0.32, 0.22)], [(-0.18, 1.06), (0.00, 1.00), (0.18, 1.06)],    # nuca
+        [(-1.24, 4.84), (-1.22, 5.06)], [(-1.16, 4.86), (-1.14, 5.10)], [(-1.08, 4.84), (-1.06, 5.04)],
+        [(1.24, 4.84), (1.22, 5.06)], [(1.16, 4.86), (1.14, 5.10)], [(1.08, 4.84), (1.06, 5.04)],
+        [(-0.56, 7.72), (-0.40, 7.66), (-0.24, 7.72)], [(0.56, 7.72), (0.40, 7.66), (0.24, 7.72)],   # calcanhares
+    ],
+    "side": [
+        [(0.06, 0.44), (0.16, 0.42), (0.19, 0.54), (0.12, 0.66), (0.06, 0.62)],                      # orelha
+        [(-0.36, 0.95), (-0.10, 0.92), (0.10, 0.76)],                                                 # mandíbula
+        [(0.44, 1.75), (0.28, 2.00), (0.30, 2.40)],                                                   # escápula
+        [(-0.30, 3.60), (0.05, 3.50), (0.38, 3.56)],                                                  # crista ilíaca
+        [(-0.30, 5.95), (-0.14, 5.90), (0.00, 5.98)],                                                 # joelho
+        [(-0.10, 7.48), (-0.02, 7.55), (0.02, 7.66)],                                                 # maléolo
+        [(-0.06, 4.86), (-0.10, 5.02)], [(0.00, 4.90), (-0.02, 5.06)],                               # dedos
+    ],
+}
+_ATLAS_LINHAS_MUSCULOS = {
+    "front": [
+        [(-0.78, 1.52), (-0.84, 1.90), (-1.00, 2.20)], [(0.78, 1.52), (0.84, 1.90), (1.00, 2.20)],   # deltoide
+        [(-1.00, 2.28), (-1.02, 2.60), (-0.96, 2.92)], [(1.00, 2.28), (1.02, 2.60), (0.96, 2.92)],   # bíceps
+        [(-0.08, 1.38), (-0.14, 1.18), (-0.24, 0.96)], [(0.08, 1.38), (0.14, 1.18), (0.24, 0.96)],   # ECM
+        [(-0.24, 2.72), (0.24, 2.72)], [(-0.24, 3.06), (0.24, 3.06)],                                 # reto abdominal
+        [(-0.30, 2.42), (-0.32, 3.00), (-0.26, 3.60)], [(0.30, 2.42), (0.32, 3.00), (0.26, 3.60)],
+        [(-0.70, 2.80), (-0.56, 3.30), (-0.48, 3.72)], [(0.70, 2.80), (0.56, 3.30), (0.48, 3.72)],   # oblíquos
+        [(-0.58, 4.30), (-0.52, 5.00), (-0.48, 5.60)], [(0.58, 4.30), (0.52, 5.00), (0.48, 5.60)],   # reto femoral
+        [(-0.36, 5.00), (-0.30, 5.40), (-0.32, 5.70)], [(0.36, 5.00), (0.30, 5.40), (0.32, 5.70)],   # vasto medial
+        [(-0.44, 6.20), (-0.40, 6.80), (-0.34, 7.40)], [(0.44, 6.20), (0.40, 6.80), (0.34, 7.40)],   # tibial anterior
+        [(-1.14, 3.10), (-1.20, 3.50), (-1.16, 3.95)], [(1.14, 3.10), (1.20, 3.50), (1.16, 3.95)],   # braquiorradial
+    ],
+    "back": [
+        [(-0.80, 1.55), (-0.86, 1.92), (-1.00, 2.20)], [(0.80, 1.55), (0.86, 1.92), (1.00, 2.20)],   # deltoide post.
+        [(-1.02, 2.26), (-1.06, 2.60), (-1.02, 2.92)], [(1.02, 2.26), (1.06, 2.60), (1.02, 2.92)],   # tríceps
+        [(-0.72, 2.40), (-0.50, 2.90), (-0.22, 3.40)], [(0.72, 2.40), (0.50, 2.90), (0.22, 3.40)],   # latíssimo
+        [(-0.14, 2.60), (-0.14, 3.70)], [(0.14, 2.60), (0.14, 3.70)],                                 # eretores
+        [(-0.60, 4.60), (-0.54, 5.20), (-0.50, 5.80)], [(0.60, 4.60), (0.54, 5.20), (0.50, 5.80)],   # isquiotibiais
+        [(-0.62, 6.20), (-0.44, 6.50), (-0.44, 7.20)], [(-0.26, 6.20), (-0.44, 6.50)],                # gastrocnêmio
+        [(0.62, 6.20), (0.44, 6.50), (0.44, 7.20)], [(0.26, 6.20), (0.44, 6.50)],
+        [(-1.12, 3.10), (-1.20, 3.50), (-1.16, 3.95)], [(1.12, 3.10), (1.20, 3.50), (1.16, 3.95)],   # extensores
+    ],
+    "side": [
+        [(-0.48, 1.70), (-0.22, 2.10), (-0.40, 2.35)],                                                # peitoral
+        [(-0.05, 2.60), (-0.25, 3.00), (-0.30, 3.45)],                                                # oblíquo
+        [(0.05, 3.70), (0.30, 3.90), (0.48, 4.25)],                                                   # glúteos
+        [(-0.10, 4.40), (-0.12, 5.10), (-0.20, 5.70)],                                                # trato iliotibial
+        [(-0.30, 4.50), (-0.28, 5.20), (-0.30, 5.60)],                                                # vasto lateral
+        [(0.00, 6.20), (0.18, 6.60), (0.10, 7.10)],                                                   # gastrocnêmio lat.
+        [(0.05, 2.20), (0.08, 2.60), (0.06, 2.95)],                                                   # braço
+    ],
+}
+# Rosto: só aparece quando a cabeça tem tamanho de leitura (área "rosto").
+_ATLAS_LINHAS_ROSTO = {
+    "front": [
+        [(-0.32, 0.18), (0.00, 0.12), (0.32, 0.18)],
+        [(-0.26, 0.42), (-0.15, 0.39), (-0.05, 0.42)], [(0.26, 0.42), (0.15, 0.39), (0.05, 0.42)],
+        [(-0.24, 0.49), (-0.15, 0.46), (-0.06, 0.49), (-0.15, 0.52), (-0.24, 0.49)],
+        [(0.24, 0.49), (0.15, 0.46), (0.06, 0.49), (0.15, 0.52), (0.24, 0.49)],
+        [(-0.02, 0.52), (-0.06, 0.66), (0.00, 0.70), (0.06, 0.66)],
+        [(-0.12, 0.81), (0.00, 0.83), (0.12, 0.81)],
+        [(-0.10, 0.93), (0.00, 0.95), (0.10, 0.93)],
+    ],
+    "back": [],
+    "side": [
+        [(-0.40, 0.47), (-0.33, 0.45), (-0.28, 0.47)], [(-0.43, 0.39), (-0.28, 0.37)],
+        [(-0.44, 0.63), (-0.38, 0.62)], [(-0.42, 0.78), (-0.30, 0.77)],
+        [(0.00, 0.10), (-0.30, 0.20), (-0.36, 0.34)],
+    ],
+}
+# Volumes (realce radial suave): (cx, cy, rx, ry) em UC.
+_ATLAS_VOLUMES = {
+    "front": [
+        (0.00, 0.45, 0.30, 0.42), (-0.38, 2.00, 0.36, 0.32), (0.38, 2.00, 0.36, 0.32),
+        (0.00, 3.05, 0.34, 0.60), (-1.00, 1.80, 0.20, 0.26), (1.00, 1.80, 0.20, 0.26),
+        (-1.02, 2.55, 0.16, 0.40), (1.02, 2.55, 0.16, 0.40), (-1.16, 3.60, 0.16, 0.42),
+        (1.16, 3.60, 0.16, 0.42), (-0.56, 5.00, 0.28, 0.70), (0.56, 5.00, 0.28, 0.70),
+        (-0.44, 6.70, 0.18, 0.50), (0.44, 6.70, 0.18, 0.50),
+    ],
+    "back": [
+        (0.00, 0.45, 0.30, 0.42), (-0.36, 2.00, 0.30, 0.40), (0.36, 2.00, 0.30, 0.40),
+        (0.00, 3.10, 0.34, 0.50), (-1.00, 1.80, 0.20, 0.26), (1.00, 1.80, 0.20, 0.26),
+        (-1.04, 2.55, 0.16, 0.40), (1.04, 2.55, 0.16, 0.40), (-1.16, 3.60, 0.16, 0.42),
+        (1.16, 3.60, 0.16, 0.42), (-0.44, 4.10, 0.34, 0.34), (0.44, 4.10, 0.34, 0.34),
+        (-0.56, 5.10, 0.26, 0.60), (0.56, 5.10, 0.26, 0.60), (-0.44, 6.60, 0.18, 0.46),
+        (0.44, 6.60, 0.18, 0.46),
+    ],
+    "side": [
+        (0.00, 0.45, 0.40, 0.42), (-0.05, 2.20, 0.36, 0.60), (0.00, 3.20, 0.32, 0.50),
+        (0.30, 3.95, 0.24, 0.36), (-0.08, 5.00, 0.30, 0.70), (0.00, 6.60, 0.24, 0.50),
+        (0.08, 1.80, 0.24, 0.26), (0.08, 2.55, 0.16, 0.40), (-0.02, 3.65, 0.14, 0.40),
+    ],
+}
+
+# Escala térmica do calor: azul frio -> âmbar -> vermelho quente. Sem amarelo
+# puro (some no tema claro) e sem o roxo escuro da viridis (some no escuro).
+_ATLAS_CALOR_LUT = ((52, 118, 222), (54, 176, 196), (240, 182, 52),
+                    (236, 110, 36), (214, 36, 44))
+
+
+def atlas_cor_calor(t):
+    """Intensidade 0..1 -> QColor da escala térmica (interpolação linear)."""
+    t = 0.0 if t != t else max(0.0, min(1.0, float(t)))
+    x = t * (len(_ATLAS_CALOR_LUT) - 1)
+    i = int(x)
+    if i >= len(_ATLAS_CALOR_LUT) - 1:
+        r, g, b = _ATLAS_CALOR_LUT[-1]
+    else:
+        a, c, fr = _ATLAS_CALOR_LUT[i], _ATLAS_CALOR_LUT[i + 1], x - i
+        r = a[0] + (c[0] - a[0]) * fr
+        g = a[1] + (c[1] - a[1]) * fr
+        b = a[2] + (c[2] - a[2]) * fr
+    return QtGui.QColor(int(r), int(g), int(b))
+
+
+def _atlas_mistura(c1, c2, t):
+    """Interpola duas cores em RGB; t=0 devolve c1."""
+    a, b = QtGui.QColor(c1), QtGui.QColor(c2)
+    return QtGui.QColor(int(a.red() + (b.red() - a.red()) * t),
+                        int(a.green() + (b.green() - a.green()) * t),
+                        int(a.blue() + (b.blue() - a.blue()) * t))
+
+
+class CorpoHumanoDesenho:
+    """Geometria e pintura do corpo humano (frente, costas, perfil esquerdo).
+
+    Estilo "anatômico delineado" com volumes suaves: preenchimento na cor da
+    superfície alternativa, realces radiais discretos, linhas internas dos
+    grupos musculares em traço leve e contorno fino. Os QPainterPath são
+    cacheados por (vista, largura, altura) e construídos em coordenadas
+    locais da caixa do corpo — quem pinta translada o painter até a caixa.
+    """
+
+    volumes = True          # realces radiais (proposta B) por cima do delineado
+
+    def __init__(self):
+        """Cria os caches de caminhos e de camadas prontas."""
+        self._cache_corpo = {}
+        self._cache_linhas = {}
+        self._camadas = {}
+
+    # ---- transformações UC <-> px da caixa ----
+    @staticmethod
+    def escala(bw, bh):
+        """Fatores UC->px e deslocamento (x=0 no meio da caixa)."""
+        return (bw / _ATLAS_UC_LARG, bh / _ATLAS_UC_ALT), (bw * 0.5, 0.0)
+
+    @staticmethod
+    def alfa_rosto(bh):
+        """Opacidade 0..1 das linhas do rosto pelo tamanho da cabeça em px:
+        invisível no corpo inteiro pequeno, nítido na área 'rosto'."""
+        return max(0.0, min(1.0, (bh / _ATLAS_UC_ALT - 45.0) / 90.0))
+
+    # ---- caminhos ----
+    def caminho_corpo(self, vista, w, h):
+        """QPainterPath fechado do corpo inteiro na vista, em px de uma caixa
+        w x h (cacheado por (vista, w, h))."""
+        chave = (vista, round(float(w), 1), round(float(h), 1))
+        c = self._cache_corpo.get(chave)
+        if c is not None:
+            return c
+        esc, des = self.escala(w, h)
+        if vista == "side":
+            path = atlas_spline_fechada(_ATLAS_PERFIL_CORPO, esc, des)
+            path.addPath(atlas_spline_fechada(_ATLAS_PERFIL_BRACO, esc, des))
+        else:
+            meio = list(_ATLAS_META_FRENTE)
+            espelho = [(-p[0], p[1]) + tuple(p[2:]) for p in reversed(meio[1:-1])]
+            path = atlas_spline_fechada(meio + espelho, esc, des)
+        # WindingFill: no perfil o braço sobrepõe o tronco e os dois têm de
+        # ficar preenchidos (OddEven abriria um buraco na sobreposição).
+        path.setFillRule(QtCore.Qt.FillRule.WindingFill)
+        if len(self._cache_corpo) > 24:
+            self._cache_corpo.clear()
+        self._cache_corpo[chave] = path
+        return path
+
+    def caminho_braco_lado(self, w, h):
+        """Só o braço do perfil (para repintar o contorno dele sobre o tronco)."""
+        chave = ("braco", round(float(w), 1), round(float(h), 1))
+        c = self._cache_linhas.get(chave)
+        if c is None:
+            esc, des = self.escala(w, h)
+            c = atlas_spline_fechada(_ATLAS_PERFIL_BRACO, esc, des)
+            self._cache_linhas[chave] = c
+        return c
+
+    def caminho_linhas(self, vista, w, h, grupo):
+        """Linhas internas abertas: grupo em ("base", "musculos", "rosto")."""
+        chave = (vista, round(float(w), 1), round(float(h), 1), grupo)
+        c = self._cache_linhas.get(chave)
+        if c is not None:
+            return c
+        esc, des = self.escala(w, h)
+        fonte = {"base": _ATLAS_LINHAS, "musculos": _ATLAS_LINHAS_MUSCULOS,
+                 "rosto": _ATLAS_LINHAS_ROSTO}[grupo].get(vista, [])
+        path = QtGui.QPainterPath()
+        for linha in fonte:
+            path.addPath(atlas_spline_aberta(linha, esc, des))
+        if len(self._cache_linhas) > 96:
+            self._cache_linhas.clear()
+        self._cache_linhas[chave] = path
+        return path
+
+    # ---- pintura ----
+    def pintar_corpo(self, p, vista, rect, cores=None):
+        """Pinta o corpo inteiro dentro de `rect` (QRectF em px) com as cores do
+        tema (dict COLORS; se None, lê COLORS do programa na hora)."""
+        cores = cores or _atlas_cores()
+        bw, bh = rect.width(), rect.height()
+        corpo = self.caminho_corpo(vista, bw, bh)
+        escuro = QtGui.QColor(cores["surface"]).lightness() < 128
+        pele = _atlas_mistura(cores["surface_alt"], cores["text"], 0.10 if escuro else 0.035)
+        traco = _atlas_mistura(cores["border"], cores["text"], 0.50 if escuro else 0.40)
+        p.save()
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+        p.translate(rect.left(), rect.top())
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.setBrush(QtGui.QBrush(pele))
+        p.drawPath(corpo)
+        p.save()
+        p.setClipPath(corpo)
+        if self.volumes:
+            realce = _atlas_mistura(cores["surface_alt"], "#ffffff", 0.40 if escuro else 0.85)
+            c0 = QtGui.QColor(realce); c0.setAlpha(95 if escuro else 150)
+            cm = QtGui.QColor(realce); cm.setAlpha(c0.alpha() // 3)
+            c1 = QtGui.QColor(realce); c1.setAlpha(0)
+            (sx, sy), (dx, dy) = self.escala(bw, bh)
+            for cx, cy, rx, ry in _ATLAS_VOLUMES.get(vista, []):
+                # Círculo unitário escalado pelo painter: o gradiente radial
+                # vira elíptico sem matemática extra.
+                p.save()
+                p.translate(cx * sx + dx, cy * sy + dy)
+                p.scale(rx * sx, ry * sy)
+                g = QtGui.QRadialGradient(QtCore.QPointF(0, 0), 1.0)
+                g.setColorAt(0.0, c0); g.setColorAt(0.6, cm); g.setColorAt(1.0, c1)
+                p.setBrush(QtGui.QBrush(g))
+                p.drawEllipse(QtCore.QPointF(0, 0), 1.0, 1.0)
+                p.restore()
+        # sombra interna da borda: destaca o contorno do fundo nos dois temas
+        sombra = QtGui.QColor(cores["text"]); sombra.setAlpha(24 if escuro else 15)
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.setPen(QtGui.QPen(sombra, max(2.0, bh / 100.0)))
+        p.drawPath(corpo)
+        p.restore()
+        # linhas internas: referências (mais firmes) e músculos (mais leves).
+        # NoBrush obrigatório: com o pincel da pele, cada linha aberta era
+        # preenchida como polígono e sumia.
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        cl = QtGui.QColor(traco); cl.setAlpha(130)
+        p.setPen(QtGui.QPen(cl, max(0.7, bh / 520.0)))
+        p.drawPath(self.caminho_linhas(vista, bw, bh, "base"))
+        cm2 = QtGui.QColor(traco); cm2.setAlpha(95)
+        p.setPen(QtGui.QPen(cm2, max(0.7, bh / 600.0)))
+        p.drawPath(self.caminho_linhas(vista, bw, bh, "musculos"))
+        a = self.alfa_rosto(bh)
+        if a > 0.02:
+            cr = QtGui.QColor(traco); cr.setAlpha(int(140 * a))
+            p.setPen(QtGui.QPen(cr, max(0.8, bh / 520.0)))
+            p.drawPath(self.caminho_linhas(vista, bw, bh, "rosto"))
+        if vista == "side":
+            p.setPen(QtGui.QPen(traco, max(0.9, bh / 420.0)))
+            p.drawPath(self.caminho_braco_lado(bw, bh))
+        p.setPen(QtGui.QPen(traco, max(1.0, bh / 400.0)))
+        p.drawPath(corpo)
+        p.restore()
+
+    def camada_corpo(self, vista, rect, cores, dpr=1.0, transf=None, tamanho=None):
+        """QPixmap transparente com o corpo já pintado, cacheado por tamanho,
+        cores e transformação.
+
+        O corpo é estático entre dois quadros (só calor e eletrodos mudam),
+        então a pintura cara (gradientes, traço largo recortado) acontece uma
+        vez e cada quadro custa um drawPixmap. `transf` (QTransform) e
+        `tamanho` (w, h) servem para gravar a camada já ampliada pelo zoom, no
+        espaço da tela, sem borrar o contorno.
+        """
+        cores = cores or _atlas_cores()
+        tam = tamanho or (int(math.ceil(rect.width())) + 4, int(math.ceil(rect.height())) + 4)
+        tk = None
+        if transf is not None:
+            tk = (round(transf.m11(), 4), round(transf.m22(), 4),
+                  round(transf.dx(), 1), round(transf.dy(), 1))
+        chave = (vista, int(round(rect.width())), int(round(rect.height())),
+                 round(rect.left(), 1), round(rect.top(), 1), tam, tk, round(dpr, 2),
+                 cores["surface_alt"], cores["border"], cores["text"], cores["surface"])
+        pm = self._camadas.get(chave)
+        if pm is not None:
+            return pm
+        pm = QtGui.QPixmap(max(1, int(tam[0] * dpr)), max(1, int(tam[1] * dpr)))
+        pm.setDevicePixelRatio(dpr)
+        pm.fill(QtCore.Qt.GlobalColor.transparent)
+        pc = QtGui.QPainter(pm)
+        pc.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+        if transf is not None:
+            pc.setTransform(transf)
+            self.pintar_corpo(pc, vista, rect, cores)
+        else:
+            self.pintar_corpo(pc, vista, QtCore.QRectF(2, 2, rect.width(), rect.height()), cores)
+        pc.end()
+        if len(self._camadas) > 6:
+            self._camadas.clear()
+        self._camadas[chave] = pm
+        return pm
+
+    @staticmethod
+    def pintar_calor(p, pontos, recorte=None):
+        """Manchas de calor nos pontos dos eletrodos, recortadas pelo corpo.
+
+        pontos: [(x, y, intensidade 0..1, raio_px)] em px. A cor esquenta
+        (azul -> âmbar -> vermelho) e a opacidade sobe com a intensidade; a
+        borda é sempre transparente, para a mancha nascer do corpo e não
+        parecer um disco colado.
+        """
+        if not pontos:
+            return
+        p.save()
+        if recorte is not None:
+            p.setClipPath(recorte)
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        for (cx, cy, t, raio) in pontos:
+            t = max(0.0, min(1.0, float(t)))
+            c0 = atlas_cor_calor(t); c0.setAlpha(int(70 + 160 * t))
+            cm = atlas_cor_calor(max(0.0, t - 0.25)); cm.setAlpha(int(35 + 90 * t))
+            c1 = QtGui.QColor(cm); c1.setAlpha(0)
+            grad = QtGui.QRadialGradient(cx, cy, max(1.0, raio))
+            grad.setColorAt(0.0, c0); grad.setColorAt(0.5, cm); grad.setColorAt(1.0, c1)
+            p.setBrush(QtGui.QBrush(grad))
+            p.drawEllipse(QtCore.QPointF(cx, cy), raio, raio)
+        p.restore()
+
+    # ---- áreas ----
+    @staticmethod
+    def recorte_area(area, vista=None):
+        """(x0, y0, x1, y1) normalizados da área na vista pedida.
+
+        A área é definida na sua própria vista; de frente para costas o
+        recorte espelha em x (o lado D do paciente troca de lado na tela), e
+        no perfil usa a mesma faixa de altura centrada no corpo.
+        """
+        a = ATLAS_AREAS[area]
+        x0, y0, x1, y1 = a["recorte"]
+        vista = vista or a["vista"]
+        if vista == a["vista"]:
+            return (x0, y0, x1, y1)
+        if vista == "side":
+            meia = max(0.20, (x1 - x0) * 0.5)
+            return (0.5 - meia, y0, 0.5 + meia, y1)
+        return (1.0 - x1, y0, 1.0 - x0, y1)
+
+    @staticmethod
+    def para_area(x, y, area):
+        """(x, y) do corpo inteiro -> (ax, ay) em 0..1 dentro da área."""
+        x0, y0, x1, y1 = ATLAS_AREAS[area]["recorte"]
+        return ((x - x0) / (x1 - x0), (y - y0) / (y1 - y0))
+
+    @staticmethod
+    def de_area(ax, ay, area):
+        """(ax, ay) em 0..1 dentro da área -> (x, y) do corpo inteiro."""
+        x0, y0, x1, y1 = ATLAS_AREAS[area]["recorte"]
+        return (x0 + ax * (x1 - x0), y0 + ay * (y1 - y0))
+
+    # ---- pontos SENIAM ----
+    @staticmethod
+    def pontos_seniam(vista, com_alias=False):
+        """[(músculo, lado, nx, ny)] dos pontos SENIAM visíveis na vista
+        (os dois lados nas vistas frontal/posterior; só o E no perfil)."""
+        out = []
+        for m, e in ELETRODOS_SENIAM.items():
+            if e.get("alias_de") and not com_alias:
+                continue
+            if vista == "side":
+                lat = e.get("lateral")
+                if lat is not None:
+                    out.append((m, "E", lat[0], lat[1]))
+                continue
+            if e["vista"] != vista:
+                continue
+            lado = e.get("lado", "ambos")
+            # x guardado é o do lado D do paciente na vista da entrada
+            if lado in ("ambos", "D"):
+                out.append((m, "D", e["x"], e["y"]))
+            if lado in ("ambos", "E"):
+                out.append((m, "E", 1.0 - e["x"], e["y"]))
+        return out
+
+    @staticmethod
+    def ponto_seniam(musculo, lado="D", vista=None):
+        """(nx, ny, vista) do ponto SENIAM do músculo no lado pedido, ou None.
+
+        Com `vista`="side" devolve a posição lateral quando existe.
+        """
+        e = ELETRODOS_SENIAM.get(musculo)
+        if e is None:
+            return None
+        if vista == "side":
+            lat = e.get("lateral")
+            return (lat[0], lat[1], "side") if lat is not None else None
+        x = e["x"] if lado != "E" else 1.0 - e["x"]
+        return (x, e["y"], e["vista"])
+
+
+class AtlasCorpoWidget(QtWidgets.QWidget):
+    """Atlas muscular interativo com corpo humano desenhado em código.
+
+    Mesma API pública do MuscleAtlasWidget (sinais, eletrodos, zoom, ao vivo,
+    exportação) mais a vista lateral ("side"), áreas recortadas (set_area) e
+    pontos SENIAM com snap. O calor aparece NO PONTO DO ELETRODO, recortado
+    pelo corpo; eletrodos colocados numa área têm coordenadas do corpo
+    inteiro, por isso aparecem também na vista inteira.
+    """
+
+    sigElectrodesChanged = QtCore.Signal()
+    sigElectrodeSelected = QtCore.Signal(int)   # id do eletrodo (ou -1)
+    sigZoomChanged = QtCore.Signal(float)      # fator de zoom atual
+
+    HANDLE_R = 12.0            # raio do marcador (px de tela)
+    ZOOM_MIN, ZOOM_MAX = 1.0, 8.0
+    RAIO_SNAP = 0.045          # distância (fração da altura do corpo) para colar no ponto SENIAM
+
+    # Compatível com o combo de regiões da aba EMG: (rótulo, zoom, foco x, foco y).
+    # Rótulos em português de propósito (dado comparado por zoom_regiao).
+    REGIOES = (
+        ("Corpo inteiro", 1.0, 0.50, 0.50),
+        ("Cabeça e pescoço", 3.4, 0.50, 0.09),
+        ("Ombro e braço", 2.6, 0.30, 0.28),
+        ("Antebraço e mão", 3.6, 0.22, 0.42),
+        ("Tronco", 2.0, 0.50, 0.32),
+        ("Quadril e coxa", 2.4, 0.50, 0.60),
+        ("Perna e pé", 2.8, 0.50, 0.84),
+    )
+    # Recorte real (normalizado) de cada região: mais preciso que zoom+foco.
+    REGIOES_RECORTE = {
+        "Cabeça e pescoço": _atlas_rec(-0.95, -0.10, 0.95, 1.80),
+        "Ombro e braço": _atlas_rec(-1.65, 1.20, 1.65, 3.40),
+        "Antebraço e mão": _atlas_rec(-1.85, 2.80, 1.85, 5.30),
+        "Tronco": _atlas_rec(-1.15, 1.20, 1.15, 4.40),
+        "Quadril e coxa": _atlas_rec(-1.15, 3.40, 1.15, 6.20),
+        "Perna e pé": _atlas_rec(-1.00, 5.60, 1.00, 8.15),
+    }
+
+    def __init__(self, parent=None):
+        """Prepara o estado: vista frontal, sem área, eletrodos, ativações e
+        leituras ao vivo vazias, seleção e margens reservadas.
+
+        Mouse tracking e ClickFocus ligados porque o widget trata arraste e a
+        tecla Delete. As margens reservam título (24 px) e legenda (42 px);
+        em miniatura elas somem.
+        """
+        super().__init__(parent)
+        self.setMinimumSize(300, 470)
+        self.setMouseTracking(True)
+        self.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
+        self._desenho = CorpoHumanoDesenho()
+        self._view = "front"
+        self._area = None                 # id de ATLAS_AREAS ou None
+        self._recorte = None              # recorte livre (zoom_regiao) ou None
+        self._electrodes = []             # [{id,name,x,y,view,channel,muscle,atlas}]
+        self._muscle_act = {}             # músculo -> %MVC (fallback)
+        self._live = {}                   # canal 0-based -> (pct, qualidade)
+        self._sel = -1
+        self._place_mode = False
+        self._dragging = False
+        self._show_labels = True
+        self._numeracao = "id"            # "id" | "canal"
+        self._miniatura_forcada = False
+        self._pad_top = 24
+        self._pad_bot = 42
+        self._pad_lado = 6
+        self._zoom = 1.0
+        self._foco_n = (0.5, 0.5)
+        self._pan_ini = None
+        self._z_atual = 1.0
+        self.setToolTip(tr(
+            "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\n"
+            "ponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\n"
+            "ARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\n"
+            "Roda do mouse amplia; botão direito arrasta a vista ampliada.\n"
+            "Duplo-clique renomeia · Delete remove o selecionado."))
+
+    # ---------------- API pública: vistas e áreas ----------------
+    def set_view(self, view):
+        """Alterna entre "front", "back" e "side"; outro valor vira "front"."""
+        self._view = view if view in ATLAS_VISTAS else "front"
+        self.update()
+
+    def get_view(self):
+        """Vista em exibição: "front", "back" ou "side"."""
+        return self._view
+
+    def set_area(self, area):
+        """Mostra uma área recortada (id de ATLAS_AREAS) ou o corpo inteiro (None).
+
+        Muda a vista para a da área quando a atual não é compatível e zera o
+        zoom livre: a área já é um enquadramento.
+        """
+        if area is not None and area not in ATLAS_AREAS:
+            area = None
+        self._area = area
+        self._recorte = None
+        if area is not None:
+            self._view = ATLAS_AREAS[area]["vista"]
+        self._zoom, self._foco_n = 1.0, (0.5, 0.5)
+        self.update()
+        self.sigZoomChanged.emit(self._zoom_efetivo())
+
+    def get_area(self):
+        """Id da área em exibição ou None (corpo inteiro)."""
+        return self._area
+
+    @staticmethod
+    def areas_disponiveis():
+        """[(id, título em pt, lado)] das áreas, na ordem de ATLAS_AREAS."""
+        return [(k, v["titulo"], v["lado"]) for k, v in ATLAS_AREAS.items()]
+
+    def set_show_labels(self, on):
+        """Liga ou desliga os rótulos dos eletrodos."""
+        self._show_labels = bool(on); self.update()
+
+    def set_numeracao(self, modo):
+        """Número dentro do marcador: "id" do eletrodo ou "canal" (CH)."""
+        self._numeracao = "canal" if modo == "canal" else "id"; self.update()
+
+    def set_miniatura(self, on):
+        """Força o modo miniatura (só corpo, pontos e calor) e libera o tamanho
+        mínimo para caber num cartão de 90 x 140."""
+        self._miniatura_forcada = bool(on)
+        self.setMinimumSize(60, 90) if on else self.setMinimumSize(300, 470)
+        self.update()
+
+    def set_place_mode(self, on):
+        """Arma o modo de posicionamento: o próximo clique cria um eletrodo.
+
+        Troca o cursor para cruz e mostra os pontos SENIAM como guias. Não
+        desliga sozinho após o clique.
+        """
+        self._place_mode = bool(on)
+        self.setCursor(QtCore.Qt.CursorShape.CrossCursor if on
+                       else QtCore.Qt.CursorShape.ArrowCursor)
+        self.update()
+
+    # ---------------- API pública: dados ----------------
+    def set_muscle_activations(self, d):
+        """Dicionário músculo -> %MVC usado quando o eletrodo não tem canal ao
+        vivo (e para músculos ativos sem eletrodo, nos pontos SENIAM)."""
+        self._muscle_act = dict(d or {}); self.update()
+
+    def set_live_channel_data(self, d):
+        """Leituras ao vivo: canal 0-based -> (pct de MVC, qualidade 0..100);
+        definem a intensidade do calor e o anel de qualidade."""
+        self._live = dict(d or {}); self.update()
+
+    def set_electrodes(self, items):
+        """Repõe a lista de eletrodos a partir de dados salvos, normalizando.
+
+        Itens sem a marca atlas=2 vêm do atlas antigo e passam por
+        converter_montagem_antiga (com ATLAS_MUSCLE_XY do programa quando
+        existe), para a montagem não perder músculo nem canal. Não emite
+        sigElectrodesChanged nem mexe na seleção.
+        """
+        tabela = globals().get("ATLAS_MUSCLE_XY") or {}
+        self._electrodes = []
+        for e in (items or []):
+            try:
+                if int(e.get("atlas", 0) or 0) < 2:
+                    conv = converter_montagem_antiga([e], tabela)
+                    if not conv:
+                        continue
+                    e = conv[0]
+                self._electrodes.append({
+                    "id":      int(e.get("id", self._next_id())),
+                    "name":    str(e.get("name", "")),
+                    "x":       float(e.get("x", 0.5)),
+                    "y":       float(e.get("y", 0.5)),
+                    "view":    e.get("view") if e.get("view") in ATLAS_VISTAS else "front",
+                    "channel": int(e.get("channel", -1)),
+                    "muscle":  str(e.get("muscle", "")),
+                    "atlas":   2,
+                })
+            except Exception:
+                continue
+        self.update()
+
+    def get_electrodes(self):
+        """Cópias dos eletrodos (para salvar ou preencher tabelas)."""
+        return [dict(e) for e in self._electrodes]
+
+    def selected_id(self):
+        """Id do eletrodo selecionado, ou -1."""
+        return self._sel
+
+    def select(self, eid):
+        """Seleciona por id a partir de fora e emite sigElectrodeSelected."""
+        self._sel = int(eid); self.update()
+        self.sigElectrodeSelected.emit(self._sel)
+
+    def _next_id(self):
+        """Próximo id = maior id existente + 1."""
+        return max((e["id"] for e in self._electrodes), default=0) + 1
+
+    def _nearest_muscle(self, nx, ny, view, max_d=0.07):
+        """Músculo cujo ponto SENIAM está mais perto de (nx, ny) na vista, ou "".
+
+        A distância pesa x pela proporção da caixa (ATLAS_ASPECTO) para ser
+        isotrópica em pixels; max_d é fração da altura do corpo.
+        """
+        m, _lado, d = self._seniam_mais_proximo(nx, ny, view)
+        return m if d <= max_d else ""
+
+    def _seniam_mais_proximo(self, nx, ny, view):
+        """(músculo, lado, distância) do ponto SENIAM mais próximo na vista."""
+        best, bl, bd = "", "", 1e9
+        for m, lado, mx, my in CorpoHumanoDesenho.pontos_seniam(view):
+            d = math.hypot((mx - nx) * ATLAS_ASPECTO, my - ny)
+            if d < bd:
+                bd, best, bl = d, m, lado
+        return best, bl, bd
+
+    def muscle_side(self, nx):
+        """Lado do corpo pela posição horizontal: na vista frontal o lado D do
+        paciente fica à esquerda de quem olha; no perfil é sempre E."""
+        if self._view == "side":
+            return "E"
+        if abs(nx - 0.5) < 0.035:
+            return ""
+        if self._view == "front":
+            return "D" if nx < 0.5 else "E"
+        return "E" if nx < 0.5 else "D"
+
+    def add_electrode(self, nx, ny, view=None, name=None, channel=-1, muscle=""):
+        """Cria um eletrodo em (nx, ny) do corpo inteiro, reconhecendo o músculo
+        pela posição; nome padrão E<id>; já sai selecionado; emite os sinais."""
+        eid = self._next_id()
+        view = view if view in ATLAS_VISTAS else self._view
+        snap_m = muscle or self._nearest_muscle(nx, ny, view)
+        e = {"id": eid, "name": name or f"E{eid}",
+             "x": float(max(0.02, min(0.98, nx))),
+             "y": float(max(0.0, min(1.0, ny))),
+             "view": view, "channel": int(channel), "muscle": snap_m, "atlas": 2}
+        self._electrodes.append(e)
+        self._sel = eid
+        self.update()
+        self.sigElectrodesChanged.emit()
+        self.sigElectrodeSelected.emit(eid)
+        return e
+
+    def add_electrode_snap(self, nx, ny, view=None):
+        """Como add_electrode, mas cola no ponto SENIAM mais próximo quando ele
+        está a menos de RAIO_SNAP; senão fica no ponto livre."""
+        view = view if view in ATLAS_VISTAS else self._view
+        m, _lado, d = self._seniam_mais_proximo(nx, ny, view)
+        if m and d <= self.RAIO_SNAP:
+            pt = CorpoHumanoDesenho.ponto_seniam(m, _lado, "side" if view == "side" else None)
+            if pt is not None:
+                return self.add_electrode(pt[0], pt[1], view, muscle=m)
+        return self.add_electrode(nx, ny, view)
+
+    def remove_selected(self):
+        """Remove o eletrodo selecionado e zera a seleção."""
+        if self._sel < 0:
+            return
+        self._electrodes = [e for e in self._electrodes if e["id"] != self._sel]
+        self._sel = -1
+        self.update()
+        self.sigElectrodesChanged.emit()
+        self.sigElectrodeSelected.emit(-1)
+
+    def clear_all(self):
+        """Esvazia todos os eletrodos (de todas as vistas) e a seleção."""
+        self._electrodes = []; self._sel = -1
+        self.update(); self.sigElectrodesChanged.emit()
+        self.sigElectrodeSelected.emit(-1)
+
+    def _find(self, eid):
+        """Eletrodo pelo id, ou None."""
+        for e in self._electrodes:
+            if e["id"] == eid:
+                return e
+        return None
+
+    def rename(self, eid, new_name):
+        """Novo nome (até 24 caracteres) e redesenho."""
+        e = self._find(eid)
+        if e:
+            e["name"] = str(new_name)[:24]
+            self.update(); self.sigElectrodesChanged.emit()
+
+    def set_channel(self, eid, ch, muscle=None):
+        """Vincula o eletrodo a um canal; o músculo só muda se muscle não for None."""
+        e = self._find(eid)
+        if e:
+            e["channel"] = int(ch)
+            if muscle is not None:
+                e["muscle"] = str(muscle)
+            self.update(); self.sigElectrodesChanged.emit()
+
+    # ---------------- geometria: corpo <-> tela ----------------
+    def _eh_miniatura(self, w, h):
+        """Miniatura = sem título, legenda nem rótulos (cartão pequeno)."""
+        return self._miniatura_forcada or w < 180 or h < 260
+
+    def _recorte_atual(self):
+        """(x0, y0, x1, y1) normalizados em exibição (área, região ou inteiro)."""
+        if self._area is not None:
+            return CorpoHumanoDesenho.recorte_area(self._area, self._view)
+        if self._recorte is not None:
+            return self._recorte
+        return (0.0, 0.0, 1.0, 1.0)
+
+    def _caixa(self, w, h):
+        """QRectF (px) da caixa do corpo INTEIRO tal que o recorte atual
+        preenche a área útil mantendo a proporção."""
+        mini = self._eh_miniatura(w, h)
+        pt, pb, pl = (2, 2, 2) if mini else (self._pad_top, self._pad_bot, self._pad_lado)
+        aw, ah = max(1.0, w - 2 * pl), max(1.0, h - pt - pb)
+        x0, y0, x1, y1 = self._recorte_atual()
+        rw, rh = max(1e-6, (x1 - x0) * ATLAS_ASPECTO), max(1e-6, (y1 - y0))
+        k = min(aw / rw, ah / rh)          # px por unidade de altura normalizada
+        bh, bw = k, k * ATLAS_ASPECTO
+        cx, cy = pl + aw * 0.5, pt + ah * 0.5
+        return QtCore.QRectF(cx - (x0 + x1) * 0.5 * bw, cy - (y0 + y1) * 0.5 * bh, bw, bh)
+
+    def _zoom_efetivo(self):
+        """Zoom percebido (corpo inteiro = 1.0) incluindo área/região e roda."""
+        x0, y0, x1, y1 = self._recorte_atual()
+        return float(self._zoom) / max(1e-6, (y1 - y0))
+
+    def _transf(self, w, h):
+        """(deslocamento x, deslocamento y, zoom) da roda do mouse."""
+        z = float(self._zoom)
+        fx, fy = self._foco_n[0] * w, self._foco_n[1] * h
+        return fx * (1.0 - z), fy * (1.0 - z), z
+
+    def _tela(self, nx, ny, w, h, caixa=None):
+        """Coordenada normalizada do corpo -> pixel de tela (com zoom)."""
+        caixa = caixa or self._caixa(w, h)
+        ox, oy, z = self._transf(w, h)
+        return (ox + (caixa.left() + nx * caixa.width()) * z,
+                oy + (caixa.top() + ny * caixa.height()) * z)
+
+    def _de_tela(self, sx, sy, w, h, caixa=None):
+        """Pixel de tela -> coordenada normalizada do corpo (inverso de _tela)."""
+        caixa = caixa or self._caixa(w, h)
+        ox, oy, z = self._transf(w, h)
+        px, py = (sx - ox) / z, (sy - oy) / z
+        return ((px - caixa.left()) / max(1e-6, caixa.width()),
+                (py - caixa.top()) / max(1e-6, caixa.height()))
+
+    def _hit(self, sx, sy, w, h):
+        """Id do eletrodo (vista atual) sob o pixel de tela, ou -1."""
+        caixa = self._caixa(w, h)
+        r2 = (self._raio_marcador(w, h) + 4) ** 2
+        best, bd = -1, r2
+        for e in self._electrodes:
+            if e["view"] != self._view:
+                continue
+            ex, ey = self._tela(e["x"], e["y"], w, h, caixa)
+            d = (ex - sx) ** 2 + (ey - sy) ** 2
+            if d <= bd:
+                bd, best = d, e["id"]
+        return best
+
+    def _raio_marcador(self, w, h):
+        """Raio do marcador: fixo em tela, menor na miniatura."""
+        if self._eh_miniatura(w, h):
+            return max(2.5, min(w, h) * 0.04)
+        return self.HANDLE_R
+
+    @staticmethod
+    def _quality_color(q):
+        """Cor do anel de contato: None cinza; >=75 verde; >=50 amarelo;
+        >=30 laranja; abaixo vermelho."""
+        cores = _atlas_cores()
+        if q is None:
+            return QtGui.QColor(cores.get("text_dim", "#8a8a8a"))
+        if q >= 75:
+            return QtGui.QColor(cores.get("success", "#2ea043"))
+        if q >= 50:
+            return QtGui.QColor(cores.get("warning", "#d29922"))
+        if q >= 30:
+            return QtGui.QColor("#e07b30")
+        return QtGui.QColor(cores.get("error", "#e05050"))
+
+    # ---------------- zoom ----------------
+    def set_zoom(self, z, foco_n=None):
+        """Zoom da roda (1..8) e, opcionalmente, o ponto focal (fração 0..1 do
+        widget que fica parado). Emite sigZoomChanged com o zoom efetivo."""
+        self._zoom = max(self.ZOOM_MIN, min(self.ZOOM_MAX, float(z)))
+        if foco_n is not None:
+            self._foco_n = (min(1.0, max(0.0, float(foco_n[0]))),
+                            min(1.0, max(0.0, float(foco_n[1]))))
+        if abs(self._zoom - 1.0) < 1e-6:
+            self._foco_n = (0.5, 0.5)
+        self.update()
+        self.sigZoomChanged.emit(self._zoom_efetivo())
+
+    def zoom_regiao(self, nome):
+        """Enquadramento pronto pelo rótulo de REGIOES ("Corpo inteiro" volta
+        ao inteiro). Usa o recorte real da região; devolve True se existia."""
+        for rot, z, fx, fy in self.REGIOES:
+            if rot != nome:
+                continue
+            self._area = None
+            self._recorte = self.REGIOES_RECORTE.get(rot)
+            self.set_zoom(1.0)
+            return True
+        return False
+
+    def wheelEvent(self, ev):
+        """Roda do mouse amplia/reduz ancorado no cursor."""
+        d = ev.angleDelta().y()
+        if not d:
+            return
+        w, h = self.width(), self.height()
+        antes = self._zoom
+        novo = max(self.ZOOM_MIN, min(self.ZOOM_MAX, antes * (1.15 if d > 0 else 1 / 1.15)))
+        if abs(novo - antes) < 1e-9:
+            ev.accept(); return
+        if novo <= 1.0 + 1e-9:
+            self.set_zoom(1.0)
+        else:
+            # foco = (tela − z·lógico) / (1 − z); ao ampliar (1 − z) é negativo
+            # e o sinal tem de ser preservado, senão a âncora foge.
+            den = 1.0 - novo
+            if abs(den) < 1e-9:
+                ev.accept(); return
+            ox, oy, z = self._transf(w, h)
+            px, py = ev.position().x(), ev.position().y()
+            lx, ly = (px - ox) / z, (py - oy) / z
+            self.set_zoom(novo, ((px - novo * lx) / den / max(1.0, w),
+                                 (py - novo * ly) / den / max(1.0, h)))
+        ev.accept()
+
+    # ---------------- pintura ----------------
+    def paintEvent(self, ev):
+        """Redesenha o atlas (corpo em camada cacheada, calor, eletrodos)."""
+        p = QtGui.QPainter(self)
+        try:
+            self.pintar(p, self.width(), self.height())
+        finally:
+            p.end()
+
+    def pintar(self, p, w, h):
+        """Pinta o atlas completo num painter já aberto, em w x h px (a mesma
+        rota do paintEvent, útil para medir e para miniaturas)."""
+        self._paint(p, w, h)
+
+    def render_highres(self, scale=2.0, title=""):
+        """QPixmap ampliado (w*scale x h*scale) para exportar a imagem.
+
+        Pinta direto (sem camada cacheada) para o contorno sair nítido na
+        escala pedida; o título extra só aparece nessa rota.
+        """
+        w, h = self.width(), self.height()
+        pm = QtGui.QPixmap(max(1, int(w * scale)), max(1, int(h * scale)))
+        pm.fill(QtGui.QColor(_atlas_cores()["surface"]))
+        p = QtGui.QPainter(pm)
+        p.scale(scale, scale)
+        self._paint(p, w, h, export_title=title, direto=True)
+        p.end()
+        return pm
+
+    def _intensidade(self, e):
+        """%MVC (0..100) do eletrodo: canal ao vivo, senão ativação do músculo."""
+        pct, ch = None, e.get("channel")
+        if ch is not None and ch >= 0 and ch in self._live:
+            pct = self._live[ch][0]
+        if pct is None and e.get("muscle"):
+            pct = self._muscle_act.get(e["muscle"])
+        return pct
+
+    def _paint(self, p, w, h, export_title=None, direto=False):
+        """Desenha tudo: fundo, corpo, calor, guias SENIAM, eletrodos, título e
+        legenda. w/h chegam por parâmetro (paintEvent e render_highres)."""
+        cores = _atlas_cores()
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+        p.fillRect(QtCore.QRectF(0, 0, w, h), QtGui.QColor(cores["surface"]))
+        mini = self._eh_miniatura(w, h)
+        caixa = self._caixa(w, h)
+        ox, oy, z = self._transf(w, h)
+        self._z_atual = z
+        transf = QtGui.QTransform()
+        transf.translate(ox, oy); transf.scale(z, z)
+
+        # 1) corpo — camada cacheada no espaço da tela (nítida sob zoom) ou
+        #    pintura direta na exportação
+        if direto:
+            p.save(); p.setTransform(transf, True)
+            self._desenho.pintar_corpo(p, self._view, caixa, cores)
+            p.restore()
+        else:
+            dpr = 1.0
+            try:
+                dpr = float(p.device().devicePixelRatioF() or 1.0)
+            except Exception:
+                pass
+            pm = self._desenho.camada_corpo(self._view, caixa, cores, dpr, transf, (int(w), int(h)))
+            p.drawPixmap(QtCore.QPointF(0, 0), pm)
+
+        # 2) calor NO PONTO DO ELETRODO, recortado pelo corpo (em tela)
+        corpo_tela = transf.map(self._desenho.caminho_corpo(self._view, caixa.width(), caixa.height())
+                                .translated(caixa.left(), caixa.top()))
+        base_r = caixa.height() * z * 0.075
+        pontos, cobertos = [], set()
+        for e in self._electrodes:
+            if e.get("view") != self._view:
+                continue
+            pct = self._intensidade(e)
+            if pct is None:
+                continue
+            t = max(0.0, min(1.0, float(pct) / 100.0))
+            ex, ey = self._tela(e["x"], e["y"], w, h, caixa)
+            pontos.append((ex, ey, t, base_r * (0.6 + 0.9 * t)))
+            if e.get("muscle"):
+                cobertos.add(e["muscle"])
+        # músculos ativos sem eletrodo nesta vista: nos pontos SENIAM (os dois
+        # lados, porque a leitura por músculo não traz o lado)
+        for m, _lado, mx, my in CorpoHumanoDesenho.pontos_seniam(self._view):
+            if m in cobertos:
+                continue
+            pct = self._muscle_act.get(m)
+            if pct is None:
+                continue
+            t = max(0.0, min(1.0, float(pct) / 100.0))
+            ex, ey = self._tela(mx, my, w, h, caixa)
+            pontos.append((ex, ey, t, base_r * (0.6 + 0.9 * t)))
+        CorpoHumanoDesenho.pintar_calor(p, pontos, corpo_tela)
+
+        # 3) guias SENIAM no modo de colocação
+        if self._place_mode and not mini:
+            guia = QtGui.QColor(cores["accent"]); guia.setAlpha(150)
+            p.setPen(QtGui.QPen(guia, 1.2))
+            p.setBrush(QtGui.QBrush(QtGui.QColor(cores["surface"])))
+            for m, _lado, mx, my in CorpoHumanoDesenho.pontos_seniam(self._view):
+                ex, ey = self._tela(mx, my, w, h, caixa)
+                if -6 <= ex <= w + 6 and -6 <= ey <= h + 6:
+                    p.drawEllipse(QtCore.QPointF(ex, ey), 3.2, 3.2)
+
+        # 4) eletrodos (tamanho de tela)
+        self._paint_electrodes(p, w, h, caixa)
+
+        if mini:
+            return
+        # 5) título, contagem e legenda por cima
+        fonte_ui = _atlas_fonte(True)
+        fundo = QtGui.QColor(cores["surface"]); fundo.setAlpha(215)
+        p.fillRect(QtCore.QRectF(0, 0, w, 36 if export_title else 21), fundo)
+        p.setPen(QtGui.QPen(QtGui.QColor(cores["text"])))
+        p.setFont(QtGui.QFont(fonte_ui, 10, QtGui.QFont.Weight.Bold))
+        head = _atlas_tr(ATLAS_TITULOS_VISTA.get(self._view, "Vista Frontal (anterior)"))
+        if self._area is not None:
+            a = ATLAS_AREAS[self._area]
+            head = _atlas_tr(a["titulo"]) + (f" {a['lado']}" if a["lado"] else "")
+            head += "  ·  " + _atlas_tr(ATLAS_TITULOS_VISTA.get(self._view, ""))
+        p.drawText(QtCore.QRectF(0, 2, w, 18), QtCore.Qt.AlignmentFlag.AlignHCenter, head)
+        if export_title:
+            p.setFont(QtGui.QFont(fonte_ui, 8))
+            p.setPen(QtGui.QPen(QtGui.QColor(cores["text_dim"])))
+            p.drawText(QtCore.QRectF(0, 20, w, 14), QtCore.Qt.AlignmentFlag.AlignHCenter,
+                       str(export_title)[:60])
+        p.fillRect(QtCore.QRectF(0, h - 38, w, 38), fundo)
+        p.setFont(QtGui.QFont(fonte_ui, 8))
+        n_here = sum(1 for e in self._electrodes if e["view"] == self._view)
+        p.setPen(QtGui.QPen(QtGui.QColor(cores["text_dim"])))
+        p.drawText(QtCore.QRectF(6, h - 34, w - 12, 14), QtCore.Qt.AlignmentFlag.AlignLeft,
+                   tr("Eletrodos nesta vista: {}   ·   total: {}").format(
+                       n_here, len(self._electrodes)))
+        p.setFont(QtGui.QFont(fonte_ui, 7))
+        p.drawText(QtCore.QRectF(6, h - 18, 54, 14), QtCore.Qt.AlignmentFlag.AlignLeft,
+                   tr("Qualidade:"))
+        seg = [(tr("baixa"), self._quality_color(20)),
+               (tr("média"), self._quality_color(40)),
+               (tr("boa"), self._quality_color(60)),
+               (tr("ótima"), self._quality_color(85))]
+        sx = 60
+        for lbl, col in seg:
+            p.setBrush(QtGui.QBrush(col)); p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.drawRect(QtCore.QRectF(sx, h - 16, 11, 9))
+            p.setPen(QtGui.QPen(QtGui.QColor(cores["text_dim"])))
+            p.drawText(int(sx + 13), int(h - 8), lbl)
+            sx += 13 + p.fontMetrics().horizontalAdvance(lbl) + 8
+
+    def _paint_electrodes(self, p, w, h, caixa):
+        """Marcadores da vista atual: halo de seleção, anel de qualidade, disco
+        na cor do canal, número e rótulo "nome · músculo D · 42%".
+
+        Duas passadas: primeiro os rótulos (com desvio de colisão e linha-guia),
+        depois os marcadores, para nenhum rótulo cobrir um marcador. O rótulo
+        vai para FORA do corpo (margem do lado mais próximo), troca de lado se
+        não couber, e o número sai preto ou branco conforme a luminância do
+        disco (as cores neon dos canais não leem com texto branco). Nada de
+        rótulo na miniatura.
+        """
+        cores = _atlas_cores()
+        canais = _atlas_cores_canais()
+        mini = self._eh_miniatura(w, h)
+        R = self._raio_marcador(w, h)
+        fonte_num = QtGui.QFont(_atlas_fonte(False), 9 if R >= 10 else 6, QtGui.QFont.Weight.Bold)
+        lbl_font = QtGui.QFont(_atlas_fonte(True), 7, QtGui.QFont.Weight.Bold)
+        fm = QtGui.QFontMetrics(lbl_font)
+        ox_, _oy, z_ = self._transf(w, h)
+        meio = ox_ + (caixa.left() + caixa.width() * 0.5) * z_
+        visiveis = []
+        for e in self._electrodes:
+            if e["view"] != self._view:
+                continue
+            ex, ey = self._tela(e["x"], e["y"], w, h, caixa)
+            if not (-R <= ex <= w + R and -R <= ey <= h + R):
+                continue
+            ch = e.get("channel", -1)
+            pct, qual = None, None
+            if ch is not None and ch >= 0 and ch in self._live:
+                pct, qual = self._live[ch]
+            visiveis.append((e, ex, ey, ch, pct, qual))
+
+        # ---- passada 1: rótulos ----
+        ocupados = []
+        if self._show_labels and not mini:
+            p.setFont(lbl_font)
+            for e, ex, ey, ch, pct, qual in visiveis:
+                qcol = self._quality_color(qual)
+                # Nome padrão "E<id>" não se repete: o número já está no disco.
+                # Q só em janela larga: o anel colorido já diz a qualidade.
+                parts = []
+                nome = str(e.get("name") or "")
+                if nome and nome != f"E{e['id']}":
+                    parts.append(nome)
+                mus = e.get("muscle") or ""
+                if mus:
+                    lado = self.muscle_side(e.get("x", 0.5))
+                    parts.append(f"{_atlas_tr(atlas_nome_curto(mus))}{(' ' + lado) if lado else ''}")
+                if pct is not None:
+                    parts.append(f"{pct:.0f}%")
+                if qual is not None and w >= 400:
+                    parts.append(f"Q{qual:.0f}")
+                if not parts:
+                    parts.append(nome or f"E{e['id']}")
+                txt = " · ".join(parts)
+                tw = fm.horizontalAdvance(txt) + 10
+                # lado preferido: para fora do corpo; se não couber, o outro
+                lado_pref = -1 if ex > meio else 1
+                bx = None
+                for s in (lado_pref, -lado_pref):
+                    cand = (ex - s * (R + 8) - tw) if s > 0 else (ex - s * (R + 8))
+                    if 2.0 <= cand <= w - tw - 2.0:
+                        bx = cand
+                        break
+                if bx is None:
+                    cand = (ex - lado_pref * (R + 8) - tw) if lado_pref > 0 else (ex - lado_pref * (R + 8))
+                    bx = max(2.0, min(cand, w - tw - 2.0))
+                by = max(2.0, min(ey - 8, h - 18))
+                alvo = QtCore.QRectF(bx, by, tw, 15)
+                for _ in range(6):
+                    if not any(alvo.intersects(o) for o in ocupados):
+                        break
+                    by += 17.0
+                    if by > h - 18:
+                        by = max(2.0, min(ey - 8, h - 18)) - 17.0
+                    alvo = QtCore.QRectF(bx, by, tw, 15)
+                else:
+                    continue
+                ocupados.append(alvo)
+                # linha-guia quando a caixa não encosta no marcador
+                if alvo.right() < ex - R:
+                    ax = alvo.right()
+                elif alvo.left() > ex + R:
+                    ax = alvo.left()
+                else:
+                    ax = None
+                if ax is not None and (abs(alvo.center().y() - ey) > R or abs(ax - ex) > R + 10):
+                    p.setPen(QtGui.QPen(qcol, 1.0))
+                    p.drawLine(QtCore.QPointF(ax, alvo.center().y()), QtCore.QPointF(ex, ey))
+                fundo_rot = QtGui.QColor(cores["surface_alt"]); fundo_rot.setAlpha(232)
+                p.setBrush(QtGui.QBrush(fundo_rot))
+                p.setPen(QtGui.QPen(qcol, 1.2))
+                p.drawRoundedRect(alvo, 3, 3)
+                p.setPen(QtGui.QPen(QtGui.QColor(cores["text"])))
+                p.drawText(alvo, QtCore.Qt.AlignmentFlag.AlignCenter, txt)
+
+        # ---- passada 2: marcadores por cima ----
+        for e, ex, ey, ch, pct, qual in visiveis:
+            base = (QtGui.QColor(canais[ch]) if (ch is not None and 0 <= ch < len(canais))
+                    else QtGui.QColor(cores["accent"]))
+            if e["id"] == self._sel and not mini:
+                halo = QtGui.QColor(cores["text"]); halo.setAlpha(50)
+                p.setBrush(QtGui.QBrush(halo)); p.setPen(QtCore.Qt.PenStyle.NoPen)
+                p.drawEllipse(QtCore.QPointF(ex, ey), R + 7, R + 7)
+            if not mini:
+                qcol = self._quality_color(qual)
+                p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+                p.setPen(QtGui.QPen(qcol, 3.2 if qual is not None else 1.6,
+                                    QtCore.Qt.PenStyle.SolidLine if qual is not None
+                                    else QtCore.Qt.PenStyle.DotLine))
+                p.drawEllipse(QtCore.QPointF(ex, ey), R + 2.2, R + 2.2)
+            p.setBrush(QtGui.QBrush(base))
+            p.setPen(QtGui.QPen(QtGui.QColor(cores["surface"]), 1.5 if not mini else 0.8))
+            p.drawEllipse(QtCore.QPointF(ex, ey), R, R)
+            if R >= 6:
+                num = (f"{ch + 1}" if (self._numeracao == "canal" and ch is not None and ch >= 0)
+                       else str(e["id"]))
+                lum = 0.299 * base.red() + 0.587 * base.green() + 0.114 * base.blue()
+                p.setPen(QtGui.QPen(QtGui.QColor("#101418" if lum > 150 else "#ffffff")))
+                p.setFont(fonte_num)
+                p.drawText(QtCore.QRectF(ex - R, ey - R, 2 * R, 2 * R),
+                           QtCore.Qt.AlignmentFlag.AlignCenter, num)
+
+    # ---------------- interação ----------------
+    def mousePressEvent(self, ev):
+        """Clique: botão direito com zoom = pan; modo de colocação = novo eletrodo
+        (com snap SENIAM); senão seleciona e inicia o arraste."""
+        w, h = self.width(), self.height()
+        sx, sy = ev.position().x(), ev.position().y()
+        if ev.button() == QtCore.Qt.MouseButton.RightButton and self._zoom > 1.0:
+            self._pan_ini = (sx, sy, self._foco_n[0], self._foco_n[1])
+            return
+        if self._place_mode:
+            nx, ny = self._de_tela(sx, sy, w, h)
+            self.add_electrode_snap(nx, ny)
+            return
+        eid = self._hit(sx, sy, w, h)
+        self._sel = eid
+        self._dragging = eid >= 0
+        self.sigElectrodeSelected.emit(eid)
+        self.update()
+
+    def mouseMoveEvent(self, ev):
+        """Pan com o botão direito; arraste do eletrodo selecionado reavaliando
+        o músculo sob ele a cada movimento."""
+        if self._pan_ini is not None:
+            x0, y0, fx0, fy0 = self._pan_ini
+            w0, h0 = max(1, self.width()), max(1, self.height())
+            z = max(1e-6, self._zoom - 1.0)
+            self.set_zoom(self._zoom, (fx0 + (ev.position().x() - x0) / (w0 * z),
+                                       fy0 + (ev.position().y() - y0) / (h0 * z)))
+            return
+        if not self._dragging or self._sel < 0:
+            return
+        e = self._find(self._sel)
+        if e is None:
+            return
+        w, h = self.width(), self.height()
+        nx, ny = self._de_tela(ev.position().x(), ev.position().y(), w, h)
+        e["x"] = max(0.02, min(0.98, nx))
+        e["y"] = max(0.0, min(1.0, ny))
+        novo = self._nearest_muscle(e["x"], e["y"], e["view"])
+        if novo and novo != e.get("muscle"):
+            e["muscle"] = novo
+            self.sigElectrodesChanged.emit()
+        self.update()
+
+    def mouseReleaseEvent(self, ev):
+        """Encerra pan/arraste; confirma o músculo da posição final."""
+        self._pan_ini = None
+        if self._dragging:
+            self._dragging = False
+            e = self._find(self._sel)
+            if e is not None:
+                m = self._nearest_muscle(e["x"], e["y"], e["view"])
+                if m:
+                    e["muscle"] = m
+            self.sigElectrodesChanged.emit()
+
+    def mouseDoubleClickEvent(self, ev):
+        """Duplo-clique num marcador abre o diálogo de renomear (pede_texto do
+        programa se existir, senão QInputDialog)."""
+        w, h = self.width(), self.height()
+        eid = self._hit(ev.position().x(), ev.position().y(), w, h)
+        if eid < 0:
+            return
+        e = self._find(eid)
+        pede = globals().get("pede_texto")
+        if callable(pede):
+            new, ok = pede(self, tr("Renomear eletrodo"), tr("Nome do eletrodo:"),
+                           QtWidgets.QLineEdit.EchoMode.Normal, e["name"])
+        else:
+            new, ok = QtWidgets.QInputDialog.getText(
+                self, tr("Renomear eletrodo"), tr("Nome do eletrodo:"),
+                QtWidgets.QLineEdit.EchoMode.Normal, e["name"])
+        if ok and str(new).strip():
+            self.rename(eid, str(new).strip())
+
+    def keyPressEvent(self, ev):
+        """Delete/Backspace apagam o eletrodo selecionado."""
+        if ev.key() in (QtCore.Qt.Key.Key_Delete, QtCore.Qt.Key.Key_Backspace):
+            self.remove_selected()
+        else:
+            super().keyPressEvent(ev)
+
+
+# Fator entre x antigo (fração da largura do widget, 300 px) e x novo (fração
+# da caixa do corpo, 0.5 * 404 px na mesma janela): um deslocamento horizontal
+# antigo vale ~1,49x em coordenadas novas.
+_ATLAS_FATOR_X_ANTIGO = 300.0 / (ATLAS_ASPECTO * (470.0 - 24.0 - 42.0))
+
+
+def _atlas_lado_antigo(x, view):
+    """Lado do paciente pela coordenada x antiga (regra do muscle_side de hoje):
+    x<0.5 na frente = direito; na vista posterior, invertido. Na linha média
+    devolve "D" por convenção."""
+    if view == "back":
+        return "E" if x < 0.5 - 1e-9 else "D"
+    return "D" if x <= 0.5 + 1e-9 else "E"
+
+
+def converter_montagem_antiga(eletrodos, ATLAS_MUSCLE_XY_antigo):
+    """Converte eletrodos do atlas antigo (retângulos) para as coordenadas do
+    corpo novo, sem perder id, nome, canal, músculo nem vista.
+
+    Músculo conhecido em ELETRODOS_SENIAM e na mesma vista: vai para o ponto
+    SENIAM do lado inferido pelo x antigo. Senão: desloca a coordenada antiga
+    pela diferença entre a posição antiga e a nova do músculo vizinho mais
+    próximo em ATLAS_MUSCLE_XY_antigo (testando o espelho). Marca atlas=2 para
+    não converter duas vezes; itens já com atlas>=2 passam intactos.
+    """
+    tabela = dict(ATLAS_MUSCLE_XY_antigo or {})
+    novos = []
+    for e in (eletrodos or []):
+        if not isinstance(e, dict):
+            continue
+        try:
+            view = e.get("view") if e.get("view") in ATLAS_VISTAS else "front"
+            x, y = float(e.get("x", 0.5)), float(e.get("y", 0.5))
+            n = {"id": int(e.get("id", len(novos) + 1)), "name": str(e.get("name", "")),
+                 "x": x, "y": y, "view": view, "channel": int(e.get("channel", -1)),
+                 "muscle": str(e.get("muscle", "")), "atlas": 2}
+        except Exception:
+            continue
+        if int(e.get("atlas", 0) or 0) >= 2:
+            novos.append(n)
+            continue
+        m = n["muscle"]
+        sen = ELETRODOS_SENIAM.get(m)
+        if sen is not None and sen["vista"] == view:
+            pt = CorpoHumanoDesenho.ponto_seniam(m, _atlas_lado_antigo(x, view))
+            n["x"], n["y"] = pt[0], pt[1]
+        else:
+            melhor = None
+            for nome, (v, mx, my) in tabela.items():
+                if v != view or nome not in ELETRODOS_SENIAM:
+                    continue
+                for mxx in (mx, 1.0 - mx):
+                    d2 = (mxx - x) ** 2 + (my - y) ** 2
+                    if melhor is None or d2 < melhor[0]:
+                        melhor = (d2, nome, mxx, my)
+            if melhor is not None:
+                _d2, nome, mxx, my = melhor
+                pt = CorpoHumanoDesenho.ponto_seniam(nome, _atlas_lado_antigo(mxx, view))
+                if ELETRODOS_SENIAM[nome]["vista"] != view:
+                    pt = (0.5 + (mxx - 0.5) * _ATLAS_FATOR_X_ANTIGO, my, view)
+                n["x"] = pt[0] + (x - mxx) * _ATLAS_FATOR_X_ANTIGO
+                n["y"] = pt[1] + (y - my)
+            else:
+                n["x"] = 0.5 + (x - 0.5) * _ATLAS_FATOR_X_ANTIGO
+            n["x"] = float(max(0.02, min(0.98, n["x"])))
+            n["y"] = float(max(0.0, min(1.0, n["y"])))
+        novos.append(n)
+    return novos
+# === FIM DO BLOCO ===
 
 
 # ============================================================
@@ -41073,6 +45208,4798 @@ class MuscleAtlasWidget(QtWidgets.QWidget):
 # ============================================================
 # _VirtualJoystickWidget — visualização do EMG Joystick
 # ============================================================
+# ============================================================
+# REPLAY (1.10.0, pedidos P6/P7/P8) — tocador único e janela do Replay
+# ------------------------------------------------------------
+# "Rever uma gravação" ganha um botão Replay que se adapta ao exame: músculos
+# (figura articulada + linha do tempo de movimentos), coração (coração que
+# bate + faixa de batidas) e olhos (olhos que piscam e olham). Tudo aqui
+# dentro do ROA.py; o tocador abaixo serve aos três.
+# ============================================================
+def fmt_mmss(t):
+    """Segundos (arredondados) -> 'm:ss' ('0:03', '1:05'); acima de uma hora, 'h:mm:ss'."""
+    try:
+        total = max(0, int(round(float(t))))
+    except (TypeError, ValueError):
+        total = 0
+    h, resto = divmod(total, 3600)
+    m, s = divmod(resto, 60)
+    return "%d:%02d:%02d" % (h, m, s) if h else "%d:%02d" % (m, s)
+
+
+class TocadorReplay(QtWidgets.QWidget):
+    """Barra de transporte do Replay: Tocar/Pausar, voltar ao início, linha do
+    tempo arrastável, relógio "0:03 / 1:20" e, no Completo, velocidade e
+    repetição.
+
+    É um só para os três exames: a cena (figura, coração ou olhos) recebe
+    tempoMudou(t) a cada quadro e pede posição com set_tempo(). O tempo
+    avança por relógio real (QElapsedTimer × velocidade), não por contagem de
+    quadros, para a animação não atrasar quando a pintura demora.
+    """
+
+    tempoMudou = QtCore.Signal(float)
+    tocando = QtCore.Signal(bool)
+    PASSO_MS = 33   # ~30 quadros por segundo
+
+    def __init__(self, duracao_s=0.0, simples=False, parent=None):
+        """Monta os controles: tocar/pausar, início, linha do tempo, relógio e, no Completo, velocidade e repetir."""
+        super().__init__(parent)
+        self._dur = max(0.0, float(duracao_s))
+        self._t = 0.0
+        self._vel = 1.0
+        self._loop = False
+        self._simples = bool(simples)
+        self._relogio = QtCore.QElapsedTimer()
+        self._t_base = 0.0
+        self._timer = QtCore.QTimer(self)
+        self._timer.setInterval(self.PASSO_MS)
+        self._timer.timeout.connect(self._tique)
+        self._arrastando = False
+        self._monta()
+
+    # ---- montagem ----
+    def _monta(self):
+        """Cria os controles; no Simples só o essencial."""
+        lay = QtWidgets.QHBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(8)
+        self.btn_tocar = QtWidgets.QPushButton(tr("▶ Tocar"))
+        self.btn_tocar.setCheckable(True)
+        self.btn_tocar.setToolTip(tr("Toca ou pausa o replay (barra de espaço)."))
+        self.btn_tocar.toggled.connect(self._on_tocar)
+        self.btn_tocar.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key.Key_Space))
+        lay.addWidget(self.btn_tocar)
+        self.btn_inicio = QtWidgets.QPushButton(tr("⏮ Início"))
+        self.btn_inicio.setToolTip(tr("Volta para o começo da gravação."))
+        self.btn_inicio.clicked.connect(self.parar)
+        lay.addWidget(self.btn_inicio)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
+        self.slider.setRange(0, max(1, int(self._dur * 100)))
+        self.slider.setSingleStep(50)
+        self.slider.setPageStep(500)
+        self.slider.setToolTip(tr("Arraste para ir a um instante da gravação."))
+        self.slider.sliderPressed.connect(self._on_slider_pressed)
+        self.slider.sliderReleased.connect(self._on_slider_released)
+        self.slider.valueChanged.connect(self._on_slider_moved)
+        lay.addWidget(self.slider, 1)
+        self.lbl_tempo = QtWidgets.QLabel(self._texto_tempo())
+        f = QtGui.QFont(globals().get("FONT_DATA", "monospace"))
+        self.lbl_tempo.setFont(f)
+        lay.addWidget(self.lbl_tempo)
+        self.combo_vel = QtWidgets.QComboBox()
+        for v, rot in ((0.25, "0,25×"), (0.5, "0,5×"), (1.0, "1×"), (2.0, "2×"), (4.0, "4×")):
+            self.combo_vel.addItem(rot, v)
+        self.combo_vel.setCurrentIndex(2)
+        self.combo_vel.setToolTip(tr("Velocidade do replay (não muda a gravação)."))
+        self.combo_vel.currentIndexChanged.connect(
+            lambda _i: self.set_velocidade(self.combo_vel.currentData()))
+        self.chk_loop = QtWidgets.QCheckBox(tr("Repetir"))
+        self.chk_loop.toggled.connect(self._on_loop)
+        lay.addWidget(self.combo_vel)
+        lay.addWidget(self.chk_loop)
+        # no Simples a velocidade e a repetição são pesquisa: ficam escondidas
+        self.combo_vel.setVisible(not self._simples)
+        self.chk_loop.setVisible(not self._simples)
+
+    # ---- API ----
+    def set_duracao(self, dur_s):
+        """Define a duração total (segundos) e reposiciona no início."""
+        self._dur = max(0.0, float(dur_s))
+        self.slider.blockSignals(True)
+        self.slider.setRange(0, max(1, int(self._dur * 100)))
+        self.slider.blockSignals(False)
+        self.set_tempo(0.0)
+
+    def duracao(self):
+        """Duração total em segundos."""
+        return self._dur
+
+    def tempo(self):
+        """Instante atual em segundos."""
+        return self._t
+
+    def esta_tocando(self):
+        """True enquanto o relógio corre."""
+        return self._timer.isActive()
+
+    def set_tempo(self, t, emitir=True):
+        """Vai para o instante t (segundos), vindo de fora (lista, faixa, clique)."""
+        t = min(self._dur, max(0.0, float(t)))
+        self._t = t
+        if self._timer.isActive():
+            # rebase do relógio: o próximo tique continua a partir daqui
+            self._t_base = t
+            self._relogio.restart()
+        if not self._arrastando:
+            self.slider.blockSignals(True)
+            self.slider.setValue(int(round(t * 100)))
+            self.slider.blockSignals(False)
+        self.lbl_tempo.setText(self._texto_tempo())
+        if emitir:
+            self.tempoMudou.emit(self._t)
+
+    def set_velocidade(self, v):
+        """Velocidade (1.0 = tempo real); rebase do relógio para não pular."""
+        v = float(v or 1.0)
+        if self._timer.isActive():
+            self._t_base = self._t
+            self._relogio.restart()
+        self._vel = max(0.05, v)
+        idx = self.combo_vel.findData(self._vel)
+        if idx >= 0 and self.combo_vel.currentIndex() != idx:
+            self.combo_vel.blockSignals(True)
+            self.combo_vel.setCurrentIndex(idx)
+            self.combo_vel.blockSignals(False)
+
+    def tocar(self):
+        """Começa a tocar (do fim volta ao início)."""
+        if self._dur <= 0:
+            return
+        if self._t >= self._dur - 1e-6:
+            self.set_tempo(0.0)
+        self._t_base = self._t
+        self._relogio.restart()
+        self._timer.start()
+        if not self.btn_tocar.isChecked():
+            self.btn_tocar.blockSignals(True)
+            self.btn_tocar.setChecked(True)
+            self.btn_tocar.blockSignals(False)
+        self.btn_tocar.setText(tr("⏸ Pausar"))
+        self.tocando.emit(True)
+
+    def pausar(self):
+        """Pausa onde está."""
+        self._timer.stop()
+        if self.btn_tocar.isChecked():
+            self.btn_tocar.blockSignals(True)
+            self.btn_tocar.setChecked(False)
+            self.btn_tocar.blockSignals(False)
+        self.btn_tocar.setText(tr("▶ Tocar"))
+        self.tocando.emit(False)
+
+    def parar(self):
+        """Pausa e volta ao início."""
+        self.pausar()
+        self.set_tempo(0.0)
+
+    # ---- internos ----
+    def _texto_tempo(self):
+        """Texto do relógio: posição atual / duração, em m:ss."""
+        return "%s / %s" % (fmt_mmss(self._t), fmt_mmss(self._dur))
+
+    def _on_tocar(self, ligado):
+        """Botão Tocar/Pausar: toca ou pausa conforme o estado do botão."""
+        if ligado:
+            self.tocar()
+        else:
+            self.pausar()
+
+    def _on_loop(self, on):
+        """Caixa Repetir: guarda a escolha; vale quando a gravação chega ao fim."""
+        self._loop = bool(on)
+
+    def _on_slider_pressed(self):
+        """Começou a arrastar a linha do tempo: o relógio não a puxa de volta."""
+        self._arrastando = True
+
+    def _on_slider_released(self):
+        """Soltou a linha do tempo: posiciona de verdade no instante escolhido."""
+        self._arrastando = False
+        self.set_tempo(self.slider.value() / 100.0)
+
+    def _on_slider_moved(self, valor):
+        # arrastando: só o relógio acompanha; solto: posiciona de verdade
+        """Linha do tempo mexeu: durante o arrasto só o relógio acompanha."""
+        if self._arrastando:
+            self._t = valor / 100.0
+            self.lbl_tempo.setText(self._texto_tempo())
+            self.tempoMudou.emit(self._t)
+        elif not self._timer.isActive():
+            self.set_tempo(valor / 100.0)
+
+    def _tique(self):
+        """Passo do relógio: avança o tempo pela velocidade; no fim, repete ou pausa."""
+        t = self._t_base + self._relogio.elapsed() / 1000.0 * self._vel
+        if t >= self._dur:
+            if self._loop and self._dur > 0:
+                self._t_base = 0.0
+                self._relogio.restart()
+                t = 0.0
+            else:
+                self.set_tempo(self._dur)
+                self.pausar()
+                return
+        self.set_tempo(t)
+
+
+class ReplayDialog(QtWidgets.QDialog):
+    """Janela do Replay: título, a cena do exame (figura dos músculos, coração
+    ou olhos), o tocador único e o selo de que é uma SIMULAÇÃO.
+
+    A cena é qualquer QWidget com set_tempo(t) e, se quiser mandar no tocador,
+    um sinal cursorMovido(float) (clique numa lista, faixa ou linha do tempo).
+    Pode também ter salvar() (grava o JSON ao lado da gravação) e
+    tem_alteracoes(); nesse caso aparece o botão Salvar.
+    """
+
+    def __init__(self, cena, duracao_s, titulo, simples=False, parent=None,
+                 aviso=None):
+        """Monta a janela: selo de que SIMULA, cena, tocador e, no Completo, Salvar."""
+        super().__init__(parent)
+        self.setWindowTitle(titulo)
+        self.setMinimumSize(760, 520)
+        self.resize(1100, 720)
+        self.cena = cena
+        self._simples = bool(simples)
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(12, 10, 12, 10); lay.setSpacing(8)
+        cab = QtWidgets.QHBoxLayout()
+        lbl = QtWidgets.QLabel("<b>%s</b>" % titulo)
+        cab.addWidget(lbl)
+        cab.addStretch(1)
+        selo = QtWidgets.QLabel(aviso or tr(
+            "A animação SIMULA o que foi gravado; não é vídeo da pessoa. "
+            "Não é laudo nem diagnóstico."))
+        selo.setWordWrap(True)
+        selo.setStyleSheet("color: %s; font-style: italic;"
+                           % globals().get("COLORS", {}).get("text_dim", "#666"))
+        cab.addWidget(selo, 2)
+        lay.addLayout(cab)
+        lay.addWidget(cena, 1)
+        self.tocador = TocadorReplay(duracao_s, simples=self._simples)
+        self.tocador.tempoMudou.connect(self._on_tempo)
+        lay.addWidget(self.tocador)
+        if hasattr(cena, "cursorMovido"):
+            cena.cursorMovido.connect(self._on_cursor_da_cena)
+        rodape = QtWidgets.QHBoxLayout()
+        rodape.addStretch(1)
+        self.btn_salvar = None
+        if hasattr(cena, "salvar"):
+            self.btn_salvar = QtWidgets.QPushButton(tr("Salvar"))
+            self.btn_salvar.setToolTip(tr("Grava as marcações ao lado da gravação."))
+            self.btn_salvar.clicked.connect(self._salvar)
+            rodape.addWidget(self.btn_salvar)
+        btn_fechar = QtWidgets.QPushButton(tr("Fechar"))
+        btn_fechar.clicked.connect(self.close)
+        rodape.addWidget(btn_fechar)
+        lay.addLayout(rodape)
+        self.tocador.set_tempo(0.0)
+
+    def _on_tempo(self, t):
+        """O tocador mudou o tempo: repassa à cena (erro na cena não derruba o tocador)."""
+        try:
+            self.cena.set_tempo(t)
+        except Exception:
+            pass
+
+    def _on_cursor_da_cena(self, t):
+        """A cena pediu um instante (clique no traçado ou na lista): move o tocador."""
+        self.tocador.set_tempo(float(t))
+
+    def _salvar(self):
+        """Pede à cena para gravar e avisa na barra de título."""
+        try:
+            ok = self.cena.salvar()
+        except Exception as exc:
+            QtWidgets.QMessageBox.warning(self, tr("Replay"),
+                                          tr("Não foi possível salvar: {0}").format(exc))
+            return
+        if ok is not False:
+            self.setWindowTitle(self.windowTitle().replace(" •", "") )
+
+    def closeEvent(self, ev):
+        """Para o tocador e, se a cena tem alterações não salvas, pergunta."""
+        self.tocador.pausar()
+        tem = getattr(self.cena, "tem_alteracoes", None)
+        if callable(tem) and tem():
+            r = QtWidgets.QMessageBox.question(
+                self, tr("Replay"),
+                tr("Há marcações não salvas. Salvar antes de fechar?"),
+                QtWidgets.QMessageBox.StandardButton.Yes
+                | QtWidgets.QMessageBox.StandardButton.No
+                | QtWidgets.QMessageBox.StandardButton.Cancel)
+            if r == QtWidgets.QMessageBox.StandardButton.Cancel:
+                ev.ignore()
+                return
+            if r == QtWidgets.QMessageBox.StandardButton.Yes:
+                self._salvar()
+        super().closeEvent(ev)
+
+
+# ============================================================
+# REPLAY DO MOVIMENTO (P6) — modelo de movimentos, linha do tempo e lista
+# ------------------------------------------------------------
+# Os trechos nascem dos marcadores/fases da gravação (ou das contrações
+# detectadas, como "a definir"), ficam em movimentos.json ao lado do data.csv
+# e alimentam a figura articulada. Faixas no mesmo instante se somam.
+# ============================================================
+# ----------------------------------------------------------------------
+# P6 — LINHA DO TEMPO DE MOVIMENTOS
+# ----------------------------------------------------------------------
+# Uma gravação de sEMG vira uma lista de TRECHOS (t0, t1, movimento) em 2 a 4
+# FAIXAS. As faixas são camadas independentes: no mesmo instante os movimentos
+# de todas elas se somam (a mão fecha enquanto o cotovelo flete). O arquivo
+# movimentos.json fica ao lado do data.csv da gravação.
+#
+# As chaves de movimento são compartilhadas com a figura do braço (outro
+# bloco); mudar uma chave aqui exige mudar lá também.
+
+MOVIMENTOS_ORDEM = [
+    "repouso", "flexao_cotovelo", "extensao_cotovelo", "supinacao", "pronacao",
+    "flexao_punho", "extensao_punho", "abrir_mao", "fechar_mao", "pinca",
+    "flexao_ombro", "extensao_ombro", "a_definir",
+]
+
+# Chave -> título em português. Os títulos passam por tr() só na exibição,
+# porque em nível de módulo o idioma ativo ainda é o português.
+MOVIMENTOS_TITULOS = {
+    "repouso":           "Repouso",
+    "flexao_cotovelo":   "Flexão do cotovelo",
+    "extensao_cotovelo": "Extensão do cotovelo",
+    "supinacao":         "Supinação (palma para cima)",
+    "pronacao":          "Pronação (palma para baixo)",
+    "flexao_punho":      "Flexão do punho",
+    "extensao_punho":    "Extensão do punho",
+    "abrir_mao":         "Abrir a mão",
+    "fechar_mao":        "Fechar a mão",
+    "pinca":             "Pinça",
+    "flexao_ombro":      "Flexão do ombro",
+    "extensao_ombro":    "Extensão do ombro",
+    "a_definir":         "A definir",
+}
+
+# Títulos curtos para dentro dos blocos estreitos (um trecho de 5 s costuma
+# ter 70 px): o título inteiro entra quando cabe; senão este; senão elide.
+MOVIMENTOS_TITULOS_CURTOS = {
+    "repouso":           "Repouso",
+    "flexao_cotovelo":   "Flex. cotovelo",
+    "extensao_cotovelo": "Ext. cotovelo",
+    "supinacao":         "Supinação",
+    "pronacao":          "Pronação",
+    "flexao_punho":      "Flex. punho",
+    "extensao_punho":    "Ext. punho",
+    "abrir_mao":         "Abrir mão",
+    "fechar_mao":        "Fechar mão",
+    "pinca":             "Pinça",
+    "flexao_ombro":      "Flex. ombro",
+    "extensao_ombro":    "Ext. ombro",
+    "a_definir":         "A definir",
+}
+
+# Músculos que se espera ver ativos em cada movimento (chaves EXATAS de
+# COMMON_MUSCLES). Serve só para o aviso de incompatibilidade.
+MUSCULOS_ESPERADOS = {
+    "repouso":           [],
+    "flexao_cotovelo":   ["Bíceps Braquial"],
+    "extensao_cotovelo": ["Tríceps Braquial"],
+    "supinacao":         ["Bíceps Braquial"],
+    "pronacao":          ["Flexor Carpi Radialis"],
+    "flexao_punho":      ["Flexor Carpi Radialis"],
+    "extensao_punho":    ["Extensor Carpi Radialis"],
+    "abrir_mao":         ["Extensor Carpi Radialis"],
+    "fechar_mao":        ["Flexor Carpi Radialis"],
+    "pinca":             ["Flexor Carpi Radialis"],
+    "flexao_ombro":      ["Deltoide Anterior", "Peitoral Maior"],
+    "extensao_ombro":    ["Deltoide Posterior", "Latíssimo do Dorso"],
+    "a_definir":         [],
+}
+
+# Paleta fixa por movimento. Cores de luminância média (0,3 a 0,6) para o
+# bloco ler bem tanto sobre fundo claro quanto escuro; a cor do texto é
+# escolhida por contraste em _mov_cor_texto. "a_definir" é hachurado.
+MOVIMENTOS_CORES = {
+    "repouso":           "#aab3c5",
+    "flexao_cotovelo":   "#7fb2e5",
+    "extensao_cotovelo": "#f0a872",
+    "supinacao":         "#8fcf8a",
+    "pronacao":          "#c7a3e0",
+    "flexao_punho":      "#6cc5cf",
+    "extensao_punho":    "#e9c664",
+    "abrir_mao":         "#b5d96e",
+    "fechar_mao":        "#ec8a9a",
+    "pinca":             "#d4b08a",
+    "flexao_ombro":      "#8d9ae8",
+    "extensao_ombro":    "#e39bc8",
+    "a_definir":         "#9aa3b5",
+}
+
+# Palavra-chave (minúscula, sem acento) encontrada no rótulo do marcador ->
+# chave de movimento. A ORDEM importa: a primeira palavra encontrada decide,
+# por isso as de repouso vêm antes ("Baseline" não pode cair em "ext"...) e
+# "flex"/"ext" vêm depois das palavras mais específicas. "flex" e "ext"
+# ainda são refinadas por "punho"/"wrist" e "ombro"/"shoulder" em
+# movimento_do_rotulo.
+PALAVRAS_MOVIMENTO = {
+    "repouso": "repouso", "rest": "repouso", "baseline": "repouso",
+    "relax": "repouso", "descanso": "repouso", "interval": "repouso",
+    "pausa": "repouso",
+    "supin": "supinacao",
+    "pron": "pronacao",
+    "pinc": "pinca", "pinch": "pinca",
+    "abr": "abrir_mao", "open": "abrir_mao",
+    "fech": "fechar_mao", "close": "fechar_mao", "grip": "fechar_mao",
+    "preens": "fechar_mao",
+    "flex": "flexao_cotovelo",
+    "ext": "extensao_cotovelo",
+    "mvc": "a_definir", "contra": "a_definir", "isom": "a_definir",
+}
+_MOV_PALAVRAS_PUNHO = ("punho", "wrist")
+_MOV_PALAVRAS_OMBRO = ("ombro", "shoulder")
+_MOV_PREFIXOS_PROTOCOLO = ("protocolo_inicio", "protocolo_fim")
+_MOV_ACENTOS = str.maketrans("áàâãäéèêëíìîïóòôõöúùûüçñ",
+                             "aaaaaeeeeiiiiooooouuuucn")
+
+
+def _mov_normalizar(texto):
+    """Devolve o texto em minúsculas e sem acentos, para comparar palavras."""
+    return str(texto or "").lower().translate(_MOV_ACENTOS).strip()
+
+
+def movimento_do_rotulo(rotulo):
+    """Descobre a chave de movimento a partir do rótulo de um marcador.
+
+    Devolve a chave (ex.: "flexao_punho") ou None quando nenhuma palavra
+    conhecida aparece (ex.: "Movimento 1", "Aviso") ou quando o marcador é
+    de controle do protocolo (PROTOCOLO_INICIO:/PROTOCOLO_FIM:).
+    """
+    txt = _mov_normalizar(rotulo)
+    if not txt or txt.startswith(_MOV_PREFIXOS_PROTOCOLO):
+        return None
+    punho = any(p in txt for p in _MOV_PALAVRAS_PUNHO)
+    ombro = any(p in txt for p in _MOV_PALAVRAS_OMBRO)
+    for palavra, chave in PALAVRAS_MOVIMENTO.items():
+        if palavra not in txt:
+            continue
+        # "flex"/"ext" sozinhas são do cotovelo; o segmento muda a chave.
+        if chave == "flexao_cotovelo":
+            return "flexao_punho" if punho else ("flexao_ombro" if ombro else chave)
+        if chave == "extensao_cotovelo":
+            return "extensao_punho" if punho else ("extensao_ombro" if ombro else chave)
+        return chave
+    return None
+
+
+def _mov_chave_valida(movimento):
+    """Garante uma chave conhecida: desconhecida vira "a_definir"."""
+    return movimento if movimento in MOVIMENTOS_TITULOS else "a_definir"
+
+
+def _mov_mmss(t):
+    """Formata segundos como m:ss ("0:03"); abaixo de 1 s de passo a régua
+    usa a versão com décimos (_mov_mmss_fino)."""
+    t = max(0.0, float(t or 0.0))
+    m, s = divmod(int(round(t)), 60)
+    return "%d:%02d" % (m, s)
+
+
+def _mov_mmss_fino(t):
+    """Formata segundos como m:ss.d ("0:03.5"), para a régua bem ampliada."""
+    t = max(0.0, float(t or 0.0))
+    m = int(t // 60)
+    return "%d:%04.1f" % (m, t - 60 * m)
+
+
+def _mov_luminancia(cor_hex):
+    """Luminância relativa (WCAG 2.1) de uma cor "#rrggbb"; 0,5 se inválida."""
+    h = str(cor_hex).lstrip("#")
+    if len(h) != 6:
+        return 0.5
+    try:
+        cs = [int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4)]
+    except ValueError:
+        return 0.5
+    cs = [(c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4)
+          for c in cs]
+    return 0.2126 * cs[0] + 0.7152 * cs[1] + 0.0722 * cs[2]
+
+
+def _mov_cor_texto(cor_fundo):
+    """Escolhe texto escuro ou claro para um bloco, pelo maior contraste WCAG.
+
+    Usa um azul-ardósia quase preto e um branco levemente azulado (as cores
+    de texto dos dois temas da marca), não preto/branco puros.
+    """
+    lf = _mov_luminancia(cor_fundo)
+    escuro, claro = "#141a33", "#f6f8fc"
+    c_escuro = (lf + 0.05) / (_mov_luminancia(escuro) + 0.05)
+    c_claro = (_mov_luminancia(claro) + 0.05) / (lf + 0.05)
+    return escuro if c_escuro >= c_claro else claro
+
+
+def _mov_nome_faixa(nome, indice):
+    """Nome da faixa para a tela: o padrão "Faixa n" passa por tr(); um nome
+    dado pelo usuário volta como está."""
+    nome = str(nome or "")
+    base, _, n = nome.rpartition(" ")
+    if base == "Faixa" and n.isdigit():
+        return tr("Faixa {0}").format(n)
+    return nome or tr("Faixa {0}").format(indice + 1)
+
+
+def _mov_rotulo_marcador(rotulo):
+    """Rótulo de marcador como aparece na linha do tempo.
+
+    Marcadores de controle do protocolo viram "Protocolo: início/fim"; os
+    demais passam por rotulo_fase_tela (do ROA.py) quando ela existir, para
+    "Contração máxima #2" sair traduzido como no resto do programa.
+    """
+    r = str(rotulo or "")
+    rn = _mov_normalizar(r)
+    if rn.startswith("protocolo_inicio"):
+        return tr("Protocolo: início")
+    if rn.startswith("protocolo_fim"):
+        return tr("Protocolo: fim")
+    f = globals().get("rotulo_fase_tela")
+    return f(r) if callable(f) else tr(r)
+
+
+def descrever_trecho(trecho, faixa):
+    """Frase curta de um trecho para a lista: "0:03–0:07  Flexão do cotovelo
+    (faixa 1)". `faixa` é o índice (0 = faixa 1)."""
+    titulo = tr(MOVIMENTOS_TITULOS.get(trecho.get("movimento"), "A definir"))
+    return "%s–%s  %s (%s)" % (_mov_mmss(trecho.get("t0", 0.0)),
+                              _mov_mmss(trecho.get("t1", 0.0)),
+                              titulo, tr("faixa {0}").format(int(faixa) + 1))
+
+
+def caminho_movimentos(pasta_gravacao):
+    """Caminho do movimentos.json de uma gravação: fica ao lado do data.csv.
+
+    Aceita a pasta da gravação ou o caminho do próprio data.csv.
+    """
+    p = str(pasta_gravacao or "")
+    if p.lower().endswith(".csv") or os.path.isfile(p):
+        p = os.path.dirname(p)
+    return os.path.join(p, "movimentos.json")
+
+
+class ModeloMovimentos:
+    """Trechos de movimento de uma gravação, em 2 a 4 faixas, com desfazer.
+
+    Guarda tudo em `self.dados` (o mesmo dicionário que vai para o JSON):
+        {"versao": 1, "gravacao": nome, "duracao_s": float,
+         "origem": "marcadores"|"contracoes"|"manual"|"vazio",
+         "faixas": [{"nome": "Faixa 1",
+                     "trechos": [{"t0": float, "t1": float, "movimento": chave}]}]}
+    Dentro de uma faixa os trechos ficam ordenados por t0 e nunca se
+    sobrepõem; mover e esticar param no vizinho e respeitam a duração mínima.
+    Cada operação guarda antes um retrato das faixas na pilha de desfazer
+    (até 100), a não ser que receba registrar=False — é o que o widget faz
+    durante um arrasto, para o gesto inteiro valer um único "desfazer".
+    """
+
+    VERSAO = 1
+    MIN_FAIXAS = 2
+    MAX_FAIXAS = 4
+    DURACAO_MINIMA = 0.2
+    LIMITE_DESFAZER = 100
+    ORIGENS = ("marcadores", "contracoes", "manual", "vazio")
+
+    def __init__(self, gravacao="", duracao_s=0.0, n_faixas=2, origem="vazio"):
+        """Cria um modelo vazio com `n_faixas` faixas (2 a 4) e a duração da
+        gravação em segundos."""
+        n = min(self.MAX_FAIXAS, max(self.MIN_FAIXAS, int(n_faixas or 2)))
+        self.dados = {
+            "versao": self.VERSAO,
+            "gravacao": str(gravacao or ""),
+            "duracao_s": max(0.0, float(duracao_s or 0.0)),
+            "origem": origem if origem in self.ORIGENS else "vazio",
+            "faixas": [{"nome": "Faixa %d" % (i + 1), "trechos": []}
+                       for i in range(n)],
+        }
+        self._desfazer = []
+        self._refazer = []
+        self.modificado = False
+
+    # ----- leitura -------------------------------------------------------
+    @property
+    def faixas(self):
+        """Lista de faixas (dicionários com "nome" e "trechos")."""
+        return self.dados["faixas"]
+
+    @property
+    def duracao_s(self):
+        """Duração da gravação em segundos (limite direito da linha do tempo)."""
+        return float(self.dados["duracao_s"])
+
+    @property
+    def origem(self):
+        """De onde vieram os trechos iniciais: marcadores, contracoes, manual
+        ou vazio."""
+        return self.dados["origem"]
+
+    @property
+    def gravacao(self):
+        """Nome da gravação a que o modelo pertence."""
+        return self.dados["gravacao"]
+
+    def n_faixas(self):
+        """Quantidade de faixas (2 a 4)."""
+        return len(self.faixas)
+
+    def trechos(self, faixa):
+        """Lista de trechos da faixa `faixa` (índice 0..n-1); [] se não existe."""
+        if 0 <= int(faixa) < len(self.faixas):
+            return self.faixas[int(faixa)]["trechos"]
+        return []
+
+    def trecho(self, faixa, idx):
+        """Um trecho pelo par (faixa, idx), ou None se não existe."""
+        ts = self.trechos(faixa)
+        if 0 <= int(idx) < len(ts):
+            return ts[int(idx)]
+        return None
+
+    def total_trechos(self):
+        """Quantos trechos há somando todas as faixas."""
+        return sum(len(f["trechos"]) for f in self.faixas)
+
+    def todos_trechos(self):
+        """Todos os trechos como (faixa, idx, trecho), ordenados por t0 e
+        depois por faixa — a ordem da lista em palavras simples."""
+        fora = []
+        for fi, f in enumerate(self.faixas):
+            for ti, tr_ in enumerate(f["trechos"]):
+                fora.append((fi, ti, tr_))
+        fora.sort(key=lambda x: (x[2]["t0"], x[0]))
+        return fora
+
+    def movimentos_em(self, t):
+        """Movimentos ativos no instante `t`, de TODAS as faixas (a mescla).
+
+        Devolve [(chave, fase)] com fase = (t - t0) / (t1 - t0) em 0..1, na
+        ordem das faixas. O intervalo é [t0, t1): na fronteira entre dois
+        trechos vizinhos vale o que começa.
+        """
+        t = float(t)
+        fora = []
+        for f in self.faixas:
+            for tr_ in f["trechos"]:
+                if tr_["t0"] <= t < tr_["t1"]:
+                    dur = tr_["t1"] - tr_["t0"]
+                    fase = (t - tr_["t0"]) / dur if dur > 0 else 0.0
+                    fora.append((tr_["movimento"], min(1.0, max(0.0, fase))))
+                    break   # por construção só um trecho por faixa cobre t
+        return fora
+
+    # ----- desfazer / refazer -------------------------------------------
+    def _copia_faixas(self):
+        """Retrato independente das faixas (sem copy.deepcopy: só dicts
+        rasos de números e strings)."""
+        return [{"nome": f["nome"],
+                 "trechos": [dict(t) for t in f["trechos"]]}
+                for f in self.faixas]
+
+    def marcar_desfazer(self):
+        """Guarda o estado atual na pilha de desfazer e limpa a de refazer.
+
+        É chamado por cada operação antes de mudar algo; o widget chama
+        direto no começo de um arrasto, para o gesto inteiro ser um passo só.
+        """
+        self._desfazer.append(self._copia_faixas())
+        if len(self._desfazer) > self.LIMITE_DESFAZER:
+            del self._desfazer[0]
+        self._refazer.clear()
+
+    def pode_desfazer(self):
+        """Há algo para desfazer?"""
+        return bool(self._desfazer)
+
+    def pode_refazer(self):
+        """Há algo para refazer?"""
+        return bool(self._refazer)
+
+    def desfazer(self):
+        """Volta ao retrato anterior das faixas; False se não há o que desfazer."""
+        if not self._desfazer:
+            return False
+        self._refazer.append(self._copia_faixas())
+        self.dados["faixas"] = self._desfazer.pop()
+        self.modificado = True
+        return True
+
+    def refazer(self):
+        """Reaplica o último desfazer; False se não há o que refazer."""
+        if not self._refazer:
+            return False
+        self._desfazer.append(self._copia_faixas())
+        self.dados["faixas"] = self._refazer.pop()
+        self.modificado = True
+        return True
+
+    # ----- operações sobre trechos ---------------------------------------
+    def _clamp_tempo(self, t):
+        """Prende um instante dentro de [0, duração]."""
+        return min(self.duracao_s, max(0.0, float(t)))
+
+    def _limites(self, faixa, idx):
+        """(t_min, t_max) em que o trecho idx pode existir sem invadir os
+        vizinhos da mesma faixa."""
+        ts = self.trechos(faixa)
+        tmin = ts[idx - 1]["t1"] if idx > 0 else 0.0
+        tmax = ts[idx + 1]["t0"] if idx + 1 < len(ts) else self.duracao_s
+        return tmin, tmax
+
+    def _marcar_mudanca(self, registrar):
+        """Parte comum das operações: registra o desfazer e marca o modelo
+        como modificado (origem "vazio" passa a "manual")."""
+        if registrar:
+            self.marcar_desfazer()
+        self.modificado = True
+        if self.dados["origem"] == "vazio":
+            self.dados["origem"] = "manual"
+
+    def adicionar_trecho(self, faixa, t0, t1, movimento="a_definir", registrar=True):
+        """Insere um trecho na faixa, encolhido para caber na lacuna entre os
+        vizinhos. Devolve o índice do trecho novo, ou None se não coube
+        (lacuna menor que a duração mínima)."""
+        if not (0 <= int(faixa) < len(self.faixas)):
+            return None
+        ts = self.trechos(faixa)
+        t0, t1 = sorted((self._clamp_tempo(t0), self._clamp_tempo(t1)))
+        pos = 0
+        while pos < len(ts) and ts[pos]["t0"] <= t0:
+            pos += 1
+        tmin = ts[pos - 1]["t1"] if pos > 0 else 0.0
+        tmax = ts[pos]["t0"] if pos < len(ts) else self.duracao_s
+        t0, t1 = max(t0, tmin), min(t1, tmax)
+        if t1 - t0 < self.DURACAO_MINIMA - 1e-9:
+            return None
+        self._marcar_mudanca(registrar)
+        ts.insert(pos, {"t0": float(t0), "t1": float(t1),
+                        "movimento": _mov_chave_valida(movimento)})
+        return pos
+
+    def mover(self, faixa, idx, dt, registrar=True):
+        """Desloca o trecho inteiro em `dt` segundos, parando nos vizinhos e
+        nas bordas da gravação. Devolve o deslocamento realmente aplicado."""
+        tr_ = self.trecho(faixa, idx)
+        if tr_ is None:
+            return 0.0
+        dur = tr_["t1"] - tr_["t0"]
+        tmin, tmax = self._limites(faixa, idx)
+        novo_t0 = min(tmax - dur, max(tmin, tr_["t0"] + float(dt)))
+        real = novo_t0 - tr_["t0"]
+        if abs(real) < 1e-9:
+            return 0.0
+        self._marcar_mudanca(registrar)
+        tr_["t0"], tr_["t1"] = float(novo_t0), float(novo_t0 + dur)
+        return real
+
+    def esticar(self, faixa, idx, lado, novo_t, registrar=True):
+        """Move uma borda ("t0" ou "t1") do trecho para `novo_t`, parando no
+        vizinho e sem encurtar abaixo da duração mínima. Devolve o valor
+        final da borda."""
+        tr_ = self.trecho(faixa, idx)
+        if tr_ is None:
+            return None
+        tmin, tmax = self._limites(faixa, idx)
+        if lado == "t0":
+            novo = min(tr_["t1"] - self.DURACAO_MINIMA, max(tmin, float(novo_t)))
+        else:
+            lado = "t1"
+            novo = max(tr_["t0"] + self.DURACAO_MINIMA, min(tmax, float(novo_t)))
+        if abs(novo - tr_[lado]) < 1e-9:
+            return tr_[lado]
+        self._marcar_mudanca(registrar)
+        tr_[lado] = float(novo)
+        return novo
+
+    def dividir(self, faixa, idx, t, registrar=True):
+        """Corta o trecho em dois no instante `t`; o segundo herda o movimento.
+        Devolve o índice da segunda metade, ou None se alguma metade ficaria
+        menor que a duração mínima."""
+        tr_ = self.trecho(faixa, idx)
+        if tr_ is None:
+            return None
+        t = float(t)
+        if (t - tr_["t0"] < self.DURACAO_MINIMA - 1e-9
+                or tr_["t1"] - t < self.DURACAO_MINIMA - 1e-9):
+            return None
+        self._marcar_mudanca(registrar)
+        segundo = {"t0": t, "t1": tr_["t1"], "movimento": tr_["movimento"]}
+        tr_["t1"] = t
+        self.trechos(faixa).insert(idx + 1, segundo)
+        return idx + 1
+
+    def trocar_movimento(self, faixa, idx, movimento, registrar=True):
+        """Troca o movimento do trecho. Devolve True se mudou algo."""
+        tr_ = self.trecho(faixa, idx)
+        if tr_ is None:
+            return False
+        movimento = _mov_chave_valida(movimento)
+        if tr_["movimento"] == movimento:
+            return False
+        self._marcar_mudanca(registrar)
+        tr_["movimento"] = movimento
+        return True
+
+    def apagar(self, faixa, idx, registrar=True):
+        """Remove o trecho. Devolve True se existia."""
+        if self.trecho(faixa, idx) is None:
+            return False
+        self._marcar_mudanca(registrar)
+        del self.trechos(faixa)[int(idx)]
+        return True
+
+    # ----- faixas ----------------------------------------------------------
+    def adicionar_faixa(self, nome=None, registrar=True):
+        """Acrescenta uma faixa vazia no fim (até 4). Devolve o índice dela
+        ou None se já há o máximo."""
+        if len(self.faixas) >= self.MAX_FAIXAS:
+            return None
+        self._marcar_mudanca(registrar)
+        self.faixas.append({"nome": nome or "Faixa %d" % (len(self.faixas) + 1),
+                            "trechos": []})
+        return len(self.faixas) - 1
+
+    def remover_faixa(self, faixa, registrar=True):
+        """Remove a faixa e seus trechos (nunca abaixo de 2 faixas). As faixas
+        com nome padrão são renumeradas. Devolve True se removeu."""
+        if len(self.faixas) <= self.MIN_FAIXAS or not (0 <= int(faixa) < len(self.faixas)):
+            return False
+        self._marcar_mudanca(registrar)
+        del self.faixas[int(faixa)]
+        for i, f in enumerate(self.faixas):
+            base, _, n = str(f["nome"]).rpartition(" ")
+            if base == "Faixa" and n.isdigit():
+                f["nome"] = "Faixa %d" % (i + 1)
+        return True
+
+    # ----- arquivo ---------------------------------------------------------
+    def para_dict(self):
+        """Cópia independente de `dados`, pronta para json.dump."""
+        d = dict(self.dados)
+        d["faixas"] = self._copia_faixas()
+        return d
+
+    def salvar(self, caminho):
+        """Grava o JSON (utf-8, indent=2). Escreve num .tmp e renomeia por
+        cima, para uma queda no meio da escrita não deixar um arquivo pela
+        metade no lugar do bom."""
+        pasta = os.path.dirname(os.path.abspath(caminho))
+        if pasta and not os.path.isdir(pasta):
+            os.makedirs(pasta, exist_ok=True)
+        tmp = caminho + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(self.para_dict(), f, ensure_ascii=False, indent=2)
+        os.replace(tmp, caminho)
+        self.modificado = False
+        return caminho
+
+    @classmethod
+    def carregar(cls, caminho, duracao_s=None):
+        """Lê um movimentos.json e devolve o modelo validado. `duracao_s`, se
+        dada, manda sobre a do arquivo (a gravação é quem sabe quanto dura)."""
+        with open(caminho, "r", encoding="utf-8") as f:
+            d = json.load(f)
+        return cls.de_dict(d, duracao_s)
+
+    @classmethod
+    def de_dict(cls, d, duracao_s=None):
+        """Monta um modelo a partir de um dicionário solto, tolerando lixo:
+        movimento desconhecido vira "a_definir", tempos fora da duração são
+        presos nela, trechos curtos ou sobrepostos são aparados/descartados,
+        e o número de faixas é levado para 2..4."""
+        if not isinstance(d, dict):
+            d = {}
+        faixas_in = d.get("faixas") if isinstance(d.get("faixas"), list) else []
+        try:
+            dur = float(duracao_s if duracao_s is not None else d.get("duracao_s", 0.0) or 0.0)
+        except (TypeError, ValueError):
+            dur = 0.0
+        if dur <= 0:
+            # Sem duração conhecida, a gravação vai até o fim do último trecho.
+            for f in faixas_in:
+                for t in (f.get("trechos") or []) if isinstance(f, dict) else []:
+                    try:
+                        dur = max(dur, float(t.get("t1", 0.0)))
+                    except (TypeError, ValueError, AttributeError):
+                        pass
+        m = cls(d.get("gravacao", ""), dur, n_faixas=cls.MIN_FAIXAS,
+                origem=str(d.get("origem", "vazio")))
+        m.dados["faixas"] = []
+        for i, f in enumerate(faixas_in[:cls.MAX_FAIXAS]):
+            if not isinstance(f, dict):
+                continue
+            nome = str(f.get("nome") or "Faixa %d" % (i + 1))
+            limpos = []
+            for t in f.get("trechos") or []:
+                try:
+                    t0, t1 = float(t["t0"]), float(t["t1"])
+                except (TypeError, ValueError, KeyError):
+                    continue
+                if not (math.isfinite(t0) and math.isfinite(t1)):
+                    continue
+                t0, t1 = sorted((min(dur, max(0.0, t0)), min(dur, max(0.0, t1))))
+                limpos.append({"t0": t0, "t1": t1,
+                               "movimento": _mov_chave_valida(t.get("movimento"))})
+            limpos.sort(key=lambda x: x["t0"])
+            sem_sobrepor = []
+            for t in limpos:
+                if sem_sobrepor and t["t0"] < sem_sobrepor[-1]["t1"]:
+                    t["t0"] = sem_sobrepor[-1]["t1"]      # apara o que invade
+                if t["t1"] - t["t0"] >= cls.DURACAO_MINIMA - 1e-9:
+                    sem_sobrepor.append(t)
+            m.dados["faixas"].append({"nome": nome, "trechos": sem_sobrepor})
+        while len(m.dados["faixas"]) < cls.MIN_FAIXAS:
+            m.dados["faixas"].append({"nome": "Faixa %d" % (len(m.dados["faixas"]) + 1),
+                                      "trechos": []})
+        m.modificado = False
+        return m
+
+
+def trechos_de_marcadores(marcadores, duracao_s, nome="", alcance_s=3.0):
+    """Modelo inicial a partir dos marcadores da gravação [(t_s, rótulo)].
+
+    Cada marcador abre um trecho na faixa 1 que vai até o marcador seguinte
+    (ou até +`alcance_s`/fim da gravação, se for o último). O movimento sai
+    de movimento_do_rotulo; marcadores de protocolo e rótulos sem palavra
+    conhecida viram "a_definir". Trechos mais curtos que a duração mínima
+    (dois marcadores quase no mesmo instante) são descartados.
+    """
+    ms = []
+    for par in marcadores or []:
+        try:
+            ms.append((float(par[0]), str(par[1])))
+        except (TypeError, ValueError, IndexError):
+            continue
+    ms.sort(key=lambda x: x[0])
+    dur = float(duracao_s or 0.0)
+    if dur <= 0 and ms:
+        dur = ms[-1][0] + alcance_s
+    modelo = ModeloMovimentos(nome, dur, origem="marcadores")
+    for i, (t, rot) in enumerate(ms):
+        t_fim = ms[i + 1][0] if i + 1 < len(ms) else min(t + alcance_s, dur)
+        mov = movimento_do_rotulo(rot) or "a_definir"
+        modelo.adicionar_trecho(0, t, t_fim, mov, registrar=False)
+    modelo.modificado = False
+    return modelo
+
+
+def trechos_de_contracoes(onsets, duracao_s, nome=""):
+    """Modelo inicial a partir das contrações detectadas [(t0, t1)]: cada uma
+    vira um trecho "a_definir" na faixa 1 (origem "contracoes"). Contrações
+    mais curtas que a duração mínima são descartadas."""
+    dur = float(duracao_s or 0.0)
+    pares = []
+    for par in onsets or []:
+        try:
+            pares.append((float(par[0]), float(par[1])))
+        except (TypeError, ValueError, IndexError):
+            continue
+    if dur <= 0 and pares:
+        dur = max(b for _, b in pares)
+    modelo = ModeloMovimentos(nome, dur, origem="contracoes")
+    for t0, t1 in sorted(pares):
+        modelo.adicionar_trecho(0, t0, t1, "a_definir", registrar=False)
+    modelo.modificado = False
+    return modelo
+
+
+def modelo_inicial(marcadores, onsets, duracao_s, nome=""):
+    """Escolhe o ponto de partida da linha do tempo de uma gravação.
+
+    Marcadores ganham se houver pelo menos um com movimento reconhecido ou
+    dois marcadores quaisquer (fases de protocolo); senão as contrações
+    detectadas viram trechos "a definir"; sem nada, modelo vazio.
+    """
+    marcadores = list(marcadores or [])
+    reconhecidos = [r for _, r in marcadores if movimento_do_rotulo(r)]
+    if reconhecidos or len(marcadores) >= 2:
+        m = trechos_de_marcadores(marcadores, duracao_s, nome)
+        if m.total_trechos() > 0 or not onsets:
+            return m
+    if onsets:
+        return trechos_de_contracoes(onsets, duracao_s, nome)
+    return ModeloMovimentos(nome, duracao_s, origem="vazio")
+
+
+def contracoes_da_gravacao(sinal, fs):
+    """Contrações [(t0, t1)] de um canal de sEMG, usando o detector que já
+    existe no programa (emg_onset_tkeo, e emg_fundir_ativacoes para juntar
+    liga-desliga da mesma contração). Sem o detector no namespace (protótipo
+    isolado) devolve []."""
+    detectar = globals().get("emg_onset_tkeo")
+    if not callable(detectar) or sinal is None:
+        return []
+    sinal = np.asarray(sinal, float).ravel()
+    if sinal.size < 2 or not fs:
+        return []
+    ativ = detectar(sinal, float(fs))
+    fundir = globals().get("emg_fundir_ativacoes")
+    return list(fundir(ativ) if callable(fundir) else ativ)
+
+
+def intensidade_no_instante(envelopes, fs, t, janela_s=0.1, mvc=None, percentil=95.0):
+    """Ativação 0..1 de cada músculo em volta do instante `t`.
+
+    `envelopes` é {músculo: array do envelope}; a média do módulo numa janela
+    de `janela_s` centrada em `t` é dividida pela MVC do músculo (`mvc`
+    {músculo: valor}), ou, sem MVC, pelo percentil `percentil` do envelope
+    inteiro — assim a escala não depende de o paciente ter feito a
+    calibração.
+    """
+    fora = {}
+    fs = float(fs or 0.0)
+    if fs <= 0:
+        return {m: 0.0 for m in (envelopes or {})}
+    meia = max(1, int(round(janela_s * fs / 2.0)))
+    centro = int(round(float(t) * fs))
+    for musculo, env in (envelopes or {}).items():
+        env = np.abs(np.asarray(env, float).ravel())
+        a, b = max(0, centro - meia), min(env.size, centro + meia)
+        if env.size == 0 or b <= a:
+            fora[musculo] = 0.0
+            continue
+        v = float(np.mean(env[a:b]))
+        ref = None
+        if mvc:
+            try:
+                ref = float(mvc.get(musculo) or 0.0)
+            except (TypeError, ValueError):
+                ref = 0.0
+        if not ref or ref <= 0:
+            ref = float(np.percentile(env, percentil))
+        fora[musculo] = 0.0 if ref <= 0 else min(1.0, max(0.0, v / ref))
+    return fora
+
+
+def aviso_incompatibilidade(movimento, ativacao_por_musculo, limiar=0.3):
+    """Texto de aviso quando os músculos ativos não combinam com o movimento.
+
+    Devolve "" quando não há o que avisar: nenhum músculo acima do limiar,
+    algum dos músculos esperados está ativo, ou o movimento não tem músculos
+    de referência (repouso, a definir). Os músculos ativos saem em ordem de
+    ativação. É um aviso de coerência da marcação, não um diagnóstico.
+    """
+    esperados = MUSCULOS_ESPERADOS.get(movimento) or []
+    if not esperados:
+        return ""
+    ativos = []
+    for m, v in (ativacao_por_musculo or {}).items():
+        try:
+            v = float(v)
+        except (TypeError, ValueError):
+            continue
+        if v >= limiar:
+            ativos.append((v, str(m)))
+    if not ativos:
+        return ""
+    ativos.sort(reverse=True)
+    nomes_ativos = [m for _, m in ativos]
+    if any(m in esperados for m in nomes_ativos):
+        return ""
+    return tr("Os músculos ativos ({0}) não combinam com o movimento escolhido "
+              "({1}); esperado: {2}.").format(
+        ", ".join(tr(m) for m in nomes_ativos),
+        tr(MOVIMENTOS_TITULOS.get(movimento, movimento)),
+        ", ".join(tr(m) for m in esperados))
+
+
+def _mov_icone_cor(cor, tam=12):
+    """Quadradinho arredondado da cor do movimento, para menus e listas."""
+    pix = QtGui.QPixmap(tam, tam)
+    pix.fill(QtCore.Qt.GlobalColor.transparent)
+    p = QtGui.QPainter(pix)
+    p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
+    p.setPen(QtCore.Qt.PenStyle.NoPen)
+    p.setBrush(QtGui.QColor(cor))
+    p.drawRoundedRect(QtCore.QRectF(0.5, 0.5, tam - 1, tam - 1), 3, 3)
+    p.end()
+    return QtGui.QIcon(pix)
+
+
+def _mov_passo_regua(span_s, largura_px, min_px=64):
+    """Passo "redondo" da régua para rótulos com pelo menos `min_px` entre si."""
+    if span_s <= 0 or largura_px <= 0:
+        return 1.0
+    for passo in (0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 1800):
+        if largura_px / (span_s / passo) >= min_px:
+            return float(passo)
+    return max(1.0, round(span_s / 8.0))
+
+
+class LinhaDoTempoMovimentosWidget(QtWidgets.QWidget):
+    """Linha do tempo com 2 a 4 faixas de trechos de movimento.
+
+    Desenha a régua (m:ss) em cima, os marcadores da gravação como traços
+    finos com rótulo, uma linha por faixa com os trechos como blocos
+    arredondados coloridos por movimento, e o cursor do tocador.
+
+    No modo Completo edita: arrastar o bloco move, arrastar as bordas estica,
+    duplo clique no fundo cria um trecho "a definir" de 1 s, botão direito
+    abre o menu (trocar o movimento, dividir, apagar, desfazer, refazer,
+    adicionar/remover faixa), Ctrl+Z/Ctrl+Y, Delete; roda rola e Ctrl+roda
+    amplia. No modo Simples (set_somente_leitura(True)) só exibe e o clique
+    posiciona o cursor.
+
+    Sinais: modeloMudou() após cada edição; cursorMovido(t) quando o usuário
+    clica/arrasta na linha do tempo; trechoSelecionado(faixa, idx).
+    """
+
+    modeloMudou = QtCore.Signal()
+    cursorMovido = QtCore.Signal(float)
+    trechoSelecionado = QtCore.Signal(int, int)
+
+    REGUA_H = 22
+    MARCADORES_H = 16
+    FAIXA_H = 34
+    ESPACO_H = 6
+    MARGEM_ESQ = 72
+    MARGEM_DIR = 12
+    MARGEM_INF = 6
+    BORDA_PX = 6            # zona, em px, em que o arrasto pega a borda
+    ZOOM_MINIMO_S = 2.0
+    NOVO_TRECHO_S = 1.0
+
+    def __init__(self, parent=None):
+        """Começa sem modelo, cursor em 0 e modo de edição."""
+        super().__init__(parent)
+        self._modelo = None
+        self._cursor = 0.0
+        self._marcadores = []
+        self._somente_leitura = False
+        self._v0, self._v1 = 0.0, 1.0        # janela visível, em segundos
+        self._sel = None                     # (faixa, idx) selecionado
+        self._hover = None                   # (faixa, idx, lado) sob o mouse
+        self._arrasto = None                 # estado do gesto em curso
+        self.setMouseTracking(True)
+        self.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Fixed)
+        self._atualizar_altura()
+
+    # ----- estado público --------------------------------------------------
+    def set_modelo(self, modelo):
+        """Troca o modelo exibido e mostra a gravação inteira."""
+        self._modelo = modelo
+        self._sel = None
+        self._hover = None
+        self._arrasto = None
+        dur = modelo.duracao_s if modelo is not None else 0.0
+        self._v0, self._v1 = 0.0, max(1.0, dur)
+        self._cursor = min(self._cursor, dur)
+        self._atualizar_altura()
+        self.update()
+
+    def modelo(self):
+        """O ModeloMovimentos exibido (ou None)."""
+        return self._modelo
+
+    def set_cursor(self, t):
+        """Posiciona o cursor do tocador em `t` segundos (sem emitir sinal:
+        é o tocador avisando a linha do tempo, não o contrário)."""
+        dur = self._modelo.duracao_s if self._modelo is not None else 0.0
+        self._cursor = min(dur, max(0.0, float(t or 0.0)))
+        self.update()
+
+    def cursor(self):
+        """Instante atual do cursor, em segundos."""
+        return self._cursor
+
+    def set_marcadores(self, marcadores):
+        """Define os marcadores da gravação [(t_s, rótulo)] desenhados como
+        traços finos."""
+        ms = []
+        for par in marcadores or []:
+            try:
+                ms.append((float(par[0]), str(par[1])))
+            except (TypeError, ValueError, IndexError):
+                continue
+        self._marcadores = sorted(ms, key=lambda x: x[0])
+        self._atualizar_altura()
+        self.update()
+
+    def set_somente_leitura(self, ativo):
+        """Modo Simples: só exibe; o clique posiciona o cursor."""
+        self._somente_leitura = bool(ativo)
+        self._arrasto = None
+        if self._somente_leitura:
+            self._sel = None
+            self._hover = None
+            self.unsetCursor()
+        self.update()
+
+    def somente_leitura(self):
+        """True no modo Simples."""
+        return self._somente_leitura
+
+    def selecionar(self, faixa, idx):
+        """Destaca o trecho (faixa, idx); None/None limpa a seleção."""
+        if faixa is None or idx is None or self._modelo is None \
+                or self._modelo.trecho(faixa, idx) is None:
+            self._sel = None
+        else:
+            self._sel = (int(faixa), int(idx))
+        self.update()
+
+    def selecionado(self):
+        """(faixa, idx) do trecho destacado, ou None."""
+        return self._sel
+
+    def set_janela(self, t0, t1):
+        """Define o intervalo visível [t0, t1] em segundos (zoom/rolagem)."""
+        dur = self._modelo.duracao_s if self._modelo is not None else 1.0
+        t0, t1 = sorted((float(t0), float(t1)))
+        span = min(max(t1 - t0, self.ZOOM_MINIMO_S), max(dur, self.ZOOM_MINIMO_S))
+        t0 = min(max(0.0, t0), max(0.0, dur - span))
+        self._v0, self._v1 = t0, t0 + span
+        self.update()
+
+    def ajustar_tudo(self):
+        """Volta a mostrar a gravação inteira."""
+        dur = self._modelo.duracao_s if self._modelo is not None else 1.0
+        self._v0, self._v1 = 0.0, max(1.0, dur)
+        self.update()
+
+    # ----- geometria ---------------------------------------------------------
+    def _marc_h(self):
+        """Altura da tira de rótulos dos marcadores (0 quando não há nenhum)."""
+        return self.MARCADORES_H if self._marcadores else 0
+
+    def _n_faixas(self):
+        """Faixas a desenhar (2 quando ainda não há modelo)."""
+        return self._modelo.n_faixas() if self._modelo is not None else 2
+
+    def _altura_total(self):
+        """Altura necessária para régua, marcadores e todas as faixas."""
+        n = self._n_faixas()
+        return (self.REGUA_H + self._marc_h() + n * self.FAIXA_H
+                + (n - 1) * self.ESPACO_H + self.MARGEM_INF)
+
+    def _atualizar_altura(self):
+        """Fixa a altura ao número de faixas (o layout pai acompanha)."""
+        h = self._altura_total()
+        self.setMinimumHeight(h)
+        self.setMaximumHeight(h)
+        self.updateGeometry()
+
+    def sizeHint(self):
+        """Largura sugerida generosa; a altura é a das faixas."""
+        return QtCore.QSize(720, self._altura_total())
+
+    def _area(self):
+        """(x0, largura) da área de tempo, à direita dos nomes das faixas."""
+        return self.MARGEM_ESQ, max(1, self.width() - self.MARGEM_ESQ - self.MARGEM_DIR)
+
+    def _y_faixa(self, i):
+        """Topo, em px, da faixa i."""
+        return self.REGUA_H + self._marc_h() + i * (self.FAIXA_H + self.ESPACO_H)
+
+    def _x_de_t(self, t):
+        """Posição x de um instante na janela visível."""
+        x0, larg = self._area()
+        span = max(1e-9, self._v1 - self._v0)
+        return x0 + (float(t) - self._v0) / span * larg
+
+    def _t_de_x(self, x):
+        """Instante correspondente a uma posição x (preso à gravação)."""
+        x0, larg = self._area()
+        t = self._v0 + (float(x) - x0) / larg * (self._v1 - self._v0)
+        dur = self._modelo.duracao_s if self._modelo is not None else self._v1
+        return min(dur, max(0.0, t))
+
+    def _px_por_s(self):
+        """Escala atual, em pixels por segundo."""
+        _, larg = self._area()
+        return larg / max(1e-9, self._v1 - self._v0)
+
+    def _faixa_em_y(self, y):
+        """Índice da faixa sob a coordenada y, ou None (régua, espaços)."""
+        for i in range(self._n_faixas()):
+            y0 = self._y_faixa(i)
+            if y0 <= y < y0 + self.FAIXA_H:
+                return i
+        return None
+
+    def _trecho_em(self, pos):
+        """(faixa, idx, lado) do trecho sob o ponto; lado é "t0", "t1" (zona
+        de 6 px nas bordas) ou "meio". None se não há trecho ali."""
+        if self._modelo is None:
+            return None
+        fi = self._faixa_em_y(pos.y())
+        if fi is None or pos.x() < self.MARGEM_ESQ:
+            return None
+        x = pos.x()
+        for idx, tr_ in enumerate(self._modelo.trechos(fi)):
+            xa, xb = self._x_de_t(tr_["t0"]), self._x_de_t(tr_["t1"])
+            if xa - 1 <= x <= xb + 1:
+                if xb - xa > 3 * self.BORDA_PX:
+                    if x <= xa + self.BORDA_PX:
+                        return (fi, idx, "t0")
+                    if x >= xb - self.BORDA_PX:
+                        return (fi, idx, "t1")
+                return (fi, idx, "meio")
+        return None
+
+    # ----- pintura -------------------------------------------------------------
+    def paintEvent(self, _ev):
+        """Pinta fundo, régua, marcadores, faixas com blocos e o cursor."""
+        p = QtGui.QPainter(self)
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
+        p.setRenderHint(QtGui.QPainter.RenderHint.TextAntialiasing)
+        w, h = self.width(), self.height()
+        p.fillRect(0, 0, w, h, QtGui.QColor(COLORS["surface"]))
+        if self._modelo is None or self._modelo.duracao_s <= 0:
+            p.setPen(QtGui.QColor(COLORS["text_dim"]))
+            p.setFont(QtGui.QFont(FONT_UI, 9))
+            p.drawText(QtCore.QRect(0, 0, w, h), QtCore.Qt.AlignmentFlag.AlignCenter,
+                       tr("Nenhuma gravação carregada."))
+            p.end()
+            return
+        x0, larg = self._area()
+        self._pintar_regua(p, x0, larg)
+        self._pintar_faixas(p, x0, larg)
+        self._pintar_marcadores(p, x0, larg)
+        self._pintar_blocos(p, x0, larg)
+        self._pintar_cursor(p, x0, larg)
+        p.end()
+
+    def _pintar_regua(self, p, x0, larg):
+        """Régua de tempo (m:ss) com marcas principais e secundárias."""
+        p.setFont(QtGui.QFont(FONT_UI, 8))
+        cor_txt = QtGui.QColor(COLORS["text_dim"])
+        cor_borda = QtGui.QColor(COLORS["border"])
+        p.setPen(QtGui.QPen(cor_borda, 1))
+        p.drawLine(x0, self.REGUA_H - 1, x0 + larg, self.REGUA_H - 1)
+        span = self._v1 - self._v0
+        passo = _mov_passo_regua(span, larg)
+        fmt = _mov_mmss_fino if passo < 1 else _mov_mmss
+        sub = passo / 5.0
+        if sub * self._px_por_s() >= 7:
+            t = math.floor(self._v0 / sub) * sub
+            p.setPen(QtGui.QPen(cor_borda, 1))
+            while t <= self._v1 + 1e-9:
+                x = int(round(self._x_de_t(t)))
+                p.drawLine(x, self.REGUA_H - 4, x, self.REGUA_H - 1)
+                t += sub
+        t = math.floor(self._v0 / passo) * passo
+        fm = QtGui.QFontMetrics(p.font())
+        while t <= self._v1 + 1e-9:
+            x = self._x_de_t(t)
+            p.setPen(QtGui.QPen(cor_txt, 1))
+            p.drawLine(int(round(x)), self.REGUA_H - 7, int(round(x)), self.REGUA_H - 1)
+            txt = fmt(t)
+            tw = fm.horizontalAdvance(txt)
+            # O rótulo fica centrado na marca, mas sem sair da área de tempo.
+            tx = min(x0 + larg - tw, max(x0, x - tw / 2.0))
+            p.drawText(QtCore.QRectF(tx, 1, tw + 2, self.REGUA_H - 9),
+                       QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter,
+                       txt)
+            t += passo
+
+    def _pintar_faixas(self, p, x0, larg):
+        """Fundo de cada faixa e o nome dela à esquerda."""
+        p.setFont(QtGui.QFont(FONT_UI, 8))
+        fm = QtGui.QFontMetrics(p.font())
+        for i in range(self._n_faixas()):
+            y = self._y_faixa(i)
+            r = QtCore.QRectF(x0, y, larg, self.FAIXA_H)
+            p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.setBrush(QtGui.QColor(COLORS["surface_alt"]))
+            p.drawRoundedRect(r, 4, 4)
+            nome = _mov_nome_faixa(self._modelo.faixas[i]["nome"], i)
+            p.setPen(QtGui.QColor(COLORS["text_dim"]))
+            p.drawText(QtCore.QRectF(6, y, self.MARGEM_ESQ - 12, self.FAIXA_H),
+                       QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter,
+                       fm.elidedText(nome, QtCore.Qt.TextElideMode.ElideRight,
+                                     self.MARGEM_ESQ - 12))
+
+    def _pintar_marcadores(self, p, x0, larg):
+        """Marcadores da gravação: traço fino por toda a altura e rótulo na
+        tira abaixo da régua, cortado antes do marcador seguinte."""
+        if not self._marcadores:
+            return
+        y_tira = self.REGUA_H
+        y_fim = self._y_faixa(self._n_faixas() - 1) + self.FAIXA_H
+        cor = QtGui.QColor(COLORS["text_dim"])
+        p.setFont(QtGui.QFont(FONT_UI, 7))
+        fm = QtGui.QFontMetrics(p.font())
+        p.setClipRect(QtCore.QRectF(x0, 0, larg, self.height()))
+        n = len(self._marcadores)
+        for i, (t, rot) in enumerate(self._marcadores):
+            if t < self._v0 - 1e-9 or t > self._v1 + 1e-9:
+                continue
+            x = self._x_de_t(t)
+            cor_linha = QtGui.QColor(cor)
+            cor_linha.setAlpha(110)
+            p.setPen(QtGui.QPen(cor_linha, 1, QtCore.Qt.PenStyle.DashLine))
+            p.drawLine(QtCore.QPointF(x, y_tira), QtCore.QPointF(x, y_fim))
+            x_prox = self._x_de_t(self._marcadores[i + 1][0]) if i + 1 < n else x0 + larg
+            disp = x_prox - x - 6
+            if disp > 10:
+                p.setPen(cor)
+                p.drawText(QtCore.QRectF(x + 3, y_tira, disp, self.MARCADORES_H),
+                           QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter,
+                           fm.elidedText(_mov_rotulo_marcador(rot),
+                                         QtCore.Qt.TextElideMode.ElideRight, int(disp)))
+        p.setClipping(False)
+
+    def _pintar_blocos(self, p, x0, larg):
+        """Blocos arredondados dos trechos, coloridos por movimento, com o
+        título dentro quando cabe; o selecionado ganha borda de acento."""
+        fonte = QtGui.QFont(FONT_UI, 8)
+        fonte.setBold(True)
+        p.setFont(fonte)
+        fm = QtGui.QFontMetrics(fonte)
+        cor_texto_tema = QtGui.QColor(COLORS["text"])
+        cor_dim = QtGui.QColor(COLORS["text_dim"])
+        for fi, faixa in enumerate(self._modelo.faixas):
+            y = self._y_faixa(fi)
+            p.setClipRect(QtCore.QRectF(x0, y, larg, self.FAIXA_H))
+            for idx, tr_ in enumerate(faixa["trechos"]):
+                xa, xb = self._x_de_t(tr_["t0"]), self._x_de_t(tr_["t1"])
+                if xb < x0 or xa > x0 + larg:
+                    continue
+                r = QtCore.QRectF(xa, y + 3, max(2.0, xb - xa), self.FAIXA_H - 6)
+                mov = tr_["movimento"]
+                cor_hex = MOVIMENTOS_CORES.get(mov, MOVIMENTOS_CORES["a_definir"])
+                cor = QtGui.QColor(cor_hex)
+                selecionado = self._sel == (fi, idx)
+                sob_mouse = self._hover is not None and self._hover[:2] == (fi, idx)
+                caminho = QtGui.QPainterPath()
+                caminho.addRoundedRect(r, 5, 5)
+                if mov == "a_definir":
+                    # Hachura em vez de cor cheia: o olho lê "ainda não decidido".
+                    p.fillPath(caminho, QtGui.QColor(COLORS["surface"]))
+                    hach = QtGui.QColor(cor_dim)
+                    hach.setAlpha(90)
+                    p.fillPath(caminho, QtGui.QBrush(hach, QtCore.Qt.BrushStyle.BDiagPattern))
+                    caneta = QtGui.QPen(cor_dim, 1, QtCore.Qt.PenStyle.DashLine)
+                    cor_txt = cor_texto_tema
+                else:
+                    p.fillPath(caminho, cor)
+                    caneta = QtGui.QPen(cor.darker(125 if sob_mouse else 112), 1)
+                    cor_txt = QtGui.QColor(_mov_cor_texto(cor_hex))
+                if selecionado:
+                    caneta = QtGui.QPen(QtGui.QColor(COLORS["accent"]), 2)
+                p.setPen(caneta)
+                p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+                p.drawPath(caminho)
+                if r.width() >= 28:
+                    titulo = tr(MOVIMENTOS_TITULOS.get(mov, "A definir"))
+                    disp = int(r.width() - 6)
+                    if fm.horizontalAdvance(titulo) > disp:
+                        titulo = tr(MOVIMENTOS_TITULOS_CURTOS.get(mov, titulo))
+                    p.setPen(cor_txt)
+                    p.drawText(r.adjusted(3, 0, -3, 0), QtCore.Qt.AlignmentFlag.AlignCenter,
+                               fm.elidedText(titulo, QtCore.Qt.TextElideMode.ElideRight, disp))
+            p.setClipping(False)
+
+    def _pintar_cursor(self, p, x0, larg):
+        """Cursor do tocador: linha vertical na cor de aviso, com o instante
+        escrito numa etiqueta na régua."""
+        if not (self._v0 - 1e-9 <= self._cursor <= self._v1 + 1e-9):
+            return
+        x = self._x_de_t(self._cursor)
+        cor = QtGui.QColor(COLORS["warning"])
+        p.setPen(QtGui.QPen(cor, 2))
+        p.drawLine(QtCore.QPointF(x, self.REGUA_H - 8), QtCore.QPointF(x, self.height() - 2))
+        fonte = QtGui.QFont(FONT_UI, 8)
+        fonte.setBold(True)
+        p.setFont(fonte)
+        fm = QtGui.QFontMetrics(fonte)
+        txt = _mov_mmss_fino(self._cursor) if self._px_por_s() > 60 else _mov_mmss(self._cursor)
+        tw = fm.horizontalAdvance(txt) + 10
+        rx = min(x0 + larg - tw, max(x0, x - tw / 2.0))
+        r = QtCore.QRectF(rx, 2, tw, self.REGUA_H - 8)
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.setBrush(cor)
+        p.drawRoundedRect(r, 3, 3)
+        p.setPen(QtGui.QColor(_mov_cor_texto(cor.name())))
+        p.drawText(r, QtCore.Qt.AlignmentFlag.AlignCenter, txt)
+
+    # ----- interação -----------------------------------------------------------
+    def _apos_mudanca(self):
+        """Depois de qualquer edição: acerta altura e seleção, repinta e avisa."""
+        if self._sel is not None and self._modelo is not None \
+                and self._modelo.trecho(*self._sel) is None:
+            self._sel = None
+        self._hover = None
+        self._atualizar_altura()
+        self.update()
+        self.modeloMudou.emit()
+
+    def _mover_cursor_para(self, x):
+        """Posiciona o cursor pelo x do mouse e avisa o tocador."""
+        self._cursor = self._t_de_x(x)
+        self.update()
+        self.cursorMovido.emit(self._cursor)
+
+    def mousePressEvent(self, ev):
+        """Botão esquerdo: pega um trecho (modo Completo) ou posiciona o cursor."""
+        if self._modelo is None or ev.button() != QtCore.Qt.MouseButton.LeftButton:
+            return super().mousePressEvent(ev)
+        self.setFocus()
+        pos = ev.position()
+        hit = None if self._somente_leitura else self._trecho_em(pos)
+        if hit is not None:
+            fi, idx, lado = hit
+            tr_ = self._modelo.trecho(fi, idx)
+            self._sel = (fi, idx)
+            self._arrasto = {"modo": lado, "faixa": fi, "idx": idx,
+                             "t_mouse": self._t_de_x(pos.x()),
+                             "t0": tr_["t0"], "t1": tr_["t1"], "moveu": False}
+            self.update()
+            self.trechoSelecionado.emit(fi, idx)
+            ev.accept()
+            return
+        if pos.x() >= self.MARGEM_ESQ:
+            if not self._somente_leitura and self._faixa_em_y(pos.y()) is not None:
+                self._sel = None
+            self._arrasto = {"modo": "cursor", "moveu": False}
+            self._mover_cursor_para(pos.x())
+            ev.accept()
+
+    def mouseMoveEvent(self, ev):
+        """Arrasta cursor, bloco ou borda; sem botão, só troca o ponteiro."""
+        if self._modelo is None:
+            return super().mouseMoveEvent(ev)
+        pos = ev.position()
+        a = self._arrasto
+        if a is not None:
+            if a["modo"] == "cursor":
+                self._mover_cursor_para(pos.x())
+                return
+            if self._modelo.trecho(a["faixa"], a["idx"]) is None:
+                self._arrasto = None
+                return
+            dt = self._t_de_x(pos.x()) - a["t_mouse"]
+            if not a["moveu"]:
+                if abs(dt) * self._px_por_s() < 3:
+                    return                      # tremor de clique não conta
+                self._modelo.marcar_desfazer()  # um desfazer para o gesto todo
+                a["moveu"] = True
+            fi, idx = a["faixa"], a["idx"]
+            if a["modo"] == "meio":
+                # Alvo absoluto (posição inicial + dt), para o bloco não
+                # "escorregar" quando bate no vizinho e o mouse volta.
+                atual = self._modelo.trecho(fi, idx)["t0"]
+                self._modelo.mover(fi, idx, a["t0"] + dt - atual, registrar=False)
+            elif a["modo"] == "t0":
+                self._modelo.esticar(fi, idx, "t0", a["t0"] + dt, registrar=False)
+            else:
+                self._modelo.esticar(fi, idx, "t1", a["t1"] + dt, registrar=False)
+            self.update()
+            return
+        hit = None if self._somente_leitura else self._trecho_em(pos)
+        if hit != self._hover:
+            self._hover = hit
+            self.update()
+        if hit is None:
+            if pos.x() >= self.MARGEM_ESQ and (pos.y() < self.REGUA_H
+                                              or self._faixa_em_y(pos.y()) is not None):
+                self.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+            else:
+                self.unsetCursor()
+        elif hit[2] == "meio":
+            self.setCursor(QtCore.Qt.CursorShape.OpenHandCursor)
+        else:
+            self.setCursor(QtCore.Qt.CursorShape.SizeHorCursor)
+
+    def mouseReleaseEvent(self, ev):
+        """Fecha o gesto; se o bloco realmente mudou, avisa modeloMudou."""
+        a = self._arrasto
+        self._arrasto = None
+        if a is not None and a["modo"] != "cursor" and a["moveu"]:
+            self._apos_mudanca()
+        else:
+            self.update()
+        super().mouseReleaseEvent(ev)
+
+    def mouseDoubleClickEvent(self, ev):
+        """Duplo clique no fundo de uma faixa cria um trecho "a definir" de 1 s."""
+        if self._modelo is None or self._somente_leitura \
+                or ev.button() != QtCore.Qt.MouseButton.LeftButton:
+            return super().mouseDoubleClickEvent(ev)
+        pos = ev.position()
+        if self._trecho_em(pos) is not None:
+            return
+        fi = self._faixa_em_y(pos.y())
+        if fi is None or pos.x() < self.MARGEM_ESQ:
+            return
+        t = self._t_de_x(pos.x())
+        idx = self._modelo.adicionar_trecho(fi, t - self.NOVO_TRECHO_S / 2.0,
+                                            t + self.NOVO_TRECHO_S / 2.0, "a_definir")
+        if idx is None:
+            return
+        self._arrasto = None
+        self._sel = (fi, idx)
+        self._apos_mudanca()
+        self.trechoSelecionado.emit(fi, idx)
+
+    def wheelEvent(self, ev):
+        """Roda: rola no tempo; Ctrl+roda: amplia/reduz em volta do mouse."""
+        if self._modelo is None:
+            return super().wheelEvent(ev)
+        delta = ev.angleDelta().y() or ev.angleDelta().x()
+        if delta == 0:
+            return
+        dur = max(self.ZOOM_MINIMO_S, self._modelo.duracao_s)
+        span = self._v1 - self._v0
+        if ev.modifiers() & QtCore.Qt.KeyboardModifier.ControlModifier:
+            fator = 0.8 if delta > 0 else 1.25
+            novo = min(dur, max(self.ZOOM_MINIMO_S, span * fator))
+            t_m = self._t_de_x(ev.position().x())
+            frac = (t_m - self._v0) / span if span > 0 else 0.5
+            v0 = t_m - frac * novo
+        else:
+            v0 = self._v0 + (-1 if delta > 0 else 1) * span * 0.1
+            novo = span
+        v0 = min(max(0.0, v0), max(0.0, dur - novo))
+        self._v0, self._v1 = v0, v0 + novo
+        self.update()
+        ev.accept()
+
+    def keyPressEvent(self, ev):
+        """Ctrl+Z desfaz, Ctrl+Y (ou Ctrl+Shift+Z) refaz, Delete apaga o
+        selecionado; nada disso no modo Simples."""
+        if self._modelo is None or self._somente_leitura:
+            return super().keyPressEvent(ev)
+        ctrl = bool(ev.modifiers() & QtCore.Qt.KeyboardModifier.ControlModifier)
+        shift = bool(ev.modifiers() & QtCore.Qt.KeyboardModifier.ShiftModifier)
+        k = ev.key()
+        if ctrl and k == QtCore.Qt.Key.Key_Z and not shift:
+            self._acao_desfazer()
+        elif ctrl and (k == QtCore.Qt.Key.Key_Y or (k == QtCore.Qt.Key.Key_Z and shift)):
+            self._acao_refazer()
+        elif k in (QtCore.Qt.Key.Key_Delete, QtCore.Qt.Key.Key_Backspace) and self._sel:
+            self._acao_apagar(*self._sel)
+        else:
+            return super().keyPressEvent(ev)
+        ev.accept()
+
+    def contextMenuEvent(self, ev):
+        """Botão direito (modo Completo): abre o menu de edição no ponto."""
+        if self._modelo is None or self._somente_leitura:
+            return
+        menu = self.criar_menu(ev.pos())
+        menu.exec(ev.globalPos())
+
+    def criar_menu(self, pos):
+        """Monta (sem abrir) o QMenu do ponto `pos`: trocar o movimento,
+        dividir aqui, apagar, desfazer, refazer, adicionar/remover faixa.
+        Separado de contextMenuEvent para poder ser testado e capturado."""
+        m = self._modelo
+        hit = self._trecho_em(pos)
+        fi = hit[0] if hit is not None else self._faixa_em_y(pos.y())
+        t = self._t_de_x(pos.x())
+        menu = QtWidgets.QMenu(self)
+        if hit is not None:
+            fi, idx = hit[0], hit[1]
+            self._sel = (fi, idx)
+            self.update()
+            atual = m.trecho(fi, idx)["movimento"]
+            sub = menu.addMenu(tr("Trocar o movimento"))
+            for chave in MOVIMENTOS_ORDEM:
+                act = sub.addAction(_mov_icone_cor(MOVIMENTOS_CORES[chave]),
+                                    tr(MOVIMENTOS_TITULOS[chave]))
+                act.setCheckable(True)
+                act.setChecked(chave == atual)
+                act.triggered.connect(
+                    lambda _c=False, f=fi, i=idx, k=chave: self._acao_trocar(f, i, k))
+            tr_ = m.trecho(fi, idx)
+            a_div = menu.addAction(tr("Dividir aqui"))
+            a_div.setEnabled(tr_["t0"] + m.DURACAO_MINIMA <= t <= tr_["t1"] - m.DURACAO_MINIMA)
+            a_div.triggered.connect(lambda _c=False, f=fi, i=idx, tt=t: self._acao_dividir(f, i, tt))
+            a_del = menu.addAction(tr("Apagar"))
+            a_del.triggered.connect(lambda _c=False, f=fi, i=idx: self._acao_apagar(f, i))
+            menu.addSeparator()
+        elif fi is not None and pos.x() >= self.MARGEM_ESQ:
+            a_novo = menu.addAction(tr("Novo trecho aqui"))
+            a_novo.triggered.connect(lambda _c=False, f=fi, tt=t: self._acao_novo(f, tt))
+            menu.addSeparator()
+        a_desf = menu.addAction(tr("Desfazer"))
+        a_desf.setShortcut(QtGui.QKeySequence("Ctrl+Z"))
+        a_desf.setEnabled(m.pode_desfazer())
+        a_desf.triggered.connect(lambda _c=False: self._acao_desfazer())
+        a_ref = menu.addAction(tr("Refazer"))
+        a_ref.setShortcut(QtGui.QKeySequence("Ctrl+Y"))
+        a_ref.setEnabled(m.pode_refazer())
+        a_ref.triggered.connect(lambda _c=False: self._acao_refazer())
+        menu.addSeparator()
+        a_add = menu.addAction(tr("Adicionar faixa"))
+        a_add.setEnabled(m.n_faixas() < m.MAX_FAIXAS)
+        a_add.triggered.connect(lambda _c=False: self._acao_adicionar_faixa())
+        a_rem = menu.addAction(tr("Remover faixa"))
+        a_rem.setEnabled(fi is not None and m.n_faixas() > m.MIN_FAIXAS)
+        a_rem.triggered.connect(lambda _c=False, f=fi: self._acao_remover_faixa(f))
+        return menu
+
+    # ----- ações do menu / teclado -----------------------------------------------
+    def _acao_trocar(self, fi, idx, chave):
+        """Troca o movimento do trecho e avisa."""
+        if self._modelo.trocar_movimento(fi, idx, chave):
+            self._apos_mudanca()
+
+    def _acao_dividir(self, fi, idx, t):
+        """Divide o trecho em `t`; a metade nova fica selecionada."""
+        novo = self._modelo.dividir(fi, idx, t)
+        if novo is not None:
+            self._sel = (fi, novo)
+            self._apos_mudanca()
+            self.trechoSelecionado.emit(fi, novo)
+
+    def _acao_apagar(self, fi, idx):
+        """Apaga o trecho e avisa."""
+        if self._modelo.apagar(fi, idx):
+            self._sel = None
+            self._apos_mudanca()
+
+    def _acao_novo(self, fi, t):
+        """Cria um trecho "a definir" de 1 s centrado em `t`."""
+        idx = self._modelo.adicionar_trecho(fi, t - self.NOVO_TRECHO_S / 2.0,
+                                            t + self.NOVO_TRECHO_S / 2.0, "a_definir")
+        if idx is not None:
+            self._sel = (fi, idx)
+            self._apos_mudanca()
+            self.trechoSelecionado.emit(fi, idx)
+
+    def _acao_desfazer(self):
+        """Desfaz a última edição."""
+        if self._modelo.desfazer():
+            self._apos_mudanca()
+
+    def _acao_refazer(self):
+        """Refaz a última edição desfeita."""
+        if self._modelo.refazer():
+            self._apos_mudanca()
+
+    def _acao_adicionar_faixa(self):
+        """Acrescenta uma faixa (até 4)."""
+        if self._modelo.adicionar_faixa() is not None:
+            self._apos_mudanca()
+
+    def _acao_remover_faixa(self, fi):
+        """Remove a faixa sob o mouse (nunca abaixo de 2)."""
+        if fi is not None and self._modelo.remover_faixa(fi):
+            self._sel = None
+            self._apos_mudanca()
+
+
+class ListaTrechosWidget(QtWidgets.QListWidget):
+    """Lista dos trechos em palavras simples ("0:03–0:07  Flexão do cotovelo
+    (faixa 1)"), ordenada pelo tempo. Clicar num item leva o cursor do
+    tocador ao começo do trecho (cursorMovido) e avisa qual trecho é
+    (trechoSelecionado)."""
+
+    cursorMovido = QtCore.Signal(float)
+    trechoSelecionado = QtCore.Signal(int, int)
+
+    def __init__(self, parent=None):
+        """Lista vazia, com a fonte da interface."""
+        super().__init__(parent)
+        self._modelo = None
+        self.setFont(QtGui.QFont(FONT_UI, 10))
+        self.setAlternatingRowColors(True)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.itemClicked.connect(self._clicou)
+        self.itemActivated.connect(self._clicou)
+
+    def set_modelo(self, modelo):
+        """Refaz a lista a partir do modelo (chame após cada modeloMudou)."""
+        self._modelo = modelo
+        self.clear()
+        if modelo is None or modelo.total_trechos() == 0:
+            vazio = QtWidgets.QListWidgetItem(
+                tr("Nenhum trecho de movimento marcado nesta gravação."))
+            vazio.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
+            self.addItem(vazio)
+            return
+        for fi, idx, tr_ in modelo.todos_trechos():
+            item = QtWidgets.QListWidgetItem(
+                _mov_icone_cor(MOVIMENTOS_CORES.get(tr_["movimento"],
+                                                    MOVIMENTOS_CORES["a_definir"])),
+                descrever_trecho(tr_, fi))
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, (fi, idx))
+            self.addItem(item)
+
+    def selecionar(self, faixa, idx):
+        """Destaca o item do trecho (faixa, idx), se estiver na lista."""
+        for i in range(self.count()):
+            it = self.item(i)
+            if it.data(QtCore.Qt.ItemDataRole.UserRole) == (faixa, idx):
+                self.setCurrentItem(it)
+                return
+
+    def _clicou(self, item):
+        """Leva o cursor ao começo do trecho clicado."""
+        dados = item.data(QtCore.Qt.ItemDataRole.UserRole)
+        if not dados or self._modelo is None:
+            return
+        fi, idx = dados
+        tr_ = self._modelo.trecho(fi, idx)
+        if tr_ is None:
+            return
+        self.cursorMovido.emit(float(tr_["t0"]))
+        self.trechoSelecionado.emit(int(fi), int(idx))
+
+
+# ============================================================
+# REPLAY DO CORAÇÃO E DOS OLHOS (P7) — detecções sobre a gravação inteira
+# (as MESMAS do relatório PDF), batidas.json / olhos.json e os widgets
+# ============================================================
+# ----------------------------------------------------------------------------
+# P7 — Replay do coração e dos olhos
+#
+# Tudo aqui calcula sobre a GRAVAÇÃO INTEIRA com as MESMAS funções da tela
+# ao vivo e do relatório PDF, para o replay mostrar os mesmos números:
+#   ECG  picos R = ecg_pan_tompkins (a do PDF e das receitas);
+#        RR = ecg_rr; bpm médio = ecg_hrv_tempo["fc_media"];
+#        batida adiantada / pausa = correct_ectopic_rr(rr, 0.30), o critério
+#        com que _update_ecg_view conta ectópicos.
+#   EOG  piscadas = eog_piscadas_tela(v, fs, limiar) (tela e PDF) ou
+#        eog_piscadas(v, fs) quando a gravação não guardou o limiar (PDF);
+#        sacadas = eog_sacadas (PDF); direção = polaridade da tela
+#        (_update_eog_view: +H = direita, +V = cima).
+# As globais do programa são lidas por _p7_global() dentro das funções, nunca
+# em nível de módulo: o bloco pode ser colado em qualquer ponto do ROA.py.
+# ----------------------------------------------------------------------------
+
+P7_VERSAO_JSON = 1
+P7_ECTOPICO_LIMIAR = 0.30        # o mesmo threshold de correct_ectopic_rr na tela
+P7_JANELA_BASE_S = 10.0          # BUFFER_SECONDS da tela: a mediana do buffer é a base
+P7_TOLERANCIA_CORRECAO_S = 0.08  # clique "na batida" = a menos de 80 ms dela
+
+
+def _p7_global(nome, padrao=None):
+    """Lê uma global do programa (tr, COLORS, FONT_UI...) se existir; senão o padrão.
+
+    Permite ao bloco rodar fora do ROA.py (protótipo e testes) sem referenciar
+    essas globais em nível de módulo."""
+    return globals().get(nome, padrao)
+
+
+def _p7_tr(s):
+    """Traduz com o tr() do programa quando ele existe; senão devolve o texto."""
+    f = _p7_global("tr")
+    return f(s) if callable(f) else s
+
+
+def _p7_cor(chave, padrao):
+    """Cor do tema atual (COLORS[chave]) ou a cor padrão informada."""
+    cores = _p7_global("COLORS") or {}
+    return str(cores.get(chave, padrao))
+
+
+def _p7_cor_sinal(tipo, padrao):
+    """Cor do tipo de sinal (SIGNAL_TYPE_COLORS[tipo]) ou a padrão."""
+    cores = _p7_global("SIGNAL_TYPE_COLORS") or {}
+    return str(cores.get(tipo, padrao))
+
+
+def _p7_cor_legivel(cor):
+    """Escurece uma cor de sinal clara (ciano, verde-limão) quando o fundo é
+    claro, para o texto continuar legível; em tema escuro devolve como está."""
+    cor = QtGui.QColor(cor)
+    fundo = QtGui.QColor(_p7_cor("surface", "#ffffff"))
+    return cor.darker(175) if fundo.lightnessF() > 0.5 else cor
+
+
+def _p7_fonte(tamanho, negrito=False, dados=False):
+    """QFont na família da interface (FONT_UI) ou dos dados (FONT_DATA)."""
+    nome = _p7_global("FONT_DATA" if dados else "FONT_UI") or "Sans Serif"
+    f = QtGui.QFont(str(nome), int(tamanho))
+    if negrito:
+        f.setBold(True)
+    return f
+
+
+def _p7_idioma():
+    """Código do idioma da interface (I18N.current) ou 'pt'."""
+    i18n = _p7_global("I18N")
+    return str(getattr(i18n, "current", "pt") or "pt") if i18n is not None else "pt"
+
+
+def fmt_num(x, casas=1):
+    """Número com a vírgula decimal dos idiomas que a usam (pt, es, it, fr, de, ru).
+
+    Usa num_loc do programa quando existe (mesma formatação do PDF); fora dele,
+    troca o ponto por vírgula conforme I18N.current. None/NaN -> '—'."""
+    f = _p7_global("num_loc")
+    if callable(f):
+        return f(x, casas)
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return "—"
+    if not math.isfinite(v):
+        return "—"
+    s = "%.*f" % (max(0, int(casas)), v)
+    if _p7_idioma() in ("pt", "es", "it", "fr", "de", "ru"):
+        s = s.replace(".", ",")
+    return s
+
+
+def _p7_plural(n, singular, plural, nenhum=None):
+    """'1 pausa maior' / '2 pausas maiores' / 'nenhuma pausa maior' via tr()."""
+    n = int(n)
+    if n == 0 and nenhum:
+        return _p7_tr(nenhum)
+    return _p7_tr(singular if n == 1 else plural).format(n)
+
+
+def _p7_sem_nan(v):
+    """float finito ou None — o JSON não guarda NaN."""
+    try:
+        v = float(v)
+    except (TypeError, ValueError):
+        return None
+    return v if math.isfinite(v) else None
+
+
+def _p7_agora_iso():
+    """Carimbo de data/hora local em ISO 8601, para 'gerado_em'."""
+    return time.strftime("%Y-%m-%dT%H:%M:%S")
+
+
+# ============================================================ ECG — batidas
+
+def _p7_mediana_movel_rr(rr):
+    """Mediana móvel dos RR com o MESMO kernel de correct_ectopic_rr (≤ 5).
+
+    correct_ectopic_rr decide QUAIS RR desviam mais de 30% dela, mas devolve
+    só os índices; o sinal do desvio (abaixo = batida adiantada, acima =
+    pausa) precisa da mediana, e ela é recalculada aqui exatamente como lá.
+    Pedido no relatório: expor a mediana em correct_ectopic_rr para não
+    repetir estas três linhas."""
+    rr = np.asarray(rr, float)
+    if rr.size < 3:
+        return rr.copy()
+    kern = max(3, min(5, rr.size if rr.size % 2 else rr.size - 1))
+    sig = _p7_global("scipy_signal")          # o módulo adiado do ROA.py
+    if sig is not None:
+        return np.asarray(sig.medfilt(rr, kernel_size=kern), float)
+    # fallback só com numpy, idêntico ao medfilt (bordas preenchidas com zero)
+    meia = kern // 2
+    cheio = np.concatenate([np.zeros(meia), rr, np.zeros(meia)])
+    return np.array([np.median(cheio[i:i + kern]) for i in range(rr.size)])
+
+
+def classificar_batidas(tempos_s, fs=1000.0):
+    """Lista de batidas {t, rr_ms, tipo, origem} a partir dos instantes dos picos R.
+
+    rr_ms é o intervalo desde a batida anterior (None na primeira). O tipo
+    segue o critério com que o painel ao vivo conta ectópicos
+    (_update_ecg_view: correct_ectopic_rr(rr, threshold=0.30)): RR que desvia
+    mais de 30% da mediana móvel; se ficou abaixo dela a batida chegou cedo
+    ("adiantada"), se ficou acima houve uma pausa antes dela ("pausa").
+    Diferença consciente: a tela descarta RR fora de 300-2000 ms antes de
+    contar; aqui nenhuma batida é descartada, para a pausa longa aparecer."""
+    tempos = np.sort(np.asarray(list(tempos_s), float))
+    n = tempos.size
+    batidas = [{"t": float(t), "rr_ms": None, "tipo": "normal", "origem": "auto"}
+               for t in tempos]
+    if n < 2:
+        return batidas
+    # ecg_rr trabalha em amostras: passar t*fs devolve exatamente diff(t)*1000
+    rr = np.asarray(ecg_rr(tempos * float(fs), fs), float)
+    for i, v in enumerate(rr):
+        batidas[i + 1]["rr_ms"] = float(v)
+    _corr, ruins = correct_ectopic_rr(rr, threshold=P7_ECTOPICO_LIMIAR)
+    if ruins:
+        med = _p7_mediana_movel_rr(rr)
+        for i in ruins:
+            i = int(i)
+            batidas[i + 1]["tipo"] = "adiantada" if rr[i] < med[i] else "pausa"
+    return batidas
+
+
+def resumo_batidas(batidas):
+    """{'bpm_medio', 'n_adiantadas', 'n_pausas', 'n_batidas'} de uma lista de batidas.
+
+    bpm_medio = 60000/média(RR) como ecg_hrv_tempo['fc_media'], o número do PDF."""
+    rr = np.asarray([b["rr_ms"] for b in batidas if b.get("rr_ms") is not None], float)
+    bpm = ecg_hrv_tempo(rr)["fc_media"] if rr.size >= 2 else float("nan")
+    return {"bpm_medio": _p7_sem_nan(bpm),
+            "n_adiantadas": sum(1 for b in batidas if b.get("tipo") == "adiantada"),
+            "n_pausas": sum(1 for b in batidas if b.get("tipo") == "pausa"),
+            "n_batidas": len(batidas)}
+
+
+def detectar_batidas_gravacao(sinal_ecg, fs):
+    """Todas as batidas de uma gravação de ECG, com os números do PDF.
+
+    Picos R por ecg_pan_tompkins (a função de _pdf_figs_ecg e das receitas),
+    RR por ecg_rr, bpm médio por ecg_hrv_tempo e tipo de cada batida por
+    classificar_batidas. Devolve {"versao", "fs", "batidas", "bpm_medio",
+    "n_adiantadas", "n_pausas"}."""
+    fs = float(fs)
+    x = np.nan_to_num(np.asarray(sinal_ecg, float))
+    picos = np.asarray(ecg_pan_tompkins(x, fs), int)
+    batidas = classificar_batidas(picos / fs, fs)
+    saida = {"versao": P7_VERSAO_JSON, "fs": fs, "batidas": batidas}
+    saida.update(resumo_batidas(batidas))
+    return saida
+
+
+def _p7_indice_mais_perto(tempos, t, tolerancia):
+    """Índice do instante mais próximo de t (ou None se nenhum está a menos de tolerancia)."""
+    if not len(tempos):
+        return None
+    arr = np.asarray(tempos, float)
+    i = int(np.argmin(np.abs(arr - float(t))))
+    return i if abs(arr[i] - float(t)) <= tolerancia else None
+
+
+def aplicar_correcoes(batidas, correcoes, tolerancia_s=P7_TOLERANCIA_CORRECAO_S):
+    """Aplica correções manuais e recalcula RR e tipos dos vizinhos.
+
+    correcoes = [{"acao": "remover", "t": s}, {"acao": "adicionar", "t": s},
+                 {"acao": "tipo", "t": s, "tipo": "normal|adiantada|pausa"}].
+    Uma batida com tipo fixado à mão fica marcada ("tipo_fixo": True,
+    "origem": "manual") e não é reclassificada; as demais voltam a passar pelo
+    mesmo critério automático, porque remover ou acrescentar uma batida muda
+    os RR ao redor. Devolve a lista nova (não altera a de entrada)."""
+    tempos = [float(b["t"]) for b in batidas]
+    fixos = {round(float(b["t"]), 4): b["tipo"] for b in batidas if b.get("tipo_fixo")}
+    manuais = {round(float(b["t"]), 4) for b in batidas if b.get("origem") == "manual"}
+    for c in correcoes or []:
+        acao = c.get("acao")
+        try:
+            t = float(c.get("t"))
+        except (TypeError, ValueError):
+            continue
+        if acao == "remover":
+            i = _p7_indice_mais_perto(tempos, t, tolerancia_s)
+            if i is not None:
+                chave = round(tempos.pop(i), 4)
+                fixos.pop(chave, None)
+                manuais.discard(chave)
+        elif acao == "adicionar":
+            if _p7_indice_mais_perto(tempos, t, tolerancia_s) is None:
+                tempos.append(t)
+                manuais.add(round(t, 4))
+        elif acao == "tipo":
+            i = _p7_indice_mais_perto(tempos, t, tolerancia_s)
+            tipo = c.get("tipo")
+            if i is not None and tipo in ("normal", "adiantada", "pausa"):
+                fixos[round(tempos[i], 4)] = tipo
+                manuais.add(round(tempos[i], 4))
+    novas = classificar_batidas(tempos)
+    for b in novas:
+        chave = round(b["t"], 4)
+        if chave in fixos:
+            b["tipo"] = fixos[chave]
+            b["tipo_fixo"] = True
+        if chave in manuais:
+            b["origem"] = "manual"
+    return novas
+
+
+def caminho_batidas(pasta_gravacao):
+    """Caminho do batidas.json dentro da pasta da gravação."""
+    return os.path.join(str(pasta_gravacao), "batidas.json")
+
+
+def salvar_batidas(pasta_gravacao, deteccao, correcoes=None):
+    """Grava batidas.json: {"versao", "fs", "batidas", "correcoes", "gerado_em",
+    "bpm_medio", "n_adiantadas", "n_pausas"}.
+
+    "batidas" já vem com as correções aplicadas; "correcoes" é só o histórico
+    (quem carrega NÃO deve reaplicá-lo). Devolve o caminho gravado."""
+    batidas = list(deteccao.get("batidas", []))
+    dados = {"versao": P7_VERSAO_JSON, "fs": float(deteccao.get("fs", 0.0)),
+             "batidas": batidas, "correcoes": list(correcoes or []),
+             "gerado_em": _p7_agora_iso()}
+    dados.update(resumo_batidas(batidas))
+    caminho = caminho_batidas(pasta_gravacao)
+    with open(caminho, "w", encoding="utf-8") as f:
+        json.dump(dados, f, ensure_ascii=False, indent=1)
+    return caminho
+
+
+def carregar_batidas(pasta_gravacao):
+    """Lê batidas.json da pasta; None se não existe ou está ilegível."""
+    caminho = caminho_batidas(pasta_gravacao)
+    try:
+        with open(caminho, encoding="utf-8") as f:
+            dados = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(dados, dict) or "batidas" not in dados:
+        return None
+    dados.setdefault("correcoes", [])
+    dados.update(resumo_batidas(dados["batidas"]))
+    return dados
+
+
+# ============================================================ EOG — olhos
+
+P7_DIRECOES = ("direita", "esquerda", "cima", "baixo")
+_P7_OPOSTA = {"direita": "esquerda", "esquerda": "direita",
+              "cima": "baixo", "baixo": "cima"}
+
+
+def _p7_pico_piscada(v, a, b, fs):
+    """Instante do pico da piscada entre as amostras a e b (o que a tela marca).
+
+    eog_piscadas_tela já devolve o índice do pico; eog_piscadas não, então o
+    pico é o máximo do resíduo sobre a linha de base local, a mesma base das
+    duas funções."""
+    r = v[a:b] - eog_linha_base(v, fs)[a:b]
+    return float((a + int(np.argmax(np.abs(r)))) / fs) if b > a else float(a / fs)
+
+
+def detectar_eventos_olhos(h, v, fs, limiar_uV, inverter_h=False, inverter_v=False):
+    """Piscadas e sacadas de uma gravação de EOG, com os critérios da tela/PDF.
+
+    Piscadas (canal vertical): eog_piscadas_tela(v, fs, limiar_uV) — subida do
+    resíduo acima de 1,5 x limiar por ≥ 50 ms, um pico por trecho, picos a
+    menos de 200 ms descartados — a mesma chamada de _update_eog_view e de
+    _pdf_figs_eog; sem limiar (gravação antiga) usa eog_piscadas(v, fs) como
+    o PDF. Sacadas: eog_sacadas (velocidade > 6 MAD, ≥ 20 ms), a função do
+    PDF, no canal horizontal e também no vertical (descartando as que caem
+    numa piscada). Direção pela polaridade que a tela usa para "Direita"/
+    "Cima" (+H = direita, +V = cima); inverter_h / inverter_v trocam o lado.
+    n_sacadas conta só as horizontais, como a tela e o PDF; as verticais
+    ficam em n_sacadas_v. Devolve {"versao", "fs", "limiar_uV", "inverter_h",
+    "inverter_v", "eventos", "n_piscadas", "n_sacadas", "n_sacadas_v",
+    "taxa_piscadas_min"}."""
+    fs = float(fs)
+    h = np.nan_to_num(np.asarray(h, float))
+    v = np.nan_to_num(np.asarray(v, float))
+    n = min(h.size, v.size)
+    h, v = h[:n], v[:n]
+    eventos = []
+    janelas_piscada = []
+    try:
+        piscadas = (eog_piscadas_tela(v, fs, float(limiar_uV)) if limiar_uV
+                    else eog_piscadas(v, fs))
+    except Exception:
+        piscadas = []
+    for q in piscadas:
+        a, b = int(q[0]), int(q[1])
+        t = float(q[4] / fs) if len(q) >= 5 else _p7_pico_piscada(v, a, b, fs)
+        janelas_piscada.append((a / fs - 0.1, b / fs + 0.1))
+        eventos.append({"t": t, "tipo": "piscada", "direcao": None,
+                        "dur_s": float(q[2]), "origem": "auto"})
+    sh = -1.0 if inverter_h else 1.0
+    sv = -1.0 if inverter_v else 1.0
+    try:
+        sac_h = eog_sacadas(h, fs)
+    except Exception:
+        sac_h = []
+    for a, b, amp, _vel in sac_h:
+        eventos.append({"t": float(a / fs), "tipo": "sacada",
+                        "direcao": "direita" if amp * sh > 0 else "esquerda",
+                        "dur_s": float((b - a) / fs), "amp_uV": float(abs(amp)),
+                        "eixo": "h", "origem": "auto"})
+    try:
+        sac_v = eog_sacadas(v, fs)
+    except Exception:
+        sac_v = []
+    n_sac_v = 0
+    for a, b, amp, _vel in sac_v:
+        ta, tb = a / fs, b / fs
+        if any(ta <= j1 and tb >= j0 for j0, j1 in janelas_piscada):
+            continue          # é a própria piscada, não um olhar para cima
+        n_sac_v += 1
+        eventos.append({"t": float(ta), "tipo": "sacada",
+                        "direcao": "cima" if amp * sv > 0 else "baixo",
+                        "dur_s": float(tb - ta), "amp_uV": float(abs(amp)),
+                        "eixo": "v", "origem": "auto"})
+    eventos.sort(key=lambda e: e["t"])
+    minutos = n / fs / 60.0 if fs > 0 else 0.0
+    taxa = (len(piscadas) / minutos) if minutos > 0 else float("nan")
+    return {"versao": P7_VERSAO_JSON, "fs": fs,
+            "limiar_uV": (float(limiar_uV) if limiar_uV else None),
+            "inverter_h": bool(inverter_h), "inverter_v": bool(inverter_v),
+            "eventos": eventos, "n_piscadas": len(piscadas),
+            "n_sacadas": len(sac_h), "n_sacadas_v": n_sac_v,
+            "taxa_piscadas_min": _p7_sem_nan(taxa)}
+
+
+def inverter_direcoes(deteccao, inverter_h, inverter_v):
+    """Devolve uma cópia da detecção com as direções trocadas conforme os flags
+    pedidos, sem detectar de novo (o botão 'Inverter' do replay é só isto)."""
+    nova = dict(deteccao)
+    troca_h = bool(inverter_h) != bool(deteccao.get("inverter_h", False))
+    troca_v = bool(inverter_v) != bool(deteccao.get("inverter_v", False))
+    eventos = []
+    for e in deteccao.get("eventos", []):
+        e = dict(e)
+        d = e.get("direcao")
+        if d in ("direita", "esquerda") and troca_h:
+            e["direcao"] = _P7_OPOSTA[d]
+        elif d in ("cima", "baixo") and troca_v:
+            e["direcao"] = _P7_OPOSTA[d]
+        eventos.append(e)
+    nova["eventos"] = eventos
+    nova["inverter_h"] = bool(inverter_h)
+    nova["inverter_v"] = bool(inverter_v)
+    return nova
+
+
+def resumo_eventos_olhos(eventos, dur_s=None):
+    """Contadores de uma lista de eventos: piscadas, sacadas (horizontais),
+    sacadas verticais e piscadas por minuto (se a duração for conhecida)."""
+    n_p = sum(1 for e in eventos if e.get("tipo") == "piscada")
+    n_sh = sum(1 for e in eventos if e.get("tipo") == "sacada"
+               and e.get("direcao") in ("direita", "esquerda", None))
+    n_sv = sum(1 for e in eventos if e.get("tipo") == "sacada"
+               and e.get("direcao") in ("cima", "baixo"))
+    taxa = (n_p / (dur_s / 60.0)) if dur_s and dur_s > 0 else None
+    return {"n_piscadas": n_p, "n_sacadas": n_sh, "n_sacadas_v": n_sv,
+            "taxa_piscadas_min": _p7_sem_nan(taxa) if taxa is not None else None}
+
+
+def aplicar_correcoes_olhos(eventos, correcoes, tolerancia_s=P7_TOLERANCIA_CORRECAO_S):
+    """Correções manuais na lista de eventos dos olhos, no molde das batidas.
+
+    correcoes = [{"acao": "remover", "t"}, {"acao": "adicionar", "t", "tipo",
+    "direcao"?, "dur_s"?}, {"acao": "tipo", "t", "tipo", "direcao"?}].
+    Devolve a lista nova, ordenada por t (não altera a de entrada)."""
+    novos = [dict(e) for e in eventos]
+    for c in correcoes or []:
+        acao = c.get("acao")
+        try:
+            t = float(c.get("t"))
+        except (TypeError, ValueError):
+            continue
+        tempos = [e["t"] for e in novos]
+        if acao == "remover":
+            i = _p7_indice_mais_perto(tempos, t, tolerancia_s)
+            if i is not None:
+                novos.pop(i)
+        elif acao == "adicionar":
+            tipo = c.get("tipo", "piscada")
+            if tipo in ("piscada", "sacada", "fixacao"):
+                novos.append({"t": t, "tipo": tipo, "direcao": c.get("direcao"),
+                              "dur_s": c.get("dur_s"), "origem": "manual"})
+        elif acao == "tipo":
+            i = _p7_indice_mais_perto(tempos, t, tolerancia_s)
+            if i is not None and c.get("tipo") in ("piscada", "sacada", "fixacao"):
+                novos[i]["tipo"] = c["tipo"]
+                if "direcao" in c:
+                    novos[i]["direcao"] = c["direcao"]
+                novos[i]["origem"] = "manual"
+    novos.sort(key=lambda e: e["t"])
+    return novos
+
+
+def caminho_olhos(pasta_gravacao):
+    """Caminho do olhos.json dentro da pasta da gravação."""
+    return os.path.join(str(pasta_gravacao), "olhos.json")
+
+
+def salvar_olhos(pasta_gravacao, deteccao, correcoes=None, dur_s=None):
+    """Grava olhos.json: {"versao", "fs", "limiar_uV", "inverter_h", "inverter_v",
+    "eventos", "correcoes", "gerado_em", "n_piscadas", "n_sacadas",
+    "n_sacadas_v", "taxa_piscadas_min"}. "eventos" já corrigidos; "correcoes"
+    é histórico. Devolve o caminho gravado."""
+    eventos = list(deteccao.get("eventos", []))
+    dados = {"versao": P7_VERSAO_JSON, "fs": float(deteccao.get("fs", 0.0)),
+             "limiar_uV": deteccao.get("limiar_uV"),
+             "inverter_h": bool(deteccao.get("inverter_h", False)),
+             "inverter_v": bool(deteccao.get("inverter_v", False)),
+             "eventos": eventos, "correcoes": list(correcoes or []),
+             "gerado_em": _p7_agora_iso()}
+    dados.update(resumo_eventos_olhos(eventos, dur_s))
+    if dados.get("taxa_piscadas_min") is None:
+        dados["taxa_piscadas_min"] = _p7_sem_nan(deteccao.get("taxa_piscadas_min"))
+    caminho = caminho_olhos(pasta_gravacao)
+    with open(caminho, "w", encoding="utf-8") as f:
+        json.dump(dados, f, ensure_ascii=False, indent=1)
+    return caminho
+
+
+def carregar_olhos(pasta_gravacao):
+    """Lê olhos.json da pasta; None se não existe ou está ilegível."""
+    caminho = caminho_olhos(pasta_gravacao)
+    try:
+        with open(caminho, encoding="utf-8") as f:
+            dados = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(dados, dict) or "eventos" not in dados:
+        return None
+    dados.setdefault("correcoes", [])
+    return dados
+
+
+def texto_evento(ev):
+    """Frase em palavras simples para um evento: '0:03 piscou',
+    '0:05 olhou para a direita', '0:09 ficou olhando para cima por 1,2 s'."""
+    t = fmt_mmss(ev.get("t", 0.0))
+    tipo = ev.get("tipo")
+    d = ev.get("direcao")
+    if tipo == "piscada":
+        return _p7_tr("{0} piscou").format(t)
+    frases_sacada = {"direita": "{0} olhou para a direita",
+                     "esquerda": "{0} olhou para a esquerda",
+                     "cima": "{0} olhou para cima",
+                     "baixo": "{0} olhou para baixo"}
+    frases_fix = {"direita": "{0} ficou olhando para a direita",
+                  "esquerda": "{0} ficou olhando para a esquerda",
+                  "cima": "{0} ficou olhando para cima",
+                  "baixo": "{0} ficou olhando para baixo"}
+    if tipo == "sacada":
+        return _p7_tr(frases_sacada.get(d, "{0} moveu os olhos")).format(t)
+    if tipo == "fixacao":
+        base = _p7_tr(frases_fix.get(d, "{0} ficou olhando para frente")).format(t)
+        dur = ev.get("dur_s")
+        if dur:
+            base = _p7_tr("{0} por {1} s").format(base, fmt_num(dur, 1))
+        return base
+    return _p7_tr("{0} evento").format(t)
+
+
+def olhar_no_instante(h, v, fs, t, inverter_h=False, inverter_v=False, escala_uV=160.0):
+    """(gx, gy) em -1..1 para animar os olhos no instante t.
+
+    Média de ~100 ms em volta de t, relativa à linha de base = mediana dos
+    10 s anteriores (a tela usa a mediana do buffer de 10 s em
+    _update_eog_view), dividida por escala_uV (a tela divide por 2 x limiar:
+    gx = h_mean / max(th*2, 1)). Com escala_uV = 2 x limiar, |g| > 0,5
+    equivale ao critério da tela para dizer 'Direita'/'Cima'. inverter_h e
+    inverter_v trocam o sinal."""
+    fs = float(fs)
+    h = np.asarray(h, float)
+    v = np.asarray(v, float)
+    n = min(h.size, v.size)
+    if n == 0 or fs <= 0:
+        return 0.0, 0.0
+    i = int(round(float(t) * fs))
+    meia = max(1, int(0.05 * fs))
+    a, b = max(0, i - meia), min(n, i + meia + 1)
+    if b <= a:
+        return 0.0, 0.0
+    j0 = max(0, b - int(P7_JANELA_BASE_S * fs))
+    hb = float(np.median(h[j0:b]))
+    vb = float(np.median(v[j0:b]))
+    esc = max(float(escala_uV), 1e-6)
+    gx = (float(np.mean(h[a:b])) - hb) / esc
+    gy = (float(np.mean(v[a:b])) - vb) / esc
+    if inverter_h:
+        gx = -gx
+    if inverter_v:
+        gy = -gy
+    return (max(-1.0, min(1.0, gx)), max(-1.0, min(1.0, gy)))
+
+
+def direcao_do_olhar(gx, gy, limite=0.5):
+    """'direita'|'esquerda'|'cima'|'baixo'|'centro' a partir do olhar em -1..1.
+
+    Mesma ordem de decisão de _update_eog_view (vertical antes de horizontal):
+    com gx = h_mean/(2·th), |gx| > 0,5 é exatamente |h_mean| > th."""
+    if gy > limite:
+        return "cima"
+    if gy < -limite:
+        return "baixo"
+    if gx > limite:
+        return "direita"
+    if gx < -limite:
+        return "esquerda"
+    return "centro"
+
+
+# ============================================================ Widgets
+
+_P7_RODAPE = "Isto não é laudo nem diagnóstico."
+
+
+def _p7_pinta_rodape(p, w, h):
+    """Rodapé fixo em letra pequena na base do widget."""
+    p.setPen(QtGui.QPen(QtGui.QColor(_p7_cor("text_dim", "#777777"))))
+    p.setFont(_p7_fonte(7))
+    p.drawText(QtCore.QRectF(0, h - 16, w, 14), QtCore.Qt.AlignmentFlag.AlignCenter,
+               _p7_tr(_P7_RODAPE))
+
+
+def _p7_palavra_tipo(tipo):
+    """Nome em palavras simples do tipo da batida."""
+    return _p7_tr({"adiantada": "batida adiantada", "pausa": "pausa maior"}
+                  .get(tipo, "batida regular"))
+
+
+def _p7_cor_tipo(tipo):
+    """Cor do tipo da batida: adiantada = aviso, pausa = erro, regular = texto fraco."""
+    if tipo == "adiantada":
+        return QtGui.QColor(_p7_cor("warning", "#b8730a"))
+    if tipo == "pausa":
+        return QtGui.QColor(_p7_cor("error", "#d4364f"))
+    return QtGui.QColor(_p7_cor("text_dim", "#777777"))
+
+
+class CoracaoReplayWidget(QtWidgets.QWidget):
+    """Coração desenhado que BATE no instante de cada batida gravada.
+
+    A animação é derivada do tempo que o tocador manda em set_tempo(t), não de
+    um timer próprio: o pulso é um decaimento desde a última batida <= t, com
+    um segundo pulso menor ("tum-tum"). Mostra o bpm instantâneo (60000/RR)
+    em letra grande e o tipo da batida atual em palavras, na cor do tipo."""
+
+    def __init__(self, parent=None):
+        """Começa sem batidas e no instante zero."""
+        super().__init__(parent)
+        self.setMinimumSize(200, 200)
+        self._batidas = []
+        self._tempos = np.zeros(0)
+        self._t = 0.0
+
+    def set_batidas(self, lista):
+        """Recebe a lista de batidas ({t, rr_ms, tipo}) da gravação."""
+        self._batidas = list(lista or [])
+        self._tempos = np.asarray([b["t"] for b in self._batidas], float)
+        self.update()
+
+    def set_tempo(self, t):
+        """Instante atual do tocador (chamado a cada ~33 ms)."""
+        self._t = float(t)
+        self.update()
+
+    def batida_atual(self):
+        """Índice da última batida <= t, ou None antes da primeira."""
+        if not self._tempos.size:
+            return None
+        i = int(np.searchsorted(self._tempos, self._t + 1e-9, side="right")) - 1
+        return i if i >= 0 else None
+
+    def pulso(self):
+        """Intensidade 0..1 do pulso no instante atual, só em função do tempo.
+
+        Sobe em 60 ms, decai com constante de 160 ms e ganha um segundo pico
+        menor 220 ms depois — o 'tum-tum' que o olho reconhece como coração."""
+        i = self.batida_atual()
+        if i is None:
+            return 0.0
+        dt = self._t - float(self._tempos[i])
+        if dt < 0:
+            return 0.0
+        ataque = 0.06
+        if dt < ataque:
+            principal = dt / ataque
+        else:
+            principal = math.exp(-(dt - ataque) / 0.16)
+        segundo = 0.0
+        if 0.20 <= dt < 0.26:
+            segundo = (dt - 0.20) / 0.06 * 0.45
+        elif dt >= 0.26:
+            segundo = 0.45 * math.exp(-(dt - 0.26) / 0.12)
+        return max(0.0, min(1.0, max(principal, segundo)))
+
+    @staticmethod
+    def _caminho_coracao(cx, cy, s):
+        """Contorno do coração em duas curvas de Bézier por lado: lóbulos
+        redondos, entalhe suave no alto e ponta embaixo, em escala s."""
+        path = QtGui.QPainterPath()
+        path.moveTo(cx, cy - 0.42 * s)                       # entalhe
+        path.cubicTo(cx - 0.20 * s, cy - 1.12 * s,
+                     cx - 1.42 * s, cy - 0.78 * s,
+                     cx - 1.00 * s, cy + 0.05 * s)           # lóbulo esquerdo
+        path.cubicTo(cx - 0.70 * s, cy + 0.55 * s,
+                     cx - 0.25 * s, cy + 0.78 * s,
+                     cx, cy + 1.05 * s)                      # ponta
+        path.cubicTo(cx + 0.25 * s, cy + 0.78 * s,
+                     cx + 0.70 * s, cy + 0.55 * s,
+                     cx + 1.00 * s, cy + 0.05 * s)
+        path.cubicTo(cx + 1.42 * s, cy - 0.78 * s,
+                     cx + 0.20 * s, cy - 1.12 * s,
+                     cx, cy - 0.42 * s)                      # lóbulo direito
+        path.closeSubpath()
+        return path
+
+    def paintEvent(self, ev):
+        """Pinta fundo, halo, coração com brilho, bpm instantâneo, tipo da
+        batida e o rodapé fixo."""
+        p = QtGui.QPainter(self)
+        try:
+            p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+            w, h = self.width(), self.height()
+            p.fillRect(0, 0, w, h, QtGui.QColor(_p7_cor("surface", "#ffffff")))
+            pulso = self.pulso()
+            i = self.batida_atual()
+            b = self._batidas[i] if i is not None else None
+            tipo = b.get("tipo", "normal") if b else "normal"
+            cor_tipo = _p7_cor_tipo(tipo)
+            cor = QtGui.QColor(_p7_cor_sinal("ECG", "#e0554e"))
+            # área do desenho: deixa 112 px embaixo para número, tipo e rodapé
+            area_h = max(60.0, h - 112.0)
+            cx, cy = w / 2.0, 14.0 + area_h / 2.0
+            s = min(w / 2.0, area_h) * 0.36 * (1.0 + 0.12 * pulso)
+            path = self._caminho_coracao(cx, cy, s)
+            halo = QtGui.QColor(cor)
+            halo.setAlpha(int(40 + 120 * pulso))
+            p.setPen(QtGui.QPen(halo, 6 + 10 * pulso, QtCore.Qt.PenStyle.SolidLine,
+                                QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenJoinStyle.RoundJoin))
+            p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+            p.drawPath(path)
+            grad = QtGui.QRadialGradient(cx - 0.45 * s, cy - 0.45 * s, 1.9 * s)
+            clara = QtGui.QColor(cor).lighter(118)
+            grad.setColorAt(0.0, clara)
+            grad.setColorAt(0.55, cor)
+            grad.setColorAt(1.0, QtGui.QColor(cor).darker(135))
+            p.setBrush(QtGui.QBrush(grad))
+            p.setPen(QtGui.QPen(QtGui.QColor(cor).darker(140), 1.5))
+            p.drawPath(path)
+            # brilho: pequena elipse clara no lóbulo esquerdo
+            brilho = QtGui.QColor("#ffffff")
+            brilho.setAlpha(150)
+            p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.setBrush(QtGui.QBrush(brilho))
+            p.save()
+            p.translate(cx - 0.62 * s, cy - 0.58 * s)
+            p.rotate(-35)
+            p.drawEllipse(QtCore.QPointF(0, 0), 0.26 * s, 0.13 * s)
+            p.restore()
+            # bpm instantâneo em letra grande
+            rr = b.get("rr_ms") if b else None
+            txt = "%d" % round(60000.0 / rr) if rr and rr > 0 else "--"
+            p.setPen(QtGui.QPen(QtGui.QColor(_p7_cor("text", "#141a33"))))
+            p.setFont(_p7_fonte(max(18, int(min(w, h) * 0.13)), negrito=True, dados=True))
+            # o número fica abaixo do coração para não cobrir o desenho
+            base_txt = 14.0 + area_h
+            p.drawText(QtCore.QRectF(0, base_txt - 4, w, 46),
+                       QtCore.Qt.AlignmentFlag.AlignCenter, txt)
+            p.setFont(_p7_fonte(8))
+            p.setPen(QtGui.QPen(QtGui.QColor(_p7_cor("text_dim", "#5a6480"))))
+            p.drawText(QtCore.QRectF(0, base_txt + 42, w, 12),
+                       QtCore.Qt.AlignmentFlag.AlignCenter, "bpm")
+            # tipo da batida atual em palavras, na cor do tipo
+            p.setPen(QtGui.QPen(cor_tipo))
+            p.setFont(_p7_fonte(10, negrito=(tipo != "normal")))
+            p.drawText(QtCore.QRectF(0, base_txt + 56, w, 18),
+                       QtCore.Qt.AlignmentFlag.AlignCenter,
+                       _p7_palavra_tipo(tipo) if b else _p7_tr("aguardando a primeira batida"))
+            _p7_pinta_rodape(p, w, h)
+        finally:
+            p.end()
+
+
+class FaixaBatidasWidget(QtWidgets.QWidget):
+    """Faixa horizontal com TODAS as batidas da gravação e o cursor do tocador.
+
+    Marcas: batida regular = traço fino; adiantada = triângulo laranja
+    (COLORS["warning"]); pausa = retângulo vazado vermelho (COLORS["error"])
+    cobrindo o intervalo longo — cor E forma diferentes, para quem não
+    distingue cores. Régua em m:ss embaixo. Clique numa marca emite
+    batidaClicada(indice) e cursorMovido(t); clique fora, só cursorMovido.
+    Em modo correção (set_edicao(True)) o clique direito abre um menu e emite
+    correcaoPedida(dict) no formato de aplicar_correcoes."""
+
+    batidaClicada = QtCore.Signal(int)
+    cursorMovido = QtCore.Signal(float)
+    correcaoPedida = QtCore.Signal(dict)
+
+    MARGEM = 12          # px livres de cada lado
+    ALTURA_REGUA = 18    # px da régua embaixo
+    TOL_CLIQUE_PX = 6
+
+    def __init__(self, parent=None):
+        """Começa vazia, com 1 s de duração e sem modo correção."""
+        super().__init__(parent)
+        self.setMinimumHeight(64)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Fixed)
+        self._batidas = []
+        self._tempos = np.zeros(0)
+        self._dur = 1.0
+        self._t = 0.0
+        self._edicao = False
+        self._linhas_cache = None
+
+    def set_batidas(self, lista):
+        """Recebe as batidas; se a duração não foi dada, estende até a última."""
+        self._batidas = list(lista or [])
+        self._tempos = np.asarray([b["t"] for b in self._batidas], float)
+        if self._tempos.size and self._dur < float(self._tempos[-1]) + 1.0:
+            self._dur = float(self._tempos[-1]) + 1.0
+        self._linhas_cache = None
+        self.update()
+
+    def set_duracao(self, dur_s):
+        """Duração total da gravação (largura da faixa em segundos)."""
+        self._dur = max(0.001, float(dur_s))
+        self._linhas_cache = None
+        self.update()
+
+    def set_tempo(self, t):
+        """Move o cursor do tocador."""
+        self._t = float(t)
+        self.update()
+
+    def set_edicao(self, ligado):
+        """Liga/desliga o modo correção (menu no clique direito)."""
+        self._edicao = bool(ligado)
+
+    def tempo_para_x(self, t):
+        """Converte segundos em x (px) dentro da faixa (aceita escalar ou array)."""
+        largura = max(1.0, self.width() - 2.0 * self.MARGEM)
+        if isinstance(t, np.ndarray):
+            return self.MARGEM + largura * (t.astype(float) / self._dur)
+        return self.MARGEM + largura * (float(t) / self._dur)
+
+    def x_para_tempo(self, x):
+        """Converte x (px) em segundos, limitado a 0..duração."""
+        largura = max(1.0, self.width() - 2.0 * self.MARGEM)
+        t = (float(x) - self.MARGEM) / largura * self._dur
+        return max(0.0, min(self._dur, t))
+
+    def indice_em(self, x, tol_px=None):
+        """Índice da batida cuja marca está a menos de tol_px de x, ou None."""
+        if not self._tempos.size:
+            return None
+        tol = self.TOL_CLIQUE_PX if tol_px is None else tol_px
+        xs = self.tempo_para_x(self._tempos)
+        i = int(np.argmin(np.abs(xs - float(x))))
+        return i if abs(xs[i] - float(x)) <= tol else None
+
+    def resizeEvent(self, ev):
+        """Invalida o cache de traços ao mudar de largura."""
+        self._linhas_cache = None
+        super().resizeEvent(ev)
+
+    def mousePressEvent(self, ev):
+        """Clique esquerdo: escolhe a batida sob o cursor (ou só move o cursor)."""
+        if ev.button() == QtCore.Qt.MouseButton.LeftButton:
+            x = ev.position().x()
+            i = self.indice_em(x)
+            if i is not None:
+                t = float(self._tempos[i])
+                self.set_tempo(t)
+                self.batidaClicada.emit(i)
+                self.cursorMovido.emit(t)
+            else:
+                t = self.x_para_tempo(x)
+                self.set_tempo(t)
+                self.cursorMovido.emit(t)
+            ev.accept()
+            return
+        super().mousePressEvent(ev)
+
+    def menu_correcao(self, x):
+        """Monta (sem abrir) o QMenu de correção para a posição x; None fora do
+        modo correção. Separado de contextMenuEvent para poder ser testado."""
+        if not self._edicao:
+            return None
+        menu = QtWidgets.QMenu(self)
+        i = self.indice_em(x)
+        t_aqui = self.x_para_tempo(x)
+        if i is not None:
+            t_b = float(self._tempos[i])
+            a = menu.addAction(_p7_tr("Remover batida"))
+            a.triggered.connect(lambda _=False, t=t_b: self.correcaoPedida.emit(
+                {"acao": "remover", "t": t}))
+            menu.addSeparator()
+            for tipo, rotulo in (("normal", "Marcar como batida regular"),
+                                 ("adiantada", "Marcar como batida adiantada"),
+                                 ("pausa", "Marcar como pausa maior")):
+                a = menu.addAction(_p7_tr(rotulo))
+                a.setEnabled(self._batidas[i].get("tipo") != tipo)
+                a.triggered.connect(lambda _=False, t=t_b, tp=tipo: self.correcaoPedida.emit(
+                    {"acao": "tipo", "t": t, "tipo": tp}))
+        else:
+            a = menu.addAction(_p7_tr("Adicionar batida aqui"))
+            a.triggered.connect(lambda _=False, t=t_aqui: self.correcaoPedida.emit(
+                {"acao": "adicionar", "t": t}))
+        return menu
+
+    def contextMenuEvent(self, ev):
+        """Clique direito em modo correção: abre o menu de correção."""
+        menu = self.menu_correcao(ev.pos().x())
+        if menu is None:
+            return super().contextMenuEvent(ev)
+        menu.exec(ev.globalPos())
+        ev.accept()
+
+    def _passo_regua(self):
+        """Espaçamento das marcas da régua (s) para caber ~1 rótulo a cada 70 px."""
+        largura = max(1.0, self.width() - 2.0 * self.MARGEM)
+        alvo = self._dur / max(1.0, largura / 70.0)
+        for passo in (1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600):
+            if passo >= alvo:
+                return passo
+        return 3600
+
+    def paintEvent(self, ev):
+        """Pinta a faixa: fundo, marcas de cada batida, cursor e régua."""
+        p = QtGui.QPainter(self)
+        try:
+            p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+            w, h = self.width(), self.height()
+            p.fillRect(0, 0, w, h, QtGui.QColor(_p7_cor("surface", "#ffffff")))
+            topo, base = 6.0, h - self.ALTURA_REGUA - 4.0
+            meio = (topo + base) / 2.0
+            alt = base - topo
+            x0, x1 = self.tempo_para_x(0.0), self.tempo_para_x(self._dur)
+            # trilho
+            p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.setBrush(QtGui.QBrush(QtGui.QColor(_p7_cor("surface_alt", "#eef2fb"))))
+            p.drawRoundedRect(QtCore.QRectF(x0, topo, x1 - x0, alt), 4, 4)
+            cor_regular = QtGui.QColor(_p7_cor("text_dim", "#5a6480"))
+            cor_regular.setAlpha(170)
+            cor_adiant = QtGui.QColor(_p7_cor("warning", "#b8730a"))
+            cor_pausa = QtGui.QColor(_p7_cor("error", "#d4364f"))
+            # traços das batidas regulares em lote (milhares em gravação longa)
+            if self._linhas_cache is None:
+                xs = self.tempo_para_x(self._tempos) if self._tempos.size else np.zeros(0)
+                linhas = []
+                for i, b in enumerate(self._batidas):
+                    if b.get("tipo", "normal") == "normal":
+                        x = float(xs[i])
+                        linhas.append(QtCore.QLineF(x, meio - alt * 0.28, x, meio + alt * 0.28))
+                self._linhas_cache = (xs, linhas)
+            xs, linhas = self._linhas_cache
+            if linhas:
+                p.setPen(QtGui.QPen(cor_regular, 1))
+                p.drawLines(linhas)
+            # pausas: retângulo vazado cobrindo o intervalo longo (fundo bem
+            # tênue só para o olho achar o trecho numa gravação longa)
+            fundo_pausa = QtGui.QColor(cor_pausa)
+            fundo_pausa.setAlpha(28)
+            p.setBrush(QtGui.QBrush(fundo_pausa))
+            p.setPen(QtGui.QPen(cor_pausa, 1.6))
+            for i, b in enumerate(self._batidas):
+                if b.get("tipo") == "pausa" and i > 0:
+                    xa, xb = float(xs[i - 1]), float(xs[i])
+                    p.drawRect(QtCore.QRectF(xa, meio - alt * 0.38, max(4.0, xb - xa), alt * 0.76))
+            # adiantadas: triângulo cheio
+            p.setPen(QtGui.QPen(cor_adiant.darker(120), 1))
+            p.setBrush(QtGui.QBrush(cor_adiant))
+            for i, b in enumerate(self._batidas):
+                if b.get("tipo") == "adiantada":
+                    x = float(xs[i])
+                    tri = QtGui.QPolygonF([QtCore.QPointF(x, meio - alt * 0.40),
+                                           QtCore.QPointF(x - 6, meio + alt * 0.34),
+                                           QtCore.QPointF(x + 6, meio + alt * 0.34)])
+                    p.drawPolygon(tri)
+            # cursor do tocador
+            xc = self.tempo_para_x(self._t)
+            cor_cursor = QtGui.QColor(_p7_cor("accent", "#1a23e0"))
+            p.setPen(QtGui.QPen(cor_cursor, 2))
+            p.drawLine(QtCore.QPointF(xc, topo - 2), QtCore.QPointF(xc, base + 2))
+            p.setBrush(QtGui.QBrush(cor_cursor))
+            p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.drawPolygon(QtGui.QPolygonF([QtCore.QPointF(xc - 5, topo - 5),
+                                           QtCore.QPointF(xc + 5, topo - 5),
+                                           QtCore.QPointF(xc, topo + 2)]))
+            # régua m:ss
+            passo = self._passo_regua()
+            p.setPen(QtGui.QPen(QtGui.QColor(_p7_cor("text_dim", "#5a6480")), 1))
+            p.setFont(_p7_fonte(7, dados=True))
+            t = 0.0
+            while t <= self._dur + 1e-9:
+                x = self.tempo_para_x(t)
+                p.drawLine(QtCore.QPointF(x, base + 3), QtCore.QPointF(x, base + 7))
+                p.drawText(QtCore.QRectF(x - 30, base + 6, 60, 12),
+                           QtCore.Qt.AlignmentFlag.AlignCenter, fmt_mmss(t))
+                t += passo
+            # legenda curta (cor E forma)
+            p.setFont(_p7_fonte(7))
+            p.setPen(QtGui.QPen(cor_regular))
+            p.drawText(QtCore.QRectF(x0, topo - 2, x1 - x0, 10),
+                       QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter,
+                       "|  " + _p7_tr("regular") + "    ▲ " + _p7_tr("adiantada")
+                       + "    ▭ " + _p7_tr("pausa") + "  ")
+        finally:
+            p.end()
+
+
+class ListaBatidasWidget(QtWidgets.QListWidget):
+    """Lista clicável, em palavras simples, só das batidas NÃO regulares.
+
+    Primeira linha = resumo ('128 batidas · 72 bpm em média · 2 adiantadas ·
+    1 pausa'); depois '0:12  batida adiantada', '1:05  pausa maior (1,8 s)'.
+    Clicar numa linha emite cursorMovido(t)."""
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, parent=None):
+        """Lista vazia; liga o clique ao sinal cursorMovido."""
+        super().__init__(parent)
+        self.setMinimumWidth(220)
+        self.itemClicked.connect(self._clicou)
+
+    def _clicou(self, item):
+        """Emite o instante guardado no item (a linha de resumo não tem)."""
+        t = item.data(QtCore.Qt.ItemDataRole.UserRole)
+        if t is not None:
+            self.cursorMovido.emit(float(t))
+
+    def set_batidas(self, lista):
+        """Monta a linha de resumo e uma linha por batida adiantada ou pausa."""
+        self.clear()
+        batidas = list(lista or [])
+        r = resumo_batidas(batidas)
+        bpm = r["bpm_medio"]
+        bpm_txt = (_p7_tr("{0} bpm em média").format("%d" % round(bpm)) if bpm
+                   else _p7_tr("bpm em média: —"))
+        resumo = " · ".join([
+            _p7_plural(r["n_batidas"], "{0} batida", "{0} batidas", "nenhuma batida"),
+            bpm_txt,
+            _p7_plural(r["n_adiantadas"], "{0} adiantada", "{0} adiantadas",
+                       "nenhuma adiantada"),
+            _p7_plural(r["n_pausas"], "{0} pausa", "{0} pausas", "nenhuma pausa")])
+        it = QtWidgets.QListWidgetItem(resumo)
+        it.setFont(_p7_fonte(9, negrito=True))
+        it.setFlags(it.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)
+        self.addItem(it)
+        for b in batidas:
+            tipo = b.get("tipo", "normal")
+            if tipo == "normal":
+                continue
+            txt = "%s  %s" % (fmt_mmss(b["t"]), _p7_palavra_tipo(tipo))
+            if tipo == "pausa" and b.get("rr_ms"):
+                txt += " (%s s)" % fmt_num(b["rr_ms"] / 1000.0, 1)
+            if b.get("origem") == "manual":
+                txt += "  " + _p7_tr("(corrigida à mão)")
+            it = QtWidgets.QListWidgetItem(txt)
+            it.setForeground(QtGui.QBrush(_p7_cor_tipo(tipo)))
+            it.setFont(_p7_fonte(9, dados=True))
+            it.setData(QtCore.Qt.ItemDataRole.UserRole, float(b["t"]))
+            self.addItem(it)
+        if len(batidas) and self.count() == 1:
+            it = QtWidgets.QListWidgetItem(_p7_tr("Todas as batidas foram regulares."))
+            it.setForeground(QtGui.QBrush(QtGui.QColor(_p7_cor("text_dim", "#5a6480"))))
+            it.setFlags(it.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)
+            self.addItem(it)
+
+
+class OlhosReplayWidget(QtWidgets.QWidget):
+    """Dois olhos desenhados que PISCAM nas piscadas e olham para onde os
+    sinais mandam.
+
+    A pálpebra fecha e abre em função do tempo (set_tempo), centrada no
+    instante de cada piscada, em ~150 ms (ou a duração detectada, até 0,5 s);
+    o olhar vem de set_olhar(gx, gy) em -1..1 (olhar_no_instante). Abaixo:
+    'olhando para a direita' etc. e os contadores de piscadas e sacadas até o
+    instante atual. set_inverter(h, v) troca o lado SÓ aqui no desenho: se o
+    olhar já vier invertido de olhar_no_instante, deixe os dois em False."""
+
+    def __init__(self, parent=None):
+        """Olhos abertos, olhando para frente, sem eventos."""
+        super().__init__(parent)
+        self.setMinimumSize(240, 190)
+        self._eventos = []
+        self._t_piscadas = np.zeros(0)
+        self._dur_piscadas = np.zeros(0)
+        self._t_sacadas = np.zeros(0)
+        self._t_sacadas_v = np.zeros(0)
+        self._gx = 0.0
+        self._gy = 0.0
+        self._t = 0.0
+        self._inv_h = False
+        self._inv_v = False
+
+    def set_eventos(self, deteccao):
+        """Recebe o dict de detectar_eventos_olhos (ou uma lista de eventos)."""
+        eventos = deteccao.get("eventos", []) if isinstance(deteccao, dict) else list(deteccao or [])
+        self._eventos = list(eventos)
+        pisc = [e for e in self._eventos if e.get("tipo") == "piscada"]
+        self._t_piscadas = np.asarray([e["t"] for e in pisc], float)
+        self._dur_piscadas = np.asarray(
+            [max(0.15, min(0.5, float(e.get("dur_s") or 0.15))) for e in pisc], float)
+        self._t_sacadas = np.asarray(
+            [e["t"] for e in self._eventos if e.get("tipo") == "sacada"
+             and e.get("direcao") in ("direita", "esquerda", None)], float)
+        self._t_sacadas_v = np.asarray(
+            [e["t"] for e in self._eventos if e.get("tipo") == "sacada"
+             and e.get("direcao") in ("cima", "baixo")], float)
+        self.update()
+
+    def set_olhar(self, gx, gy):
+        """Direção do olhar em -1..1 (direita/cima positivos)."""
+        self._gx = max(-1.0, min(1.0, float(gx)))
+        self._gy = max(-1.0, min(1.0, float(gy)))
+        self.update()
+
+    def set_tempo(self, t):
+        """Instante atual do tocador."""
+        self._t = float(t)
+        self.update()
+
+    def set_inverter(self, h, v):
+        """Inverte o lado horizontal e/ou vertical no desenho e no texto."""
+        self._inv_h = bool(h)
+        self._inv_v = bool(v)
+        self.update()
+
+    def olhar_mostrado(self):
+        """(gx, gy) efetivamente desenhados, já com a inversão do widget."""
+        return ((-self._gx if self._inv_h else self._gx),
+                (-self._gy if self._inv_v else self._gy))
+
+    def fechamento(self):
+        """0 (aberto) .. 1 (fechado) no instante atual, só em função do tempo:
+        meia senoide ao quadrado centrada em cada piscada."""
+        if not self._t_piscadas.size:
+            return 0.0
+        i = int(np.searchsorted(self._t_piscadas, self._t + 0.3, side="right")) - 1
+        melhor = 0.0
+        for k in (i, i - 1):
+            if 0 <= k < self._t_piscadas.size:
+                d = float(self._dur_piscadas[k])
+                ini = float(self._t_piscadas[k]) - d / 2.0
+                f = (self._t - ini) / d
+                if 0.0 <= f <= 1.0:
+                    melhor = max(melhor, math.sin(math.pi * f) ** 2)
+        return melhor
+
+    def contadores(self):
+        """(piscadas, sacadas para os lados, sacadas para cima/baixo) até o
+        instante atual. As horizontais são as que a tela e o PDF chamam de
+        'sacadas'."""
+        n_p = int(np.searchsorted(self._t_piscadas, self._t + 1e-9, side="right"))
+        n_s = int(np.searchsorted(self._t_sacadas, self._t + 1e-9, side="right"))
+        n_v = int(np.searchsorted(self._t_sacadas_v, self._t + 1e-9, side="right"))
+        return n_p, n_s, n_v
+
+    def _pinta_olho(self, p, cx, cy, ew, eh, gx, gy, fech, cor_iris, cor_linha, cor_pele):
+        """Um olho: esclera, íris em gradiente, pupila, brilho e pálpebras."""
+        olho = QtGui.QPainterPath()
+        olho.addEllipse(QtCore.QPointF(cx, cy), ew, eh)
+        p.setPen(QtGui.QPen(cor_linha, 2))
+        p.setBrush(QtGui.QBrush(QtGui.QColor("#fbfbfb")))
+        p.drawPath(olho)
+        p.save()
+        p.setClipPath(olho)
+        # sombra leve no alto da esclera (volume)
+        sombra = QtGui.QColor("#000000")
+        sombra.setAlpha(22)
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.setBrush(QtGui.QBrush(sombra))
+        p.drawEllipse(QtCore.QPointF(cx, cy - eh * 0.9), ew * 1.05, eh * 0.55)
+        ir = eh * 0.80
+        px = cx + gx * (ew - ir) * 0.80
+        py = cy - gy * (eh - ir) * 0.80
+        grad = QtGui.QRadialGradient(px - ir * 0.2, py - ir * 0.2, ir * 1.1)
+        grad.setColorAt(0.0, QtGui.QColor(cor_iris).lighter(125))
+        grad.setColorAt(0.6, QtGui.QColor(cor_iris))
+        grad.setColorAt(1.0, QtGui.QColor(cor_iris).darker(160))
+        p.setBrush(QtGui.QBrush(grad))
+        p.setPen(QtGui.QPen(QtGui.QColor(cor_iris).darker(170), 1))
+        p.drawEllipse(QtCore.QPointF(px, py), ir, ir)
+        p.setBrush(QtGui.QBrush(QtGui.QColor("#0c0c0c")))
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.drawEllipse(QtCore.QPointF(px, py), ir * 0.42, ir * 0.42)
+        p.setBrush(QtGui.QBrush(QtGui.QColor("#ffffff")))
+        p.drawEllipse(QtCore.QPointF(px - ir * 0.30, py - ir * 0.32), ir * 0.14, ir * 0.14)
+        # pálpebras: a de cima desce 75% do caminho, a de baixo sobe 25%
+        if fech > 0.01:
+            p.setBrush(QtGui.QBrush(cor_pele))
+            alt_cima = 2.0 * eh * fech * 0.75
+            alt_baixo = 2.0 * eh * fech * 0.25
+            p.drawRect(QtCore.QRectF(cx - ew - 2, cy - eh - 2, 2 * ew + 4, alt_cima + 2))
+            p.drawRect(QtCore.QRectF(cx - ew - 2, cy + eh - alt_baixo, 2 * ew + 4, alt_baixo + 2))
+            p.setPen(QtGui.QPen(cor_linha, 2))
+            y1 = cy - eh + alt_cima
+            y2 = cy + eh - alt_baixo
+            p.drawLine(QtCore.QPointF(cx - ew, y1), QtCore.QPointF(cx + ew, y1))
+            if fech > 0.6:
+                p.drawLine(QtCore.QPointF(cx - ew, y2), QtCore.QPointF(cx + ew, y2))
+        p.restore()
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.setPen(QtGui.QPen(cor_linha, 2))
+        p.drawPath(olho)
+
+    def paintEvent(self, ev):
+        """Pinta os dois olhos, o texto da direção, os contadores e o rodapé."""
+        p = QtGui.QPainter(self)
+        try:
+            p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+            w, h = self.width(), self.height()
+            p.fillRect(0, 0, w, h, QtGui.QColor(_p7_cor("surface", "#ffffff")))
+            gx, gy = self.olhar_mostrado()
+            fech = self.fechamento()
+            cor_iris = QtGui.QColor(_p7_cor_sinal("EoG", "#4fb3d9"))
+            cor_linha = QtGui.QColor(_p7_cor("text", "#141a33"))
+            cor_pele = QtGui.QColor(_p7_cor("surface_alt", "#eef2fb"))
+            area_h = max(50.0, h - 76.0)
+            cy = 10.0 + area_h / 2.0
+            ew = min(w * 0.21, area_h * 0.85)
+            eh = min(area_h * 0.42, ew * 0.62)
+            for cx in (w / 2.0 - ew * 1.18, w / 2.0 + ew * 1.18):
+                self._pinta_olho(p, cx, cy, ew, eh, gx, gy, fech, cor_iris, cor_linha, cor_pele)
+            # texto da direção (mesma regra de decisão da tela)
+            d = direcao_do_olhar(gx, gy)
+            if fech > 0.5:
+                frase = _p7_tr("piscando")
+            else:
+                frase = _p7_tr({"direita": "olhando para a direita",
+                                "esquerda": "olhando para a esquerda",
+                                "cima": "olhando para cima",
+                                "baixo": "olhando para baixo"}.get(d, "olhando para frente"))
+            base_txt = 10.0 + area_h + 4.0
+            p.setPen(QtGui.QPen(_p7_cor_legivel(cor_iris)))
+            p.setFont(_p7_fonte(12, negrito=True))
+            p.drawText(QtCore.QRectF(0, base_txt, w, 22), QtCore.Qt.AlignmentFlag.AlignCenter, frase)
+            n_p, n_s, n_v = self.contadores()
+            p.setPen(QtGui.QPen(QtGui.QColor(_p7_cor("text_dim", "#5a6480"))))
+            p.setFont(_p7_fonte(9))
+            p.drawText(QtCore.QRectF(0, base_txt + 24, w, 16), QtCore.Qt.AlignmentFlag.AlignCenter,
+                       _p7_tr("piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}")
+                       .format(n_p, n_s, n_v))
+            _p7_pinta_rodape(p, w, h)
+        finally:
+            p.end()
+
+
+class LinhaDoTempoOlhosWidget(QtWidgets.QListWidget):
+    """Linha do tempo dos olhos em palavras ('0:03 piscou', '0:05 olhou para
+    a direita'); clicar numa linha emite cursorMovido(t). set_tempo(t)
+    destaca o último evento já ocorrido."""
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, parent=None):
+        """Lista vazia; liga o clique ao sinal cursorMovido."""
+        super().__init__(parent)
+        self.setMinimumWidth(220)
+        self._tempos = np.zeros(0)
+        self.itemClicked.connect(self._clicou)
+
+    def _clicou(self, item):
+        """Emite o instante do evento clicado."""
+        t = item.data(QtCore.Qt.ItemDataRole.UserRole)
+        if t is not None:
+            self.cursorMovido.emit(float(t))
+
+    def set_eventos(self, deteccao):
+        """Recebe o dict de detectar_eventos_olhos (ou uma lista de eventos)."""
+        self.clear()
+        eventos = deteccao.get("eventos", []) if isinstance(deteccao, dict) else list(deteccao or [])
+        eventos = sorted(eventos, key=lambda e: e["t"])
+        self._tempos = np.asarray([e["t"] for e in eventos], float)
+        cor_pisc = _p7_cor_legivel(_p7_cor_sinal("EoG", "#4fb3d9"))
+        cor_sac = QtGui.QColor(_p7_cor("accent", "#1a23e0"))
+        cor_fix = QtGui.QColor(_p7_cor("text_dim", "#5a6480"))
+        for e in eventos:
+            txt = texto_evento(e)
+            if e.get("origem") == "manual":
+                txt += "  " + _p7_tr("(corrigido à mão)")
+            it = QtWidgets.QListWidgetItem(txt)
+            it.setFont(_p7_fonte(9, dados=True))
+            cor = {"piscada": cor_pisc, "sacada": cor_sac}.get(e.get("tipo"), cor_fix)
+            it.setForeground(QtGui.QBrush(cor))
+            it.setData(QtCore.Qt.ItemDataRole.UserRole, float(e["t"]))
+            self.addItem(it)
+        if not eventos:
+            it = QtWidgets.QListWidgetItem(_p7_tr("Nenhuma piscada ou movimento dos olhos encontrado."))
+            it.setForeground(QtGui.QBrush(cor_fix))
+            it.setFlags(it.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)
+            self.addItem(it)
+
+    def set_tempo(self, t):
+        """Destaca o último evento com t <= instante atual (só se mudou de linha)."""
+        if not self._tempos.size:
+            return
+        i = int(np.searchsorted(self._tempos, float(t) + 1e-9, side="right")) - 1
+        if i >= 0 and i != self.currentRow():
+            self.setCurrentRow(i)
+
+
+# ============================================================
+# REPLAY DO MOVIMENTO (P6) — figura articulada de perfil, poses, tarefas prontas
+# ------------------------------------------------------------
+# A figura SIMULA o movimento marcado na linha do tempo (não é vídeo da
+# pessoa) e acende cada músculo com a intensidade medida no instante.
+# ============================================================
+# ------------------------------------------------------------------
+# P6 — Replay do movimento (EMG): tabelas de movimentos e músculos
+# ------------------------------------------------------------------
+# Chaves canônicas, compartilhadas com a linha do tempo da gravação. Os títulos
+# são chaves de tr() em português: traduzir só na hora de exibir.
+MOVIMENTOS_INFO = {
+    "repouso":           {"titulo": "Repouso",                      "musculos": []},
+    "flexao_cotovelo":   {"titulo": "Flexão do cotovelo",           "musculos": ["Bíceps Braquial"]},
+    "extensao_cotovelo": {"titulo": "Extensão do cotovelo",         "musculos": ["Tríceps Braquial"]},
+    "supinacao":         {"titulo": "Supinação (palma para cima)",  "musculos": ["Bíceps Braquial"]},
+    "pronacao":          {"titulo": "Pronação (palma para baixo)",  "musculos": ["Flexor Carpi Radialis"]},
+    "flexao_punho":      {"titulo": "Flexão do punho",              "musculos": ["Flexor Carpi Radialis"]},
+    "extensao_punho":    {"titulo": "Extensão do punho",            "musculos": ["Extensor Carpi Radialis"]},
+    "abrir_mao":         {"titulo": "Abrir a mão",                  "musculos": ["Extensor Carpi Radialis"]},
+    "fechar_mao":        {"titulo": "Fechar a mão",                 "musculos": ["Flexor Carpi Radialis"]},
+    "pinca":             {"titulo": "Pinça",                        "musculos": ["Flexor Carpi Radialis"]},
+    "flexao_ombro":      {"titulo": "Flexão do ombro",              "musculos": ["Deltoide Anterior", "Peitoral Maior"]},
+    "extensao_ombro":    {"titulo": "Extensão do ombro",            "musculos": ["Deltoide Posterior", "Latíssimo do Dorso"]},
+    "a_definir":         {"titulo": "A definir",                    "musculos": []},
+}
+MOVIMENTOS = list(MOVIMENTOS_INFO.keys())
+
+# Músculos esperados por movimento (figura e aviso de incompatibilidade).
+# MUSCULOS_ESPERADOS: definido no bloco da linha do tempo (P6), mesmo mapeamento.
+
+# Os dez músculos de braço/tronco que a figura sabe acender (chaves de
+# COMMON_MUSCLES). Os demais (perna, quadril) são ignorados sem erro.
+MUSCULOS_FIGURA = (
+    "Bíceps Braquial", "Tríceps Braquial",
+    "Deltoide Anterior", "Deltoide Medio", "Deltoide Posterior",
+    "Trapézio", "Latíssimo do Dorso", "Peitoral Maior",
+    "Flexor Carpi Radialis", "Extensor Carpi Radialis",
+)
+
+# Limites articulares da figura: a soma de faixas simultâneas é recortada aqui.
+LIMITES_POSE = {
+    "ombro":    (-50.0, 170.0),
+    "cotovelo": (0.0, 145.0),
+    "pronacao": (-1.0, 1.0),
+    "punho":    (-70.0, 70.0),
+    "mao":      (0.0, 1.0),
+    "pinca":    (0.0, 1.0),
+    "tronco":   (-20.0, 20.0),
+}
+
+# Repouso: braço solto ao lado do corpo, cotovelo quase esticado, dedos em
+# leve flexão natural (uma mão "aberta" de verdade não fica rígida).
+POSE_REPOUSO = {
+    "ombro": 5.0, "cotovelo": 12.0, "pronacao": 0.0, "punho": 0.0,
+    "mao": 0.15, "pinca": 0.0, "tronco": 0.0,
+}
+
+# Deltas no PICO de cada movimento (fase 0,5). "primario" é o gesto em si e se
+# SOMA com as outras faixas; "postura" é a posição de teste (antebraço na
+# horizontal para girar, fletir o punho ou fechar a mão) e NÃO se soma: entre
+# faixas simultâneas vale a maior, senão duas faixas de mão levariam o
+# cotovelo ao limite.
+_POSTURA_ANTEBRACO = {"ombro": 20.0, "cotovelo": 76.0}
+_DELTAS_MOVIMENTO = {
+    "repouso":           ({}, {}),
+    "a_definir":         ({}, {}),
+    "flexao_cotovelo":   ({"cotovelo": 120.0, "ombro": 8.0}, {}),
+    # Extensão parte de um cotovelo fletido à frente e termina esticado.
+    "extensao_cotovelo": ({"cotovelo": -110.0}, {"ombro": 40.0, "cotovelo": 110.0}),
+    "supinacao":         ({"pronacao": -1.0}, _POSTURA_ANTEBRACO),
+    "pronacao":          ({"pronacao": 1.0}, _POSTURA_ANTEBRACO),
+    "flexao_punho":      ({"punho": -60.0}, _POSTURA_ANTEBRACO),
+    "extensao_punho":    ({"punho": 55.0}, _POSTURA_ANTEBRACO),
+    "abrir_mao":         ({"mao": -0.4, "punho": 8.0}, _POSTURA_ANTEBRACO),
+    "fechar_mao":        ({"mao": 0.85}, _POSTURA_ANTEBRACO),
+    "pinca":             ({"pinca": 1.0, "mao": 0.25}, _POSTURA_ANTEBRACO),
+    "flexao_ombro":      ({"ombro": 95.0, "cotovelo": 10.0, "tronco": -3.0}, {}),
+    "extensao_ombro":    ({"ombro": -48.0, "cotovelo": 10.0, "tronco": 4.0}, {}),
+}
+
+
+def _suave(a, b, x):
+    """Rampa suave (smoothstep) de 0 em x<=a até 1 em x>=b."""
+    if b <= a:
+        return 1.0 if x >= b else 0.0
+    t = max(0.0, min(1.0, (x - a) / (b - a)))
+    return t * t * (3.0 - 2.0 * t)
+
+
+def perfil_movimento(fase, duracao_s=None):
+    """Intensidade 0..1 do gesto ao longo da fase 0..1 (0 e 1 = repouso).
+
+    Faixa curta (uma repetição): meio seno, pico em 0,5. Faixa longa (mais de
+    2,5 s): sobe em ~0,6 s, SUSTENTA e volta em ~0,6 s, porque ninguém
+    repete um movimento em câmera lenta durante 8 s; segura a posição.
+    """
+    fase = max(0.0, min(1.0, float(fase)))
+    if duracao_s and duracao_s > 2.5:
+        rampa = max(0.08, min(0.5, 0.6 / float(duracao_s)))
+        return _suave(0.0, rampa, fase) * (1.0 - _suave(1.0 - rampa, 1.0, fase))
+    return math.sin(math.pi * fase)
+
+
+def _perfil_postura(fase):
+    """A posição de teste entra rápido (20% da fase), fica e sai rápido."""
+    fase = max(0.0, min(1.0, float(fase)))
+    return _suave(0.0, 0.2, fase) * (1.0 - _suave(0.8, 1.0, fase))
+
+
+def _componentes(chave, fase, duracao_s=None):
+    """Devolve (deltas do gesto, deltas de postura) já escalados pela fase."""
+    prim, post = _DELTAS_MOVIMENTO.get(chave, ({}, {}))
+    p = perfil_movimento(fase, duracao_s)
+    q = _perfil_postura(fase)
+    return ({k: v * p for k, v in prim.items()},
+            {k: v * q for k, v in post.items()})
+
+
+def pose_do_movimento(chave, fase, duracao_s=None):
+    """Deltas de pose de UM movimento na fase 0..1 (0 início, 0,5 pico, 1 volta).
+
+    Devolve todas as chaves de POSE_REPOUSO (zero quando não mudam); some em
+    POSE_REPOUSO com aplicar_deltas(). Chave desconhecida -> deltas zero.
+    """
+    prim, post = _componentes(chave, fase, duracao_s)
+    d = {k: 0.0 for k in POSE_REPOUSO}
+    for k, v in prim.items():
+        d[k] += v
+    for k, v in post.items():
+        d[k] += v
+    return d
+
+
+def aplicar_deltas(deltas, base=None):
+    """Soma deltas à pose base (POSE_REPOUSO) e recorta nos limites articulares."""
+    pose = dict(base or POSE_REPOUSO)
+    for k, v in (deltas or {}).items():
+        if k in pose:
+            pose[k] = pose[k] + float(v)
+    for k, (lo, hi) in LIMITES_POSE.items():
+        if k in pose:
+            pose[k] = max(lo, min(hi, pose[k]))
+    return pose
+
+
+def pose_mesclada(lista):
+    """Pose das faixas ativas no mesmo instante: os gestos se SOMAM.
+
+    lista: [(chave, fase), (chave, fase, peso) ou (chave, fase, peso, duracao_s)].
+    Gestos de faixas simultâneas se somam (peso escala cada um); a postura de
+    teste não se soma (vale a maior); tudo recortado em LIMITES_POSE.
+    """
+    soma = {k: 0.0 for k in POSE_REPOUSO}
+    postura = {k: 0.0 for k in POSE_REPOUSO}
+    lista = list(lista or ())
+    # Quem move ombro/cotovelo de verdade (gesto de braço) manda na posição do
+    # braço: a postura de teste das faixas de mão só entra quando nenhuma
+    # OUTRA faixa simultânea é gesto de braço (senão o copo subiria da mesa).
+    de_braco = [any(k in _DELTAS_MOVIMENTO.get(it[0], ({}, {}))[0] for k in ("ombro", "cotovelo"))
+                for it in lista]
+    for i, item in enumerate(lista):
+        chave, fase = item[0], item[1]
+        peso = float(item[2]) if len(item) > 2 and item[2] is not None else 1.0
+        dur = item[3] if len(item) > 3 else None
+        prim, post = _componentes(chave, fase, dur)
+        for k, v in prim.items():
+            soma[k] += v * peso
+        if any(de_braco[j] for j in range(len(lista)) if j != i):
+            continue
+        for k, v in post.items():
+            postura[k] = max(postura[k], v * peso)
+    for k in soma:
+        soma[k] += postura[k]
+    return aplicar_deltas(soma)
+
+
+# Tarefas prontas: sequências plausíveis de faixas. Cada trecho é
+# (movimento, t0_frac, t1_frac) ou (movimento, t0_frac, t1_frac, peso).
+TAREFAS = {
+    "levantar_halter": {
+        "titulo": "Levantar o halter", "objeto": "halter", "duracao_s": 9.0,
+        "trechos": [
+            ("fechar_mao", 0.0, 1.0),
+            ("flexao_cotovelo", 0.0, 0.33), ("supinacao", 0.0, 0.33, 0.35),
+            ("flexao_cotovelo", 0.33, 0.66), ("supinacao", 0.33, 0.66, 0.35),
+            ("flexao_cotovelo", 0.66, 1.0), ("supinacao", 0.66, 1.0, 0.35),
+        ],
+    },
+    "chave_na_porta": {
+        "titulo": "Abrir a porta com a chave", "objeto": "chave", "duracao_s": 8.0,
+        "trechos": [
+            ("pinca", 0.0, 1.0),
+            ("pronacao", 0.14, 0.40), ("supinacao", 0.40, 0.66), ("pronacao", 0.66, 0.92),
+        ],
+    },
+    "copo_a_boca": {
+        "titulo": "Pegar o copo e levar à boca", "objeto": "copo", "duracao_s": 10.0,
+        "trechos": [
+            ("flexao_ombro", 0.0, 1.0, 0.36), ("fechar_mao", 0.04, 0.96),
+            ("flexao_cotovelo", 0.28, 0.82), ("supinacao", 0.34, 0.76, 0.3),
+        ],
+    },
+}
+
+
+def pose_da_tarefa(chave, t_frac):
+    """Pose da tarefa pronta no instante t_frac (0..1), mesclando os trechos ativos."""
+    tarefa = TAREFAS.get(chave)
+    if not tarefa:
+        return dict(POSE_REPOUSO)
+    t = max(0.0, min(1.0, float(t_frac)))
+    dur = float(tarefa.get("duracao_s", 1.0))
+    ativos = []
+    for trecho in tarefa["trechos"]:
+        mov, t0, t1 = trecho[0], trecho[1], trecho[2]
+        peso = trecho[3] if len(trecho) > 3 else 1.0
+        if t0 <= t <= t1 and t1 > t0:
+            ativos.append((mov, (t - t0) / (t1 - t0), peso, (t1 - t0) * dur))
+    return pose_mesclada(ativos)
+
+
+def movimentos_da_tarefa(chave, t_frac):
+    """Chaves dos movimentos ativos na tarefa em t_frac (para o rótulo da figura)."""
+    tarefa = TAREFAS.get(chave)
+    if not tarefa:
+        return []
+    t = max(0.0, min(1.0, float(t_frac)))
+    return [tr_[0] for tr_ in tarefa["trechos"] if tr_[1] <= t <= tr_[2]]
+
+
+def cor_intensidade(v):
+    """Cor da intensidade 0..1: azul frio -> amarelo -> vermelho (alfa cresce junto)."""
+    v = max(0.0, min(1.0, float(v)))
+    frio, meio, quente = (70, 130, 225), (248, 196, 40), (222, 44, 44)
+    if v < 0.5:
+        a, b, t = frio, meio, v / 0.5
+    else:
+        a, b, t = meio, quente, (v - 0.5) / 0.5
+    return QtGui.QColor(int(a[0] + (b[0] - a[0]) * t), int(a[1] + (b[1] - a[1]) * t),
+                        int(a[2] + (b[2] - a[2]) * t))
+
+
+# ------------------------------------------------------------------
+# Geometria e cores de apoio da figura
+# ------------------------------------------------------------------
+def _misturar(c1, c2, t):
+    """Cor entre c1 (t=0) e c2 (t=1); aceita QColor ou "#rrggbb"."""
+    a, b = QtGui.QColor(c1), QtGui.QColor(c2)
+    t = max(0.0, min(1.0, t))
+    return QtGui.QColor(int(a.red() + (b.red() - a.red()) * t),
+                        int(a.green() + (b.green() - a.green()) * t),
+                        int(a.blue() + (b.blue() - a.blue()) * t))
+
+
+def _com_alfa(c, alfa):
+    """Cópia da cor com alfa 0..1."""
+    q = QtGui.QColor(c)
+    q.setAlphaF(max(0.0, min(1.0, alfa)))
+    return q
+
+
+def _capsula(p0, r0, p1, r1):
+    """Caminho fechado que envolve dois círculos (segmento afilado de membro).
+
+    É a forma de braço, antebraço, pescoço e perna: rolicha nas pontas e
+    afunilando, em vez de um palito.
+    """
+    x0, y0 = p0
+    x1, y1 = p1
+    dx, dy = x1 - x0, y1 - y0
+    d = math.hypot(dx, dy)
+    path = QtGui.QPainterPath()
+    if d < 1e-6:
+        path.addEllipse(QtCore.QPointF(x0, y0), max(r0, r1), max(r0, r1))
+        return path
+    ang = math.atan2(dy, dx)
+    g = math.acos(max(-1.0, min(1.0, (r0 - r1) / d)))  # normal da tangente externa
+    pts = []
+    n = 10
+    for i in range(n + 1):           # arco do círculo 1 (ponta distal)
+        a = ang + g - (2.0 * g) * i / n
+        pts.append(QtCore.QPointF(x1 + r1 * math.cos(a), y1 + r1 * math.sin(a)))
+    for i in range(n + 1):           # arco do círculo 0 (ponta proximal)
+        a = ang - g - (2.0 * math.pi - 2.0 * g) * i / n
+        pts.append(QtCore.QPointF(x0 + r0 * math.cos(a), y0 + r0 * math.sin(a)))
+    path.addPolygon(QtGui.QPolygonF(pts))
+    path.closeSubpath()
+    return path
+
+
+def _caminho_suave(pontos, fechado=True):
+    """Curva fechada suave (Catmull-Rom -> Bézier) pelos pontos (x, y)."""
+    n = len(pontos)
+    path = QtGui.QPainterPath()
+    if n < 3:
+        return path
+    path.moveTo(QtCore.QPointF(*pontos[0]))
+    rng = range(n) if fechado else range(n - 1)
+    for i in rng:
+        p0 = pontos[(i - 1) % n]
+        p1 = pontos[i]
+        p2 = pontos[(i + 1) % n]
+        p3 = pontos[(i + 2) % n]
+        c1 = (p1[0] + (p2[0] - p0[0]) / 6.0, p1[1] + (p2[1] - p0[1]) / 6.0)
+        c2 = (p2[0] - (p3[0] - p1[0]) / 6.0, p2[1] - (p3[1] - p1[1]) / 6.0)
+        path.cubicTo(QtCore.QPointF(*c1), QtCore.QPointF(*c2), QtCore.QPointF(*p2))
+    if fechado:
+        path.closeSubpath()
+    return path
+
+
+def _envoltoria(pontos):
+    """Envoltória convexa (cadeia monótona) de poucos pontos (x, y)."""
+    pts = sorted(set((round(x, 4), round(y, 4)) for x, y in pontos))
+    if len(pts) <= 2:
+        return pts
+
+    def cruz(o, a, b):
+        """Produto vetorial 2D: o sinal diz de que lado de o→a está o ponto b."""
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    baixo, cima = [], []
+    for p in pts:
+        while len(baixo) >= 2 and cruz(baixo[-2], baixo[-1], p) <= 0:
+            baixo.pop()
+        baixo.append(p)
+    for p in reversed(pts):
+        while len(cima) >= 2 and cruz(cima[-2], cima[-1], p) <= 0:
+            cima.pop()
+        cima.append(p)
+    return baixo[:-1] + cima[:-1]
+
+
+def _girar(p, centro, graus):
+    """Gira o ponto p em torno de centro (coordenadas de tela, y para baixo)."""
+    a = math.radians(graus)
+    dx, dy = p[0] - centro[0], p[1] - centro[1]
+    return (centro[0] + dx * math.cos(a) - dy * math.sin(a),
+            centro[1] + dx * math.sin(a) + dy * math.cos(a))
+
+
+# Medidas da figura em "unidades" (comprimento do braço = 1). Perfil, de frente
+# para a direita, ombro na origem, y cresce para baixo.
+_L_BRACO, _L_ANTEBRACO = 1.0, 0.92
+_PALMA_COMPR, _PALMA_LARG, _PALMA_ESP = 0.30, 0.30, 0.10
+_DEDOS = (  # (posição lateral -1..1 na palma, comprimentos das 3 falanges)
+    (0.75, (0.150, 0.095, 0.075)),    # indicador
+    (0.25, (0.165, 0.105, 0.080)),    # médio
+    (-0.25, (0.150, 0.095, 0.075)),   # anular
+    (-0.75, (0.115, 0.075, 0.065)),   # mínimo
+)
+_QUADRIL = (-0.05, 1.55)
+_BOCA = (0.47, -0.80)
+_PORTA_X, _FECHADURA_Y = 1.76, 0.50   # porta/fechadura fixas (tarefa da chave)
+_MESA_Y, _MESA_X0, _MESA_X1 = 1.68, 1.15, 2.50
+_CENA = (-1.30, -1.56, 2.45, 2.55)     # x0, y0, x1, y1 da cena em unidades (mão solta cabe)
+_CENA_X1_OBJETO = {"chave": 2.55, "copo": 2.65}   # a cena alarga para caber porta/mesa
+
+
+class FiguraMovimentoWidget(QtWidgets.QWidget):
+    """Figura humana de perfil que SIMULA o movimento marcado numa gravação.
+
+    Desenha, em código, tronco, cabeça, pernas sugeridas e o braço que trabalha
+    (ombro, braço, antebraço, punho, mão com dedos articulados e polegar) por
+    cinemática direta a partir da pose, acende os músculos conforme a
+    intensidade medida e prende um objeto à mão (halter, chave ou copo).
+    Não é o vídeo da pessoa: um selo fixo no rodapé diz isso.
+    """
+
+    def __init__(self, parent=None):
+        """Começa em repouso, sem ativação, sem objeto e sem rótulo."""
+        super().__init__(parent)
+        self._pose = dict(POSE_REPOUSO)
+        self._ativacao = {}
+        self._objeto = None
+        self._rotulo = ""
+        self.setMinimumSize(240, 200)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Expanding)
+
+    # ---------------- API pública ----------------
+    def set_pose(self, pose):
+        """Define a pose (dict com as chaves de POSE_REPOUSO; faltantes = repouso)."""
+        nova = dict(POSE_REPOUSO)
+        for k, v in (pose or {}).items():
+            if k in nova:
+                try:
+                    nova[k] = float(v)
+                except (TypeError, ValueError):
+                    pass
+        self._pose = aplicar_deltas({}, nova)
+        self.update()
+
+    def set_ativacao(self, ativacao):
+        """Define a intensidade 0..1 por músculo; músculos fora da figura são ignorados."""
+        nova = {}
+        for m, v in (ativacao or {}).items():
+            if m in MUSCULOS_FIGURA:
+                try:
+                    nova[m] = max(0.0, min(1.0, float(v)))
+                except (TypeError, ValueError):
+                    pass
+        self._ativacao = nova
+        self.update()
+
+    def set_objeto(self, objeto):
+        """Prende um objeto à mão: "halter", "chave", "copo" ou None (sem objeto)."""
+        self._objeto = objeto if objeto in ("halter", "chave", "copo") else None
+        self.update()
+
+    def set_rotulo_movimento(self, texto):
+        """Mostra o nome do movimento em curso (texto já traduzido)."""
+        self._rotulo = str(texto or "")
+        self.update()
+
+    def pose(self):
+        """Pose atual (cópia)."""
+        return dict(self._pose)
+
+    # ---------------- pintura ----------------
+    def paintEvent(self, _ev):
+        """Pinta a figura inteira no retângulo do widget."""
+        p = QtGui.QPainter(self)
+        try:
+            self.pintar(p, self.rect())
+        finally:
+            p.end()
+
+    def _fonte(self, pt, negrito=False):
+        """Fonte da interface (FONT_UI) no tamanho pedido."""
+        f = QtGui.QFont(FONT_UI, pt)
+        f.setBold(negrito)
+        return f
+
+    def _cores(self):
+        """Paleta da figura derivada do tema (COLORS) no momento da pintura."""
+        c = COLORS
+        sup, txt, dim = c["surface"], c["text"], c["text_dim"]
+        return {
+            "fundo": QtGui.QColor(sup),
+            "texto": QtGui.QColor(txt),
+            "dim": QtGui.QColor(dim),
+            "acento": QtGui.QColor(c["accent"]),
+            "borda": QtGui.QColor(c["border"]),
+            "corpo": _misturar(sup, dim, 0.26),      # tronco, cabeça, pernas
+            "braco": _misturar(sup, dim, 0.15),      # braço que trabalha, mais claro
+            "palma": _misturar(sup, dim, 0.05),      # palma clara
+            "dorso": _misturar(sup, dim, 0.40),      # dorso sombreado
+            "contorno": _misturar(dim, txt, 0.35),
+            "objeto": _misturar(dim, txt, 0.45),
+            "cena": _misturar(sup, dim, 0.12),       # porta, mesa
+        }
+
+    def _P(self, x, y):
+        """Unidades da cena -> pixel (QPointF)."""
+        return QtCore.QPointF(self._ox + x * self._esc, self._oy + y * self._esc)
+
+    def _caminho_pts(self, pontos, suave=True):
+        """Caminho em pixels a partir de pontos (x, y) em unidades."""
+        pix = [(self._ox + x * self._esc, self._oy + y * self._esc) for x, y in pontos]
+        if suave:
+            return _caminho_suave(pix)
+        path = QtGui.QPainterPath()
+        path.addPolygon(QtGui.QPolygonF([QtCore.QPointF(*q) for q in pix]))
+        path.closeSubpath()
+        return path
+
+    def _capsula_px(self, p0, r0, p1, r1):
+        """Cápsula afilada em pixels a partir de pontos/raios em unidades."""
+        e = self._esc
+        return _capsula((self._ox + p0[0] * e, self._oy + p0[1] * e), r0 * e,
+                        (self._ox + p1[0] * e, self._oy + p1[1] * e), r1 * e)
+
+    def _preencher(self, p, path, cor, contorno, larg=1.4):
+        """Preenche e contorna um caminho (traço fino, cor do tema)."""
+        p.setPen(QtGui.QPen(contorno, larg))
+        p.setBrush(QtGui.QBrush(cor))
+        p.drawPath(path)
+
+    def _brilho(self, p, clip, centro, raio, v, eixo=None):
+        """Brilho radial do músculo recortado pela forma do segmento.
+
+        Com "eixo" (vetor unitário do segmento) o brilho se alonga no sentido
+        do músculo, como um ventre muscular, em vez de uma bola.
+        """
+        if v <= 0.02:
+            return
+        cor = cor_intensidade(v)
+        a = 0.30 + 0.62 * v
+        c = self._P(*centro)
+        g = QtGui.QRadialGradient(c, raio * self._esc)
+        g.setColorAt(0.0, _com_alfa(cor, a))
+        g.setColorAt(0.5, _com_alfa(cor, a * 0.55))
+        g.setColorAt(1.0, _com_alfa(cor, 0.0))
+        pincel = QtGui.QBrush(g)
+        if eixo is not None:
+            t = QtGui.QTransform()
+            t.translate(c.x(), c.y())
+            t.rotate(math.degrees(math.atan2(eixo[1], eixo[0])))
+            t.scale(1.45, 0.85)
+            t.translate(-c.x(), -c.y())
+            pincel.setTransform(t)
+        p.save()
+        p.setClipPath(clip)
+        p.fillRect(clip.boundingRect(), pincel)
+        p.restore()
+
+    def _polilinha(self, p, pts_px, largs, cor, contorno):
+        """Cadeia de falanges: contorno + miolo, larguras afilando, pontas redondas."""
+        cap, join = QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenJoinStyle.RoundJoin
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        for passo in (0, 1):
+            for i in range(len(pts_px) - 1):
+                w = largs[i] * self._esc
+                pen = QtGui.QPen(contorno if passo == 0 else cor,
+                                 w + (2.4 if passo == 0 else 0.0), QtCore.Qt.PenStyle.SolidLine, cap, join)
+                p.setPen(pen)
+                p.drawLine(QtCore.QPointF(*pts_px[i]), QtCore.QPointF(*pts_px[i + 1]))
+        # Articulações: anel sutil em cada junta interna, para ler as falanges.
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.setPen(QtGui.QPen(_com_alfa(contorno, 0.38), 1.0))
+        for i in range(1, len(pts_px) - 1):
+            r = largs[i] * self._esc * 0.5
+            p.drawEllipse(QtCore.QPointF(*pts_px[i]), r, r)
+
+    def pintar(self, p, rect):
+        """Pinta a figura inteira no retângulo dado (paintEvent e exportação)."""
+        cores = self._cores()
+        pose = self._pose
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+        p.setRenderHint(QtGui.QPainter.RenderHint.TextAntialiasing, True)
+        rect = QtCore.QRectF(rect)
+        p.fillRect(rect, cores["fundo"])
+        W, H = rect.width(), rect.height()
+        pequeno = W < 330 or H < 250
+
+        # --- faixas de texto: cabeçalho (movimento + músculos) e rodapé (selo)
+        f_tit = self._fonte(9 if pequeno else 11, True)
+        f_sub = self._fonte(7 if pequeno else 8)
+        fm_tit, fm_sub = QtGui.QFontMetrics(f_tit), QtGui.QFontMetrics(f_sub)
+        topo = rect.top() + 6 + fm_tit.height() + (0 if pequeno else fm_sub.height() + 2)
+        rodape = rect.bottom() - fm_sub.height() - 8
+
+        # --- escala da cena
+        x0, y0, x1, y1 = _CENA
+        x1 = _CENA_X1_OBJETO.get(self._objeto, x1)
+        area = QtCore.QRectF(rect.left() + 6, topo + 2, W - 12, rodape - topo - 4)
+        self._esc = max(1.0, min(area.width() / (x1 - x0), area.height() / (y1 - y0)))
+        self._ox = area.center().x() - (x0 + x1) / 2.0 * self._esc
+        self._oy = area.center().y() - (y0 + y1) / 2.0 * self._esc
+        e = self._esc
+        self._evitar = []   # formas (px) que o rótulo da palma não deve cobrir
+
+        # --- cinemática direta (unidades): tronco gira em torno do quadril
+        tronco = pose["tronco"]
+
+        def R(pt):
+            """Gira um ponto do tronco em torno do quadril pelo ângulo do tronco."""
+            return _girar(pt, _QUADRIL, tronco)
+        S = R((0.0, 0.0))
+        a1 = math.radians(pose["ombro"] + tronco)
+        E = (S[0] + _L_BRACO * math.sin(a1), S[1] + _L_BRACO * math.cos(a1))
+        a2 = a1 + math.radians(pose["cotovelo"])
+        Wr = (E[0] + _L_ANTEBRACO * math.sin(a2), E[1] + _L_ANTEBRACO * math.cos(a2))
+        a3 = a2 + math.radians(pose["punho"])
+        d1, f1 = (math.sin(a1), math.cos(a1)), (math.cos(a1), -math.sin(a1))  # eixo, frente
+        d2, f2 = (math.sin(a2), math.cos(a2)), (math.cos(a2), -math.sin(a2))  # eixo, dorso
+
+        # --- cena fixa (porta ou mesa), atrás de tudo
+        p.save()
+        p.setClipRect(area)
+        if self._objeto == "chave":
+            self._desenhar_porta(p, cores)
+        elif self._objeto == "copo":
+            self._desenhar_mesa(p, cores)
+        p.restore()
+
+        # --- pernas sugeridas (esmaecem para baixo), tronco, pescoço, cabeça
+        grad = QtGui.QLinearGradient(self._P(0, 1.92), self._P(0, 2.30))
+        grad.setColorAt(0.0, cores["corpo"])
+        grad.setColorAt(1.0, _com_alfa(cores["corpo"], 0.0))
+        grad_c = QtGui.QLinearGradient(self._P(0, 1.92), self._P(0, 2.30))
+        grad_c.setColorAt(0.0, cores["contorno"])
+        grad_c.setColorAt(1.0, _com_alfa(cores["contorno"], 0.0))
+        for (pa, ra, pb, rb, escuro) in (((-0.14, 1.80), 0.24, (-0.22, 2.45), 0.20, True),
+                                         ((0.14, 1.80), 0.25, (0.20, 2.45), 0.21, False)):
+            path = self._capsula_px(pa, ra, pb, rb)
+            p.setPen(QtGui.QPen(QtGui.QBrush(grad_c), 1.4))
+            if escuro:
+                g2 = QtGui.QLinearGradient(grad)
+                g2.setColorAt(0.0, _misturar(cores["corpo"], cores["contorno"], 0.25))
+                p.setBrush(QtGui.QBrush(g2))
+            else:
+                p.setBrush(QtGui.QBrush(grad))
+            p.drawPath(path)
+
+        torso_pts = [(0.20, -0.30), (0.40, 0.05), (0.46, 0.45), (0.42, 0.95), (0.38, 1.35),
+                     (0.30, 1.72), (0.05, 1.88), (-0.22, 1.84), (-0.38, 1.55), (-0.40, 1.10),
+                     (-0.34, 0.65), (-0.42, 0.20), (-0.36, -0.15), (-0.16, -0.33)]
+        torso = self._caminho_pts([R(q) for q in torso_pts])
+        pescoco = self._capsula_px(R((0.09, -0.70)), 0.15, R((0.06, -0.28)), 0.20)
+        self._preencher(p, pescoco, cores["corpo"], cores["contorno"])
+        self._preencher(p, torso, cores["corpo"], cores["contorno"])
+        # Orelha atrás da cabeça, depois a cabeça e o rosto voltado para a frente.
+        self._preencher(p, self._capsula_px(R((0.02, -1.08)), 0.055, R((0.0, -0.96)), 0.05),
+                        cores["corpo"], cores["contorno"])
+        cab = R((0.13, -1.06))
+        cabeca = QtGui.QPainterPath()
+        cabeca.addEllipse(self._P(*cab), 0.40 * e, 0.46 * e)
+        self._preencher(p, cabeca, cores["corpo"], cores["contorno"])
+        nariz = self._caminho_pts([R((0.49, -1.10)), R((0.58, -0.98)), R((0.49, -0.92))], suave=False)
+        self._preencher(p, nariz, cores["corpo"], cores["contorno"], 1.2)
+        p.setPen(QtGui.QPen(cores["contorno"], 1.6, QtCore.Qt.PenStyle.SolidLine,
+                            QtCore.Qt.PenCapStyle.RoundCap))
+        p.drawLine(self._P(*R((0.41, -0.80))), self._P(*R((0.50, -0.81))))  # boca
+        p.setBrush(QtGui.QBrush(cores["contorno"]))
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.drawEllipse(self._P(*R((0.36, -1.13))), 0.032 * e, 0.032 * e)      # olho
+
+        # --- músculos do tronco (recortados pelo tronco+pescoço)
+        at = self._ativacao
+        if any(at.get(m, 0) > 0.02 for m in ("Peitoral Maior", "Latíssimo do Dorso", "Trapézio")):
+            clip_t = torso.united(pescoco)
+            self._brilho(p, clip_t, R((0.27, 0.30)), 0.38, at.get("Peitoral Maior", 0))
+            self._brilho(p, clip_t, R((-0.27, 0.72)), 0.42, at.get("Latíssimo do Dorso", 0), (0.15, 1.0))
+            self._brilho(p, clip_t, R((-0.12, -0.26)), 0.30, at.get("Trapézio", 0))
+
+        # --- braço que trabalha: ombro arredondado, braço, antebraço
+        ombro = QtGui.QPainterPath()
+        ombro.addEllipse(self._P(*S), 0.25 * e, 0.25 * e)
+        braco = self._capsula_px(S, 0.20, E, 0.145)
+        antebraco = self._capsula_px(E, 0.145, Wr, 0.095)
+        self._preencher(p, ombro, cores["braco"], cores["contorno"])
+        self._preencher(p, braco, cores["braco"], cores["contorno"])
+        self._preencher(p, antebraco, cores["braco"], cores["contorno"])
+        # Articulações: anéis discretos no cotovelo e no punho.
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.setPen(QtGui.QPen(_com_alfa(cores["contorno"], 0.45), 1.2))
+        p.drawEllipse(self._P(*E), 0.095 * e, 0.095 * e)
+        p.drawEllipse(self._P(*Wr), 0.062 * e, 0.062 * e)
+
+        # --- músculos do braço
+        if any(at.get(m, 0) > 0.02 for m in ("Bíceps Braquial", "Tríceps Braquial", "Deltoide Anterior",
+                                             "Deltoide Medio", "Deltoide Posterior")):
+            clip_b = ombro.united(braco)
+            self._brilho(p, clip_b, (S[0] + d1[0] * 0.47 + f1[0] * 0.08, S[1] + d1[1] * 0.47 + f1[1] * 0.08),
+                         0.32, at.get("Bíceps Braquial", 0), d1)
+            self._brilho(p, clip_b, (S[0] + d1[0] * 0.50 - f1[0] * 0.09, S[1] + d1[1] * 0.50 - f1[1] * 0.09),
+                         0.32, at.get("Tríceps Braquial", 0), d1)
+            self._brilho(p, clip_b, (S[0] + f1[0] * 0.15 + d1[0] * 0.06, S[1] + f1[1] * 0.15 + d1[1] * 0.06),
+                         0.24, at.get("Deltoide Anterior", 0))
+            self._brilho(p, clip_b, (S[0] - d1[0] * 0.08, S[1] - d1[1] * 0.08),
+                         0.24, at.get("Deltoide Medio", 0))
+            self._brilho(p, clip_b, (S[0] - f1[0] * 0.15 + d1[0] * 0.06, S[1] - f1[1] * 0.15 + d1[1] * 0.06),
+                         0.24, at.get("Deltoide Posterior", 0))
+        if at.get("Flexor Carpi Radialis", 0) > 0.02 or at.get("Extensor Carpi Radialis", 0) > 0.02:
+            self._brilho(p, antebraco, (E[0] + d2[0] * 0.40 - f2[0] * 0.06, E[1] + d2[1] * 0.40 - f2[1] * 0.06),
+                         0.28, at.get("Flexor Carpi Radialis", 0), d2)
+            self._brilho(p, antebraco, (E[0] + d2[0] * 0.36 + f2[0] * 0.06, E[1] + d2[1] * 0.36 + f2[1] * 0.06),
+                         0.28, at.get("Extensor Carpi Radialis", 0), d2)
+
+        # --- mão (com objeto preso) e rótulo da palma
+        info_mao = self._desenhar_mao(p, cores, Wr, a3, pose)
+        palma_px = QtGui.QPainterPath()
+        palma_px.addRect(QtCore.QRectF(info_mao["x0"], info_mao["y0"],
+                                       info_mao["x1"] - info_mao["x0"], info_mao["y1"] - info_mao["y0"]))
+        r = pose["pronacao"]
+        if abs(r) >= 0.3:
+            texto = tr("palma para cima") if r < 0 else tr("palma para baixo")
+            f_p = self._fonte(7 if pequeno else 8, True)
+            fm_p = QtGui.QFontMetrics(f_p)
+            p.setFont(f_p)
+            p.setPen(cores["acento"])
+            tw, th = fm_p.horizontalAdvance(texto), fm_p.height()
+            hx0, hx1, hy0, hy1, hcx = (info_mao[k] for k in ("x0", "x1", "y0", "y1", "cx"))
+            # Embaixo da mão de preferência; senão à frente, em cima ou atrás,
+            # no primeiro lugar que não cobre o corpo nem o braço.
+            candidatos = [QtCore.QRectF(hcx - tw / 2, hy1 + 4, tw, th),
+                          QtCore.QRectF(hx1 + 6, (hy0 + hy1) / 2 - th / 2, tw, th),
+                          QtCore.QRectF(hcx - tw / 2, hy0 - 4 - th, tw, th),
+                          QtCore.QRectF(hx0 - 6 - tw, (hy0 + hy1) / 2 - th / 2, tw, th)]
+            figura = (torso, braco, antebraco, ombro, cabeca, palma_px) + tuple(self._evitar)
+            escolhido = None
+            for rc in candidatos:
+                rc.moveLeft(max(rect.left() + 4, min(rect.right() - 4 - tw, rc.left())))
+                if rc.top() < topo or rc.bottom() > rodape:
+                    continue
+                if not any(f.intersects(rc) for f in figura):
+                    escolhido = rc
+                    break
+            if escolhido is None:
+                escolhido = candidatos[0]
+                escolhido.moveTop(max(topo, min(rodape - th, escolhido.top())))
+            p.drawText(QtCore.QPointF(escolhido.left(), escolhido.top() + fm_p.ascent()), texto)
+
+        # --- cabeçalho: movimento em curso e músculos ativos
+        larg_legenda = 48 if pequeno else 70
+        p.setFont(f_tit)
+        p.setPen(cores["texto"])
+        rot = self._rotulo or tr("Repouso")
+        larg_txt = W - 16 - larg_legenda - 12
+        p.drawText(QtCore.QPointF(rect.left() + 8, rect.top() + 6 + fm_tit.ascent()),
+                   fm_tit.elidedText(rot, QtCore.Qt.TextElideMode.ElideRight, int(larg_txt)))
+        if not pequeno:
+            ativos = sorted(((v, m) for m, v in at.items() if v > 0.02), reverse=True)
+            sub = "  ·  ".join("%s %d%%" % (tr(m), round(v * 100)) for v, m in ativos)
+            if not sub:
+                sub = tr("nenhum músculo acima de 2%")
+            p.setFont(f_sub)
+            p.setPen(cores["dim"])
+            p.drawText(QtCore.QPointF(rect.left() + 8, rect.top() + 8 + fm_tit.height() + fm_sub.ascent()),
+                       fm_sub.elidedText(sub, QtCore.Qt.TextElideMode.ElideRight, int(larg_txt)))
+
+        # --- legenda da intensidade (canto superior direito)
+        lx = rect.right() - 8 - larg_legenda
+        ly = rect.top() + 6 + (0 if pequeno else fm_sub.height() + 1)
+        g = QtGui.QLinearGradient(QtCore.QPointF(lx, ly), QtCore.QPointF(lx + larg_legenda, ly))
+        for k in range(5):
+            g.setColorAt(k / 4.0, cor_intensidade(k / 4.0))
+        p.setPen(QtGui.QPen(cores["borda"], 1.0))
+        p.setBrush(QtGui.QBrush(g))
+        p.drawRoundedRect(QtCore.QRectF(lx, ly, larg_legenda, 7), 3, 3)
+        p.setFont(f_sub)
+        p.setPen(cores["dim"])
+        if not pequeno:
+            tit = tr("intensidade")
+            p.drawText(QtCore.QPointF(lx + larg_legenda - fm_sub.horizontalAdvance(tit), rect.top() + 4 + fm_sub.ascent()), tit)
+        p.drawText(QtCore.QPointF(lx, ly + 8 + fm_sub.ascent()), "0")
+        p.drawText(QtCore.QPointF(lx + larg_legenda - fm_sub.horizontalAdvance("100%"), ly + 8 + fm_sub.ascent()), "100%")
+
+        # --- selo fixo: a figura simula, não é o vídeo
+        selo = tr("Simulação")
+        f_selo = self._fonte(7 if pequeno else 8, True)
+        fm_selo = QtGui.QFontMetrics(f_selo)
+        chip_w = fm_selo.horizontalAdvance(selo) + 10
+        chip = QtCore.QRectF(rect.left() + 8, rodape, chip_w, fm_sub.height() + 2)
+        p.setPen(QtGui.QPen(_com_alfa(cores["acento"], 0.55), 1.0))
+        p.setBrush(QtGui.QBrush(_com_alfa(cores["acento"], 0.10)))
+        p.drawRoundedRect(chip, 4, 4)
+        p.setFont(f_selo)
+        p.setPen(cores["acento"])
+        p.drawText(QtCore.QPointF(chip.left() + 5, chip.top() + 1 + fm_selo.ascent()), selo)
+        frase = tr("A figura SIMULA o movimento marcado; não é o vídeo da pessoa.")
+        p.setFont(f_sub)
+        p.setPen(cores["dim"])
+        p.drawText(QtCore.QPointF(chip.right() + 8, chip.top() + 1 + fm_sub.ascent()),
+                   fm_sub.elidedText(frase, QtCore.Qt.TextElideMode.ElideRight,
+                                     int(rect.right() - 8 - chip.right() - 8)))
+
+    def _desenhar_mao(self, p, cores, Wr, a3, pose):
+        """Mão articulada: palma/dorso, 4 dedos com 3 falanges, polegar, objeto.
+
+        Modelo 3D simplificado no referencial da mão (x ao longo dos dedos,
+        y para o lado do polegar, z para a palma), girado em torno de x
+        conforme a pronação e projetado no plano de perfil. Assim a supinação
+        mostra a PALMA e a pronação mostra o DORSO, e o polegar troca de lado.
+        Devolve {"cx", "baixo"} em pixels para posicionar o rótulo da palma.
+        """
+        e = self._esc
+        r = pose["pronacao"]
+        # Neutro é uma vista 3/4 (55°): dá para ver os dedos lado a lado; a
+        # supinação vai a 0° (palma de frente) e a pronação a 180° (dorso).
+        alfa = math.radians(55.0 + 55.0 * r) if r <= 0 else math.radians(55.0 + 125.0 * r)
+        ca, sa = math.cos(alfa), math.sin(alfa)
+        xh = (math.sin(a3), math.cos(a3))
+        uh = (math.cos(a3), -math.sin(a3))   # lado dorsal (extensão) no plano
+
+        def proj(x, y, z):
+            """Projeta um ponto 3D da mão (eixo do antebraço, largura, espessura) na tela."""
+            up = y * ca - z * sa
+            return (self._ox + (Wr[0] + x * xh[0] + up * uh[0]) * e,
+                    self._oy + (Wr[1] + x * xh[1] + up * uh[1]) * e)
+
+        def prof(y, z):
+            """Profundidade do ponto: positivo = mais perto de quem olha (decide o que fica por cima)."""
+            return y * sa + z * ca      # profundidade (+ = mais perto de quem olha)
+
+        w2, t2 = _PALMA_LARG / 2.0, _PALMA_ESP / 2.0
+        cantos = [proj(x, sy, sz) for x in (0.0, _PALMA_COMPR) for sy in (-w2, w2) for sz in (-t2, t2)]
+        palma_poly = QtGui.QPolygonF([QtCore.QPointF(*q) for q in _envoltoria(cantos)])
+        palma_path = QtGui.QPainterPath()
+        palma_path.addPolygon(palma_poly)
+        palma_path.closeSubpath()
+        if ca >= 0:
+            cor_mao = _misturar(cores["braco"], cores["palma"], ca)
+        else:
+            cor_mao = _misturar(cores["braco"], cores["dorso"], -ca)
+        # Cantos arredondados: contorno grosso de junta redonda, depois o miolo.
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.setPen(QtGui.QPen(cores["contorno"], 0.06 * e + 2.8, QtCore.Qt.PenStyle.SolidLine,
+                            QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenJoinStyle.RoundJoin))
+        p.drawPolygon(palma_poly)
+        p.setPen(QtGui.QPen(cor_mao, 0.06 * e, QtCore.Qt.PenStyle.SolidLine,
+                            QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenJoinStyle.RoundJoin))
+        p.setBrush(QtGui.QBrush(cor_mao))
+        p.drawPolygon(palma_poly)
+        if ca > 0.35:   # pregas da palma, mais nítidas quanto mais de frente
+            p.setPen(QtGui.QPen(_com_alfa(cores["contorno"], 0.55 * ca), 1.0))
+            p.drawLine(QtCore.QPointF(*proj(0.10, -0.40 * w2, 0)), QtCore.QPointF(*proj(0.21, 0.55 * w2, 0)))
+            p.drawLine(QtCore.QPointF(*proj(0.16, -0.75 * w2, 0)), QtCore.QPointF(*proj(0.25, 0.10 * w2, 0)))
+
+        # Dedos: 3 falanges, curvando para a palma (+z) conforme "mao"; a pinça
+        # fecha um pouco o indicador para o polegar alcançar.
+        c = pose["mao"]
+        pinca = pose["pinca"]
+        dedos = []
+        for lat, (l1, l2, l3) in _DEDOS:
+            cf = min(1.0, c + (0.42 if lat > 0.5 else 0.30) * pinca)
+            angs = (math.radians(72 * cf), math.radians(88 * cf), math.radians(55 * cf))
+            x, y, z = _PALMA_COMPR, lat * w2 * 0.95, 0.0
+            pts3 = [(x, y, z)]
+            fi = 0.0
+            for l, a in zip((l1, l2, l3), angs):
+                fi += a
+                x, z = x + l * math.cos(fi), z + l * math.sin(fi)
+                pts3.append((x, y, z))
+            dedos.append((prof(y, 0.0), lat, [proj(*q) for q in pts3]))
+        dedos.sort(key=lambda d: d[0])          # de trás para a frente
+        idx_pts = next(d[2] for d in dedos if d[1] > 0.5)
+
+        # Polegar: base no lado radial, cinemática inversa de 2 segmentos até o
+        # alvo (descanso, ponta do indicador na pinça, ou sobre os dedos no punho).
+        base = proj(0.09, w2 * 0.92, 0.25 * t2)
+        dir3 = (0.74, 0.56, 0.34)   # descanso: ~40° do indicador, levemente para a palma
+        L1, L2 = 0.135 * e, 0.105 * e
+        q = proj(0.09 + dir3[0], w2 * 0.92 + dir3[1], 0.25 * t2 + dir3[2])
+        n = max(1e-6, math.hypot(q[0] - base[0], q[1] - base[1]))
+        # Alvo quase no alcance total: polegar reto, sem dobra artificial.
+        ponta_desc = (base[0] + (q[0] - base[0]) / n * 0.97 * (L1 + L2),
+                      base[1] + (q[1] - base[1]) / n * 0.97 * (L1 + L2))
+        alvo = ponta_desc
+        if pinca > 0:
+            alvo = (alvo[0] + (idx_pts[3][0] - alvo[0]) * pinca, alvo[1] + (idx_pts[3][1] - alvo[1]) * pinca)
+        if c > 0.35:
+            k = (c - 0.35) / 0.65 * (1.0 - pinca)
+            alvo = (alvo[0] + (idx_pts[1][0] - alvo[0]) * k, alvo[1] + (idx_pts[1][1] - alvo[1]) * k)
+        dx, dy = alvo[0] - base[0], alvo[1] - base[1]
+        d = max(abs(L1 - L2) + 1e-3, min(L1 + L2 - 1e-3, math.hypot(dx, dy)))
+        cos_a = max(-1.0, min(1.0, (d * d + L1 * L1 - L2 * L2) / (2 * d * L1)))
+        ang0 = math.atan2(dy, dx)
+        centro_mao = proj(_PALMA_COMPR * 0.5, 0.0, 0.0)
+        melhor = None
+        for sinal in (1, -1):
+            a = ang0 + sinal * math.acos(cos_a)
+            j = (base[0] + L1 * math.cos(a), base[1] + L1 * math.sin(a))
+            dist = math.hypot(j[0] - centro_mao[0], j[1] - centro_mao[1])
+            if melhor is None or dist < melhor[0]:   # o polegar dobra para a palma
+                melhor = (dist, j)
+        ponta = (base[0] + dx / max(1e-6, math.hypot(dx, dy)) * d, base[1] + dy / max(1e-6, math.hypot(dx, dy)) * d)
+        polegar = [base, melhor[1], ponta]
+        polegar_atras = prof(w2, 0.25 * t2) < 0
+
+        if polegar_atras:
+            self._polilinha(p, polegar, (0.095, 0.082), cor_mao, cores["contorno"])
+
+        # Objeto que a mão segura: fica entre a palma e os dedos.
+        grip = proj(0.17, 0.0, 0.12)
+        if self._objeto == "halter":
+            self._desenhar_halter(p, cores, grip, proj, xh, uh, ca, sa)
+        elif self._objeto == "copo":
+            self._desenhar_copo(p, cores, grip, a3)
+
+        for _, lat, pts in dedos:
+            self._polilinha(p, pts, (0.088, 0.078, 0.068), cor_mao, cores["contorno"])
+        if ca < -0.35:   # nós dos dedos no dorso
+            p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.setBrush(QtGui.QBrush(_com_alfa(cores["contorno"], 0.35 * -ca)))
+            for _, lat, pts in dedos:
+                p.drawEllipse(QtCore.QPointF(*pts[0]), 0.03 * e, 0.03 * e)
+        if not polegar_atras:
+            self._polilinha(p, polegar, (0.095, 0.082), cor_mao, cores["contorno"])
+
+        if self._objeto == "chave":
+            k = ((ponta[0] + idx_pts[3][0]) / 2.0, (ponta[1] + idx_pts[3][1]) / 2.0)
+            self._desenhar_chave(p, cores, k, xh, uh, ca)
+
+        todos = [QtCore.QPointF(*q) for q in cantos] + [QtCore.QPointF(*q) for _, _, pts in dedos for q in pts]
+        todos += [QtCore.QPointF(*q) for q in polegar]
+        xs, ys = [q.x() for q in todos], [q.y() for q in todos]
+        return {"cx": sum(xs) / len(xs), "cy": sum(ys) / len(ys), "baixo": max(ys),
+                "x0": min(xs) - 0.05 * e, "x1": max(xs) + 0.05 * e,
+                "y0": min(ys) - 0.05 * e, "y1": max(ys) + 0.05 * e}
+
+    def _desenhar_halter(self, p, cores, grip, proj, xh, uh, ca, sa):
+        """Halter preso ao punho fechado: barra pelo eixo da pegada, dois discos."""
+        e = self._esc
+        # A barra atravessa o punho pelo eixo y (do mínimo ao indicador); vista
+        # de perfil ela fica quase perpendicular ao antebraço. Limitamos a
+        # perspectiva para o halter continuar reconhecível na supinação.
+        ca_b = max(0.35, min(0.95, abs(ca)))
+        meia = 0.30 * ca_b
+        p1 = (grip[0] + meia * uh[0] * e, grip[1] + meia * uh[1] * e)
+        p2 = (grip[0] - meia * uh[0] * e, grip[1] - meia * uh[1] * e)
+        p.setPen(QtGui.QPen(cores["objeto"], 0.06 * e, QtCore.Qt.PenStyle.SolidLine,
+                            QtCore.Qt.PenCapStyle.RoundCap))
+        p.drawLine(QtCore.QPointF(*p1), QtCore.QPointF(*p2))
+        ang = math.degrees(math.atan2(xh[1], xh[0]))
+        rd = 0.135 * e
+        ry = rd * max(0.35, math.sqrt(1.0 - ca_b * ca_b))
+        for q in (p1, p2):
+            ev = QtGui.QPainterPath()
+            ev.addEllipse(QtCore.QPointF(*q), rd, rd)
+            self._evitar.append(ev)
+            p.save()
+            p.translate(QtCore.QPointF(*q))
+            p.rotate(ang)
+            p.setPen(QtGui.QPen(cores["contorno"], 1.2))
+            p.setBrush(QtGui.QBrush(cores["objeto"]))
+            p.drawEllipse(QtCore.QPointF(0, 0), rd, ry)
+            p.setPen(QtGui.QPen(_com_alfa(cores["fundo"], 0.35), 1.0))
+            p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+            p.drawEllipse(QtCore.QPointF(0, 0), rd * 0.55, ry * 0.55)
+            p.restore()
+
+    def _desenhar_copo(self, p, cores, grip, a3):
+        """Copo preso à mão, sempre em pé; inclina para a boca quando o antebraço sobe."""
+        e = self._esc
+        incl = max(0.0, min(28.0, (math.degrees(a3) - 100.0) * 0.35))
+        h, b, t = 0.46 * e, 0.11 * e, 0.145 * e
+        pts = [(-b, h / 2), (b, h / 2), (t, -h / 2), (-t, -h / 2)]
+        pts = [_girar((grip[0] + x, grip[1] + y), grip, incl) for x, y in pts]
+        poly = QtGui.QPolygonF([QtCore.QPointF(*q) for q in pts])
+        ev = QtGui.QPainterPath()
+        ev.addPolygon(poly)
+        self._evitar.append(ev)
+        p.setPen(QtGui.QPen(cores["contorno"], 1.3))
+        p.setBrush(QtGui.QBrush(_com_alfa(cores["acento"], 0.20)))
+        p.drawPolygon(poly)
+        # Nível da água: horizontal no mundo, por isso não gira com o copo.
+        p.setPen(QtGui.QPen(_com_alfa(cores["acento"], 0.6), 1.2))
+        nivel = grip[1] + 0.02 * e
+        p.drawLine(QtCore.QPointF(grip[0] - 0.12 * e, nivel), QtCore.QPointF(grip[0] + 0.12 * e, nivel))
+        # Borda do copo
+        p.setPen(QtGui.QPen(cores["contorno"], 1.3))
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.save()
+        p.translate(QtCore.QPointF(*_girar((grip[0], grip[1] - h / 2), grip, incl)))
+        p.rotate(incl)
+        p.drawEllipse(QtCore.QPointF(0, 0), t, 0.035 * e)
+        p.restore()
+
+    def _desenhar_chave(self, p, cores, k, xh, uh, ca):
+        """Chave presa entre polegar e indicador, haste para a frente, dentes giram com a mão."""
+        e = self._esc
+        a = (k[0] - 0.03 * xh[0] * e, k[1] - 0.03 * xh[1] * e)
+        b = (k[0] + 0.33 * xh[0] * e, k[1] + 0.33 * xh[1] * e)
+        p.setPen(QtGui.QPen(cores["objeto"], 0.035 * e, QtCore.Qt.PenStyle.SolidLine,
+                            QtCore.Qt.PenCapStyle.RoundCap))
+        p.drawLine(QtCore.QPointF(*a), QtCore.QPointF(*b))
+        # Dentes no lado do polegar: sobem na supinação e descem na pronação.
+        alt = (0.015 + 0.05 * abs(ca)) * e
+        lado = 1.0 if ca >= 0 else -1.0
+        for s in (0.17, 0.23, 0.29):
+            q = (k[0] + s * xh[0] * e, k[1] + s * xh[1] * e)
+            p.drawLine(QtCore.QPointF(*q), QtCore.QPointF(q[0] + lado * uh[0] * alt, q[1] + lado * uh[1] * alt))
+        # Argola (cabeça da chave)
+        arg = (k[0] - 0.085 * xh[0] * e, k[1] - 0.085 * xh[1] * e)
+        p.setPen(QtGui.QPen(cores["objeto"], 0.03 * e))
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.drawEllipse(QtCore.QPointF(*arg), 0.06 * e, 0.06 * e)
+
+    def _desenhar_porta(self, p, cores):
+        """Porta e fechadura fixas na cena, alvo da tarefa da chave."""
+        e = self._esc
+        x0, y0, x1, y1 = _CENA
+        porta = QtCore.QRectF(self._P(_PORTA_X, y0 - 0.2), self._P(x1 + 0.3, y1 + 0.3))
+        p.setPen(QtGui.QPen(cores["contorno"], 1.4))
+        p.setBrush(QtGui.QBrush(cores["cena"]))
+        p.drawRect(porta)
+        p.setPen(QtGui.QPen(_com_alfa(cores["contorno"], 0.25), 1.0))
+        for k in (0.22, 0.44, 0.66):
+            x = _PORTA_X + k
+            p.drawLine(self._P(x, y0 - 0.2), self._P(x, y1 + 0.3))
+        # Espelho da fechadura com o buraco; maçaneta logo acima.
+        placa = QtCore.QRectF(self._P(_PORTA_X - 0.02, _FECHADURA_Y - 0.17), QtCore.QSizeF(0.13 * e, 0.34 * e))
+        evitar = QtGui.QPainterPath()
+        evitar.addRect(QtCore.QRectF(self._P(_PORTA_X - 0.20, _FECHADURA_Y - 0.42), self._P(_PORTA_X + 0.12, _FECHADURA_Y + 0.20)))
+        self._evitar.append(evitar)
+        p.setPen(QtGui.QPen(cores["contorno"], 1.2))
+        p.setBrush(QtGui.QBrush(cores["objeto"]))
+        p.drawRoundedRect(placa, 3, 3)
+        p.setBrush(QtGui.QBrush(cores["fundo"]))
+        p.drawEllipse(self._P(_PORTA_X + 0.045, _FECHADURA_Y), 0.03 * e, 0.03 * e)
+        p.setBrush(QtGui.QBrush(cores["objeto"]))
+        p.drawPath(self._capsula_px((_PORTA_X, _FECHADURA_Y - 0.33), 0.035, (_PORTA_X - 0.13, _FECHADURA_Y - 0.33), 0.055))
+
+    def _desenhar_mesa(self, p, cores):
+        """Mesa fixa na cena (de onde vem o copo); a boca é o outro alvo."""
+        e = self._esc
+        tampo = QtCore.QRectF(self._P(_MESA_X0, _MESA_Y), self._P(_MESA_X1, _MESA_Y + 0.08))
+        grad = QtGui.QLinearGradient(self._P(0, _MESA_Y), self._P(0, 2.30))
+        grad.setColorAt(0.0, cores["contorno"])
+        grad.setColorAt(1.0, _com_alfa(cores["contorno"], 0.0))
+        p.setPen(QtGui.QPen(QtGui.QBrush(grad), 0.06 * e))
+        for x in (_MESA_X0 + 0.12, _MESA_X1 - 0.12):
+            p.drawLine(self._P(x, _MESA_Y + 0.08), self._P(x, 2.30))
+        p.setPen(QtGui.QPen(cores["contorno"], 1.3))
+        p.setBrush(QtGui.QBrush(cores["cena"]))
+        p.drawRoundedRect(tampo, 2, 2)
+
+
+# ============================================================
+# REPLAY (P8) — cenas por exame e abertura pela aba "Rever uma gravação"
+# ============================================================
+def _replay_global(nome, padrao=None):
+    """globals().get com fallback: as cenas usam peças de outros blocos
+    (figura do P6, pyqtgraph, SignalProcessor) sem depender da ordem de
+    definição no arquivo."""
+    return globals().get(nome, padrao)
+
+
+def replay_exame_da_gravacao(modo, tipos):
+    """Decide para qual exame o Replay abre: "EMG", "ECG", "EoG" ou None.
+
+    Usa o acquisition_mode do summary.json quando é um dos três; senão o tipo
+    de canal predominante entre os canais gravados (gravação multimodal ou
+    antiga). EEG não tem replay (não há o que animar): devolve None.
+    """
+    if modo in ("EMG", "ECG", "EoG"):
+        return modo
+    cont = {}
+    for t in tipos or []:
+        if t in ("EMG", "ECG", "EoG"):
+            cont[t] = cont.get(t, 0) + 1
+    if not cont:
+        return None
+    return max(cont.items(), key=lambda kv: kv[1])[0]
+
+
+def _replay_canais_do_tipo(tipos, tipo, n_total):
+    """Índices dos canais gravados com esse tipo; sem tipos gravados (gravação
+    antiga) devolve todos os canais."""
+    if tipos and len(tipos) == n_total:
+        idx = [i for i, t in enumerate(tipos) if t == tipo]
+        if idx:
+            return idx
+    return list(range(n_total))
+
+
+def _replay_decimar(t, y, max_pts=6000):
+    """Decima um traçado para o gráfico do replay (lttb se existir no
+    programa; senão passo fixo). O cursor usa o tempo real, não o decimado."""
+    if t.size <= max_pts:
+        return t, y
+    f = _replay_global("lttb")
+    if callable(f):
+        try:
+            return f(t, y, max_pts)
+        except Exception:
+            pass
+    passo = int(math.ceil(t.size / float(max_pts)))
+    return t[::passo], y[::passo]
+
+
+class _TracadoReplay(QtWidgets.QWidget):
+    """Gráfico do traçado gravado com um cursor vertical que segue o tocador.
+
+    Envolve um pg.PlotWidget (pyqtgraph já é dependência do programa). Clicar
+    no gráfico move o cursor (sinal cursorMovido) — é o jeito de ir a um
+    ponto do sinal sem mexer na barra.
+    """
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, titulo="", unidade="µV", parent=None):
+        """Traçado em pyqtgraph com cursor vertical e título opcional."""
+        super().__init__(parent)
+        pg = _replay_global("pg")
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(2)
+        if titulo:
+            lbl = QtWidgets.QLabel(titulo)
+            lbl.setStyleSheet("font-weight: bold;")
+            lay.addWidget(lbl)
+        self._pg = pg
+        self._curvas = []
+        self._marcas = []
+        if pg is None:
+            self.plot = QtWidgets.QLabel(tr("Gráfico indisponível."))
+            lay.addWidget(self.plot)
+            self._cursor = None
+            return
+        self.plot = pg.PlotWidget()
+        self.plot.setMinimumHeight(140)
+        self.plot.setLabel("bottom", tr("tempo (s)"))
+        self.plot.setLabel("left", unidade)
+        self.plot.showGrid(x=True, y=True, alpha=0.2)
+        self.plot.setMenuEnabled(False)
+        cores = _replay_global("COLORS", {})
+        self._cursor = pg.InfiniteLine(pos=0.0, angle=90, movable=False,
+                                       pen=pg.mkPen(cores.get("warning", "#e0a000"), width=2))
+        self._cursor.setZValue(50)
+        self.plot.addItem(self._cursor)
+        self.plot.scene().sigMouseClicked.connect(self._on_click)
+        lay.addWidget(self.plot, 1)
+
+    def set_series(self, series):
+        """Desenha as curvas: lista de (t, y, cor, nome)."""
+        if self._pg is None:
+            return
+        for c in self._curvas:
+            self.plot.removeItem(c)
+        self._curvas = []
+        for t, y, cor, nome in series:
+            td, yd = _replay_decimar(np.asarray(t, float), np.asarray(y, float))
+            c = self.plot.plot(td, yd, pen=self._pg.mkPen(cor, width=1), name=nome)
+            self._curvas.append(c)
+        if series:
+            self.plot.setXRange(0.0, float(series[0][0][-1]) if len(series[0][0]) else 1.0, padding=0.01)
+
+    def set_marcas(self, tempos, cor="#888", simbolo="t"):
+        """Pontos (ex.: picos R ou piscadas) sobre a primeira curva."""
+        if self._pg is None:
+            return
+        for m in self._marcas:
+            self.plot.removeItem(m)
+        self._marcas = []
+        if not tempos or not self._curvas:
+            return
+        c0 = self._curvas[0]
+        xs, ys = c0.getData()
+        if xs is None or not len(xs):
+            return
+        tt = np.asarray(tempos, float)
+        yy = np.interp(tt, xs, ys)
+        sc = self._pg.ScatterPlotItem(tt, yy, symbol=simbolo, size=7,
+                                      brush=self._pg.mkBrush(cor), pen=None)
+        sc.setZValue(20)
+        self.plot.addItem(sc)
+        self._marcas.append(sc)
+
+    def set_tempo(self, t):
+        """Move o cursor para t e mantém uma janela de 10 s à vista."""
+        if self._cursor is None:
+            return
+        self._cursor.setPos(float(t))
+        vb = self.plot.getViewBox()
+        (x0, x1), _ = vb.viewRange()
+        larg = max(2.0, x1 - x0)
+        if t < x0 or t > x1:
+            vb.setXRange(max(0.0, t - larg * 0.1), max(0.0, t - larg * 0.1) + larg, padding=0)
+
+    def _on_click(self, ev):
+        """Clique no traçado: emite o instante clicado para o tocador ir até lá."""
+        if self._cursor is None:
+            return
+        try:
+            pos = self.plot.getPlotItem().vb.mapSceneToView(ev.scenePos())
+            self.cursorMovido.emit(max(0.0, float(pos.x())))
+        except Exception:
+            pass
+
+
+# ------------------------------------------------------------
+# Músculos
+# ------------------------------------------------------------
+class CenaReplayEMG(QtWidgets.QWidget):
+    """Cena do Replay de músculos: a figura articulada refaz o movimento
+    marcado, cada músculo acende com a intensidade medida no instante, e a
+    linha do tempo de movimentos (editável no Completo) fica embaixo.
+
+    Dados: d (dict de _load_session_csv), pasta da gravação, tipos e músculos
+    por canal (summary.json). A intensidade é o envelope RMS de 100 ms de cada
+    canal EMG, normalizado pelo percentil 95 da gravação (não há MVC numa
+    gravação antiga). O modelo de movimentos vem de movimentos.json ou, na
+    primeira vez, dos marcadores/contrações.
+    """
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, d, pasta, tipos=None, musculos=None, simples=False,
+                 nome="", parent=None):
+        """Prepara sinais, envelope por músculo e modelo de movimentos, e monta a cena."""
+        super().__init__(parent)
+        self._simples = bool(simples)
+        self.pasta = pasta
+        self.fs = float(d.get("sr") or 250.0)
+        eeg = np.asarray(d.get("eeg"), float)
+        self.n_amostras = eeg.shape[1] if eeg.ndim == 2 else 0
+        self.dur = self.n_amostras / self.fs if self.fs else 0.0
+        self.marcadores = list(d.get("markers") or [])
+        self._objetos = []          # [(t0, t1, "halter"|"chave"|"copo")]
+        self._alterado_extra = False
+        # ---- envelopes por músculo ----
+        canais = _replay_canais_do_tipo(tipos, "EMG", eeg.shape[0] if eeg.ndim == 2 else 0)
+        SP = _replay_global("SignalProcessor")
+        self.envelopes = {}
+        self._canal_principal = canais[0] if canais else None
+        melhor_std = -1.0
+        for ch in canais:
+            sinal = eeg[ch] - float(np.mean(eeg[ch]))
+            env = SP.compute_emg_envelope(sinal, self.fs, 0.10) if SP is not None else np.abs(sinal)
+            nome_m = ""
+            if musculos and ch < len(musculos):
+                nome_m = str(musculos[ch] or "")
+            if nome_m in ("", "(não definido)"):
+                nome_m = "CH%d" % (ch + 1)
+            if nome_m in self.envelopes:
+                self.envelopes[nome_m] = np.maximum(self.envelopes[nome_m], env)
+            else:
+                self.envelopes[nome_m] = env
+            sd = float(np.std(env)) if env.size else 0.0
+            if sd > melhor_std:
+                melhor_std, self._canal_principal = sd, ch
+        # ---- modelo de movimentos ----
+        self.caminho = caminho_movimentos(pasta) if pasta else ""
+        self.modelo = None
+        if self.caminho and os.path.exists(self.caminho):
+            try:
+                self.modelo = ModeloMovimentos.carregar(self.caminho, self.dur)
+                self._objetos = self._ler_objetos(self.caminho)
+            except Exception:
+                self.modelo = None
+        if self.modelo is None:
+            onsets = []
+            if self._canal_principal is not None:
+                try:
+                    onsets = contracoes_da_gravacao(eeg[self._canal_principal], self.fs)
+                except Exception:
+                    onsets = []
+            self.modelo = modelo_inicial(self.marcadores, onsets, self.dur, nome)
+            self.modelo.modificado = False
+        self._monta()
+        self.set_tempo(0.0)
+
+    # ---- montagem ----
+    def _monta(self):
+        """Monta a cena: figura e lista (Simples) mais linha do tempo editável e tarefas (Completo)."""
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(6)
+        topo = QtWidgets.QHBoxLayout(); topo.setSpacing(8)
+        Fig = _replay_global("FiguraMovimentoWidget")
+        if Fig is not None:
+            self.figura = Fig()
+        else:
+            # o bloco da figura (P6a) ainda não está no arquivo: mostra o
+            # movimento em palavras para a cena continuar utilizável
+            self.figura = QtWidgets.QLabel(tr("Figura do movimento indisponível."))
+            self.figura.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.figura.setMinimumSize(320, 260)
+        topo.addWidget(self.figura, 3)
+        lado = QtWidgets.QVBoxLayout(); lado.setSpacing(6)
+        self.lbl_mov = QtWidgets.QLabel("")
+        self.lbl_mov.setStyleSheet("font-size: %dpt; font-weight: bold;" % _pt(13))
+        self.lbl_mov.setWordWrap(True)
+        lado.addWidget(self.lbl_mov)
+        self.lbl_ativ = QtWidgets.QLabel("")
+        self.lbl_ativ.setWordWrap(True)
+        lado.addWidget(self.lbl_ativ)
+        self.lbl_aviso = QtWidgets.QLabel("")
+        self.lbl_aviso.setWordWrap(True)
+        self.lbl_aviso.setStyleSheet("color: %s;" % _replay_global("COLORS", {}).get("warning", "#b8730a"))
+        lado.addWidget(self.lbl_aviso)
+        if not self._simples:
+            TAREFAS = _replay_global("TAREFAS", {}) or {}
+            if TAREFAS:
+                tl = QtWidgets.QHBoxLayout()
+                tl.addWidget(QtWidgets.QLabel(tr("Tarefa pronta:")))
+                self.combo_tarefa = QtWidgets.QComboBox()
+                for chave, info in TAREFAS.items():
+                    self.combo_tarefa.addItem(tr(info.get("titulo", chave)), chave)
+                tl.addWidget(self.combo_tarefa, 1)
+                bt = QtWidgets.QPushButton(tr("Inserir no cursor"))
+                bt.setToolTip(tr("Coloca os movimentos da tarefa na linha do tempo a partir "
+                                 "do instante atual, com o objeto preso à mão."))
+                bt.clicked.connect(self._inserir_tarefa)
+                tl.addWidget(bt)
+                lado.addLayout(tl)
+        lado.addStretch(1)
+        topo.addLayout(lado, 2)
+        lay.addLayout(topo, 3)
+        self.linha = LinhaDoTempoMovimentosWidget()
+        self.linha.set_modelo(self.modelo)
+        self.linha.set_marcadores(self.marcadores)
+        self.linha.set_somente_leitura(self._simples)
+        self.linha.cursorMovido.connect(self.cursorMovido)
+        self.linha.modeloMudou.connect(self._modelo_mudou)
+        lay.addWidget(self.linha)
+        self.lista = ListaTrechosWidget()
+        self.lista.set_modelo(self.modelo)
+        self.lista.setMaximumHeight(130)
+        self.lista.cursorMovido.connect(self.cursorMovido)
+        lay.addWidget(self.lista)
+        self._t = 0.0
+
+    # ---- dados ----
+    def _ler_objetos(self, caminho):
+        """Lê a lista "objetos" do movimentos.json (chave extra do P8)."""
+        try:
+            with open(caminho, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            out = []
+            for o in d.get("objetos") or []:
+                out.append((float(o["t0"]), float(o["t1"]), str(o["objeto"])))
+            return out
+        except Exception:
+            return []
+
+    def _modelo_mudou(self):
+        """O modelo de movimentos mudou (edição ou desfazer): atualiza lista e figura."""
+        self.lista.set_modelo(self.modelo)
+        self.set_tempo(self._t)
+
+    def _inserir_tarefa(self):
+        """Coloca a tarefa pronta escolhida a partir do cursor (Completo)."""
+        TAREFAS = _replay_global("TAREFAS", {}) or {}
+        chave = self.combo_tarefa.currentData()
+        info = TAREFAS.get(chave)
+        if not info:
+            return
+        dur = float(info.get("duracao_s", 10.0))
+        t0 = self._t
+        if t0 + dur > self.dur:
+            t0 = max(0.0, self.dur - dur)
+        # trechos no modelo: faixa 1 para o primeiro movimento de cada
+        # instante, faixa 2 para os que se sobrepõem
+        self.modelo.marcar_desfazer()
+        for mov, f0, f1 in info.get("trechos", []):
+            a, b = t0 + f0 * dur, t0 + f1 * dur
+            idx = self.modelo.adicionar_trecho(0, a, b, mov, registrar=False)
+            if idx is None and self.modelo.n_faixas() >= 2:
+                self.modelo.adicionar_trecho(1, a, b, mov, registrar=False)
+        obj = info.get("objeto")
+        if obj:
+            self._objetos.append((t0, t0 + dur, obj))
+            self._alterado_extra = True
+        self.linha.set_modelo(self.modelo)
+        self._modelo_mudou()
+
+    def _objeto_em(self, t):
+        """Objeto preso à mão no instante t (halter, chave, copo) ou None."""
+        for a, b, obj in self._objetos:
+            if a <= t < b:
+                return obj
+        return None
+
+    # ---- API da cena ----
+    def set_tempo(self, t):
+        """Posiciona tudo no instante t: cursor, pose, ativação e avisos."""
+        self._t = float(t)
+        self.linha.set_cursor(self._t)
+        movs = self.modelo.movimentos_em(self._t)
+        titulos = _replay_global("MOVIMENTOS_TITULOS", {}) or {}
+        nomes = [tr(titulos.get(k, k)) for k, _f in movs]
+        self.lbl_mov.setText(" + ".join(nomes) if nomes else tr("Repouso"))
+        ativ = intensidade_no_instante(self.envelopes, self.fs, self._t)
+        fortes = sorted(ativ.items(), key=lambda kv: -kv[1])[:4]
+        self.lbl_ativ.setText("  ·  ".join("%s %d%%" % (tr(m), int(round(v * 100)))
+                                          for m, v in fortes) if fortes else "")
+        aviso = ""
+        for k, _f in movs:
+            aviso = aviso_incompatibilidade(k, ativ)
+            if aviso:
+                break
+        if not aviso and any(k == "repouso" for k, _f in movs):
+            ativos = [tr(m) for m, v in ativ.items() if v >= 0.3]
+            if ativos:
+                aviso = tr("Há músculos ativos ({0}) num trecho marcado como repouso.").format(
+                    ", ".join(ativos))
+        self.lbl_aviso.setText(aviso)
+        fig = self.figura
+        if hasattr(fig, "set_pose"):
+            mesclar = _replay_global("pose_mesclada")
+            if callable(mesclar):
+                try:
+                    fig.set_pose(mesclar([(k, f, 1.0) for k, f in movs]))
+                except Exception:
+                    pass
+            if hasattr(fig, "set_ativacao"):
+                fig.set_ativacao(ativ)
+            if hasattr(fig, "set_objeto"):
+                fig.set_objeto(self._objeto_em(self._t))
+            if hasattr(fig, "set_rotulo_movimento"):
+                fig.set_rotulo_movimento(self.lbl_mov.text())
+
+    def tem_alteracoes(self):
+        """True se a linha do tempo ou os objetos mudaram e não foram salvos."""
+        return bool(getattr(self.modelo, "modificado", False) or self._alterado_extra)
+
+    def salvar(self):
+        """Grava movimentos.json ao lado da gravação (mais a lista de objetos)."""
+        if not self.caminho:
+            return False
+        self.modelo.salvar(self.caminho)
+        if self._objetos:
+            with open(self.caminho, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            d["objetos"] = [{"t0": a, "t1": b, "objeto": o} for a, b, o in self._objetos]
+            tmp = self.caminho + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(d, f, ensure_ascii=False, indent=2)
+            os.replace(tmp, self.caminho)
+        self.modelo.modificado = False
+        self._alterado_extra = False
+        return True
+
+
+# ------------------------------------------------------------
+# Coração
+# ------------------------------------------------------------
+class CenaReplayECG(QtWidgets.QWidget):
+    """Cena do Replay do coração: coração que bate no ritmo gravado, traçado
+    com cursor, bpm, faixa com todas as batidas (adiantada e pausa em cor e
+    forma) e lista clicável. No Completo a faixa aceita correções, salvas em
+    batidas.json.
+    """
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, d, pasta, tipos=None, canal=None, simples=False, parent=None):
+        """Escolhe o canal de ECG, detecta as batidas (ou lê batidas.json) e monta a cena."""
+        super().__init__(parent)
+        self._simples = bool(simples)
+        self.pasta = pasta
+        self.fs = float(d.get("sr") or 250.0)
+        eeg = np.asarray(d.get("eeg"), float)
+        n_ch = eeg.shape[0] if eeg.ndim == 2 else 0
+        canais = _replay_canais_do_tipo(tipos, "ECG", n_ch)
+        if canal is None or not (0 <= int(canal) < n_ch):
+            canal = canais[0] if canais else 0
+        self.canal = int(canal)
+        self.sinal = eeg[self.canal] - float(np.mean(eeg[self.canal])) if n_ch else np.zeros(0)
+        self.dur = self.sinal.size / self.fs if self.fs else 0.0
+        self.t = np.arange(self.sinal.size) / self.fs
+        # detecção: batidas.json salvo vence; senão detecta agora (as MESMAS
+        # funções do relatório PDF)
+        self.correcoes = []
+        self.deteccao = None
+        salvo = carregar_batidas(pasta) if pasta else None
+        if isinstance(salvo, dict) and salvo.get("batidas"):
+            self.deteccao = salvo
+            self.correcoes = list(salvo.get("correcoes") or [])
+        else:
+            self.deteccao = detectar_batidas_gravacao(self.sinal, self.fs)
+        self._alterado = False
+        self._monta()
+        self.set_tempo(0.0)
+
+    def _monta(self):
+        """Monta a cena: coração, traçado com cursor, faixa de batidas e lista."""
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(6)
+        topo = QtWidgets.QHBoxLayout(); topo.setSpacing(8)
+        self.coracao = CoracaoReplayWidget()
+        self.coracao.setMinimumSize(220, 220)
+        self.coracao.set_batidas(self.deteccao.get("batidas", []))
+        topo.addWidget(self.coracao, 1)
+        self.tracado = _TracadoReplay(tr("Traçado do coração (ECG)"))
+        cor = (_replay_global("SIGNAL_TYPE_COLORS", {}) or {}).get("ECG", "#e0554e")
+        self.tracado.set_series([(self.t, self.sinal, cor, "ECG")])
+        self.tracado.cursorMovido.connect(self.cursorMovido)
+        topo.addWidget(self.tracado, 3)
+        lay.addLayout(topo, 3)
+        self.faixa = FaixaBatidasWidget()
+        self.faixa.set_duracao(self.dur)
+        self.faixa.set_edicao(not self._simples)
+        self.faixa.cursorMovido.connect(self.cursorMovido)
+        self.faixa.correcaoPedida.connect(self._corrigir)
+        lay.addWidget(self.faixa)
+        self.lista = ListaBatidasWidget()
+        self.lista.setMaximumHeight(150)
+        self.lista.cursorMovido.connect(self.cursorMovido)
+        lay.addWidget(self.lista)
+        self._atualiza_widgets()
+
+    def _atualiza_widgets(self):
+        """Repassa as batidas atuais (detecção + correções) a todos os widgets."""
+        bat = self.deteccao.get("batidas", [])
+        self.coracao.set_batidas(bat)
+        self.faixa.set_batidas(bat)
+        self.lista.set_batidas(bat)
+        self.tracado.set_marcas([b["t"] for b in bat if b.get("tipo") == "normal"], cor="#2ea043", simbolo="t1")
+        self.tracado.set_marcas([b["t"] for b in bat], cor=(_replay_global("COLORS", {}) or {}).get("accent", "#1a23e0"), simbolo="t1")
+
+    def _corrigir(self, correcao):
+        """Aplica uma correção pedida pela faixa (Completo) e refaz os números."""
+        try:
+            novas = aplicar_correcoes(self.deteccao.get("batidas", []), [correcao])
+        except Exception:
+            return
+        self.deteccao["batidas"] = novas
+        self.deteccao.update(resumo_batidas(novas))
+        self.correcoes.append(dict(correcao))
+        self._alterado = True
+        self._atualiza_widgets()
+        self.set_tempo(self._t)
+
+    def set_tempo(self, t):
+        """Posiciona coração, faixa e traçado no instante t."""
+        self._t = float(t)
+        self.coracao.set_tempo(self._t)
+        self.faixa.set_tempo(self._t)
+        self.tracado.set_tempo(self._t)
+
+    def tem_alteracoes(self):
+        """Há correções ainda não gravadas em batidas.json?"""
+        return self._alterado
+
+    def salvar(self):
+        """Grava batidas.json ao lado da gravação; devolve True se gravou."""
+        if not self.pasta:
+            return False
+        salvar_batidas(self.pasta, self.deteccao, self.correcoes)
+        self._alterado = False
+        return True
+
+
+# ------------------------------------------------------------
+# Olhos
+# ------------------------------------------------------------
+class CenaReplayEOG(QtWidgets.QWidget):
+    """Cena do Replay dos olhos: olhos que piscam nas piscadas e olham para
+    onde os sinais mandam, traçado H/V com cursor, "Inverter horizontal/
+    vertical", linha do tempo em palavras e contadores. No Completo a linha
+    do tempo aceita correções (remover evento, trocar a direção), salvas em
+    olhos.json.
+    """
+
+    cursorMovido = QtCore.Signal(float)
+
+    def __init__(self, d, pasta, tipos=None, canal_h=None, canal_v=None,
+                 limiar_uV=None, simples=False, parent=None):
+        """Escolhe os canais H/V, detecta piscadas e sacadas (ou lê olhos.json) e monta a cena."""
+        super().__init__(parent)
+        self._simples = bool(simples)
+        self.pasta = pasta
+        self.fs = float(d.get("sr") or 250.0)
+        eeg = np.asarray(d.get("eeg"), float)
+        n_ch = eeg.shape[0] if eeg.ndim == 2 else 0
+        canais = _replay_canais_do_tipo(tipos, "EoG", n_ch)
+        if canal_h is None or not (0 <= int(canal_h) < n_ch):
+            canal_h = canais[0] if canais else 0
+        if canal_v is None or not (0 <= int(canal_v) < n_ch):
+            canal_v = canais[1] if len(canais) > 1 else canal_h
+        self.canal_h, self.canal_v = int(canal_h), int(canal_v)
+        self.h = eeg[self.canal_h] - float(np.median(eeg[self.canal_h])) if n_ch else np.zeros(0)
+        self.v = eeg[self.canal_v] - float(np.median(eeg[self.canal_v])) if n_ch else np.zeros(0)
+        self.dur = self.h.size / self.fs if self.fs else 0.0
+        self.t = np.arange(self.h.size) / self.fs
+        # sensibilidade: a gravada no summary (report_channels.eog_threshold);
+        # sem ela, um limiar robusto pelo próprio sinal vertical
+        if not limiar_uV or limiar_uV <= 0:
+            mad = float(np.median(np.abs(self.v - np.median(self.v)))) if self.v.size else 0.0
+            limiar_uV = max(40.0, 6.0 * 1.4826 * mad)
+        self.limiar = float(limiar_uV)
+        self.inv_h = False
+        self.inv_v = False
+        self.correcoes = []
+        salvo = carregar_olhos(pasta) if pasta else None
+        if isinstance(salvo, dict) and salvo.get("eventos") is not None:
+            self.deteccao = salvo
+            self.correcoes = list(salvo.get("correcoes") or [])
+            self.inv_h = bool(salvo.get("inverter_h", False))
+            self.inv_v = bool(salvo.get("inverter_v", False))
+            self.limiar = float(salvo.get("limiar_uV") or self.limiar)
+        else:
+            self.deteccao = detectar_eventos_olhos(self.h, self.v, self.fs, self.limiar,
+                                                   self.inv_h, self.inv_v)
+        self._alterado = False
+        self._monta()
+        self.set_tempo(0.0)
+
+    def _monta(self):
+        """Monta a cena: olhos, caixas de inverter, traçados com cursor e linha do tempo em palavras."""
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(6)
+        topo = QtWidgets.QHBoxLayout(); topo.setSpacing(8)
+        self.olhos = OlhosReplayWidget()
+        self.olhos.setMinimumSize(260, 200)
+        topo.addWidget(self.olhos, 2)
+        self.tracado = _TracadoReplay(tr("Traçado dos olhos (horizontal e vertical)"))
+        cor = (_replay_global("SIGNAL_TYPE_COLORS", {}) or {}).get("EoG", "#4fb3d9")
+        self.tracado.set_series([(self.t, self.h, cor, "H"), (self.t, self.v, "#9a6ad0", "V")])
+        self.tracado.cursorMovido.connect(self.cursorMovido)
+        topo.addWidget(self.tracado, 3)
+        lay.addLayout(topo, 3)
+        ctrl = QtWidgets.QHBoxLayout()
+        self.chk_h = QtWidgets.QCheckBox(tr("Inverter horizontal"))
+        self.chk_h.setToolTip(tr("Use se os olhos olham para o lado contrário do que a pessoa fez "
+                                 "(eletrodos trocados)."))
+        self.chk_h.setChecked(self.inv_h)
+        self.chk_h.toggled.connect(self._inverter)
+        self.chk_v = QtWidgets.QCheckBox(tr("Inverter vertical"))
+        self.chk_v.setChecked(self.inv_v)
+        self.chk_v.toggled.connect(self._inverter)
+        ctrl.addWidget(self.chk_h); ctrl.addWidget(self.chk_v)
+        self.lbl_cont = QtWidgets.QLabel("")
+        ctrl.addWidget(self.lbl_cont, 1)
+        lay.addLayout(ctrl)
+        self.linha = LinhaDoTempoOlhosWidget()
+        self.linha.setMaximumHeight(160)
+        self.linha.cursorMovido.connect(self.cursorMovido)
+        if not self._simples:
+            self.linha.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+            self.linha.customContextMenuRequested.connect(self._menu_evento)
+        lay.addWidget(self.linha)
+        self._atualiza_widgets()
+
+    def _atualiza_widgets(self):
+        """Repassa os eventos atuais aos olhos, à linha do tempo, aos traçados e aos contadores."""
+        ev = self.deteccao.get("eventos", [])
+        self.olhos.set_eventos(self.deteccao)
+        self.linha.set_eventos(self.deteccao)
+        self.tracado.set_marcas([e["t"] for e in ev if e.get("tipo") == "piscada"], cor="#4fb3d9", simbolo="o")
+        r = resumo_eventos_olhos(ev, self.dur)
+        self.lbl_cont.setText(tr("piscadas: {0} · para os lados: {1} · para cima ou baixo: {2}").format(
+            r.get("n_piscadas", self.deteccao.get("n_piscadas", 0)),
+            r.get("n_sacadas", self.deteccao.get("n_sacadas", 0)),
+            r.get("n_sacadas_v", self.deteccao.get("n_sacadas_v", 0))))
+
+    def _inverter(self, _on=None):
+        """Troca as direções sem redetectar (mesmos eventos, outro rótulo)."""
+        self.inv_h, self.inv_v = self.chk_h.isChecked(), self.chk_v.isChecked()
+        try:
+            self.deteccao = inverter_direcoes(self.deteccao, self.inv_h, self.inv_v)
+        except Exception:
+            pass
+        self._alterado = True
+        self._atualiza_widgets()
+        self.set_tempo(self._t)
+
+    def _menu_evento(self, pos):
+        """Correções no Completo: remover o evento ou trocar a direção."""
+        item = self.linha.itemAt(pos)
+        if item is None:
+            return
+        idx = self.linha.row(item)
+        eventos = self.deteccao.get("eventos", [])
+        if not (0 <= idx < len(eventos)):
+            return
+        ev = eventos[idx]
+        menu = QtWidgets.QMenu(self)
+        a_rm = menu.addAction(tr("Remover este evento"))
+        acoes_dir = {}
+        if ev.get("tipo") == "sacada":
+            sub = menu.addMenu(tr("Trocar a direção"))
+            for dnome in ("direita", "esquerda", "cima", "baixo"):
+                acoes_dir[sub.addAction(tr(dnome))] = dnome
+        escolha = menu.exec(self.linha.mapToGlobal(pos))
+        if escolha is None:
+            return
+        if escolha is a_rm:
+            corr = {"acao": "remover", "t": ev["t"]}
+        else:
+            corr = {"acao": "tipo", "t": ev["t"], "tipo": "sacada", "direcao": acoes_dir.get(escolha)}
+        try:
+            self.deteccao["eventos"] = aplicar_correcoes_olhos(eventos, [corr])
+        except Exception:
+            return
+        self.correcoes.append(corr)
+        self._alterado = True
+        self._atualiza_widgets()
+
+    def set_tempo(self, t):
+        """Posiciona olhar, olhos, linha do tempo e traçados no instante t."""
+        self._t = float(t)
+        gx, gy = olhar_no_instante(self.h, self.v, self.fs, self._t, self.inv_h, self.inv_v,
+                                   2.0 * self.limiar)
+        self.olhos.set_olhar(gx, gy)
+        self.olhos.set_tempo(self._t)
+        self.linha.set_tempo(self._t)
+        self.tracado.set_tempo(self._t)
+
+    def tem_alteracoes(self):
+        """Há correções ou inversões ainda não gravadas em olhos.json?"""
+        return self._alterado
+
+    def salvar(self):
+        """Grava olhos.json (eventos, correções e inversões); devolve True se gravou."""
+        if not self.pasta:
+            return False
+        self.deteccao["inverter_h"] = self.inv_h
+        self.deteccao["inverter_v"] = self.inv_v
+        salvar_olhos(self.pasta, self.deteccao, self.correcoes, self.dur)
+        self._alterado = False
+        return True
+
+
+def abrir_replay(d, pasta, modo=None, tipos=None, musculos=None, canais_relatorio=None,
+                 simples=False, nome="", parent=None):
+    """Monta a cena certa para a gravação e devolve o ReplayDialog (ou None
+    quando o exame não tem replay).
+
+    `canais_relatorio` é o report_channels do summary.json ({ecg, eog_h,
+    eog_v, eog_threshold}); quando falta, a cena escolhe os canais pelo tipo.
+    """
+    exame = replay_exame_da_gravacao(modo, tipos)
+    if exame is None:
+        return None
+    rc = canais_relatorio or {}
+    if exame == "EMG":
+        cena = CenaReplayEMG(d, pasta, tipos, musculos, simples=simples, nome=nome)
+        titulo = tr("Replay do movimento — {0}").format(nome)
+        aviso = tr("A figura SIMULA o movimento marcado; não é vídeo da pessoa. "
+                   "Não é laudo nem diagnóstico.")
+    elif exame == "ECG":
+        cena = CenaReplayECG(d, pasta, tipos, canal=rc.get("ecg"), simples=simples)
+        titulo = tr("Replay do coração — {0}").format(nome)
+        aviso = tr("O coração desenhado SIMULA o ritmo gravado. Não é laudo nem diagnóstico.")
+    else:
+        cena = CenaReplayEOG(d, pasta, tipos, canal_h=rc.get("eog_h"), canal_v=rc.get("eog_v"),
+                             limiar_uV=rc.get("eog_threshold"), simples=simples)
+        titulo = tr("Replay dos olhos — {0}").format(nome)
+        aviso = tr("Os olhos desenhados SIMULAM as piscadas e o olhar gravados. "
+                   "Não é laudo nem diagnóstico.")
+    dlg = ReplayDialog(cena, cena.dur, titulo, simples=simples, parent=parent, aviso=aviso)
+    dlg.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose, True)
+    return dlg
+
+
 class _VirtualJoystickWidget(QtWidgets.QWidget):
     """Widget que desenha um joystick virtual.
 
@@ -41348,11 +50275,11 @@ class _SimulationOverlay(QtWidgets.QWidget):
 # Para dispositivos BT clássicos (HC-05, módulos seriais), o usuário deve
 # parear pelo Windows e a porta COM virtual aparecerá no combo de portas.
 # ============================================================
-try:
-    import bleak as _bleak_module
-    HAS_BLEAK = True
-except Exception:
-    HAS_BLEAK = False
+# Só confere se a biblioteca está instalada (find_spec, sem importar): o
+# import do bleak puxa asyncio e, no Windows, as APIs WinRT, e custava de 0,3 a
+# 1 s na abertura. O import de verdade acontece em _BluetoothScanThread.run,
+# quando a pessoa pede para procurar aparelhos (1.10.0, P9).
+HAS_BLEAK = _module_available("bleak")
 
 
 class _BluetoothScanThread(QtCore.QThread):
@@ -41641,6 +50568,95 @@ class _WorkflowCard(QtWidgets.QFrame):
         super().leaveEvent(ev)
 
 
+# ============================================================
+# Perfis de uso (1.10.0, pedido P4)
+# ------------------------------------------------------------
+# Um perfil diz COM O QUE a pessoa trabalha: quais exames a tela inicial
+# oferece e quais abas e painéis aparecem. Quem só faz EEG não precisa ver
+# músculo, coração nem olhos. Os perfis prontos têm nome em português (chave
+# de tr(), traduzida na hora de exibir); o personalizado chama-se "Minha
+# bancada". Instalações antigas (config.json sem a chave) ficam em "Tudo",
+# que não esconde nada: é o comportamento da 1.9.0.
+# ============================================================
+PERFIL_TUDO = "Tudo"
+PERFIL_PERSONALIZADO = "Minha bancada"
+EXAMES_PERFIL = ("EEG", "EMG", "ECG", "EoG")
+PERFIS_PRONTOS = {
+    "Cérebro (EEG)":  ("EEG",),
+    "Músculos (EMG)": ("EMG",),
+    "Coração (ECG)":  ("ECG",),
+    "Olhos (EOG)":    ("EoG",),
+    PERFIL_TUDO:      EXAMES_PERFIL,
+}
+# Nome do cartão do assistente por exame (também é o nome do perfil pronto)
+ROTULO_EXAME_PERFIL = {"EEG": "Cérebro (EEG)", "EMG": "Músculos (EMG)",
+                       "ECG": "Coração (ECG)", "EoG": "Olhos (EOG)"}
+# Abas que só existem no Multimodal e não pertencem a exame nenhum: num
+# perfil com 2 ou 3 exames elas continuam aparecendo no modo Multimodal.
+_ABAS_SO_MULTIMODAL = {"view": {"Layout Custom"}, "system": {"Rede e Eventos"},
+                       "bio": {"Acel · Movimento"}}
+
+
+def perfis_disponiveis(config):
+    """Todos os perfis: os prontos mais os personalizados do config.
+
+    Devolve dict nome -> {"exames": [...], "paineis": dict, "pronto": bool},
+    na ordem: prontos (um por exame, depois "Tudo") e, por fim, os do usuário.
+    """
+    saida = {}
+    for nome, exames in PERFIS_PRONTOS.items():
+        saida[nome] = {"exames": list(exames), "paineis": {}, "pronto": True}
+    extras = getattr(config, "usage_profiles", None) if config is not None else None
+    if isinstance(extras, dict):
+        for nome, dados in extras.items():
+            if not isinstance(nome, str) or not nome or nome in saida:
+                continue
+            dados = dados if isinstance(dados, dict) else {}
+            exames = [e for e in (dados.get("exames") or []) if e in EXAMES_PERFIL]
+            paineis = dados.get("paineis") if isinstance(dados.get("paineis"), dict) else {}
+            saida[nome] = {"exames": exames or list(EXAMES_PERFIL),
+                           "paineis": dict(paineis), "pronto": False}
+    return saida
+
+
+def perfil_valido(config):
+    """Nome do perfil em uso; cai em "Tudo" quando o salvo não existe mais."""
+    nome = getattr(config, "usage_profile", None) if config is not None else None
+    if isinstance(nome, str) and nome in perfis_disponiveis(config):
+        return nome
+    return PERFIL_TUDO
+
+
+def exames_do_perfil(config, nome=None):
+    """Códigos de exame que o perfil oferece, com "Hibrido" quando há 2 ou mais.
+
+    Sem config (testes, launcher avulso) devolve todos. A ordem é a dos
+    cartões (EEG, EMG, ECG, EoG) e o Multimodal vem por último.
+    """
+    if config is None:
+        return list(EXAMES_PERFIL) + ["Hibrido"]
+    nome = nome or perfil_valido(config)
+    exames = perfis_disponiveis(config).get(nome, {}).get("exames") or list(EXAMES_PERFIL)
+    ordenados = [e for e in EXAMES_PERFIL if e in exames]
+    if len(ordenados) >= 2:
+        ordenados.append("Hibrido")
+    return ordenados
+
+
+def perfil_para_exames(exames):
+    """Nome do perfil pronto que bate com esses exames, ou "Minha bancada"."""
+    alvo = tuple(e for e in EXAMES_PERFIL if e in set(exames))
+    for nome, lista in PERFIS_PRONTOS.items():
+        if tuple(lista) == alvo:
+            return nome
+    return PERFIL_PERSONALIZADO
+
+
+def rotulo_perfil(nome):
+    """Texto de tela de um perfil: prontos passam por tr(); os do usuário não."""
+    return tr(nome) if nome in PERFIS_PRONTOS or nome == PERFIL_PERSONALIZADO else nome
+
+
 class LauncherScreen(QtWidgets.QDialog):
     """Tela inicial. Bloqueia até o usuário fazer uma escolha (ou sair).
 
@@ -41836,6 +50852,20 @@ class LauncherScreen(QtWidgets.QDialog):
         v.addLayout(topo)
         self._atualiza_rotulo_exame()
 
+        # ---- Perfil de uso (P4) ----
+        # Só aparece quando há mais de um perfil para escolher; com um só
+        # (instalação nova que marcou um exame) a linha seria ruído.
+        perf = QtWidgets.QHBoxLayout(); perf.setSpacing(8)
+        perf_lbl = QtWidgets.QLabel(tr("Perfil:"))
+        perf_lbl.setObjectName("rotuloPaciente")
+        perf.addWidget(perf_lbl)
+        self.perfil_combo = self._monta_combo_perfil()
+        self.perfil_combo.setMinimumHeight(d(38, 32))
+        perf.addWidget(self.perfil_combo)
+        perf.addStretch(1)
+        self._perfil_widgets = (perf_lbl, self.perfil_combo)
+        v.addLayout(perf)
+
         # ---- Paciente ----
         pac = QtWidgets.QHBoxLayout(); pac.setSpacing(8)
         pac_lbl = QtWidgets.QLabel(tr("Paciente:"))
@@ -42006,10 +51036,16 @@ class LauncherScreen(QtWidgets.QDialog):
         return lbl
 
     def _tipos_de_exame(self):
-        """Os 5 tipos de exame (chave, rótulo, dica), na ordem da tela. Fonte
-        única dos radios do Pré-Flight e do diálogo "Trocar". No Simples a
-        dica diz o que o exame mede, em palavras comuns; a dica com filtro e
-        notch é do Completo (validação com leigos, G34)."""
+        """Os tipos de exame (chave, rótulo, dica) que o PERFIL DE USO oferece,
+        na ordem da tela. Fonte única dos radios do Pré-Flight e do diálogo
+        "Trocar". No Simples a dica diz o que o exame mede, em palavras comuns;
+        a dica com filtro e notch é do Completo (validação com leigos, G34).
+        Fora do perfil nada é oferecido (P4): quem só faz EEG não vê músculo."""
+        permitidos = set(exames_do_perfil(self.config))
+        return tuple(t for t in self._tipos_de_exame_todos() if t[0] in permitidos)
+
+    def _tipos_de_exame_todos(self):
+        """Os 5 tipos de exame sem o filtro do perfil (base de _tipos_de_exame)."""
         if getattr(self, "_simples", False):
             return (
                 ("EEG", tr("EEG · Cérebro"),
@@ -42058,7 +51094,8 @@ class LauncherScreen(QtWidgets.QDialog):
         acq = self._acq_escolhido or getattr(
             self.config, "acquisition_mode", "EEG")
         validos = [k for k, _l, _t in self._tipos_de_exame()]
-        return acq if acq in validos else "EEG"
+        # fora do perfil cai no primeiro exame oferecido, não em EEG fixo
+        return acq if acq in validos else (validos[0] if validos else "EEG")
 
     def _atualiza_rotulo_exame(self):
         """Reescreve o rótulo ao lado de "Exame:" com a modalidade em vigor."""
@@ -42072,6 +51109,65 @@ class LauncherScreen(QtWidgets.QDialog):
         if n_ch != BASE_CHANNELS:
             rotulo = rotulo + " · " + tr("{0} canais").format(n_ch)
         self.exame_lbl.setText(rotulo)
+
+    def _monta_combo_perfil(self):
+        """Combo com os perfis de uso (userData = nome-chave), já no perfil em
+        vigor e ligado a _on_perfil_trocado. Serve às duas telas."""
+        combo = QtWidgets.QComboBox()
+        combo.setObjectName("perfilCombo")
+        for nome in perfis_disponiveis(self.config):
+            combo.addItem(rotulo_perfil(nome), nome)
+        idx = combo.findData(perfil_valido(self.config))
+        combo.setCurrentIndex(max(0, idx))
+        combo.setToolTip(tr("Quem só faz um tipo de exame não precisa ver os outros: "
+                            "o perfil decide o que a tela inicial oferece e quais abas "
+                            "aparecem. Crie o seu em Sistema → Perfil de uso."))
+        combo.currentIndexChanged.connect(self._on_perfil_trocado)
+        return combo
+
+    def _on_perfil_trocado(self, _idx=None):
+        """Troca o perfil de uso na hora: grava no config, refaz os exames
+        oferecidos e corrige o exame em vigor se ele saiu do perfil."""
+        combo = getattr(self, "perfil_combo", None)
+        if combo is None or self.config is None:
+            return
+        nome = combo.currentData()
+        if not isinstance(nome, str) or nome == perfil_valido(self.config):
+            return
+        self.config.usage_profile = nome
+        try:
+            self.config.save()
+        except Exception as exc:
+            print(f"[Launcher] erro salvando o perfil: {exc}")
+        self._aplica_perfil_na_tela()
+
+    def _aplica_perfil_na_tela(self):
+        """Deixa visíveis só os exames do perfil (radios do Completo) e corrige
+        a escolha/rótulo do exame (Simples) quando o atual ficou de fora."""
+        permitidos = exames_do_perfil(self.config)
+        radios = getattr(self, "_acq_radios", None)
+        if radios:
+            for key, rb in radios.items():
+                rb.setVisible(key in permitidos)
+            marcado = next((k for k, rb in radios.items() if rb.isChecked()), None)
+            if marcado not in permitidos and permitidos:
+                rb = radios.get(permitidos[0])
+                if rb is not None:
+                    rb.setChecked(True)
+            if hasattr(self, "summary_lbl"):
+                self._refresh_summary()
+        if getattr(self, "_simples", False):
+            if self._acq_escolhido not in permitidos:
+                self._acq_escolhido = None
+            atual = self._exame_atual()
+            if self.config is not None and getattr(self.config, "acquisition_mode", None) not in permitidos:
+                # o salvo saiu do perfil: a janela vai abrir no primeiro exame dele
+                self.config.acquisition_mode = atual
+                try:
+                    self.config.save()
+                except Exception:
+                    pass
+            self._atualiza_rotulo_exame()
 
     def _dialogo_trocar_exame(self):
         """Diálogo pequeno da tela simples: tipo de exame + número de canais.
@@ -42513,6 +51609,16 @@ class LauncherScreen(QtWidgets.QDialog):
         hint.setWordWrap(True)
         v.addWidget(hint)
 
+        # ---- Bloco: Perfil de uso (P4) ----
+        perfil_box = QtWidgets.QFrame()
+        perfil_box.setObjectName("subPanel")
+        pl = QtWidgets.QVBoxLayout(perfil_box)
+        pl.setContentsMargins(12, 10, 12, 12); pl.setSpacing(6)
+        pl.addWidget(self._sub_label(tr("Perfil de uso")))
+        self.perfil_combo = self._monta_combo_perfil()
+        pl.addWidget(self.perfil_combo)
+        v.addWidget(perfil_box)
+
         # ---- Bloco: Hardware ----
         hw_box = QtWidgets.QFrame()
         hw_box.setObjectName("subPanel")
@@ -42560,7 +51666,9 @@ class LauncherScreen(QtWidgets.QDialog):
         self.acquisition_group = QtWidgets.QButtonGroup(self)
         self.acquisition_group.setExclusive(True)
         self._acq_radios = {}
-        for key, label, tip in self._tipos_de_exame():
+        # todos os tipos são criados; _aplica_perfil_na_tela esconde os que o
+        # perfil não oferece (trocar de perfil não reconstrói o painel)
+        for key, label, tip in self._tipos_de_exame_todos():
             rb = QtWidgets.QRadioButton(label)
             rb.setObjectName("acqRadio")
             rb.setToolTip(tip)
@@ -42573,6 +51681,7 @@ class LauncherScreen(QtWidgets.QDialog):
             getattr(self.config, "acquisition_mode", "EEG"),
             self._acq_radios["EEG"]).setChecked(True)
         v.addWidget(type_box)
+        self._aplica_perfil_na_tela()
 
         # Espaço
         v.addStretch()
@@ -44042,6 +53151,1500 @@ def mi_validate_focal_erd(eeg, fs, ch_names, trials, art_uv=120.0):
 
 
 # ============================================================
+# P2 — Painéis em "gavetas" (nível Completo)
+# ============================================================
+# Cada QGroupBox empilhado numa aba vira uma gaveta: cabeçalho fino com
+# recolher/expandir, menu (mover, tamanho padrão, fechar) e fechar, e uma
+# alça embaixo para arrastar a altura. Painéis lado a lado dividem a largura
+# num QSplitter. No Simples a gaveta se comporta como o QGroupBox de hoje.
+# O arranjo (ordem, visíveis, recolhidos, alturas, divisões) é estado do
+# CatalogoPaineis e vai para a chave "paineis" do config.json.
+
+_GAVETA_ALTURA_MAX = 16777215      # QWIDGETSIZE_MAX
+_GAVETA_ALTURA_MIN = 48            # menor corpo que ainda mostra algo
+_GAVETA_EXAMES = ("EEG", "EMG", "ECG", "EoG")
+_GAVETA_DEBOUNCE_MS = 500          # o arraste da alça muda a altura a cada pixel
+
+
+def _gaveta_cores():
+    """Paleta em vigor: o COLORS do programa, lido na hora (ele é mutado
+    in-place na troca de tema). Sem COLORS por perto (módulo usado sozinho
+    em teste) devolve um cinza neutro para nada estourar."""
+    try:
+        return COLORS
+    except NameError:
+        return {"background": "#f0f0f0", "surface": "#ffffff",
+                "surface_alt": "#e8e8e8", "border": "#c8c8c8",
+                "text": "#202020", "text_dim": "#606060",
+                "accent": "#3050c0", "accent_dim": "#203890",
+                "error": "#c03040", "warning": "#a06000",
+                "expansion": "#108060"}
+
+
+def _gaveta_mistura(cor, fundo, alfa):
+    """Tinta OPACA de `cor` pousada sobre `fundo` com opacidade `alfa`.
+    Opaca de propósito: com rgba o Fusion pinta o realce da paleta por baixo."""
+    a, b = QtGui.QColor(cor), QtGui.QColor(fundo)
+    if not a.isValid() or not b.isValid():
+        return str(cor)
+
+    def m(x, y):
+        """Mistura um componente de cor (0–255) pela proporção alfa."""
+        return int(round(x * alfa + y * (1 - alfa)))
+    return "#%02x%02x%02x" % (m(a.red(), b.red()), m(a.green(), b.green()),
+                              m(a.blue(), b.blue()))
+
+
+def _gaveta_repolir(w):
+    """Reaplica a folha de estilo num widget cuja propriedade dinâmica mudou
+    (o QSS só relê [prop="x"] depois de unpolish/polish)."""
+    try:
+        st = w.style()
+        st.unpolish(w)
+        st.polish(w)
+        w.update()
+    except Exception:
+        pass
+
+
+def qss_gavetas(c):
+    """Folha de estilo das gavetas a partir do dicionário de cores `c` (as
+    chaves do COLORS). É anexada por build_stylesheet, então acompanha a troca
+    de tema. Só usa cores do tema: nada fixo que quebre no claro ou no escuro."""
+    hover_cab = _gaveta_mistura(c["accent"], c["surface_alt"], 0.08)
+    hover_bt = _gaveta_mistura(c["accent"], c["surface_alt"], 0.14)
+    return f"""
+/* ===== Painéis em gavetas (P2) ===== */
+QFrame#painelGaveta {{ background-color: {c['surface']};
+    border: 1px solid {c['border']}; border-radius: 5px; }}
+QFrame#gavetaCabecalho {{ background-color: {c['surface_alt']}; border: none;
+    border-bottom: 1px solid {c['border']};
+    border-top-left-radius: 4px; border-top-right-radius: 4px; }}
+QFrame#gavetaCabecalho[aberta="false"] {{ border-bottom: none;
+    border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }}
+QFrame#gavetaCabecalho:hover {{ background-color: {hover_cab}; }}
+QLabel#gavetaTitulo {{ color: {c['accent']}; font-weight: 600;
+    background: transparent; border: none; padding: 0px; }}
+QToolButton#gavetaSeta, QToolButton#gavetaMenu, QToolButton#gavetaFechar {{
+    background: transparent; border: none; border-radius: 3px;
+    color: {c['text_dim']}; padding: 0px; margin: 0px; font-weight: bold; }}
+QToolButton#gavetaSeta {{ color: {c['accent']}; font-size: 10pt; }}
+QToolButton#gavetaMenu {{ font-size: 12pt; }}
+QToolButton#gavetaFechar {{ font-size: 12pt; }}
+QToolButton#gavetaSeta:hover, QToolButton#gavetaMenu:hover {{
+    background-color: {hover_bt}; color: {c['accent']}; }}
+QToolButton#gavetaFechar:hover {{ background-color: {hover_bt};
+    color: {c['error']}; }}
+QToolButton#gavetaMenu::menu-indicator {{ image: none; width: 0px; }}
+QFrame#gavetaCorpo {{ background: transparent; border: none; }}
+QFrame#gavetaAlca {{ background: transparent; border: none; }}
+QGroupBox[emGaveta="true"] {{ border: none; border-radius: 0px;
+    margin-top: 0px; padding: 8px 10px 6px 10px; background: transparent; }}
+QGroupBox[emGaveta="true"]::title {{ height: 0px; padding: 0px; margin: 0px; }}
+QSplitter#linhaGavetas::handle {{ background: transparent; }}
+QSplitter#linhaGavetas::handle:hover {{ background: {c['border']}; }}
+QToolButton#botaoPaineis {{ background-color: {c['surface_alt']};
+    color: {c['accent']}; border: 1px solid {c['border']}; border-radius: 4px;
+    padding: 3px 10px; font-weight: 600; }}
+QToolButton#botaoPaineis:hover {{ border-color: {c['accent_dim']};
+    background-color: {hover_bt}; }}
+QToolButton#botaoPaineis::menu-indicator {{ image: none; width: 0px; }}
+"""
+
+
+class CatalogoPaineis:
+    """Registro dos painéis que podem virar gaveta — id, título, aba, exames a
+    que pertencem e estado padrão — mais o estado ATUAL de cada um (visível,
+    recolhido, altura), a ordem por aba e as divisões das linhas lado a lado.
+    Serializa tudo para a chave "paineis" do config.json e é a fonte da verdade
+    tanto para as pilhas (PilhaGavetas) quanto para os perfis de uso (P4)."""
+
+    def __init__(self):
+        """Catálogo vazio: painéis, estado, ordem por aba e divisores."""
+        self._paineis = {}        # id -> {"titulo", "aba", "exames", "padrao", "fechavel", "assistente"}
+        self._estado = {}         # id -> {"visivel", "recolhido", "altura"}
+        self._ordem = {}          # aba -> [ids] (ordem atual)
+        self._ordem_padrao = {}   # aba -> [ids] (ordem de registro)
+        self._splits = {}         # aba -> {nome: [tamanhos]}
+        self._nomes_aba = {}      # aba -> nome de tela (chave de tr())
+
+    # ---------- registro ----------
+    @staticmethod
+    def _altura_valida(altura):
+        """None, ou um inteiro dentro de limites sãos (um config editado à mão
+        com altura 0 ou 10^9 não pode travar a tela)."""
+        if altura is None or isinstance(altura, bool):
+            return None
+        try:
+            a = int(altura)
+        except (TypeError, ValueError):
+            return None
+        return max(_GAVETA_ALTURA_MIN, min(a, 6000))
+
+    def registrar(self, id_, titulo, aba, exames=(), visivel=True,
+                  recolhido=False, altura=None, fechavel=True, assistente=True):
+        """Cadastra (ou atualiza o cadastro de) um painel e devolve o id.
+        `titulo` é a chave em português (traduzida na hora de exibir);
+        `fechavel=False` marca um painel-núcleo que nunca é fechado;
+        `assistente=False` tira o painel da lista "Escolha os gráficos" do
+        assistente (formulários de configuração não são gráficos).
+        Registrar de novo o mesmo id não apaga o estado atual, para o builder
+        poder rodar mais de uma vez sem perder o arranjo do usuário."""
+        if isinstance(exames, str):
+            exames = [exames]
+        padrao = {"visivel": bool(visivel), "recolhido": bool(recolhido),
+                  "altura": self._altura_valida(altura)}
+        self._paineis[str(id_)] = {"titulo": str(titulo), "aba": str(aba),
+                                   "exames": {str(e) for e in exames},
+                                   "padrao": padrao, "fechavel": bool(fechavel),
+                                   "assistente": bool(assistente)}
+        self._estado.setdefault(str(id_), dict(padrao))
+        for mapa in (self._ordem, self._ordem_padrao):
+            lista = mapa.setdefault(str(aba), [])
+            if str(id_) not in lista:
+                lista.append(str(id_))
+        return str(id_)
+
+    def tem(self, id_):
+        """O id está registrado?"""
+        return id_ in self._paineis
+
+    def nomear_aba(self, aba, nome):
+        """Dá à aba (chave interna, ex.: "emg") um nome de tela em português
+        (ex.: "EMG · Músculos"), que o assistente mostra via tr()."""
+        self._nomes_aba[str(aba)] = str(nome)
+
+    def nome_da_aba(self, aba):
+        """Nome de tela da aba (ou a própria chave, se não foi nomeada)."""
+        return self._nomes_aba.get(aba, aba)
+
+    def fechavel_de(self, id_):
+        """O painel pode ser fechado pelo usuário?"""
+        return bool(self._paineis[id_].get("fechavel", True))
+
+    def itens(self, todos=False):
+        """Lista de dicts {"id", "titulo", "aba", "exames", "padrao", "fechavel"}
+        na ordem de registro, para o assistente de primeiro uso (P4) e para os
+        perfis. Por padrão só os painéis marcados para o assistente (gráficos);
+        todos=True inclui formulários e painéis-núcleo."""
+        saida = []
+        for aba in self._ordem_padrao:
+            for i in self._ordem_padrao[aba]:
+                p = self._paineis[i]
+                if not todos and not p.get("assistente", True):
+                    continue
+                saida.append({"id": i, "titulo": p["titulo"],
+                              "aba": self.nome_da_aba(aba),
+                              "exames": sorted(p["exames"]),
+                              "padrao": dict(p["padrao"]),
+                              "fechavel": bool(p.get("fechavel", True))})
+        return saida
+
+    def ids(self):
+        """Todos os ids, na ordem das abas e, dentro da aba, na ordem atual."""
+        out = []
+        for aba in self._ordem:
+            out.extend(self._ordem[aba])
+        return out
+
+    def abas(self):
+        """Abas que têm pelo menos um painel registrado."""
+        return list(self._ordem.keys())
+
+    def titulo(self, id_):
+        """Título de tela do painel (já em português; quem registra passa tr())."""
+        return self._paineis[id_]["titulo"]
+
+    def aba_de(self, id_):
+        """Aba a que o painel pertence."""
+        return self._paineis[id_]["aba"]
+
+    def exames_de(self, id_):
+        """Exames (EEG/EMG/ECG/EoG) a que o painel pertence."""
+        return set(self._paineis[id_]["exames"])
+
+    def ids_da_aba(self, aba):
+        """Ids da aba, na ordem ATUAL (a que o usuário arrumou)."""
+        return list(self._ordem.get(aba, []))
+
+    def ids_do_exame(self, exame):
+        """Ids dos painéis que pertencem ao exame. "Hibrido" devolve todos."""
+        if exame == "Hibrido":
+            return self.ids()
+        return [i for i in self.ids() if exame in self._paineis[i]["exames"]]
+
+    # ---------- estado ----------
+    def estado_padrao(self, id_):
+        """Cópia do estado padrão do painel ({visivel, recolhido, altura})."""
+        return dict(self._paineis[id_]["padrao"])
+
+    def estado_atual(self, id_):
+        """Cópia do estado atual do painel."""
+        return dict(self._estado.get(id_) or self._paineis[id_]["padrao"])
+
+    def definir_estado(self, id_, **campos):
+        """Atualiza campos do estado atual (visivel, recolhido, altura)."""
+        if id_ not in self._paineis:
+            return
+        e = self._estado.setdefault(id_, self.estado_padrao(id_))
+        if "visivel" in campos:
+            e["visivel"] = bool(campos["visivel"])
+        if "recolhido" in campos:
+            e["recolhido"] = bool(campos["recolhido"])
+        if "altura" in campos:
+            e["altura"] = self._altura_valida(campos["altura"])
+
+    def ordem_da_aba(self, aba):
+        """Ordem atual dos ids da aba."""
+        return list(self._ordem.get(aba, []))
+
+    def ordem_padrao_da_aba(self, aba):
+        """Ordem de registro dos ids da aba (o "padrão")."""
+        return list(self._ordem_padrao.get(aba, []))
+
+    def definir_ordem(self, aba, ids):
+        """Nova ordem para a aba. Ids desconhecidos são descartados e os que
+        faltarem entram no fim, na ordem padrão — um config velho nunca some
+        com um painel novo."""
+        validos = [i for i in ids if i in self._paineis
+                   and self._paineis[i]["aba"] == aba]
+        vistos = set()
+        ordem = []
+        for i in validos:
+            if i not in vistos:
+                vistos.add(i)
+                ordem.append(i)
+        for i in self._ordem_padrao.get(aba, []):
+            if i not in vistos:
+                ordem.append(i)
+        self._ordem[aba] = ordem
+
+    def splits_da_aba(self, aba):
+        """Divisões salvas das linhas lado a lado da aba: {nome: [tamanhos]}."""
+        return {k: list(v) for k, v in self._splits.get(aba, {}).items()}
+
+    def definir_split(self, aba, nome, tamanhos):
+        """Guarda os tamanhos de um QSplitter de linha."""
+        try:
+            lista = [max(0, int(t)) for t in tamanhos]
+        except (TypeError, ValueError):
+            return
+        if lista:
+            self._splits.setdefault(aba, {})[str(nome)] = lista
+
+    def restaurar_padrao(self, aba=None):
+        """Volta estado, ordem e divisões ao padrão (de uma aba ou de todas)."""
+        abas = [aba] if aba is not None else self.abas()
+        for a in abas:
+            for i in self._ordem_padrao.get(a, []):
+                self._estado[i] = self.estado_padrao(i)
+            self._ordem[a] = list(self._ordem_padrao.get(a, []))
+            self._splits.pop(a, None)
+
+    # ---------- serialização ----------
+    def estado_da_aba(self, aba):
+        """O dict de uma aba, no formato que vai para config.paineis[aba]:
+        {"ordem": [...], "paineis": {id: {...}}, "splits": {...}}."""
+        return {"ordem": self.ordem_da_aba(aba),
+                "paineis": {i: self.estado_atual(i)
+                            for i in self._ordem_padrao.get(aba, [])},
+                "splits": self.splits_da_aba(aba)}
+
+    def aplicar_estado_da_aba(self, aba, d):
+        """Lê o dict de uma aba vindo do config.json, com tolerância: tipos
+        errados e ids desconhecidos são ignorados em silêncio."""
+        if not isinstance(d, dict):
+            return
+        paineis = d.get("paineis")
+        if isinstance(paineis, dict):
+            for i, e in paineis.items():
+                if i in self._paineis and isinstance(e, dict):
+                    campos = {}
+                    if isinstance(e.get("visivel"), bool):
+                        campos["visivel"] = e["visivel"]
+                    if isinstance(e.get("recolhido"), bool):
+                        campos["recolhido"] = e["recolhido"]
+                    if "altura" in e:
+                        campos["altura"] = e["altura"]
+                    self.definir_estado(i, **campos)
+        ordem = d.get("ordem")
+        if isinstance(ordem, list):
+            self.definir_ordem(aba, [str(i) for i in ordem])
+        splits = d.get("splits")
+        if isinstance(splits, dict):
+            for nome, tam in splits.items():
+                if isinstance(tam, list):
+                    self.definir_split(aba, nome, tam)
+
+    def para_config(self):
+        """Tudo que vai para a chave "paineis" do config.json: {aba: estado}."""
+        return {aba: self.estado_da_aba(aba) for aba in self.abas()}
+
+    def de_config(self, d):
+        """Lê a chave "paineis" do config.json ({aba: estado}); abas e ids
+        desconhecidos ficam de fora."""
+        if not isinstance(d, dict):
+            return
+        for aba, est in d.items():
+            if aba in self._ordem_padrao:
+                self.aplicar_estado_da_aba(aba, est)
+
+    # ---------- API para o P4 (perfis de uso) ----------
+    def recomendados_para(self, exames):
+        """Ids dos painéis que pertencem a pelo menos um dos `exames` (string
+        ou coleção; "Hibrido" = todos). Painel sem exame declarado conta como
+        de interesse geral e entra sempre."""
+        if isinstance(exames, str):
+            exames = [exames]
+        exames = set(exames)
+        if "Hibrido" in exames:
+            return self.ids()
+        return [i for i in self.ids()
+                if not self._paineis[i]["exames"]
+                or self._paineis[i]["exames"] & exames]
+
+    def estado_para_perfil(self, exames):
+        """Um dict completo ("paineis" do config) em que os painéis dos
+        `exames` ficam no estado padrão e os demais nascem fechados. É o que um
+        perfil de uso (P4) grava para arrumar as abas de uma vez."""
+        rec = set(self.recomendados_para(exames))
+        out = {}
+        for aba in self.abas():
+            paineis = {}
+            for i in self._ordem_padrao.get(aba, []):
+                e = self.estado_padrao(i)
+                # painel-núcleo (fechavel=False) nunca nasce fechado
+                if i not in rec and self._paineis[i].get("fechavel", True):
+                    e["visivel"] = False
+                paineis[i] = e
+            out[aba] = {"ordem": self.ordem_padrao_da_aba(aba),
+                        "paineis": paineis, "splits": {}}
+        return out
+
+
+class _CabecalhoGaveta(QtWidgets.QFrame):
+    """Barra fina no alto da gaveta. Um clique em área livre (inclusive no
+    título) recolhe/expande; os botões filhos tratam os próprios cliques."""
+    clicado = QtCore.Signal()
+
+    def mousePressEvent(self, ev):
+        # Aceita o press para o release chegar aqui (se ignorasse, o Qt
+        # mandaria o par press/release para o pai).
+        """Aceita o clique esquerdo para o release chegar ao cabeçalho."""
+        if ev.button() == QtCore.Qt.MouseButton.LeftButton:
+            ev.accept()
+            return
+        super().mousePressEvent(ev)
+
+    def mouseReleaseEvent(self, ev):
+        """Soltou dentro do cabeçalho: emite clicado (recolher/expandir)."""
+        if (ev.button() == QtCore.Qt.MouseButton.LeftButton
+                and self.rect().contains(ev.position().toPoint())):
+            self.clicado.emit()
+            ev.accept()
+            return
+        super().mouseReleaseEvent(ev)
+
+
+class _RotuloElidido(QtWidgets.QLabel):
+    """QLabel que corta o título com "…" quando a gaveta fica estreita (duas
+    gavetas lado a lado numa tela pequena), em vez de vazar por cima dos botões."""
+
+    def __init__(self, texto="", parent=None):
+        """Guarda o texto cheio e pede largura expansível."""
+        super().__init__(texto, parent)
+        self._texto_cheio = texto
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Preferred)
+        self.setMinimumWidth(40)
+
+    def set_texto_cheio(self, texto):
+        """Define o título completo e reelide para a largura atual."""
+        self._texto_cheio = texto
+        self._reelidir()
+
+    def texto_cheio(self):
+        """O título sem corte."""
+        return self._texto_cheio
+
+    def _reelidir(self):
+        """Reescreve o texto com reticências conforme a largura atual."""
+        fm = self.fontMetrics()
+        larg = max(10, self.width() - 2)
+        super().setText(fm.elidedText(self._texto_cheio,
+                                      QtCore.Qt.TextElideMode.ElideRight, larg))
+        self.setToolTip(self._texto_cheio if self.text() != self._texto_cheio else "")
+
+    def resizeEvent(self, ev):
+        """Mudou a largura: elide de novo."""
+        super().resizeEvent(ev)
+        self._reelidir()
+
+    def sizeHint(self):
+        # A dica de tamanho é do texto inteiro, para a gaveta pedir largura
+        # suficiente quando houver espaço.
+        """Dica de tamanho do texto inteiro (a gaveta pede largura quando há espaço)."""
+        fm = self.fontMetrics()
+        return QtCore.QSize(fm.horizontalAdvance(self._texto_cheio) + 4,
+                            fm.height())
+
+    def minimumSizeHint(self):
+        """Mínimo pequeno: o rótulo pode encolher até quase sumir."""
+        return QtCore.QSize(40, self.fontMetrics().height())
+
+
+class _AlcaGaveta(QtWidgets.QFrame):
+    """Alça de ~6 px na base da gaveta: arrastar muda a altura do corpo;
+    duplo clique volta ao tamanho padrão. Desenha um traço curto centralizado
+    com as cores do tema (sem imagem externa)."""
+    inicioArrasto = QtCore.Signal()
+    arrastou = QtCore.Signal(int)          # deslocamento em px desde o início
+    fimArrasto = QtCore.Signal()
+    duploClique = QtCore.Signal()
+
+    ALTURA = 7
+
+    def __init__(self, parent=None):
+        """Alça fina com cursor de redimensionar vertical."""
+        super().__init__(parent)
+        self.setObjectName("gavetaAlca")
+        self.setFixedHeight(self.ALTURA)
+        self.setCursor(QtCore.Qt.CursorShape.SizeVerCursor)
+        self.setMouseTracking(True)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_Hover, True)
+        self._y0 = None
+        self._quente = False
+
+    def paintEvent(self, ev):
+        """Pinta a linha da alça: realçada ao passar o mouse ou durante o arrasto."""
+        super().paintEvent(ev)
+        c = _gaveta_cores()
+        cor = QtGui.QColor(c["accent_dim"] if (self._quente or self._y0 is not None)
+                           else c["border"])
+        p = QtGui.QPainter(self)
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.setBrush(cor)
+        larg = 36
+        x = (self.width() - larg) / 2.0
+        y = (self.height() - 3) / 2.0
+        p.drawRoundedRect(QtCore.QRectF(x, y, larg, 3), 1.5, 1.5)
+        p.end()
+
+    def enterEvent(self, ev):
+        """Mouse entrou: realça."""
+        self._quente = True
+        self.update()
+        super().enterEvent(ev)
+
+    def leaveEvent(self, ev):
+        """Mouse saiu: volta à cor normal."""
+        self._quente = False
+        self.update()
+        super().leaveEvent(ev)
+
+    def mousePressEvent(self, ev):
+        """Começa o arrasto: guarda o y inicial e avisa a gaveta."""
+        if ev.button() == QtCore.Qt.MouseButton.LeftButton:
+            self._y0 = ev.globalPosition().y()
+            self.inicioArrasto.emit()
+            self.update()
+            ev.accept()
+            return
+        super().mousePressEvent(ev)
+
+    def mouseMoveEvent(self, ev):
+        """Arrastando: emite o deslocamento vertical acumulado."""
+        if self._y0 is not None:
+            self.arrastou.emit(int(round(ev.globalPosition().y() - self._y0)))
+            ev.accept()
+            return
+        super().mouseMoveEvent(ev)
+
+    def mouseReleaseEvent(self, ev):
+        """Fim do arrasto: avisa a gaveta."""
+        if self._y0 is not None and ev.button() == QtCore.Qt.MouseButton.LeftButton:
+            self._y0 = None
+            self.fimArrasto.emit()
+            self.update()
+            ev.accept()
+            return
+        super().mouseReleaseEvent(ev)
+
+    def mouseDoubleClickEvent(self, ev):
+        """Duplo clique: pede o tamanho padrão."""
+        if ev.button() == QtCore.Qt.MouseButton.LeftButton:
+            self._y0 = None
+            self.duploClique.emit()
+            ev.accept()
+            return
+        super().mouseDoubleClickEvent(ev)
+
+
+class PainelGaveta(QtWidgets.QFrame):
+    """Embrulha um widget de conteúdo (normalmente um QGroupBox já existente)
+    numa gaveta: cabeçalho fino (seta recolher/expandir, título, menu "⋯",
+    fechar "×"), corpo e alça inferior para arrastar a altura. O título do
+    QGroupBox vira o título do cabeçalho e o QGroupBox perde título e borda.
+
+    Com simples=True nada disso existe (nem cabeçalho nem alça): a gaveta é
+    só um invólucro transparente e o QGroupBox fica como hoje, porque no
+    Simples nada do arranjo aparece. set_simples(False) cria o cromo na hora.
+
+    Estado: visível (fechar = esconder, não destruir), recolhido e altura.
+    Toda mudança emite estadoMudou(id). esta_ativo() diz se vale a pena
+    calcular algo para este painel neste instante."""
+    estadoMudou = QtCore.Signal(str)
+    moverPedido = QtCore.Signal(str, int)     # id, -1 (cima) / +1 (baixo)
+
+    def __init__(self, id_, conteudo, titulo=None, simples=False,
+                 aba_visivel=None, altura_padrao=None, fechavel=True,
+                 parent=None):
+        # Antes do super(): setVisible (sobrescrito) pode ser chamado pelo Qt
+        # durante a construção e lê estes campos via getattr.
+        """Embrulha o conteúdo numa gaveta: cabeçalho, corpo e alça; começa aberta."""
+        self._visivel_painel = True
+        self._recolhido = False
+        self._simples = bool(simples)
+        super().__init__(parent)
+        self.setObjectName("painelGaveta")
+        self._id = str(id_)
+        self._conteudo = conteudo
+        self._aba_visivel = aba_visivel
+        self._altura_padrao = CatalogoPaineis._altura_valida(altura_padrao)
+        self._fechavel = bool(fechavel)
+        self._altura = None
+        self._pilha = None
+        self._celula = None       # _CelulaLinha que a segura numa linha (ou None)
+        self._h0 = 0
+        self._cab = None
+        self._alca = None
+        self._menu = None
+        self._titulo_original = None
+        if isinstance(conteudo, QtWidgets.QGroupBox):
+            self._titulo_original = conteudo.title()
+            if titulo is None:
+                titulo = self._titulo_original
+        # Título canônico sem escape: o QGroupBox escreve "&" como "&&", o
+        # QLabel do cabeçalho não (e o QAction do menu escapa de novo).
+        self._titulo = (titulo or "").replace("&&", "&")
+
+        self._corpo = QtWidgets.QFrame(self)
+        self._corpo.setObjectName("gavetaCorpo")
+        cl = QtWidgets.QVBoxLayout(self._corpo)
+        cl.setContentsMargins(0, 0, 0, 0)
+        cl.setSpacing(0)
+        cl.addWidget(conteudo)
+
+        self._lay = QtWidgets.QVBoxLayout(self)
+        self._lay.setContentsMargins(0, 0, 0, 0)
+        self._lay.setSpacing(0)
+        self._lay.addWidget(self._corpo, 1)
+        # Sem espaçador interno de propósito: um layout com spacer Expanding
+        # torna o widget "expansivo" para o layout de fora (QWidgetItem herda
+        # expandingDirections do layout filho) e a gaveta recolhida crescia
+        # vazia. Quem segura a altura é a política de tamanho (_aplicar_recolhido).
+
+        self.set_simples(self._simples)
+
+    # ---------- cromo (cabeçalho e alça), criado só no Completo ----------
+    def _garantir_cromo(self):
+        """Cria cabeçalho, menu e alça na primeira vez em que a gaveta sai do
+        Simples. No Simples eles nunca existem (economia e "nada aparece")."""
+        if self._cab is not None:
+            return
+        cab = _CabecalhoGaveta(self)
+        cab.setObjectName("gavetaCabecalho")
+        cab.setProperty("aberta", "true")
+        cab.clicado.connect(self.alternar_recolhido)
+        hl = QtWidgets.QHBoxLayout(cab)
+        hl.setContentsMargins(6, 0, 4, 0)
+        hl.setSpacing(2)
+
+        self._bt_seta = QtWidgets.QToolButton(cab)
+        self._bt_seta.setObjectName("gavetaSeta")
+        self._bt_seta.setText("▾")
+        self._bt_seta.setAutoRaise(True)
+        self._bt_seta.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+        self._bt_seta.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+        self._bt_seta.clicked.connect(self.alternar_recolhido)
+
+        self._lbl_titulo = _RotuloElidido(self._titulo, cab)
+        self._lbl_titulo.setObjectName("gavetaTitulo")
+        self._lbl_titulo.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+
+        self._bt_menu = QtWidgets.QToolButton(cab)
+        self._bt_menu.setObjectName("gavetaMenu")
+        self._bt_menu.setText("⋯")
+        self._bt_menu.setAutoRaise(True)
+        self._bt_menu.setToolTip(tr("Opções do painel"))
+        self._bt_menu.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+        self._bt_menu.setPopupMode(
+            QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)
+        self._menu = QtWidgets.QMenu(self._bt_menu)
+        self._menu.aboutToShow.connect(self._montar_menu)
+        self._bt_menu.setMenu(self._menu)
+
+        self._bt_fechar = QtWidgets.QToolButton(cab)
+        self._bt_fechar.setObjectName("gavetaFechar")
+        self._bt_fechar.setText("×")
+        self._bt_fechar.setAutoRaise(True)
+        self._bt_fechar.setToolTip(tr("Fechar painel (reabra pelo botão Painéis)"))
+        self._bt_fechar.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+        self._bt_fechar.clicked.connect(self.fechar)
+        self._bt_fechar.setVisible(self._fechavel)
+
+        hl.addWidget(self._bt_seta)
+        hl.addWidget(self._lbl_titulo, 1)
+        hl.addWidget(self._bt_menu)
+        hl.addWidget(self._bt_fechar)
+        self._cab = cab
+
+        alca = _AlcaGaveta(self)
+        alca.inicioArrasto.connect(self._ao_iniciar_arrasto)
+        alca.arrastou.connect(self._ao_arrastar)
+        alca.duploClique.connect(self.tamanho_padrao)
+        alca.setToolTip(tr("Arraste para mudar a altura · duplo clique: tamanho padrão"))
+        self._alca = alca
+
+        self._lay.insertWidget(0, cab)
+        self._lay.insertWidget(2, alca)
+        self._ajustar_metrica()
+
+    def _ajustar_metrica(self):
+        """Altura do cabeçalho pela fonte em vigor (acompanha "Tamanho da
+        letra"), sem cair abaixo de 22 px nem passar de ~30."""
+        if self._cab is None:
+            return
+        fm = self._lbl_titulo.fontMetrics()
+        h = max(22, min(30, fm.height() + 7))
+        self._cab.setFixedHeight(h)
+        for bt in (self._bt_seta, self._bt_menu, self._bt_fechar):
+            bt.setFixedSize(h - 4, h - 4)
+
+    def changeEvent(self, ev):
+        """Fonte ou estilo mudou: recalcula as alturas do cabeçalho e do corpo."""
+        super().changeEvent(ev)
+        if ev.type() in (QtCore.QEvent.Type.FontChange,
+                         QtCore.QEvent.Type.StyleChange,
+                         QtCore.QEvent.Type.ApplicationFontChange):
+            self._ajustar_metrica()
+
+    def _montar_menu(self):
+        """Refaz o menu "⋯" a cada abertura, porque "mover" depende da posição
+        atual na pilha e "fechar" depende de fechavel."""
+        m = self._menu
+        m.clear()
+        a_cima = m.addAction(tr("Mover para cima"))
+        a_cima.triggered.connect(lambda: self.moverPedido.emit(self._id, -1))
+        a_baixo = m.addAction(tr("Mover para baixo"))
+        a_baixo.triggered.connect(lambda: self.moverPedido.emit(self._id, +1))
+        if self._pilha is not None:
+            a_cima.setEnabled(self._pilha.pode_mover(self._id, -1))
+            a_baixo.setEnabled(self._pilha.pode_mover(self._id, +1))
+        else:
+            a_cima.setEnabled(False)
+            a_baixo.setEnabled(False)
+        a_pad = m.addAction(tr("Tamanho padrão"))
+        a_pad.triggered.connect(self.tamanho_padrao)
+        a_pad.setEnabled(not self._recolhido)
+        if self._fechavel:
+            m.addSeparator()
+            m.addAction(tr("Fechar")).triggered.connect(self.fechar)
+
+    # ---------- identidade ----------
+    def id(self):
+        """Id do painel no catálogo."""
+        return self._id
+
+    def titulo(self):
+        """Título mostrado no cabeçalho."""
+        return self._titulo
+
+    def set_titulo(self, titulo):
+        """Troca o título (use isto, não setTitle() no QGroupBox: no Completo o
+        QGroupBox fica sem título e é o cabeçalho que o mostra)."""
+        self._titulo = str(titulo).replace("&&", "&")
+        self._titulo_original = self._titulo.replace("&", "&&")
+        if self._cab is not None:
+            self._lbl_titulo.set_texto_cheio(self._titulo)
+        if self._simples and isinstance(self._conteudo, QtWidgets.QGroupBox):
+            self._conteudo.setTitle(self._titulo_original)
+
+    def conteudo(self):
+        """O widget embrulhado."""
+        return self._conteudo
+
+    def fechavel(self):
+        """O painel tem botão/menu "Fechar"?"""
+        return self._fechavel
+
+    def menu(self):
+        """O QMenu do botão "⋯" (None no Simples)."""
+        return self._menu
+
+    def cabecalho(self):
+        """O QFrame do cabeçalho (None no Simples)."""
+        return self._cab
+
+    # ---------- estado ----------
+    def recolhido(self):
+        """Está recolhido (só o cabeçalho à mostra)?"""
+        return self._recolhido
+
+    def visivel_painel(self):
+        """Está aberto (não fechado pelo usuário)? Independe do nível e da aba."""
+        return self._visivel_painel
+
+    def altura(self):
+        """Altura fixada pelo usuário em px, ou None (tamanho natural)."""
+        return self._altura
+
+    def altura_padrao(self):
+        """Altura padrão do catálogo (None = natural)."""
+        return self._altura_padrao
+
+    def estado(self):
+        """{visivel, recolhido, altura} — o que vai para o catálogo."""
+        return {"visivel": self._visivel_painel, "recolhido": self._recolhido,
+                "altura": self._altura}
+
+    def set_recolhido(self, recolhido, avisar=True):
+        """Recolhe (só cabeçalho) ou expande. avisar=False não emite o sinal
+        (usado ao aplicar um estado salvo)."""
+        recolhido = bool(recolhido)
+        mudou = recolhido != self._recolhido
+        self._recolhido = recolhido
+        self._aplicar_recolhido()
+        if mudou and avisar:
+            self.estadoMudou.emit(self._id)
+
+    def alternar_recolhido(self):
+        """Inverte recolhido/expandido (clique na seta ou no título)."""
+        self.set_recolhido(not self._recolhido)
+
+    def _aplicar_recolhido(self):
+        """Mostra ou esconde o corpo conforme recolhido; no Simples o corpo fica sempre visível."""
+        pol = QtWidgets.QSizePolicy.Policy
+        if self._simples:
+            self._corpo.setVisible(True)
+            self.setSizePolicy(pol.Preferred, pol.Preferred)
+            return
+        self._corpo.setVisible(not self._recolhido)
+        # Recolhida, a gaveta não pode crescer: só o cabeçalho.
+        self.setSizePolicy(pol.Preferred, pol.Fixed if self._recolhido else pol.Preferred)
+        if self._alca is not None:
+            self._alca.setVisible(not self._recolhido)
+        if self._cab is not None:
+            self._bt_seta.setText("▸" if self._recolhido else "▾")
+            self._bt_seta.setToolTip(tr("Expandir") if self._recolhido
+                                     else tr("Recolher"))
+            self._cab.setProperty("aberta", "false" if self._recolhido else "true")
+            _gaveta_repolir(self._cab)
+        self.updateGeometry()
+
+    def set_visivel_painel(self, visivel, avisar=True):
+        """Abre ou fecha o painel. Fechar esconde (não destrói): o estado dos
+        widgets continua lá e o botão "Painéis" reabre. Um painel-núcleo
+        (fechavel=False) ignora o pedido de fechar."""
+        visivel = bool(visivel)
+        if not visivel and not self._fechavel:
+            visivel = True
+        mudou = visivel != self._visivel_painel
+        self._visivel_painel = visivel
+        if not self._simples:
+            self._set_visivel_qt(visivel)
+        if mudou and avisar:
+            self.estadoMudou.emit(self._id)
+
+    def fechar(self):
+        """Fecha o painel (botão "×" ou menu)."""
+        if self._fechavel:
+            self.set_visivel_painel(False)
+
+    def _set_visivel_qt(self, visivel):
+        """Visibilidade Qt de verdade, espelhada na célula da linha (se houver):
+        sem isso a célula vazia continuaria ocupando largura no QSplitter."""
+        QtWidgets.QFrame.setVisible(self, visivel)
+        cel = getattr(self, "_celula", None)
+        if cel is not None:
+            try:
+                cel.setVisible(visivel)
+            except RuntimeError:
+                pass
+
+    def setVisible(self, visivel):
+        """Visibilidade Qt. No Completo, um painel fechado pelo usuário não
+        reaparece por um show() vindo de fora (ex.: _apply_detail_level ao
+        trocar de nível): só set_visivel_painel(True) ou o botão Painéis."""
+        if (visivel and not getattr(self, "_simples", False)
+                and not getattr(self, "_visivel_painel", True)):
+            visivel = False
+        self._set_visivel_qt(visivel)
+
+    def altura_minima(self):
+        """Menor altura aceita para o corpo: o mínimo do conteúdo (um formulário
+        não encolhe abaixo do que precisa; para sumir, recolha)."""
+        return max(_GAVETA_ALTURA_MIN, self._corpo.minimumSizeHint().height())
+
+    def set_altura(self, altura, avisar=True):
+        """Fixa a altura do corpo em px, ou None para voltar ao natural."""
+        altura = CatalogoPaineis._altura_valida(altura)
+        if altura is not None:
+            altura = max(self.altura_minima(), altura)
+        mudou = altura != self._altura
+        self._altura = altura
+        self._aplicar_altura()
+        if mudou and avisar:
+            self.estadoMudou.emit(self._id)
+
+    def _aplicar_altura(self):
+        """Aplica a altura escolhida ao corpo (ou a libera, no Simples ou sem altura)."""
+        if self._simples or self._altura is None:
+            self._corpo.setMinimumHeight(0)
+            self._corpo.setMaximumHeight(_GAVETA_ALTURA_MAX)
+        else:
+            self._corpo.setFixedHeight(self._altura)
+        self.updateGeometry()
+
+    def tamanho_padrao(self):
+        """Volta à altura padrão do catálogo (menu ou duplo clique na alça)."""
+        self.set_altura(self._altura_padrao)
+
+    def _ao_iniciar_arrasto(self):
+        """Guarda a altura do corpo no início do arrasto da alça."""
+        self._h0 = self._corpo.height()
+
+    def _ao_arrastar(self, dy):
+        """Alça arrastada: nova altura = inicial + deslocamento, nunca abaixo do mínimo."""
+        self.set_altura(max(self.altura_minima(), self._h0 + dy))
+
+    # ---------- nível ----------
+    def simples(self):
+        """Está no modo Simples (sem cromo)?"""
+        return self._simples
+
+    def set_simples(self, simples):
+        """Alterna entre Simples (nada aparece; o QGroupBox volta a ter título
+        e borda) e Completo (cabeçalho, alça e estado do catálogo valem)."""
+        simples = bool(simples)
+        self._simples = simples
+        gb = self._conteudo if isinstance(self._conteudo, QtWidgets.QGroupBox) else None
+        if simples:
+            if self._cab is not None:
+                self._cab.setVisible(False)
+                self._alca.setVisible(False)
+            if gb is not None:
+                gb.setTitle(self._titulo_original or self._titulo)
+                gb.setProperty("emGaveta", "false")
+                _gaveta_repolir(gb)
+            self.setProperty("emSimples", "true")
+            # Fechado no Completo não é fechado no Simples: ali quem decide é
+            # _register_advanced/_apply_detail_level.
+            if not self._visivel_painel:
+                self._set_visivel_qt(True)
+        else:
+            self._garantir_cromo()
+            self._cab.setVisible(True)
+            if gb is not None:
+                if self._titulo_original is None:
+                    self._titulo_original = gb.title()
+                gb.setTitle("")
+                gb.setProperty("emGaveta", "true")
+                _gaveta_repolir(gb)
+            self.setProperty("emSimples", "false")
+            if not self._visivel_painel:
+                self._set_visivel_qt(False)
+        _gaveta_repolir(self)
+        self._aplicar_recolhido()
+        self._aplicar_altura()
+
+    # ---------- "painel fechado não gasta processamento" ----------
+    def set_aba_visivel(self, func):
+        """Define o callable que diz se a aba dona está em primeiro plano."""
+        self._aba_visivel = func
+
+    def esta_ativo(self, considerar_aba=True):
+        """True só se vale calcular algo para este painel agora: aberto, não
+        recolhido, aba visível (callable aba_visivel) e — com a janela já na
+        tela — não escondido por um ancestral (aba não corrente, Simples...).
+        No Simples o estado da gaveta não conta; só a visibilidade real.
+        considerar_aba=False olha só fechado/recolhido: para painéis cujo
+        conteúdo é gravado em arquivo mesmo fora de vista (snapshot)."""
+        if not self._simples and (not self._visivel_painel or self._recolhido):
+            return False
+        if not considerar_aba:
+            return True
+        if self._aba_visivel is not None:
+            try:
+                if not self._aba_visivel():
+                    return False
+            except Exception:
+                pass
+        jan = self.window()
+        if jan is not None and jan is not self and jan.isVisible() and not self.isVisible():
+            return False
+        return True
+
+
+class _CelulaLinha(QtWidgets.QWidget):
+    """Célula de uma linha lado a lado: segura uma gaveta e um espaçador, para
+    a gaveta recolhida ficar colada no alto em vez de esticar até a altura da
+    vizinha expandida."""
+
+    def __init__(self, gaveta, parent=None):
+        """Célula de uma linha lado a lado: envolve a gaveta e espelha sua visibilidade."""
+        super().__init__(parent)
+        self.gaveta = gaveta
+        gaveta._celula = self          # a gaveta espelha a visibilidade aqui
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+        lay.addWidget(gaveta, 1)
+        lay.addStretch(0)
+        self._lay = lay
+        self.atualizar()
+
+    def atualizar(self):
+        """Dá o espaço extra à gaveta quando expandida e ao espaçador quando
+        recolhida ou com altura fixa."""
+        solta = (not self.gaveta.recolhido() and self.gaveta.altura() is None) \
+            or self.gaveta.simples()
+        self._lay.setStretch(0, 1 if solta else 0)
+        self._lay.setStretch(1, 0 if solta else 1)
+
+
+class PilhaGavetas(QtWidgets.QWidget):
+    """Empilha PainelGaveta num QVBoxLayout (ou em linhas lado a lado com
+    QSplitter), sabe mover para cima/baixo, recolher/expandir todos, restaurar
+    o padrão e cria o botão "Painéis" da aba. Guarda o estado no
+    CatalogoPaineis e emite estadoMudou(dict) com debounce de ~500 ms para o
+    dono gravar em config.paineis[aba] e chamar config.save().
+
+    dono: objeto (a janela) onde a pilha registra as gavetas em `_gavetas`
+    {id: gaveta}, para gaveta_ativa(janela, id) achar cada uma."""
+    estadoMudou = QtCore.Signal(dict)
+
+    def __init__(self, aba, catalogo=None, dono=None, simples=False,
+                 aba_visivel=None, espacamento=6, parent=None):
+        """Pilha vazia para a aba: layout vertical, botão Painéis e debounce de gravação."""
+        super().__init__(parent)
+        self.setObjectName("pilhaGavetas")
+        self._aba = str(aba)
+        self._catalogo = catalogo if catalogo is not None else CatalogoPaineis()
+        self._dono = dono
+        self._simples = bool(simples)
+        self._aba_visivel = aba_visivel
+        self._gavetas = {}        # id -> PainelGaveta
+        self._itens = []          # [{"widget", "ids", "stretch", "nome", "celulas", "tam_padrao"}]
+        self._botao = None
+        self._menu_paineis = None
+        self._aplicando = False
+        self._lay = QtWidgets.QVBoxLayout(self)
+        self._lay.setContentsMargins(0, 0, 0, 0)
+        self._lay.setSpacing(espacamento)
+        # Espaçador final de stretch 0: só absorve quando nenhum item tem
+        # stretch (todos recolhidos/fixos), para gavetas não esticarem vazias.
+        self._lay.addStretch(0)
+        self._timer = QtCore.QTimer(self)
+        self._timer.setSingleShot(True)
+        self._timer.setInterval(_GAVETA_DEBOUNCE_MS)
+        self._timer.timeout.connect(self._emitir_estado)
+
+    # ---------- acesso ----------
+    def aba(self):
+        """Nome da aba (chave em config.paineis)."""
+        return self._aba
+
+    def catalogo(self):
+        """O CatalogoPaineis compartilhado."""
+        return self._catalogo
+
+    def gaveta(self, id_):
+        """A gaveta de um id (ou None)."""
+        return self._gavetas.get(id_)
+
+    def gavetas(self):
+        """Gavetas na ordem visual atual."""
+        return [self._gavetas[i] for i in self.ordem() if i in self._gavetas]
+
+    def ids(self):
+        """Ids presentes na pilha, na ordem visual."""
+        return self.ordem()
+
+    def ordem(self):
+        """Ordem visual achatada: itens de cima para baixo, linhas da esquerda
+        para a direita."""
+        out = []
+        for it in self._itens:
+            out.extend(it["ids"])
+        return out
+
+    # ---------- montagem ----------
+    def _nova_gaveta(self, id_, conteudo, titulo=None, exames=(), visivel=True,
+                     recolhido=False, altura=None, fechavel=None):
+        """Registra no catálogo (se preciso) e cria a gaveta com os padrões
+        dele. Título de tela: o passado, senão o do QGroupBox (já traduzido),
+        senão tr() do título em português do catálogo. fechavel=None = o do
+        catálogo."""
+        if titulo is None and isinstance(conteudo, QtWidgets.QGroupBox):
+            titulo = conteudo.title().replace("&&", "&")
+        if not self._catalogo.tem(id_):
+            self._catalogo.registrar(id_, titulo or id_, self._aba, exames,
+                                     visivel=visivel, recolhido=recolhido,
+                                     altura=altura,
+                                     fechavel=True if fechavel is None else fechavel)
+        if fechavel is None:
+            fechavel = self._catalogo.fechavel_de(id_)
+        if titulo is None:
+            titulo = tr(self._catalogo.titulo(id_))
+        padrao = self._catalogo.estado_padrao(id_)
+        g = PainelGaveta(id_, conteudo, titulo=titulo,
+                         simples=self._simples, aba_visivel=self._aba_visivel,
+                         altura_padrao=padrao["altura"], fechavel=fechavel)
+        return g
+
+    def _preparar_gaveta(self, g):
+        """Liga os sinais da gaveta à pilha e a registra no catálogo."""
+        g._pilha = self
+        g.estadoMudou.connect(self._ao_mudar_gaveta)
+        g.moverPedido.connect(self.mover)
+        self._gavetas[g.id()] = g
+        if self._dono is not None:
+            try:
+                reg = getattr(self._dono, "_gavetas", None)
+                if reg is None:
+                    reg = {}
+                    setattr(self._dono, "_gavetas", reg)
+                reg[g.id()] = g
+            except Exception:
+                pass
+        # Estado atual do catálogo (pode vir de um config já lido).
+        e = self._catalogo.estado_atual(g.id())
+        self._aplicando = True
+        try:
+            g.set_recolhido(e["recolhido"], avisar=False)
+            g.set_altura(e["altura"], avisar=False)
+            g.set_visivel_painel(e["visivel"], avisar=False)
+        finally:
+            self._aplicando = False
+
+    def _inserir_item(self, item):
+        """Insere o item (gaveta ou linha) antes do espaçador final, com o stretch certo."""
+        self._itens.append(item)
+        # Antes do espaçador final.
+        self._lay.insertWidget(self._lay.count() - 1, item["widget"],
+                               self._stretch_efetivo(item))
+
+    def adicionar_painel(self, id_, conteudo, titulo=None, exames=(),
+                         visivel=True, recolhido=False, altura=None,
+                         fechavel=None, stretch=0):
+        """Cria e empilha uma gaveta para `conteudo` (um QGroupBox ou qualquer
+        QWidget). Os padrões (visivel/recolhido/altura) só valem se o id ainda
+        não estiver no catálogo. Devolve a gaveta."""
+        g = self._nova_gaveta(id_, conteudo, titulo, exames, visivel,
+                              recolhido, altura, fechavel)
+        return self.adicionar_gaveta(g, stretch=stretch)
+
+    def adicionar_gaveta(self, gaveta, stretch=0):
+        """Empilha uma PainelGaveta pronta (registra no catálogo se faltar)."""
+        if not self._catalogo.tem(gaveta.id()):
+            self._catalogo.registrar(gaveta.id(), gaveta.titulo(), self._aba,
+                                     altura=gaveta.altura_padrao())
+        gaveta.set_aba_visivel(self._aba_visivel)
+        gaveta.set_simples(self._simples)
+        self._preparar_gaveta(gaveta)
+        self._inserir_item({"widget": gaveta, "ids": [gaveta.id()],
+                            "stretch": int(stretch), "nome": None,
+                            "celulas": None, "tam_padrao": None})
+        return gaveta
+
+    def adicionar_linha(self, membros, nome=None, tamanhos=None, stretch=0):
+        """Empilha uma LINHA de gavetas lado a lado que dividem a largura num
+        QSplitter horizontal (tamanhos persistidos em "splits"). Cada membro é
+        uma PainelGaveta pronta, uma tupla (id, conteudo[, titulo]) ou um dict
+        com os argumentos de adicionar_painel. Devolve o QSplitter."""
+        gavetas = []
+        for m in membros:
+            if isinstance(m, PainelGaveta):
+                g = m
+                if not self._catalogo.tem(g.id()):
+                    self._catalogo.registrar(g.id(), g.titulo(), self._aba,
+                                             altura=g.altura_padrao())
+                g.set_aba_visivel(self._aba_visivel)
+                g.set_simples(self._simples)
+            elif isinstance(m, dict):
+                g = self._nova_gaveta(**m)
+            else:
+                g = self._nova_gaveta(*m)
+            gavetas.append(g)
+        if not gavetas:
+            raise ValueError("adicionar_linha precisa de pelo menos uma gaveta")
+        nome = str(nome) if nome else "+".join(g.id() for g in gavetas)
+        split = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
+        split.setObjectName("linhaGavetas")
+        split.setChildrenCollapsible(False)
+        split.setHandleWidth(6)
+        # QSplitter nasce Expanding na vertical e cresceria vazio na pilha
+        # com todas as gavetas da linha recolhidas.
+        split.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                            QtWidgets.QSizePolicy.Policy.Preferred)
+        celulas = []
+        for g in gavetas:
+            cel = _CelulaLinha(g)          # a gaveta espelha sua visibilidade na célula
+            celulas.append(cel)
+            split.addWidget(cel)
+            self._preparar_gaveta(g)
+        salvos = self._catalogo.splits_da_aba(self._aba).get(nome)
+        tam_padrao = list(tamanhos) if tamanhos else None
+        if salvos and len(salvos) == len(gavetas):
+            split.setSizes(salvos)
+        elif tam_padrao:
+            split.setSizes(tam_padrao)
+        split.splitterMoved.connect(
+            lambda *_a, n=nome, s=split: self._ao_mover_split(n, s))
+        self._inserir_item({"widget": split, "ids": [g.id() for g in gavetas],
+                            "stretch": int(stretch), "nome": nome,
+                            "celulas": celulas, "tam_padrao": tam_padrao})
+        return split
+
+    def _item_de(self, id_):
+        """Índice e item que contêm a gaveta id_ (ou -1, None)."""
+        for i, it in enumerate(self._itens):
+            if id_ in it["ids"]:
+                return i, it
+        return -1, None
+
+    def _stretch_efetivo(self, item):
+        """Stretch pedido só quando o item pode crescer: recolhido ou com
+        altura fixa, 0 (senão a gaveta esticaria vazia)."""
+        if self._simples:
+            return item["stretch"]
+        for i in item["ids"]:
+            g = self._gavetas.get(i)
+            if g is not None and g.visivel_painel() and not g.recolhido() \
+                    and g.altura() is None:
+                return item["stretch"]
+        return 0
+
+    def _atualizar_stretches(self):
+        """Recalcula o stretch de cada item (itens recolhidos não esticam)."""
+        for it in self._itens:
+            idx = self._lay.indexOf(it["widget"])
+            if idx >= 0:
+                self._lay.setStretch(idx, self._stretch_efetivo(it))
+            if it["celulas"]:
+                for cel in it["celulas"]:
+                    cel.atualizar()
+
+    # ---------- mudanças ----------
+    def _ao_mudar_gaveta(self, id_):
+        """Uma gaveta mudou (recolher/fechar/altura): grava no catálogo e agenda o salvamento."""
+        g = self._gavetas.get(id_)
+        if g is None:
+            return
+        self._atualizar_stretches()
+        if self._aplicando:
+            return
+        self._catalogo.definir_estado(id_, **g.estado())
+        self._agendar()
+
+    def _ao_mover_split(self, nome, split):
+        """Divisor lado a lado movido: grava os tamanhos no catálogo e agenda o salvamento."""
+        self._catalogo.definir_split(self._aba, nome, split.sizes())
+        self._agendar()
+
+    def _agendar(self):
+        """Debounce: grava uma vez depois que o usuário parou de mexer."""
+        if not self._aplicando:
+            self._timer.start()
+
+    def _emitir_estado(self):
+        """Emite estadoMudou com o estado completo da pilha."""
+        self.estadoMudou.emit(self.estado())
+
+    def salvar_agora(self):
+        """Emite estadoMudou já, sem esperar o debounce (ex.: ao fechar)."""
+        if self._timer.isActive():
+            self._timer.stop()
+        self._emitir_estado()
+
+    def pendente(self):
+        """Há mudança esperando o debounce para ser gravada?"""
+        return self._timer.isActive()
+
+    def cancelar_pendente(self):
+        """Desarma o debounce sem emitir (o dono vai ler estado() por conta
+        própria, ex.: no closeEvent, para gravar o config uma vez só)."""
+        self._timer.stop()
+
+    def pode_mover(self, id_, delta):
+        """O item que contém `id_` pode subir (delta<0) ou descer (delta>0)?"""
+        i, _ = self._item_de(id_)
+        if i < 0:
+            return False
+        j = i + (1 if delta > 0 else -1)
+        return 0 <= j < len(self._itens)
+
+    def mover(self, id_, delta):
+        """Move o item (gaveta ou linha inteira) que contém `id_` uma posição
+        para cima (delta<0) ou para baixo (delta>0)."""
+        if not self.pode_mover(id_, delta):
+            return
+        i, _ = self._item_de(id_)
+        j = i + (1 if delta > 0 else -1)
+        self._itens[i], self._itens[j] = self._itens[j], self._itens[i]
+        self._reempilhar()
+        self._catalogo.definir_ordem(self._aba, self.ordem())
+        self._agendar()
+
+    def mover_para_cima(self, id_):
+        """Atalho de mover(id, -1)."""
+        self.mover(id_, -1)
+
+    def mover_para_baixo(self, id_):
+        """Atalho de mover(id, +1)."""
+        self.mover(id_, +1)
+
+    def _reempilhar(self):
+        """Refaz o layout na ordem de self._itens (o espaçador fica no fim)."""
+        for it in self._itens:
+            self._lay.removeWidget(it["widget"])
+        for it in self._itens:
+            self._lay.insertWidget(self._lay.count() - 1, it["widget"],
+                                   self._stretch_efetivo(it))
+
+    def _aplicar_ordem(self, ids):
+        """Ordena os itens pela posição do primeiro id de cada um em `ids`;
+        itens sem id na lista ficam no fim, na ordem atual."""
+        pos = {i: k for k, i in enumerate(ids)}
+        grande = len(ids) + 1
+
+        def chave(par):
+            """Chave de ordenação: menor posição pedida entre as gavetas do item; empate pela ordem atual."""
+            idx, it = par
+            ps = [pos[i] for i in it["ids"] if i in pos]
+            return (min(ps) if ps else grande, idx)
+        self._itens = [it for _, it in sorted(enumerate(self._itens), key=chave)]
+        self._reempilhar()
+
+    def recolher_todos(self):
+        """Recolhe todas as gavetas abertas."""
+        for g in self._gavetas.values():
+            g.set_recolhido(True)
+
+    def expandir_todos(self):
+        """Expande todas as gavetas."""
+        for g in self._gavetas.values():
+            g.set_recolhido(False)
+
+    def restaurar_padrao(self):
+        """Volta ordem, visibilidade, recolhimento, alturas e divisões ao
+        padrão do catálogo e agenda a gravação."""
+        self._catalogo.restaurar_padrao(self._aba)
+        self._aplicar_do_catalogo()
+        for it in self._itens:
+            if it["celulas"] and it["tam_padrao"]:
+                it["widget"].setSizes(it["tam_padrao"])
+            elif it["celulas"]:
+                n = len(it["celulas"])
+                larg = max(100, it["widget"].width())
+                it["widget"].setSizes([larg // n] * n)
+        self._agendar()
+
+    # ---------- persistência ----------
+    def estado(self):
+        """{"ordem": [...], "paineis": {id: {...}}, "splits": {...}} da aba."""
+        return self._catalogo.estado_da_aba(self._aba)
+
+    def aplicar_estado(self, d):
+        """Aplica um dict salvo (config.paineis[aba]) sem emitir estadoMudou."""
+        self._catalogo.aplicar_estado_da_aba(self._aba, d)
+        self._aplicar_do_catalogo()
+
+    def _aplicar_do_catalogo(self):
+        """Aplica às gavetas o estado guardado no catálogo (visível, recolhido, altura), sem reemitir."""
+        self._aplicando = True
+        try:
+            for id_, g in self._gavetas.items():
+                e = self._catalogo.estado_atual(id_)
+                g.set_recolhido(e["recolhido"], avisar=False)
+                g.set_altura(e["altura"], avisar=False)
+                g.set_visivel_painel(e["visivel"], avisar=False)
+            self._aplicar_ordem(self._catalogo.ordem_da_aba(self._aba))
+            splits = self._catalogo.splits_da_aba(self._aba)
+            for it in self._itens:
+                if it["nome"] and it["nome"] in splits \
+                        and len(splits[it["nome"]]) == len(it["ids"]):
+                    it["widget"].setSizes(splits[it["nome"]])
+            self._atualizar_stretches()
+        finally:
+            self._aplicando = False
+        self._atualizar_menu_paineis()
+
+    # ---------- nível ----------
+    def set_simples(self, simples):
+        """Propaga o nível a todas as gavetas e esconde o botão "Painéis" no
+        Simples. Chamar no início de _apply_detail_level("ui"), antes do laço
+        que mostra/esconde os widgets avançados."""
+        self._simples = bool(simples)
+        for g in self._gavetas.values():
+            g.set_simples(self._simples)
+        if self._botao is not None:
+            self._botao.setVisible(not self._simples)
+        self._atualizar_stretches()
+
+    def set_aba_visivel(self, func):
+        """Troca o callable de "aba visível" em todas as gavetas."""
+        self._aba_visivel = func
+        for g in self._gavetas.values():
+            g.set_aba_visivel(func)
+
+    # ---------- botão "Painéis" ----------
+    def botao_paineis(self):
+        """O QToolButton "Painéis ▾" da aba (criado uma vez): um item marcável
+        por painel + Recolher todos / Expandir todos / Restaurar o padrão.
+        Invisível no Simples."""
+        if self._botao is None:
+            bt = QtWidgets.QToolButton()
+            bt.setObjectName("botaoPaineis")
+            bt.setText(tr("Painéis") + " ▾")
+            bt.setToolTip(tr("Mostrar, ocultar e arrumar os painéis desta aba"))
+            bt.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+            bt.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)
+            bt.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+            self._menu_paineis = QtWidgets.QMenu(bt)
+            self._menu_paineis.aboutToShow.connect(self._montar_menu_paineis)
+            bt.setMenu(self._menu_paineis)
+            bt.setVisible(not self._simples)
+            self._botao = bt
+        return self._botao
+
+    def _montar_menu_paineis(self):
+        """Refaz o menu Painéis: uma ação marcável por gaveta mais recolher/expandir todos e restaurar."""
+        m = self._menu_paineis
+        if m is None:
+            return
+        m.clear()
+        for g in self.gavetas():
+            # QAction trata "&" como mnemônico; o título canônico não é escapado.
+            a = m.addAction(g.titulo().replace("&", "&&"))
+            a.setCheckable(True)
+            a.setChecked(g.visivel_painel())
+            a.setEnabled(g.fechavel() or not g.visivel_painel())
+            a.toggled.connect(lambda marcado, gg=g: gg.set_visivel_painel(marcado))
+        m.addSeparator()
+        m.addAction(tr("Recolher todos")).triggered.connect(self.recolher_todos)
+        m.addAction(tr("Expandir todos")).triggered.connect(self.expandir_todos)
+        m.addAction(tr("Restaurar o padrão")).triggered.connect(self.restaurar_padrao)
+
+    def _atualizar_menu_paineis(self):
+        # O menu é refeito a cada abertura; nada a fazer se estiver fechado.
+        """Se o menu Painéis está aberto, refaz suas marcações."""
+        if self._menu_paineis is not None and self._menu_paineis.isVisible():
+            self._montar_menu_paineis()
+
+
+def gaveta_ativa(janela, id_, considerar_aba=True):
+    """Para os laços de atualização (_update_emg_view etc.) pularem o cálculo
+    de painéis fechados, recolhidos ou fora da aba corrente: devolve
+    esta_ativo() da gaveta registrada em janela._gavetas[id]. Sem gaveta com
+    esse id (aba ainda não construída, id antigo) devolve True, para nunca
+    bloquear um cálculo por engano. considerar_aba=False ignora a aba (só
+    fechado/recolhido contam), para painéis que vão ao snapshot."""
+    try:
+        g = getattr(janela, "_gavetas", None)
+        g = g.get(id_) if isinstance(g, dict) else None
+        if g is None:
+            return True
+        return bool(g.esta_ativo(considerar_aba))
+    except RuntimeError:        # widget já destruído pelo Qt
+        return True
+
+
+# ------------------------------------------------------------
+# Catálogo GLOBAL de painéis (P2). Registro ESTÁTICO: o assistente de
+# primeiro uso lista os painéis antes de a janela existir, e a janela usa
+# este mesmo objeto (self._catalogo_paineis = CATALOGO_PAINEIS), nunca outro.
+# Os títulos em português são as chaves de tr() dos QGroupBox das abas.
+# ------------------------------------------------------------
+CATALOGO_PAINEIS = CatalogoPaineis()
+
+
+def _registrar_paineis_padrao(cat):
+    """Cadastra no catálogo todos os painéis que viram gaveta no Completo:
+    id, título (pt), aba, exames e estado padrão. recolhido=True marca o que é
+    pesado ou de uso raro; fechavel=False o painel-núcleo da aba; e
+    assistente=False o que é formulário, não gráfico (fora de "Escolha os
+    gráficos")."""
+    cat.nomear_aba("emg", "EMG · Músculos")
+    cat.nomear_aba("ecg", "ECG · Coração")
+    cat.nomear_aba("eog", "EOG · Olhos")
+    cat.nomear_aba("analises", "Análises")
+    cat.nomear_aba("filtros", "Filtros e Canais")
+    cat.nomear_aba("rede", "Rede e Eventos")
+    r = cat.registrar
+    # --- Músculos (EMG) ---
+    r("emg.config_envelope", "Configuração do Envelope EMG", "emg", {"EMG"},
+      assistente=False)
+    r("emg.atlas", "Atlas Muscular & Posicionamento de Eletrodos", "emg", {"EMG"})
+    r("emg.canais", "Canais EMG — envelope e ativações", "emg", {"EMG"},
+      fechavel=False, assistente=False)
+    r("emg.mvc_fadiga", "Mapeamento Muscular e Análise Avançada (MVC, Fadiga, Co-contração)",
+      "emg", {"EMG"})
+    r("emg.mnf_mdf", "Frequência Mediana (MDF) e Média (MNF) — Rastreamento de Fadiga",
+      "emg", {"EMG"})
+    r("emg.tempo_freq", "Análise Tempo×Frequência (fadiga) e Atividade Muscular no tempo",
+      "emg", {"EMG"}, recolhido=True)
+    r("emg.ergonomia", "Ergonomia (APDF) e Comparação de Fadiga entre Músculos",
+      "emg", {"EMG"}, recolhido=True)
+    # --- Coração (ECG) ---
+    r("ecg.tracado", "Traçado ECG e detecção de picos R", "ecg", {"ECG"},
+      fechavel=False, assistente=False)
+    r("ecg.tacograma", "Tacograma e Poincaré", "ecg", {"ECG"})
+    r("ecg.zonas", "Zonas de Treino (Karvonen) + Detecção de Arritmia + Recuperação",
+      "ecg", {"ECG"})
+    r("ecg.hrv_nao_linear", "HRV não-linear (Kubios-style) — DFA, Entropia, Poincaré",
+      "ecg", {"ECG"}, recolhido=True)
+    r("ecg.hrv_espectral",
+      "HRV Espectral (Welch/FFT) + Geométrica — bandas VLF/LF/HF e índice triangular",
+      "ecg", {"ECG"}, recolhido=True)
+    # --- Olhos (EoG) ---
+    r("eog.tracado", "Traçado H/V — piscadas e sacadas", "eog", {"EoG"},
+      fechavel=False, assistente=False)
+    r("eog.alerta", "Estado de Alerta (sonolência) + Sacadas + Fixação", "eog", {"EoG"})
+    r("eog.oculometria",
+      "Oculometria — sequência principal das sacadas + taxa de piscadas (sonolência)",
+      "eog", {"EoG"}, recolhido=True)
+    # --- Análises (EEG) ---
+    r("ana.fft", "Espectro de Frequência (FFT)", "analises", {"EEG"})
+    r("ana.bandas", "Bandas de Potência EEG", "analises", {"EEG"})
+    r("ana.estatisticas", "Estatísticas — Todos os Canais", "analises", {"EEG"})
+    # --- Filtros e Canais (formulários; sem exame = interesse geral) ---
+    r("filtros.reref", "Re-referenciação (aplicada ANTES dos filtros)", "filtros", {"EEG"},
+      assistente=False)
+    r("filtros.notch", "Filtro Notch (rejeição de banda)", "filtros", (), assistente=False)
+    r("filtros.bandpass", "Filtro Bandpass (Butterworth, ordem 4)", "filtros", (),
+      assistente=False)
+    r("filtros.canais", "Canais — Ativação e Tipo de Sinal (multimodal: EEG / EMG / ECG / EoG)",
+      "filtros", (), assistente=False)
+    r("filtros.canais_ruins", "Detecção Automática de Canais Ruins (variância + correlação)",
+      "filtros", {"EEG"}, assistente=False)
+    r("filtros.modo_exame", "Modo do exame — o que você vai medir", "filtros", (),
+      fechavel=False, assistente=False)
+    # --- Rede e Eventos (só no Multimodal) ---
+    r("rede.udp", "Streaming UDP (JSON)", "rede", (), assistente=False)
+    r("rede.lsl", "Streaming LSL (Lab Streaming Layer)", "rede", (), assistente=False)
+    r("rede.lsl_receber", "Receber via LSL (markers/eventos de PsychoPy, OpenViBE, etc.)",
+      "rede", (), assistente=False)
+    r("rede.marcadores", "Marcadores / Eventos (hotkey global: M)", "rede", (),
+      assistente=False)
+
+
+_registrar_paineis_padrao(CATALOGO_PAINEIS)
+
+
+# ============================================================
 # Janela principal — com suporte ao módulo de expansão (16 canais)
 # ============================================================
 class EEGCollectorWindow(QtWidgets.QMainWindow):
@@ -44183,6 +54786,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # Densidade do Simples antes do primeiro widget (captura e testes
         # criam a janela sem passar pelo main())
         _decide_ui_simples()
+        # Painéis em gavetas (P2): catálogo global compartilhado com o
+        # assistente, pilhas por aba e registro id -> gaveta (gaveta_ativa).
+        self._catalogo_paineis = CATALOGO_PAINEIS
+        self._pilhas = {}
+        self._gavetas = {}
         self._build_ui()
         self._refresh_ports()
         # Aplica mapeamento de canais carregado do config no Head Plot
@@ -44590,6 +55198,12 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 getattr(self.config, "acquisition_mode", "EEG"))
         except Exception:
             pass
+        # Painéis em gavetas (P2): o arranjo salvo vence; aba sem arranjo nasce
+        # do perfil de uso. Antes do nível, que esconde/mostra por cima.
+        try:
+            self._restaurar_paineis()
+        except Exception as exc:
+            self._log(f"Falha restaurando o arranjo dos painéis: {exc}", error=True)
         # Nível global Simples/Avançado. Sem esta chamada o combo "ui" nasce no
         # índice 0 sem emitir sinal e a janela abre completa.
         try:
@@ -44681,10 +55295,206 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self._detail_widgets.setdefault(chave, []).extend(
             [w for w in widgets if w is not None])
 
+    # ------------------------------------------------------------------
+    # P2 — painéis em "gavetas": pilhas por aba, catálogo e persistência
+    # ------------------------------------------------------------------
+    def _nova_pilha(self, aba, aba_visivel=None, espacamento=6):
+        """Pilha de gavetas de uma aba, ligada ao catálogo global, a este
+        dono (registro id -> gaveta para gaveta_ativa) e ao config: toda
+        mudança de arranjo vira config.paineis[aba] depois do debounce."""
+        p = PilhaGavetas(aba, catalogo=self._catalogo_paineis, dono=self,
+                         simples=self._nivel_simples(), aba_visivel=aba_visivel,
+                         espacamento=espacamento)
+        p.estadoMudou.connect(lambda d, a=aba: self._salvar_paineis(a, d))
+        self._pilhas[aba] = p
+        return p
+
+    def _salvar_paineis(self, aba, estado):
+        """Grava o arranjo de uma aba em config.paineis e no config.json (o
+        debounce de ~500 ms já foi feito pela pilha)."""
+        try:
+            if not isinstance(getattr(self.config, "paineis", None), dict):
+                self.config.paineis = {}
+            self.config.paineis[aba] = estado
+            self.config.save()
+        except Exception as exc:
+            self._log(f"Falha gravando o arranjo dos painéis: {exc}", error=True)
+
+    def _restaurar_paineis(self):
+        """Ao abrir: aplica às pilhas o arranjo salvo em config.paineis. Uma
+        aba SEM arranjo salvo nasce do perfil de uso (P4): painéis fora dos
+        exames do perfil e os desmarcados no perfil personalizado nascem
+        fechados. O arranjo salvo pela pessoa sempre vence o perfil."""
+        cat = self._catalogo_paineis
+        salvos = getattr(self.config, "paineis", None)
+        if not isinstance(salvos, dict):
+            salvos = {}
+            self.config.paineis = salvos
+        # O catálogo é global ao módulo: zera o que outra janela (testes,
+        # relançamento) possa ter deixado antes de ler ESTE config.
+        cat.restaurar_padrao()
+        cat.de_config(salvos)
+        try:
+            exames = [e for e in exames_do_perfil(self.config) if e != "Hibrido"]
+            perfil = perfil_valido(self.config)
+            paineis_perfil = (perfis_disponiveis(self.config).get(perfil, {})
+                              .get("paineis") or {})
+        except Exception:
+            exames, paineis_perfil = list(_GAVETA_EXAMES), {}
+        do_perfil = cat.estado_para_perfil(exames or list(_GAVETA_EXAMES))
+        for pid, vis in paineis_perfil.items():
+            if vis is False and cat.tem(pid) and cat.fechavel_de(pid):
+                aba = cat.aba_de(pid)
+                do_perfil.setdefault(aba, {"ordem": [], "paineis": {}, "splits": {}})
+                do_perfil[aba]["paineis"].setdefault(
+                    pid, cat.estado_padrao(pid))["visivel"] = False
+        for aba, pilha in self._pilhas.items():
+            est = salvos.get(aba)
+            if isinstance(est, dict) and est:
+                pilha.aplicar_estado(est)
+            else:
+                pilha.aplicar_estado(do_perfil.get(aba, {}))
+
+    def _aba_bio_visivel(self, i):
+        """A sub-aba Bio de índice i (0 Músculos, 1 Coração, 2 Olhos) está em
+        primeiro plano? Alimenta esta_ativo() das gavetas dessas abas."""
+        bt = getattr(self, "bio_tabs", None)
+        if bt is None:
+            return True
+        return self._aba_esta_visivel("view", 3) and bt.currentIndex() == i
+
     def _nivel_simples(self):
         """O nível global da interface é o Simples? Lê o config, não o combo:
         a visibilidade é aplicada em _build_ui, antes de o combo existir."""
         return getattr(self.config, "ui_level", "simples") == "simples"
+
+    # ------------------------------------------------------------------
+    # P1 — "só os canais em uso": helpers únicos de canais em uso / por tipo
+    # ------------------------------------------------------------------
+    def _canais_em_uso(self):
+        """Índices dos canais em uso na placa (0..num_channels-1).
+
+        É a lista que toda aba deve percorrer: os widgets e buffers existem
+        para MAX_CHANNELS, mas só estes canais têm sinal."""
+        n = int(getattr(self, "num_channels", BASE_CHANNELS) or BASE_CHANNELS)
+        return list(range(max(0, min(n, MAX_CHANNELS))))
+
+    def _tipo_do_canal(self, ch):
+        """Tipo configurado do canal `ch` ("EEG", "EMG", "ECG", "EoG" ou "off");
+        "EEG" quando a lista do config não chega até ele."""
+        tipos = getattr(self.config, "channel_signal_types", None) or []
+        return tipos[ch] if 0 <= ch < len(tipos) else "EEG"
+
+    def _canais_em_uso_tipo(self, tipo):
+        """Canais em uso cujo tipo configurado é `tipo` (ex.: os EMG da placa)."""
+        n = int(getattr(self, "num_channels", BASE_CHANNELS) or BASE_CHANNELS)
+        return canais_por_tipo(
+            getattr(self.config, "channel_signal_types", None) or [],
+            min(n, MAX_CHANNELS), tipo)
+
+    def _rotulo_canal_combo(self, ch):
+        """Texto de um canal nos combos: "CH3", ou "CH3 — Bíceps Braquial"
+        quando é EMG com músculo definido. O nome do músculo é chave (fica em
+        português no config); só o texto exibido passa por tr()."""
+        rot = f"CH{ch + 1}"
+        if self._tipo_do_canal(ch) == "EMG":
+            musc = getattr(self.config, "emg_channel_muscle", None) or []
+            m = musc[ch] if ch < len(musc) else ""
+            if m and m != "(não definido)":
+                rot += f" — {tr(m)}"
+        return rot
+
+    def _repopular_combo_canais(self, combo, canais, tipo_vazio=None, rotulo=None):
+        """Recarrega `combo` com os `canais` dados (userData = índice do canal),
+        preservando a seleção anterior pelo índice do canal, não pela posição.
+
+        Lista vazia vira o item único "nenhum canal" de _msg_sem_canal(tipo_vazio)
+        com data -1 (como _populate_ecg_channel_combo). Os sinais ficam
+        bloqueados durante a troca: repopular não é escolha da pessoa.
+        Devolve True quando a seleção anterior sobreviveu."""
+        if combo is None:
+            return False
+        try:
+            prev = combo.currentData()
+        except Exception:
+            prev = None
+        rotulo = rotulo or self._rotulo_canal_combo
+        combo.blockSignals(True)
+        try:
+            combo.clear()
+            if not canais:
+                if tipo_vazio:
+                    combo.addItem(self._msg_sem_canal(tipo_vazio), -1)
+            else:
+                for ch in canais:
+                    combo.addItem(rotulo(ch), ch)
+            idx = (combo.findData(prev)
+                   if isinstance(prev, int) and prev >= 0 else -1)
+            if idx >= 0:
+                combo.setCurrentIndex(idx)
+            elif combo.count():
+                combo.setCurrentIndex(0)
+        finally:
+            combo.blockSignals(False)
+        return idx >= 0
+
+    def _refresh_listas_canais(self):
+        """Repopula TODAS as listas de canais que dependem do número ou do tipo
+        dos canais em uso, preservando a seleção: combos EMG do MDF/MNF, APDF e
+        espectrograma, combos "Canal" do Atlas, canal do ERP (só sem gravação
+        carregada: a gravação manda nos seus canais), painéis do Layout, linhas
+        da Calibração, legenda do envelope EMG e o mapa de co-contração aberto.
+
+        Chamado por _set_num_channels, _on_channel_signal_type_changed e
+        apply_launcher_choice; os _build_* usam os mesmos helpers ao construir.
+        Cada bloco é protegido para uma aba ainda não montada não travar as
+        outras."""
+        emg = self._canais_em_uso_tipo("EMG")
+        todos = self._canais_em_uso()
+        for nome in ("emg_mnfdf_channel", "emg_apdf_channel", "emg_spec_channel"):
+            combo = getattr(self, nome, None)
+            if combo is not None:
+                try:
+                    self._repopular_combo_canais(combo, emg, "EMG")
+                except Exception:
+                    pass
+        # Os combos "Canal" do Atlas vivem dentro da tabela: ela é refeita
+        if hasattr(self, "emg_atlas_table") and hasattr(self, "emg_atlas"):
+            try:
+                self._emg_atlas_rebuild_table()
+            except Exception:
+                pass
+        # ERP: com uma gravação carregada o combo segue os canais DELA
+        if hasattr(self, "erp_channel_combo") and not getattr(self, "_erp_data", None):
+            try:
+                self._repopular_combo_canais(
+                    self.erp_channel_combo, todos, rotulo=lambda ch: f"CH{ch + 1}")
+            except Exception:
+                pass
+        for slot in getattr(self, "layout_slots", None) or []:
+            cb = slot.get("ch_combo") if isinstance(slot, dict) else None
+            if cb is not None:
+                try:
+                    self._repopular_combo_canais(
+                        cb, todos, rotulo=lambda ch: f"CH{ch + 1}")
+                except Exception:
+                    pass
+        try:
+            self._refresh_imp_table_rows()
+        except Exception:
+            pass
+        try:
+            self._sincroniza_legenda_emg()
+        except Exception:
+            pass
+        dlg = getattr(self, "_cocontr_dialog", None)
+        if dlg is not None:
+            try:
+                dlg._popular_canais()
+            except RuntimeError:          # diálogo já destruído pelo Qt
+                self._cocontr_dialog = None
+            except Exception:
+                pass
 
     def _definir_nivel(self, nivel):
         """Troca o nível global ("simples"/"avancado"): grava no config, aplica
@@ -44721,6 +55531,16 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             if combo is None:
                 return
             avancado = (combo.currentData() == "avancado")
+        if chave == "ui":
+            # Painéis em gavetas (P2) ANTES do laço: set_simples(True) reabre o
+            # que a pessoa fechou (no Simples quem decide é este laço) e
+            # set_simples(False) volta a fechar — o setVisible(True) abaixo não
+            # reabre um painel fechado.
+            for p in getattr(self, "_pilhas", {}).values():
+                try:
+                    p.set_simples(not avancado)
+                except RuntimeError:
+                    pass
         for w in getattr(self, "_detail_widgets", {}).get(chave, []):
             try:
                 w.setVisible(avancado)
@@ -44871,9 +55691,15 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             self._emg_hdr_limiar.setText(
                 tr("Sensibilidade (µV)") if simples else tr("Limiar (µV)"))
         if hasattr(self, "_emg_atlas_grp"):
-            self._emg_atlas_grp.setTitle(
-                tr("Onde estão os eletrodos (desenho do corpo)") if simples else
-                tr("Atlas Muscular & Posicionamento de Eletrodos").replace("&", "&&"))
+            _t_atlas = (tr("Onde estão os eletrodos (desenho do corpo)") if simples else
+                        tr("Atlas Muscular & Posicionamento de Eletrodos"))
+            _g_atlas = getattr(self, "_gavetas", {}).get("emg.atlas")
+            if _g_atlas is not None:
+                # Gaveta (P2): no Completo o título mora no cabeçalho; no
+                # Simples ela o devolve ao QGroupBox (já com "&" escapado).
+                _g_atlas.set_titulo(_t_atlas)
+            else:
+                self._emg_atlas_grp.setTitle(_t_atlas.replace("&", "&&"))
             self.emg_atlas_table.setColumnHidden(4, simples)     # % MVC
             self.emg_atlas_table.setColumnHidden(5, simples)     # Qualidade
         if hasattr(self, "_ecg_raw_lbl"):
@@ -44894,9 +55720,13 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                    "Se contar piscadas demais, aumente; se não contar, diminua.")
                 if simples else "")
         if hasattr(self, "_eog_alert_group"):
-            self._eog_alert_group.setTitle(
-                tr("Alerta ou sonolento · movimentos dos olhos") if simples else
-                tr("Estado de Alerta (sonolência) + Sacadas + Fixação"))
+            _t_alerta = (tr("Alerta ou sonolento · movimentos dos olhos") if simples else
+                         tr("Estado de Alerta (sonolência) + Sacadas + Fixação"))
+            _g_alerta = getattr(self, "_gavetas", {}).get("eog.alerta")
+            if _g_alerta is not None:
+                _g_alerta.set_titulo(_t_alerta)       # gaveta (P2), ver o atlas
+            else:
+                self._eog_alert_group.setTitle(_t_alerta)
             self._eog_sac_lbl.setText(
                 tr("movimentos rápidos dos olhos") if simples
                 else tr("sacadas detectadas"))
@@ -47911,6 +58741,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                "com título (paciente, exame e data)."))
         self.offline_fig_btn.clicked.connect(self._offline_salvar_figura)
         ctrl2.addWidget(self.offline_fig_btn)
+        # Replay (1.10.0, P8): a animação do exame gravado — a figura dos
+        # músculos, o coração batendo ou os olhos. Nos dois níveis; só liga
+        # quando a gravação aberta é de músculos, coração ou olhos.
+        self.offline_replay_btn = QtWidgets.QPushButton(tr("▶ Replay"))
+        self.offline_replay_btn.setEnabled(False)
+        self.offline_replay_btn.clicked.connect(self._offline_abrir_replay)
+        ctrl2.addWidget(self.offline_replay_btn)
+        self._offline_atualiza_replay()
         recipe_btn = QtWidgets.QPushButton(tr("Área Maker (receitas)…"))
         recipe_btn.setToolTip(
             tr("Área Maker: monte um pipeline de análise (métrica + banda + canais), "
@@ -47946,6 +58784,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self._offline_botoes = [refresh_btn, load_sel_btn, load_man_btn, edf_btn,
                                 nano_btn, imp_btn, stats_btn, intra_btn, evol_btn,
                                 self.offline_pdf_btn, self.offline_fig_btn,
+                                self.offline_replay_btn,
                                 recipe_btn, bancada_btn, self.offline_ica_btn]
         self._offline_carregar_btn = load_sel_btn
         self._offline_bl = bl
@@ -48458,6 +59297,70 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             # splitter sozinho: e preciso repor as fatias.
             vs.setSizes([200, 500, 300])
             self._offline_reparte()
+
+    def _offline_atualiza_replay(self):
+        """Liga o botão Replay conforme o exame da gravação aberta (músculos,
+        coração ou olhos); para EEG ou sem gravação fica desligado, com a
+        explicação na dica."""
+        bt = getattr(self, "offline_replay_btn", None)
+        if bt is None:
+            return
+        info = getattr(self, "_offline_session_info", None) or {}
+        pasta = info.get("path")
+        if not pasta or getattr(self, "_offline_data", None) is None:
+            bt.setEnabled(False)
+            bt.setToolTip(tr("Abra uma gravação de músculos, coração ou olhos para ver o Replay."))
+            return
+        try:
+            modo, tipos, _musc = self._offline_tipos_da_gravacao(pasta)
+        except Exception:
+            modo, tipos = None, []
+        exame = replay_exame_da_gravacao(modo, tipos)
+        bt.setEnabled(exame is not None)
+        if exame is None:
+            bt.setToolTip(tr("O Replay existe para exames de músculos, coração e olhos; "
+                             "esta gravação é de outro tipo."))
+        else:
+            bt.setToolTip({
+                "EMG": tr("Figura articulada que refaz o movimento marcado, com os músculos "
+                          "acendendo conforme a gravação."),
+                "ECG": tr("Coração que bate no ritmo gravado, com todas as batidas na faixa."),
+                "EoG": tr("Olhos que piscam e olham conforme os sinais gravados."),
+            }.get(exame, ""))
+
+    def _offline_abrir_replay(self):
+        """Abre a janela do Replay para a gravação carregada na aba Offline."""
+        d = getattr(self, "_offline_data", None)
+        info = getattr(self, "_offline_session_info", None) or {}
+        pasta = info.get("path")
+        if d is None or not pasta:
+            QtWidgets.QMessageBox.information(
+                self, tr("Replay"), tr("Escolha uma gravação na lista primeiro."))
+            return
+        try:
+            modo, tipos, musc = self._offline_tipos_da_gravacao(pasta)
+        except Exception:
+            modo, tipos, musc = None, [], []
+        rc = {}
+        try:
+            with open(os.path.join(pasta, "summary.json"), "r", encoding="utf-8") as f:
+                rc = (json.load(f) or {}).get("report_channels") or {}
+        except Exception:
+            rc = {}
+        dlg = abrir_replay(d, pasta, modo, tipos, musc, rc,
+                           simples=self._nivel_simples(), nome=str(info.get("name") or ""),
+                           parent=self)
+        if dlg is None:
+            QtWidgets.QMessageBox.information(
+                self, tr("Replay"),
+                tr("O Replay existe para exames de músculos, coração e olhos; "
+                   "esta gravação é de outro tipo."))
+            return
+        # referência viva: a janela não é modal, para a pessoa poder olhar a
+        # gravação e o replay lado a lado
+        self._replay_dlg = dlg
+        dlg.show()
+        self._audit_event("replay_open", path=pasta)
 
     def _offline_salvar_figura(self):
         """Grava o traçado visível do Offline em
@@ -49328,6 +60231,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             "sr_info": sr_info, "fonte": fonte, "csv": csv_path, "pasta": sess_dir,
             "truncado": d.get("aviso_truncado")}
         self._offline_escreve_status()
+        self._offline_atualiza_replay()
         # Stats por canal
         self.offline_stats_table.setRowCount(n_ch)
         for ch in range(n_ch):
@@ -52084,9 +62988,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             self.analysis_channel.addItem(f"CH{i + 1}")
         self.analysis_channel.setMinimumWidth(120)
         sel_row.addWidget(self.analysis_channel); sel_row.addStretch()
+        # Painéis em gavetas (P2): FFT | bandas numa linha e estatísticas
+        # embaixo; os PNG do snapshot saem destes gráficos mesmo fora de vista,
+        # por isso os gates de _update_analysis não olham a aba.
+        pilha = self._nova_pilha("analises", espacamento=10)
+        sel_row.addWidget(pilha.botao_paineis())
         layout.addLayout(sel_row)
+        layout.addWidget(pilha, stretch=1)
 
-        graph_row = QtWidgets.QHBoxLayout()
         fft_group = QtWidgets.QGroupBox(tr("Espectro de Frequência (FFT)"))
         fft_layout = QtWidgets.QVBoxLayout(fft_group)
         self.fft_plot = pg.PlotWidget(enableMenu=False)
@@ -52100,7 +63009,6 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 pen=pg.mkPen(COLORS["border"], style=QtCore.Qt.PenStyle.DashLine))
             self.fft_plot.addItem(line)
         fft_layout.addWidget(self.fft_plot)
-        graph_row.addWidget(fft_group)
 
         band_group = QtWidgets.QGroupBox(tr("Bandas de Potência EEG"))
         band_layout = QtWidgets.QVBoxLayout(band_group)
@@ -52120,8 +63028,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.band_plot.addItem(self.band_bars)
         self.band_plot.setXRange(-0.5, len(EEG_BANDS) - 0.5)
         band_layout.addWidget(self.band_plot)
-        graph_row.addWidget(band_group)
-        layout.addLayout(graph_row, stretch=2)
+        pilha.adicionar_linha([("ana.fft", fft_group), ("ana.bandas", band_group)],
+                              nome="fft+bandas", stretch=2)
 
         # Tabela de estatísticas — todos os canais (compacta, 16 linhas visíveis sem scroll)
         stats_group = QtWidgets.QGroupBox(tr("Estatísticas — Todos os Canais"))
@@ -52152,7 +63060,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 it.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.stats_table.setItem(ch, col, it)
         stats_layout.addWidget(self.stats_table)
-        layout.addWidget(stats_group, stretch=1)
+        pilha.adicionar_painel("ana.estatisticas", stats_group, stretch=1)
         return widget
 
     # ---- Tab: Topografia ----
@@ -52410,6 +63318,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         widget = QtWidgets.QWidget()
         layout = QtWidgets.QVBoxLayout(widget)
         layout.setContentsMargins(15, 15, 15, 15); layout.setSpacing(12)
+        # Painéis em gavetas (P2): cada bloco recolhe/fecha/move; sem gates
+        # (são formulários). Botão "Painéis" numa linha própria no topo.
+        pilha = self._nova_pilha("filtros", espacamento=12)
+        _row_p = QtWidgets.QHBoxLayout()
+        _row_p.addStretch()
+        _row_p.addWidget(pilha.botao_paineis())
+        layout.addLayout(_row_p)
+        layout.addWidget(pilha)
 
         # ============================================================
         # Re-referenciação (CAR / Laplacian / Mastoide / Bipolar / REST)
@@ -52444,7 +63360,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.reref_channels_edit.setMaximumWidth(160)
         self.reref_channels_edit.editingFinished.connect(self._on_reref_changed)
         reref_l.addWidget(self.reref_channels_edit)
-        layout.addWidget(reref_group)
+        pilha.adicionar_painel("filtros.reref", reref_group)
 
         notch_group = QtWidgets.QGroupBox(tr("Filtro Notch (rejeição de banda)"))
         nl = QtWidgets.QHBoxLayout(notch_group)
@@ -52457,7 +63373,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.notch_freq.currentTextChanged.connect(self._on_filter_change)
         nl.addWidget(self.notch_freq); nl.addStretch()
         nl.addWidget(QtWidgets.QLabel(tr("(Q=30 — remove ruido de rede elétrica)")))
-        layout.addWidget(notch_group)
+        pilha.adicionar_painel("filtros.notch", notch_group)
 
         bp_group = QtWidgets.QGroupBox(tr("Filtro Bandpass (Butterworth, ordem 4)"))
         bp_outer = QtWidgets.QVBoxLayout(bp_group)
@@ -52487,7 +63403,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             presets.addWidget(btn)
         presets.addStretch()
         bp_outer.addLayout(presets)
-        layout.addWidget(bp_group)
+        pilha.adicionar_painel("filtros.bandpass", bp_group)
 
         # Configuração por canal: ativo + tipo de sinal (multimodal)
         ch_group = QtWidgets.QGroupBox(tr("Canais — Ativação e Tipo de Sinal (multimodal: EEG / EMG / ECG / EoG)"))
@@ -52602,7 +63518,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         f_row.addStretch()
         cl_outer.addLayout(f_row)
 
-        layout.addWidget(ch_group)
+        pilha.adicionar_painel("filtros.canais", ch_group)
 
         # ---- Detecção automática de canais ruins ----
         bad_group = QtWidgets.QGroupBox(tr("Detecção Automática de Canais Ruins (variância + correlação)"))
@@ -52618,7 +63534,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.bad_detect_status = QtWidgets.QLabel("--")
         self.bad_detect_status.setStyleSheet(f"color: {COLORS['text_dim']};")
         bgl.addWidget(self.bad_detect_status)
-        layout.addWidget(bad_group)
+        pilha.adicionar_painel("filtros.canais_ruins", bad_group)
 
         # ---- Modo do exame (define o que a interface inteira mostra) ----
         mode_group = QtWidgets.QGroupBox(tr("Modo do exame — o que você vai medir"))
@@ -52652,7 +63568,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.mode_visibility_combo.currentIndexChanged.connect(
             self._on_mode_visibility_apply)
         mode_l.addWidget(self.mode_visibility_combo)
-        layout.addWidget(mode_group)
+        # O seletor de modo tem de continuar à mão: gaveta que não fecha.
+        pilha.adicionar_painel("filtros.modo_exame", mode_group, fechavel=False)
+        self._aplicar_perfil_no_combo_modo()
 
         layout.addStretch()
         return widget
@@ -52693,6 +63611,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # EMG Joystick combos
         if hasattr(self, "_joy_axes"):
             self._joy_repopulate_combos()
+        # Combos EMG (MDF/MNF, APDF, espectrograma), Atlas, legenda (P1)
+        self._refresh_listas_canais()
         # Reenvia os tipos ao FilterChain: a máscara da média comum é lida só em
         # set_reref, então sem isto reclassificar um canal para ECG no meio da
         # sessão não o tirava da CAR — ele seguia sangrando QRS em todo o EEG.
@@ -52910,6 +63830,13 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         widget = QtWidgets.QWidget()
         layout = QtWidgets.QVBoxLayout(widget)
         layout.setContentsMargins(15, 15, 15, 15); layout.setSpacing(12)
+        # Painéis em gavetas (P2): UDP, LSL, LSL receber e marcadores.
+        pilha = self._nova_pilha("rede", espacamento=12)
+        _row_p = QtWidgets.QHBoxLayout()
+        _row_p.addStretch()
+        _row_p.addWidget(pilha.botao_paineis())
+        layout.addLayout(_row_p)
+        layout.addWidget(pilha)
 
         udp_group = QtWidgets.QGroupBox(tr("Streaming UDP (JSON)"))
         ul = QtWidgets.QGridLayout(udp_group)
@@ -52930,7 +63857,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             "Markers viram {'t': float, 'marker': str}."))
         info.setStyleSheet(f"color: {COLORS['text_dim']};"); info.setWordWrap(True)
         ul.addWidget(info, 1, 0, 1, 5)
-        layout.addWidget(udp_group)
+        pilha.adicionar_painel("rede.udp", udp_group)
 
         # ===== LSL (Lab Streaming Layer) — padrão clínico/cientifico =====
         lsl_group = QtWidgets.QGroupBox(tr("Streaming LSL (Lab Streaming Layer)"))
@@ -52952,7 +63879,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         )
         lsl_info.setStyleSheet(f"color: {COLORS['text_dim']};"); lsl_info.setWordWrap(True)
         ll.addWidget(lsl_info, 1, 0, 1, 4)
-        layout.addWidget(lsl_group)
+        pilha.adicionar_painel("rede.lsl", lsl_group)
 
         # ===== LSL Receiver — recebe streams de outros apps =====
         lslr_group = QtWidgets.QGroupBox(tr("Receber via LSL (markers/eventos de PsychoPy, OpenViBE, etc.)"))
@@ -52981,7 +63908,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.lslr_status_lbl.setStyleSheet(f"color: {COLORS['text_dim']};")
         self.lslr_status_lbl.setWordWrap(True)
         lslr_l.addWidget(self.lslr_status_lbl)
-        layout.addWidget(lslr_group)
+        pilha.adicionar_painel("rede.lsl_receber", lslr_group)
 
         # Estado interno do receiver
         self._lslr_streams_found = []   # lista de StreamInfo
@@ -53012,7 +63939,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.markers_view = QtWidgets.QTextEdit()
         self.markers_view.setReadOnly(True); self.markers_view.setMaximumHeight(220)
         ml.addWidget(self.markers_view)
-        layout.addWidget(mk_group)
+        pilha.adicionar_painel("rede.marcadores", mk_group)
         layout.addStretch()
         return widget
 
@@ -53110,9 +64037,15 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             f"border: 1px solid {COLORS['border']}; border-radius: 3px;")
         info_row.addWidget(self.emg_active_count_lbl)
         outer.addLayout(info_row)
-        # Seletor Simples/Avançado desta modalidade
-        outer.addLayout(self._make_detail_toggle(
-            "emg", tr("Exame de músculos — posicione os eletrodos e grave.")))
+        # Painéis em gavetas (P2): tudo abaixo da faixa de nível vai para a
+        # pilha; ordem, recolher, fechar e altura ficam em config.paineis["emg"].
+        pilha = self._nova_pilha("emg", lambda: self._aba_bio_visivel(0))
+        # Seletor Simples/Avançado desta modalidade + botão "Painéis"
+        _row_niv = self._make_detail_toggle(
+            "emg", tr("Exame de músculos — posicione os eletrodos e grave."))
+        _row_niv.addWidget(pilha.botao_paineis())
+        outer.addLayout(_row_niv)
+        outer.addWidget(pilha, stretch=1)
 
         # === Controles globais ===
         ctrl_group = QtWidgets.QGroupBox(tr("Configuração do Envelope EMG"))
@@ -53155,13 +64088,13 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         btn_reset_counters.setToolTip(tr("Zera contadores de ativação muscular por canal."))
         btn_reset_counters.clicked.connect(self._emg_reset_counters)
         ctrl.addWidget(btn_reset_counters)
-        outer.addWidget(ctrl_group)
+        pilha.adicionar_painel("emg.config_envelope", ctrl_group)
 
         # === Atlas muscular — a FIGURA vem primeiro ===
         # Antes ele era o 4º bloco da aba, abaixo de dois painéis grandes: o
         # operador rolava até o fim sem nunca ver a silhueta do corpo. É a peça
         # que se entende sem legenda, então abre a tela.
-        outer.addWidget(self._build_emg_atlas_group())
+        pilha.adicionar_painel("emg.atlas", self._build_emg_atlas_group())
 
         # === Splitter: cards por canal (esquerda) + plot temporal (direita) ===
         split = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
@@ -53288,7 +64221,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         rl.addWidget(self.emg_plot)
         split.addWidget(right)
         split.setSizes([720, 600])
-        outer.addWidget(split, stretch=2)
+        # Painel-núcleo da aba: vira gaveta (alça de altura, ordem) mas não fecha.
+        pilha.adicionar_painel("emg.canais", split,
+                               titulo=tr("Canais EMG — envelope e ativações"),
+                               fechavel=False, stretch=2)
 
         # ===================================================================
         # SEÇÃO: Mapeamento Muscular + Análise Avançada
@@ -53425,7 +64361,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         muscle_grid.setColumnStretch(1, 1); muscle_grid.setColumnStretch(2, 1)
         muscle_grid.setColumnStretch(6, 1); muscle_grid.setColumnStretch(7, 1)
         ag_l.addLayout(muscle_grid)
-        outer.addWidget(analysis_group)
+        pilha.adicionar_painel("emg.mvc_fadiga", analysis_group)
 
         # (O Atlas Muscular foi promovido para o topo da aba — ver acima.)
 
@@ -53439,8 +64375,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         mnfdf_ctrl = QtWidgets.QHBoxLayout()
         mnfdf_ctrl.addWidget(QtWidgets.QLabel(tr("Canal EMG:")))
         self.emg_mnfdf_channel = QtWidgets.QComboBox()
-        for ch in range(MAX_CHANNELS):
-            self.emg_mnfdf_channel.addItem(f"CH{ch+1}", ch)
+        # só canais EMG em uso (P1); _refresh_listas_canais repopula ao mudar
+        self._repopular_combo_canais(
+            self.emg_mnfdf_channel, self._canais_em_uso_tipo("EMG"), "EMG")
         mnfdf_ctrl.addWidget(self.emg_mnfdf_channel)
         mnfdf_ctrl.addSpacing(15)
         self.emg_mnfdf_status_lbl = QtWidgets.QLabel(
@@ -53490,8 +64427,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.emg_fatigue_metrics_lbl.setWordWrap(True)
         mnfdf_l.addWidget(self.emg_fatigue_metrics_lbl)
         self._emg_dimitrov_history = {ch: [] for ch in range(MAX_CHANNELS)}
-        outer.addWidget(mnfdf_group)
-        self._register_advanced("emg", mnfdf_group)
+        _gv_mnf = pilha.adicionar_painel("emg.mnf_mdf", mnfdf_group)
+        self._register_advanced("emg", _gv_mnf)       # a gaveta, não o QGroupBox
 
         # Buffer adicional para MNF (mean frequency)
         self._emg_mean_freq_history = {ch: [] for ch in range(MAX_CHANNELS)}
@@ -53511,11 +64448,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # ===================================================================
         _g_adv = self._build_emg_advanced_group()
         _g_erg = self._build_emg_ergonomics_group()
-        outer.addWidget(_g_adv)
-        outer.addWidget(_g_erg)
+        _gv_adv = pilha.adicionar_painel("emg.tempo_freq", _g_adv)
+        _gv_erg = pilha.adicionar_painel("emg.ergonomia", _g_erg)
         # Blocos de pesquisa: espectrograma/atividade, APDF e fadiga comparativa,
         # configuração do envelope e a grade de mapeamento muscular (64 linhas).
-        self._register_advanced("emg", _g_adv, _g_erg, ctrl_group, analysis_group)
+        # Registram-se as GAVETAS: no Simples some o invólucro inteiro.
+        self._register_advanced("emg", _gv_adv, _gv_erg,
+                                pilha.gaveta("emg.config_envelope"),
+                                pilha.gaveta("emg.mvc_fadiga"))
         # Modo Simples é o padrão — a tela abre enxuta para o operador.
         self._apply_detail_level("emg")
 
@@ -53534,8 +64474,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         lc = QtWidgets.QHBoxLayout()
         lc.addWidget(QtWidgets.QLabel(tr("Canal EMG:")))
         self.emg_apdf_channel = QtWidgets.QComboBox()
-        for ch in range(MAX_CHANNELS):
-            self.emg_apdf_channel.addItem(f"CH{ch+1}", ch)
+        # só canais EMG em uso (P1); _refresh_listas_canais repopula ao mudar
+        self._repopular_combo_canais(
+            self.emg_apdf_channel, self._canais_em_uso_tipo("EMG"), "EMG")
         lc.addWidget(self.emg_apdf_channel); lc.addStretch()
         left.addLayout(lc)
         self.emg_apdf_plot = pg.PlotWidget(enableMenu=False)
@@ -53604,8 +64545,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         lc = QtWidgets.QHBoxLayout()
         lc.addWidget(QtWidgets.QLabel(tr("Canal EMG:")))
         self.emg_spec_channel = QtWidgets.QComboBox()
-        for ch in range(MAX_CHANNELS):
-            self.emg_spec_channel.addItem(f"CH{ch+1}", ch)
+        # só canais EMG em uso (P1); _refresh_listas_canais repopula ao mudar
+        self._repopular_combo_canais(
+            self.emg_spec_channel, self._canais_em_uso_tipo("EMG"), "EMG")
         lc.addWidget(self.emg_spec_channel); lc.addStretch()
         lc.addWidget(QtWidgets.QLabel(tr("<span style='color:#888'>MDF desce ⇒ fadiga</span>")))
         left.addLayout(lc)
@@ -53675,7 +64617,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
 
         # ---- coluna esquerda: o atlas ----
         left = QtWidgets.QVBoxLayout(); left.setSpacing(4)
-        self.emg_atlas = MuscleAtlasWidget()
+        self.emg_atlas = AtlasCorpoWidget()
         self.emg_atlas.setMinimumWidth(300)
         self.emg_atlas.sigElectrodesChanged.connect(self._emg_atlas_on_changed)
         self.emg_atlas.sigElectrodeSelected.connect(self._emg_atlas_on_selected)
@@ -53694,17 +64636,24 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         ctl = QtWidgets.QHBoxLayout()
         ctl.addWidget(QtWidgets.QLabel(tr("Vista:")))
         self.emg_atlas_view = QtWidgets.QComboBox()
-        self.emg_atlas_view.addItems([tr("Frontal (anterior)"), tr("Posterior")])
+        # P3: três vistas + áreas recortadas (zoom anatômico) no mesmo combo.
+        # userData "view:<vista>" ou "area:<id>"; o separador não tem dado.
+        self.emg_atlas_view.addItem(tr("Frontal (anterior)"), "view:front")
+        self.emg_atlas_view.addItem(tr("Posterior"), "view:back")
+        self.emg_atlas_view.addItem(tr("Lado"), "view:side")
+        self.emg_atlas_view.insertSeparator(self.emg_atlas_view.count())
+        for _aid, _tit, _lado in AtlasCorpoWidget.areas_disponiveis():
+            self.emg_atlas_view.addItem(
+                tr(_tit) + (f" {_lado}" if _lado else ""), f"area:{_aid}")
         self.emg_atlas_view.setMinimumWidth(150)
-        self.emg_atlas_view.currentIndexChanged.connect(
-            lambda i: self.emg_atlas.set_view("back" if i == 1 else "front"))
+        self.emg_atlas_view.currentIndexChanged.connect(self._emg_atlas_vista_escolhida)
         ctl.addWidget(self.emg_atlas_view)
         # Zoom por REGIÃO: no corpo inteiro, antebraço e mão ficam com poucos
         # pixels e posicionar eletrodo ali vira sorte.
         ctl.addWidget(QtWidgets.QLabel(tr("Zoom:")))
         self.emg_atlas_regiao = QtWidgets.QComboBox()
         self.emg_atlas_regiao.setMinimumWidth(160)
-        for rot, _z, _fx, _fy in MuscleAtlasWidget.REGIOES:
+        for rot, _z, _fx, _fy in AtlasCorpoWidget.REGIOES:
             self.emg_atlas_regiao.addItem(tr(rot), rot)
         self.emg_atlas_regiao.setToolTip(tr(
             "Aproxima numa região do corpo. Também dá para usar a roda do "
@@ -53803,6 +64752,33 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self._emg_atlas_reload_history()
         return grp
 
+    def _emg_atlas_vista_escolhida(self, i):
+        """Combo de vista do atlas (P3): "view:front|back|side" troca a vista e
+        sai da área; "area:<id>" mostra a área recortada (zoom anatômico).
+
+        O separador tem userData None e é ignorado. A flag
+        _emg_atlas_mudando_area impede _emg_atlas_zoom_mudou de marcar
+        "(livre)" no combo de região, porque a área já é um enquadramento.
+        """
+        dado = self.emg_atlas_view.itemData(i)
+        if not isinstance(dado, str) or ":" not in dado:
+            return
+        tipo, valor = dado.split(":", 1)
+        self._emg_atlas_mudando_area = True
+        try:
+            if tipo == "area":
+                self.emg_atlas.set_area(valor)
+            else:
+                self.emg_atlas.set_area(None)
+                self.emg_atlas.set_view(valor)
+        finally:
+            self._emg_atlas_mudando_area = False
+        cb = getattr(self, "emg_atlas_regiao", None)
+        if cb is not None:
+            _b = cb.blockSignals(True)
+            cb.setCurrentIndex(0)
+            cb.blockSignals(_b)
+
     def _emg_atlas_toggle_place(self, on):
         """Liga o modo de inserção de eletrodo no atlas e troca o texto do botão
         para indicar que se espera um clique no corpo."""
@@ -53874,7 +64850,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 # Canal (combo)
                 ccb = QtWidgets.QComboBox()
                 ccb.addItem("—", -1)
-                for ch in range(MAX_CHANNELS):
+                # só os canais EMG em uso (P1); o canal já gravado no
+                # eletrodo continua listado para a montagem salva não mudar
+                # sozinha ao abrir com outra placa
+                _lista = self._canais_em_uso_tipo("EMG")
+                _salvo = e.get("channel", -1)
+                if isinstance(_salvo, int) and _salvo >= 0 and _salvo not in _lista:
+                    _lista = sorted(_lista + [_salvo])
+                for ch in _lista:
                     ccb.addItem(f"CH{ch+1}", ch)
                 idx = ccb.findData(e["channel"])
                 ccb.setCurrentIndex(idx if idx >= 0 else 0)
@@ -53885,7 +64868,12 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 mcb = QtWidgets.QComboBox()
                 for mn in COMMON_MUSCLES.keys():
                     mcb.addItem(tr(mn), mn)          # exibe traduzido, guarda a chave
-                if e["muscle"] in COMMON_MUSCLES:
+                # Músculo SENIAM fora de COMMON_MUSCLES (rosto, fibular...):
+                # entra como item extra para a tabela mostrar o que o atlas
+                # reconheceu, sem mexer na lista de músculos dos canais.
+                if e["muscle"] and e["muscle"] not in COMMON_MUSCLES:
+                    mcb.addItem(tr(e["muscle"]), e["muscle"])
+                if e["muscle"]:
                     _j = mcb.findData(e["muscle"])
                     if _j >= 0:
                         mcb.setCurrentIndex(_j)
@@ -54069,7 +65057,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 str(rec.get("n_electrodes", "")),
                 ("—" if rec.get("quality_mean") is None
                  else f"{rec['quality_mean']:.1f}"),
-                (tr("Posterior") if rec.get("view") == "back" else "Frontal"),
+                ({"back": tr("Posterior"), "side": tr("Lateral")}.get(
+                    rec.get("view"), "Frontal")),
             ]
             for c, v in enumerate(vals):
                 it = QtWidgets.QTableWidgetItem(str(v))
@@ -54083,6 +65072,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         temporal do sinal."""
         if not hasattr(self, "emg_spec_img") or n < SAMPLE_RATE:
             return
+        # O portão do painel fechado (P2) fica em _update_emg_view, que chama
+        # esta função; chamada direta (testes, exportação) sempre calcula.
         fmax = self._emg_adv_fmax; nfreq = self._emg_adv_nfreq
         step_s = self.EMG_ADV_STEP / float(SAMPLE_RATE)
         window = self.EMG_ADV_FRAMES * step_s
@@ -54119,11 +65110,13 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             tx = np.linspace(-window, 0.0, self.EMG_ADV_FRAMES)
             self.emg_spec_mdf.setData(tx, self._emg_spec_mdf_hist, connect="finite")
         # ---- Atividade muscular (canais × tempo) ----
-        emg_chs = [ch for ch in range(MAX_CHANNELS)
-                   if (self.config.channel_signal_types[ch]
-                       if ch < len(self.config.channel_signal_types) else "EEG") == "EMG"]
+        # Só os canais EMG em uso: com 8 canais e exame EMG os 64 vinham
+        # marcados EMG e o mapa mostrava CH1..CH64 numa placa de 8 (P1).
+        emg_chs = [ch for ch in self._canais_em_uso_tipo("EMG")
+                   if ch < self._emg_activity_buf.shape[0]]
         self._emg_activity_buf = np.roll(self._emg_activity_buf, -1, axis=1)
-        for ch in range(MAX_CHANNELS):
+        self._emg_activity_buf[:, -1] = 0.0        # canais fora de uso zerados
+        for ch in emg_chs:
             env = env_map.get(ch)
             if env is None or not len(env):
                 self._emg_activity_buf[ch, -1] = 0.0; continue
@@ -54139,6 +65132,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             ax = self.emg_activity_widget.getAxis("left")
             ax.setTicks([[(i + 0.5, f"CH{emg_chs[i]+1}") for i in range(len(emg_chs))]])
             self.emg_activity_widget.setYRange(0, len(emg_chs))
+        else:
+            # sem canal EMG em uso o mapa fica vazio em vez de congelar o último
+            self.emg_activity_img.clear()
+            self.emg_activity_widget.getAxis("left").setTicks([[]])
         # ---- Marcadores de onset/offset (TKEO) sobre o envelope ----
         if not hasattr(self, "_emg_onset_regions"):
             self._emg_onset_regions = []
@@ -54167,6 +65164,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         fadiga (MDF %vs início) entre os músculos EMG."""
         if not hasattr(self, "emg_apdf_curve"):
             return
+        if not gaveta_ativa(self, "emg.ergonomia"):
+            return                      # P2: painel fechado não gasta processamento
         # ---- APDF ----
         sel = self.emg_apdf_channel.currentData()
         env = env_map.get(sel) if isinstance(sel, int) else None
@@ -54192,9 +65191,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # ---- Comparação de fadiga (MDF %vs início) entre músculos ----
         pens = None
         any_curve = False
+        _emg_uso = set(self._canais_em_uso_tipo("EMG"))      # P1
         for ch in range(MAX_CHANNELS):
-            is_emg = (self.config.channel_signal_types[ch]
-                      if ch < len(self.config.channel_signal_types) else "EEG") == "EMG"
+            is_emg = ch in _emg_uso
             hist = self._emg_median_freq_history.get(ch, [])
             if not is_emg or len(hist) < 3:
                 if ch in self.emg_fatcmp_curves:
@@ -54224,8 +65223,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         electrodes = self.emg_atlas.get_electrodes()
         channels = sorted({e["channel"] for e in electrodes
                            if isinstance(e["channel"], int) and e["channel"] >= 0})
+        _uso = set(self._canais_em_uso())
         for ch in channels:
-            if ch >= MAX_CHANNELS:
+            if ch not in _uso:          # canal além da placa (P1)
                 continue
             env = env_map.get(ch)
             if env is None or not len(env):
@@ -54242,7 +65242,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             # músculo do canal (para o heatmap)
             m = (self.config.emg_channel_muscle[ch]
                  if ch < len(self.config.emg_channel_muscle) else "")
-            if m in ATLAS_MUSCLE_XY and pct is not None:
+            if (m in ELETRODOS_SENIAM or m in ATLAS_MUSCLE_XY) and pct is not None:
                 muscle_act[m] = max(muscle_act.get(m, 0.0), pct)
         self._emg_atlas_live = live
         self.emg_atlas.set_muscle_activations(muscle_act)
@@ -54270,7 +65270,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                     q_it.setText("—")
                 else:
                     q_it.setText(f"{qual:.0f}")
-                    q_it.setForeground(MuscleAtlasWidget._quality_color(qual))
+                    q_it.setForeground(AtlasCorpoWidget._quality_color(qual))
 
     def _emg_channel_quality(self, data, ch, env):
         """Índice 0..100 de qualidade/acurácia do eletrodo:
@@ -54426,6 +65426,30 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                     tr("{0} canais EMG ativos").format(emg_count))
             else:
                 self.emg_active_count_lbl.setText(self._msg_sem_canal("EMG"))
+        # a legenda do envelope acompanha: só canais EMG em uso (P1)
+        self._sincroniza_legenda_emg()
+
+    def _sincroniza_legenda_emg(self):
+        """Deixa na legenda do envelope EMG só as curvas dos canais EMG em uso,
+        em ordem de canal.
+
+        As 64 curvas nascem registradas pelo name= do plot(): numa placa de 8
+        a legenda listava CH1..CH64 e ficava mais alta que o gráfico."""
+        plot_item = getattr(getattr(self, "emg_plot", None), "plotItem", None)
+        leg = getattr(plot_item, "legend", None) if plot_item is not None else None
+        if leg is None or not hasattr(self, "emg_curves"):
+            return
+        quer = [ch for ch in self._canais_em_uso_tipo("EMG")
+                if ch < len(self.emg_curves)]
+        if getattr(self, "_emg_leg_on", None) == quer:
+            return
+        try:
+            leg.clear()
+            for ch in quer:
+                leg.addItem(self.emg_curves[ch], "CH%d" % (ch + 1))
+            self._emg_leg_on = list(quer)
+        except Exception:
+            pass
 
     def _emg_rotulo_eletrodo(self, ch, is_emg):
         """Texto da coluna "Eletrodo / músculo" de um canal.
@@ -54518,14 +65542,21 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             self._emg_adv_last_st = -10 ** 9
         fazer_fadiga = (n > SAMPLE_RATE
                         and st - getattr(self, "_emg_mdf_last_st", -10 ** 9) >= SAMPLE_RATE)
+        # P2: a FFT de fadiga só alimenta painéis; com os três fechados ou
+        # recolhidos ninguém a mostra (a série de MDF fica com um buraco — o
+        # eixo é índice de janela, a regressão continua válida ao reabrir).
+        fazer_fadiga = fazer_fadiga and (gaveta_ativa(self, "emg.mnf_mdf")
+                                         or gaveta_ativa(self, "emg.mvc_fadiga")
+                                         or gaveta_ativa(self, "emg.ergonomia"))
         emg_count_active = 0
         # Armazena envelope atual por canal para análises agregadas
         ch_envelope_current = {}
         ch_env_full = {}            # canal -> envelope completo (p/ atlas/qualidade)
-        for ch in range(MAX_CHANNELS):
-            sig = (self.config.channel_signal_types[ch]
-                   if ch < len(self.config.channel_signal_types) else "EEG")
-            if sig != "EMG":
+        # Só canais EMG em uso (P1): calcular envelope/FFT dos canais 9-64
+        # marcados EMG gastava CPU e alimentava o atlas, a co-contração e o
+        # mapa canais×tempo com canais que a placa não tem.
+        for ch in self._canais_em_uso_tipo("EMG"):
+            if ch >= data.shape[0] or ch >= len(self.emg_rows):
                 continue
             emg_count_active += 1
             try:
@@ -54646,6 +65677,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
 
         # ---- Atlas muscular: heatmap %MVC + qualidade/acurácia (~2×/s) ----
         if (hasattr(self, "emg_atlas")
+                and gaveta_ativa(self, "emg.atlas")          # P2: fechado não calcula
                 and st - getattr(self, "_emg_atlas_last_st", -10 ** 9) >= max(1, SAMPLE_RATE // 2)):
             self._emg_atlas_last_st = st
             try:
@@ -54655,6 +65687,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
 
         # ---- Espectrograma EMG + atividade muscular no tempo (~4×/s) ----
         if (hasattr(self, "emg_spec_img")
+                and (gaveta_ativa(self, "emg.tempo_freq")    # P2: cada função
+                     or gaveta_ativa(self, "emg.ergonomia"))  # checa a sua gaveta
                 and st - getattr(self, "_emg_adv_last_st", -10 ** 9)
                 >= getattr(self, "EMG_ADV_STEP", SAMPLE_RATE)):
             self._emg_adv_last_st = st
@@ -54668,7 +65702,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 pass
 
         # ---- Plot MNF/MDF temporal ----
-        if hasattr(self, "emg_mdf_curve"):
+        if hasattr(self, "emg_mdf_curve") and gaveta_ativa(self, "emg.mnf_mdf"):
             sel = self.emg_mnfdf_channel.currentData() if hasattr(self, "emg_mnfdf_channel") else 0
             if isinstance(sel, int) and sel >= 0:
                 mdf = self._emg_median_freq_history.get(sel, [])
@@ -54730,7 +65764,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                         self.emg_mnfdf_status_lbl.setStyleSheet(f"color: {col}; font-weight: bold;")
 
         # ---- Indicadores globais (fadiga + co-contração + movimento) ----
-        if hasattr(self, "emg_fatigue_lbl"):
+        if hasattr(self, "emg_fatigue_lbl") and gaveta_ativa(self, "emg.mvc_fadiga"):
             # Fadiga média: queda % da freq mediana vs baseline
             drops = []
             for ch, hist in self._emg_median_freq_history.items():
@@ -54761,7 +65795,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 self._cocontr_dialog = None
 
         # ---- Co-contração e movimento dominante ----
-        if hasattr(self, "emg_cocontraction_lbl"):
+        if hasattr(self, "emg_cocontraction_lbl") and gaveta_ativa(self, "emg.mvc_fadiga"):
             cocontr_pairs = []
             dominant_moves = []
             for ch, env_val in ch_envelope_current.items():
@@ -54867,11 +65901,18 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         btn_reset.clicked.connect(self._ecg_reset_history)
         ctrl.addWidget(btn_reset)
         outer.addLayout(ctrl)
-        outer.addLayout(self._make_detail_toggle(
-            "ecg", tr("Exame do coração — confira o traçado e a frequência.")))
+        # Painéis em gavetas (P2): traçado | tacograma numa linha, e os blocos
+        # de HRV embaixo; arranjo em config.paineis["ecg"].
+        pilha = self._nova_pilha("ecg", lambda: self._aba_bio_visivel(1))
+        _row_niv = self._make_detail_toggle(
+            "ecg", tr("Exame do coração — confira o traçado e a frequência."))
+        _row_niv.addWidget(pilha.botao_paineis())
+        outer.addLayout(_row_niv)
+        outer.addWidget(pilha, stretch=1)
 
-        # === Splitter: sinal cru + sinal MWA (esquerda) / Poincaré (direita) ===
-        split = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
+        # === Linha: sinal cru + sinal MWA (esquerda) / Poincaré (direita) ===
+        # (era um QSplitter solto; agora é uma linha de gavetas com a divisão
+        # persistida)
 
         # Painel esquerdo: 2 plots empilhados
         left = QtWidgets.QWidget()
@@ -54918,7 +65959,6 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # Sincronizar X dos dois plots
         self.ecg_mwa_plot.setXLink(self.ecg_raw_plot)
 
-        split.addWidget(left)
         self._register_advanced("ecg", _lbl_mwa, self.ecg_mwa_plot)
 
         # Painel direito: tacograma + Poincaré
@@ -54968,9 +66008,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                          style=QtCore.Qt.PenStyle.DotLine))
         rl.addWidget(self.ecg_poincare_plot)
 
-        split.addWidget(right)
-        split.setSizes([720, 600])
-        outer.addWidget(split, stretch=2)
+        # O traçado é o núcleo da aba (não fecha); o tacograma pode fechar e o
+        # traçado ocupa a linha inteira.
+        pilha.adicionar_linha(
+            [{"id_": "ecg.tracado", "conteudo": left,
+              "titulo": tr("Traçado ECG e detecção de picos R"), "fechavel": False},
+             {"id_": "ecg.tacograma", "conteudo": right,
+              "titulo": tr("Tacograma e Poincaré")}],
+            nome="tracado+tacograma", tamanhos=[720, 600], stretch=2)
 
         # ===================================================================
         # SEÇÃO: Zonas Karvonen + Arritmia + Recuperação + LF/HF
@@ -55075,7 +66120,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         zg.addLayout(rec_box)
         zg.addStretch()
 
-        outer.addWidget(zone_group)
+        pilha.adicionar_painel("ecg.zonas", zone_group)
 
         # ===================================================================
         # SEÇÃO: HRV não-linear (Kubios-style) — DFA, Entropia, Poincaré SD1/SD2
@@ -55141,7 +66186,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         nlhrv.addLayout(poin_box)
         nlhrv.addStretch()
 
-        outer.addWidget(nlhrv_group)
+        pilha.adicionar_painel("ecg.hrv_nao_linear", nlhrv_group)
 
         # ===================================================================
         # SEÇÃO: HRV Espectral (PSD) + Geométrica (histograma RR)
@@ -55215,11 +66260,15 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         hist_col.addWidget(self.ecg_hti_lbl)
         sgl.addLayout(hist_col, stretch=2)
 
-        outer.addWidget(spec_group)
+        pilha.adicionar_painel("ecg.hrv_espectral", spec_group)
         # Blocos de pesquisa do ECG: tacograma+Poincaré (painel direito), zonas
         # de treino, HRV não-linear (DFA/entropia) e HRV espectral/geométrica.
         # Vários deles exigem 2-5 min de registro e ficam vazios num exame curto.
-        self._register_advanced("ecg", right, zone_group, nlhrv_group, spec_group)
+        # Registram-se as GAVETAS (P2): no Simples some o invólucro inteiro.
+        self._register_advanced("ecg", pilha.gaveta("ecg.tacograma"),
+                                pilha.gaveta("ecg.zonas"),
+                                pilha.gaveta("ecg.hrv_nao_linear"),
+                                pilha.gaveta("ecg.hrv_espectral"))
         self._apply_detail_level("ecg")
 
         # Estado interno
@@ -55459,10 +66508,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                     f"RMSSD: {s_rm}  SDNN: {s_sd}  pNN50: {s_pn}")
                 # Tacograma e Poincaré são GRÁFICOS, não índices: podem mostrar a
                 # série inteira desde o primeiro batimento, sem mínimo.
-                self.ecg_tacho_curve.setData(np.arange(n_hist), rr_hist)
-                if n_hist >= 2:
-                    self.ecg_poincare_scatter.setData(
-                        rr_hist[:-1].tolist(), rr_hist[1:].tolist())
+                if gaveta_ativa(self, "ecg.tacograma"):     # P2: fechado não desenha
+                    self.ecg_tacho_curve.setData(np.arange(n_hist), rr_hist)
+                    if n_hist >= 2:
+                        self.ecg_poincare_scatter.setData(
+                            rr_hist[:-1].tolist(), rr_hist[1:].tolist())
                 # LED pulsante: se o último pico está nos últimos 200ms da janela
                 last_peak_t = float(t_axis[peaks[-1]])
                 last_t = float(t_axis[-1])
@@ -55490,7 +66540,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 elif pct_hrmax < 80:  zone, zc = "Z3", SIGNAL_TYPE_COLORS["EEG"]
                 elif pct_hrmax < 90:  zone, zc = "Z4", COLORS["warning"]
                 else:                 zone, zc = "Z5", COLORS["error"]
-                if hasattr(self, "ecg_zone_lbl"):
+                if hasattr(self, "ecg_zone_lbl") and gaveta_ativa(self, "ecg.zonas"):
                     self.ecg_zone_lbl.setText(f"{zone}  {pct_hrmax:.0f}%")
                     self.ecg_zone_lbl.setStyleSheet(
                         f"color: {zc}; font-size: 22pt; font-weight: bold;"
@@ -55548,7 +66598,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                     self.ecg_lfhf_lbl.setText(f"LF/HF: {p_lfhf}")
                     if hasattr(self, "ecg_psd_lbl"):
                         self.ecg_psd_lbl.setText(f"VLF/LF/HF: {p_lfhf}")
-                if hasattr(self, "ecg_lfhf_lbl") and not p_lfhf:
+                # P2: o Welch alimenta LF/HF (painel Zonas) e a PSD (painel
+                # Espectral); roda se qualquer um dos dois estiver aberto.
+                if (hasattr(self, "ecg_lfhf_lbl") and not p_lfhf
+                        and (gaveta_ativa(self, "ecg.zonas")
+                             or gaveta_ativa(self, "ecg.hrv_espectral"))):
                     try:
                         # Interpola RR a 4 Hz (tempo regular)
                         t_rr = np.cumsum(rr_hist) / 1000.0  # tempo cumulativo em s
@@ -55579,7 +66633,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                             caveat = "" if mins >= 5.0 else f"  ⚠ {mins:.1f}/5 min"
                             self.ecg_lfhf_lbl.setText(f"LF/HF: {ratio:.2f}{caveat}")
                             # --- Espectro HRV (plot) + potências por banda ---
-                            if hasattr(self, "ecg_psd_curve"):
+                            if hasattr(self, "ecg_psd_curve") and gaveta_ativa(self, "ecg.hrv_espectral"):
                                 vlf_mask = (freqs >= 0.0033) & (freqs < 0.04)
                                 vlf_p = (float(_TRAPEZOID(psd[vlf_mask], freqs[vlf_mask]))
                                          if vlf_mask.any() else 0.0)
@@ -55603,7 +66657,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 p_geom = hrv_pendente(n_hist, "geom")
                 if hasattr(self, "ecg_hti_lbl") and p_geom:
                     self.ecg_hti_lbl.setText(f"HTI: {p_geom}  TINN: —")
-                if hasattr(self, "ecg_rrhist_bars") and not p_geom:
+                if (hasattr(self, "ecg_rrhist_bars") and not p_geom
+                        and gaveta_ativa(self, "ecg.hrv_espectral")):   # P2
                     try:
                         rr_h = np.asarray(rr_hist, dtype=np.float64)
                         binw = 1000.0 / 128.0  # 7,8125 ms (padrão Task Force)
@@ -55649,7 +66704,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                     self.ecg_dfa_lbl.setText(f"DFA α1: {p_dfa1}  α2: —")
                 if hasattr(self, "ecg_entropy_lbl") and p_ent:
                     self.ecg_entropy_lbl.setText(f"ApEn: {p_ent}  SampEn: —")
-                if not p_poin:
+                # P2: SD1/SD2 (barato) também desenha a elipse do Poincaré, por
+                # isso roda com qualquer um dos dois painéis aberto; DFA e
+                # entropia (caros) só com o não-linear aberto, logo abaixo.
+                if not p_poin and (gaveta_ativa(self, "ecg.hrv_nao_linear")
+                                   or gaveta_ativa(self, "ecg.tacograma")):
                     try:
                         rr_arr = np.asarray(rr_hist, dtype=np.float64)
                         # Poincaré SD1, SD2 (Brennan 2001)
@@ -55684,7 +66743,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                         # timer de 20 Hz da GUI — sem teto e sem throttle a
                         # interface travaria assim que a sessão passasse de 1 min.
                         _now = time.time()
-                        if (_now - getattr(self, "_ecg_nl_last_t", 0.0)
+                        if (gaveta_ativa(self, "ecg.hrv_nao_linear")
+                                and _now - getattr(self, "_ecg_nl_last_t", 0.0)
                                 >= ECG_NONLINEAR_PERIOD_S):
                             self._ecg_nl_last_t = _now
                             # DFA α1 / α2 (Peng 1995)
@@ -55883,8 +66943,13 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         eog_reg_btn.clicked.connect(self._eog_regression_demo)
         ctrl.addWidget(eog_reg_btn)
         outer.addLayout(ctrl)
-        outer.addLayout(self._make_detail_toggle(
-            "eog", tr("Exame dos olhos — acompanhe piscadas e direção do olhar.")))
+        # Painéis em gavetas (P2): traçado, alerta e oculometria numa pilha
+        # (entra no layout depois dos cards); arranjo em config.paineis["eog"].
+        pilha = self._nova_pilha("eog", lambda: self._aba_bio_visivel(2))
+        _row_niv = self._make_detail_toggle(
+            "eog", tr("Exame dos olhos — acompanhe piscadas e direção do olhar."))
+        _row_niv.addWidget(pilha.botao_paineis())
+        outer.addLayout(_row_niv)
         self._populate_eog_channel_combos()
         self.eog_h_combo.currentIndexChanged.connect(self._eog_reset)
         self.eog_v_combo.currentIndexChanged.connect(self._eog_reset)
@@ -55951,6 +67016,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self.eog_gaze_widget.setMaximumSize(280, 280)
         cards.addWidget(self.eog_gaze_widget)
         outer.addLayout(cards)
+        outer.addWidget(pilha, stretch=1)
 
         # === Plot dos 2 canais ===
         self.eog_plot = pg.PlotWidget(enableMenu=False)
@@ -55982,7 +67048,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             size=8, brush=pg.mkBrush("#ff66ff"),
             pen=pg.mkPen("#ffffff", width=1), symbol="d")
         self.eog_plot.addItem(self.eog_saccade_scatter)
-        outer.addWidget(self.eog_plot, stretch=2)
+        # Painel-núcleo da aba: vira gaveta (alça de altura, ordem) mas não fecha.
+        pilha.adicionar_painel("eog.tracado", self.eog_plot,
+                               titulo=tr("Traçado H/V — piscadas e sacadas"),
+                               fechavel=False, stretch=2)
         # Listener de threshold
         self.eog_threshold_spin.valueChanged.connect(
             lambda v: (self.eog_thresh_pos_line.setPos(v),
@@ -56071,7 +67140,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         )
         ag.addWidget(self.eog_microsleep_lbl)
 
-        outer.addWidget(alert_group)
+        pilha.adicionar_painel("eog.alerta", alert_group)
 
         # ===================================================================
         # SEÇÃO: Sequência principal (main sequence) + taxa de piscadas no tempo
@@ -56141,10 +67210,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         br_col.addWidget(self.eog_perclos_lbl)
         ocg.addLayout(br_col, stretch=1)
 
-        outer.addWidget(oc_group)
+        _gv_oc = pilha.adicionar_painel("eog.oculometria", oc_group)
         # Oculometria de pesquisa: sequência principal das sacadas (lei de
         # potência V=k·A^b) e taxa de piscadas em janela deslizante.
-        self._register_advanced("eog", oc_group)
+        self._register_advanced("eog", _gv_oc)        # a gaveta, não o QGroupBox
         self._apply_detail_level("eog")
         self._aplicar_nomes_bio(self._nivel_simples())
 
@@ -56446,7 +67515,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # legítima (ninguém piscou em 60 s), que é justamente o caso SONOLENTO /
         # olhos fechados: o teste antigo (> 0) descartava esse caso e deixava o
         # rótulo congelado no último estado exibido.
-        if rate >= 0:
+        if rate >= 0 and gaveta_ativa(self, "eog.alerta"):     # P2: fechado não desenha
             if   rate < 8:  state = "SONOLENTO";  color = COLORS["error"]
             elif rate > 22: state = "FADIGA";     color = COLORS["warning"]
             elif rate < 18: state = "ALERTA";     color = SIGNAL_TYPE_COLORS["EoG"]
@@ -56508,7 +67577,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 self.eog_saccade_scatter.setData(vis_sac, ys)
                 self.eog_saccade_count_lbl.setText(str(self._eog_saccade_count))
                 # --- Sequência principal: scatter + ajuste log-log V=k·A^b ---
-                if hasattr(self, "eog_mainseq_scatter") and self._eog_saccade_ampl:
+                if (hasattr(self, "eog_mainseq_scatter") and self._eog_saccade_ampl
+                        and gaveta_ativa(self, "eog.oculometria")):     # P2
                     A = np.asarray(self._eog_saccade_ampl, dtype=np.float64)
                     V = np.asarray(self._eog_saccade_pvel, dtype=np.float64)
                     self.eog_mainseq_scatter.setData(A.tolist(), V.tolist())
@@ -56549,7 +67619,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         # ===== FIXAÇÃO (% do tempo sem movimento) =====
         # Heurística: tempo em que |dH/dt| e |dV/dt| ambos < threshold/4
         try:
-            if n > SAMPLE_RATE:
+            if n > SAMPLE_RATE and gaveta_ativa(self, "eog.alerta"):   # P2
                 window_fix = min(n, int(SAMPLE_RATE * BUFFER_SECONDS))
                 wh = sig_h[-window_fix:]
                 wv = sig_v[-window_fix:]
@@ -56576,20 +67646,23 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 self._eog_blinkrate_hist.append((elapsed_s / 60.0, rate_t))
                 if len(self._eog_blinkrate_hist) > 800:
                     self._eog_blinkrate_hist = self._eog_blinkrate_hist[-800:]
-                xs = [p[0] for p in self._eog_blinkrate_hist]
-                ys = [p[1] for p in self._eog_blinkrate_hist]
-                self.eog_blinkrate_curve.setData(xs, ys)
-                # PERCLOS ≈ % do tempo (buffer) com |VEoG-baseline| acima do limiar
-                perclos = float(np.mean(np.abs(resid_v) > thr_blink)) * 100.0
-                # Tendência: inclinação das últimas ~10 amostras
-                trend = tr("estável")
-                if len(ys) >= 6:
-                    yy = np.asarray(ys[-10:]); xx = np.arange(yy.size)
-                    slope = float(np.polyfit(xx, yy, 1)[0])
-                    if slope > 0.4:   trend = tr("subindo (fadiga?)")
-                    elif slope < -0.4: trend = tr("caindo (sonolência?)")
-                self.eog_perclos_lbl.setText(
-                    tr("PERCLOS: {0}%  ·  tendência: {1}").format(num_loc(perclos, 1), trend))
+                # P2: a série acima é acumulada sempre; só o desenho e o
+                # ajuste de tendência esperam o painel estar aberto.
+                if gaveta_ativa(self, "eog.oculometria"):
+                    xs = [p[0] for p in self._eog_blinkrate_hist]
+                    ys = [p[1] for p in self._eog_blinkrate_hist]
+                    self.eog_blinkrate_curve.setData(xs, ys)
+                    # PERCLOS ≈ % do tempo (buffer) com |VEoG-baseline| acima do limiar
+                    perclos = float(np.mean(np.abs(resid_v) > thr_blink)) * 100.0
+                    # Tendência: inclinação das últimas ~10 amostras
+                    trend = tr("estável")
+                    if len(ys) >= 6:
+                        yy = np.asarray(ys[-10:]); xx = np.arange(yy.size)
+                        slope = float(np.polyfit(xx, yy, 1)[0])
+                        if slope > 0.4:   trend = tr("subindo (fadiga?)")
+                        elif slope < -0.4: trend = tr("caindo (sonolência?)")
+                    self.eog_perclos_lbl.setText(
+                        tr("PERCLOS: {0}%  ·  tendência: {1}").format(num_loc(perclos, 1), trend))
         except Exception:
             pass
 
@@ -57060,6 +68133,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             except Exception: pass
         # Propaga para combos de canal das abas multimodais (EMG / EoG / ECG / Focus)
         self._sync_multimodal_tabs_with_channels()
+        # Listas de canais por tipo: combos EMG, Atlas, ERP, Layout,
+        # Calibração, legenda do envelope (P1)
+        self._refresh_listas_canais()
         # Mapeamento de Canais acompanha: só os canais em uso ficam visíveis
         self._refresh_mapping_rows()
         self._log(f"Canais ativos: {n}")
@@ -58388,15 +69464,27 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         calcular. FFT e bandas usam só o canal escolhido no combo; a tabela
         cobre todos os canais e mostra '--' nos que estão além de num_channels.
         """
+        # P2: cada painel só é calculado se estiver aberto e expandido. A aba
+        # não entra na conta (considerar_aba=False) porque o snapshot grava
+        # estes gráficos em PNG mesmo com a aba fora de vista.
+        _fft_on = gaveta_ativa(self, "ana.fft", considerar_aba=False)
+        _band_on = gaveta_ativa(self, "ana.bandas", considerar_aba=False)
+        _stats_on = gaveta_ativa(self, "ana.estatisticas", considerar_aba=False)
+        if not (_fft_on or _band_on or _stats_on):
+            return
         data = self._ordered_buffer()
         if data.shape[1] < SAMPLE_RATE: return
         ch = self.analysis_channel.currentIndex()
         if ch >= self.num_channels: ch = 0
-        freqs, fft_vals = SignalProcessor.compute_fft(data[ch])
-        if freqs.size:
-            self.fft_curve.setData(freqs, fft_vals)
-        powers = SignalProcessor.compute_band_powers(data[ch])
-        self.band_bars.setOpts(height=list(powers.values()))
+        if _fft_on:
+            freqs, fft_vals = SignalProcessor.compute_fft(data[ch])
+            if freqs.size:
+                self.fft_curve.setData(freqs, fft_vals)
+        if _band_on:
+            powers = SignalProcessor.compute_band_powers(data[ch])
+            self.band_bars.setOpts(height=list(powers.values()))
+        if not _stats_on:
+            return
         for c in range(MAX_CHANNELS):
             if c >= self.num_channels:
                 self.stats_table.item(c, 1).setText("--")
@@ -60286,6 +71374,19 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             # modalidades). Sem `return`: o nível Simples ainda corta por cima.
             rules = {k: set(title_map[k])
                      for k in ("setup", "view", "analyse", "system", "bio")}
+        # Perfil de uso (P4): o que não pertence a nenhum exame do perfil some,
+        # até no Multimodal. "Tudo" (ou um perfil com os 4 exames) não corta.
+        perfil_ex = [e for e in self._exames_do_perfil() if e != "Hibrido"]
+        if perfil_ex and len(perfil_ex) < len(EXAMES_PERFIL):
+            uniao = {k: set() for k in ("setup", "view", "analyse", "system", "bio")}
+            for ex in perfil_ex:
+                for k, titulos in (self.MODE_TAB_VISIBILITY.get(ex) or {}).items():
+                    uniao[k] |= set(titulos)
+            if multimodal:
+                for k, titulos in _ABAS_SO_MULTIMODAL.items():
+                    uniao[k] |= titulos
+            rules = {k: (set(v) & uniao[k]) if v is not None else None
+                     for k, v in rules.items()}
         simples = self._nivel_simples()
 
         def _primeira_visivel(tabs):
@@ -60377,8 +71478,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             return
 
         # A aba deixa de anunciar as três modalidades quando só uma está ativa
-        self._set_bio_tab_title(self.MODE_BIO_TAB_TITLE.get(
-            acq_type, "Bio (EMG/ECG/EoG)"))
+        self._set_bio_tab_title(tr(self.MODE_BIO_TAB_TITLE.get(
+            acq_type, "Bio (EMG/ECG/EoG)")))
         if hasattr(self, "bio_banner"):
             self.bio_banner.setVisible(False)
 
@@ -60393,9 +71494,12 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         'Músculos'/'Coração'/'Olhos')."""
         sub = getattr(self, "_sub_tabs", {}).get("view")
         if not sub: return
+        nomes = ("Músculos", "Coração", "Olhos")
+        # nos outros idiomas a aba já está com o nome traduzido (1.10.0)
+        nomes_tela = tuple(tr(n) for n in nomes)
         for i in range(sub.count()):
             t = sub.tabText(i)
-            if t.startswith("Bio") or t in ("Músculos", "Coração", "Olhos"):
+            if t.startswith("Bio") or t in nomes or t in nomes_tela:
                 sub.setTabText(i, titulo); return
 
     def _nome_modalidade(self, code=None):
@@ -60583,6 +71687,220 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             else:
                 self._on_channel_signal_type_changed(ch, code)
 
+    # ------------------------------------------------------------------
+    # Perfil de uso (P4)
+    # ------------------------------------------------------------------
+    def _exames_do_perfil(self):
+        """Exames que o perfil de uso em vigor oferece (com "Hibrido" se 2+)."""
+        return exames_do_perfil(self.config)
+
+    def _aplicar_perfil_no_combo_modo(self):
+        """Desabilita no combo "Modo do exame" os exames fora do perfil."""
+        combo = getattr(self, "mode_visibility_combo", None)
+        if combo is None:
+            return
+        permitidos = self._exames_do_perfil()
+        modelo = combo.model()
+        for i in range(combo.count()):
+            item = modelo.item(i) if hasattr(modelo, "item") else None
+            if item is not None:
+                item.setEnabled(combo.itemData(i) in permitidos)
+
+    def _perfil_definir(self, nome):
+        """Troca o perfil de uso valendo na hora: grava, refaz as abas e, se o
+        exame atual saiu do perfil, muda para o primeiro exame dele."""
+        if nome not in perfis_disponiveis(self.config):
+            nome = PERFIL_TUDO
+        self.config.usage_profile = nome
+        try:
+            self.config.save()
+        except Exception:
+            pass
+        self._aplicar_perfil()
+        try:
+            self._log(tr("Perfil de uso: {0}.").format(rotulo_perfil(nome)))
+        except Exception:
+            pass
+
+    def _aplicar_perfil(self):
+        """Reaplica o perfil em vigor: combo do modo, abas e badge."""
+        permitidos = self._exames_do_perfil()
+        self._aplicar_perfil_no_combo_modo()
+        modo = getattr(self, "_signal_mode", None) or getattr(self.config, "acquisition_mode", "EEG")
+        if modo not in permitidos and permitidos:
+            combo = getattr(self, "mode_visibility_combo", None)
+            idx = combo.findData(permitidos[0]) if combo is not None else -1
+            if combo is not None and idx >= 0 and combo.currentIndex() != idx:
+                combo.setCurrentIndex(idx)      # o handler aplica o modo novo
+            else:
+                self._apply_signal_mode_visibility(permitidos[0])
+        else:
+            self._apply_signal_mode_visibility(modo)
+        combo_cfg = getattr(self, "perfil_cfg_combo", None)
+        if combo_cfg is not None:
+            self._perfil_recarregar_combo()
+        try:
+            self._sync_action_bar()
+        except Exception:
+            pass
+
+    def _build_perfil_group(self):
+        """Grupo "Perfil de uso" da aba Sistema → Tema e Cores: escolher,
+        criar, duplicar, renomear e excluir perfis; os exames de um perfil
+        personalizado são caixas de marcar. Visível nos dois níveis."""
+        grp = QtWidgets.QGroupBox(tr("Perfil de uso"))
+        g = QtWidgets.QVBoxLayout(grp)
+        g.addWidget(QtWidgets.QLabel(tr(
+            "Quem só faz um tipo de exame não precisa ver os outros: o perfil "
+            "decide o que a tela inicial oferece e quais abas aparecem.")))
+        linha = QtWidgets.QHBoxLayout()
+        linha.addWidget(QtWidgets.QLabel(tr("Perfil:")))
+        self.perfil_cfg_combo = QtWidgets.QComboBox()
+        self.perfil_cfg_combo.setMinimumContentsLength(18)
+        linha.addWidget(self.perfil_cfg_combo, 1)
+        for rotulo, fn in ((tr("Novo…"), self._perfil_novo),
+                           (tr("Duplicar…"), self._perfil_duplicar),
+                           (tr("Renomear…"), self._perfil_renomear)):
+            bt = QtWidgets.QPushButton(rotulo)
+            bt.clicked.connect(fn)
+            linha.addWidget(bt)
+        self.perfil_del_btn = QtWidgets.QPushButton(tr("Excluir"))
+        self.perfil_del_btn.clicked.connect(self._perfil_excluir)
+        linha.addWidget(self.perfil_del_btn)
+        g.addLayout(linha)
+        ex_row = QtWidgets.QHBoxLayout()
+        ex_row.addWidget(QtWidgets.QLabel(tr("Exames deste perfil:")))
+        self._perfil_exame_chks = {}
+        for code in EXAMES_PERFIL:
+            chk = QtWidgets.QCheckBox(tr(ROTULO_EXAME_PERFIL[code]))
+            chk.toggled.connect(self._perfil_exames_mudaram)
+            ex_row.addWidget(chk)
+            self._perfil_exame_chks[code] = chk
+        ex_row.addStretch(1)
+        g.addLayout(ex_row)
+        self._perfil_nota = QtWidgets.QLabel(tr(
+            "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar."))
+        self._perfil_nota.setStyleSheet(f"color: {COLORS['text_dim']}; font-style: italic;")
+        self._perfil_nota.setWordWrap(True)
+        g.addWidget(self._perfil_nota)
+        self._perfil_combo_ligado = False
+        self._perfil_recarregar_combo()
+        return grp
+
+    def _perfil_recarregar_combo(self):
+        """Repopula o combo de perfis da aba Sistema e os checkboxes de exames."""
+        combo = getattr(self, "perfil_cfg_combo", None)
+        if combo is None:
+            return
+        combo.blockSignals(True)
+        combo.clear()
+        perfis = perfis_disponiveis(self.config)
+        for nome in perfis:
+            combo.addItem(rotulo_perfil(nome), nome)
+        atual = perfil_valido(self.config)
+        combo.setCurrentIndex(max(0, combo.findData(atual)))
+        combo.blockSignals(False)
+        if not self._perfil_combo_ligado:
+            combo.currentIndexChanged.connect(self._perfil_trocou_no_combo)
+            self._perfil_combo_ligado = True
+        pronto = perfis.get(atual, {}).get("pronto", True)
+        exames = set(perfis.get(atual, {}).get("exames") or EXAMES_PERFIL)
+        for code, chk in self._perfil_exame_chks.items():
+            chk.blockSignals(True)
+            chk.setChecked(code in exames)
+            chk.setEnabled(not pronto)
+            chk.blockSignals(False)
+        self.perfil_del_btn.setEnabled(not pronto)
+        self._perfil_nota.setVisible(pronto)
+
+    def _perfil_trocou_no_combo(self, _idx=None):
+        """Combo da aba Sistema: aplica o perfil escolhido na hora."""
+        combo = self.perfil_cfg_combo
+        nome = combo.currentData()
+        if isinstance(nome, str) and nome != perfil_valido(self.config):
+            self._perfil_definir(nome)
+
+    def _perfil_exames_mudaram(self, _on=None):
+        """Checkbox de exame de um perfil personalizado: grava e reaplica.
+        Pelo menos um exame fica marcado."""
+        nome = perfil_valido(self.config)
+        perfis = perfis_disponiveis(self.config)
+        if perfis.get(nome, {}).get("pronto", True):
+            return
+        marcados = [c for c, chk in self._perfil_exame_chks.items() if chk.isChecked()]
+        if not marcados:
+            self._perfil_recarregar_combo()   # desfaz: não existe perfil sem exame
+            return
+        self.config.usage_profiles[nome] = {
+            "exames": marcados,
+            "paineis": dict(perfis[nome].get("paineis") or {})}
+        try:
+            self.config.save()
+        except Exception:
+            pass
+        self._aplicar_perfil()
+
+    def _perfil_pede_nome(self, titulo, sugestao=""):
+        """Pergunta o nome de um perfil e recusa vazio ou repetido."""
+        nome, ok = pede_texto(self, titulo, tr("Nome do perfil:"), text=sugestao)
+        if not ok:
+            return None
+        nome = str(nome or "").strip()
+        if not nome:
+            return None
+        if nome in perfis_disponiveis(self.config):
+            QtWidgets.QMessageBox.warning(self, tr("Nome já existe"),
+                                          tr("Já existe um perfil com esse nome."))
+            return None
+        return nome
+
+    def _perfil_novo(self):
+        """Cria um perfil personalizado com os exames do perfil em vigor."""
+        nome = self._perfil_pede_nome(tr("Novo perfil de uso"), PERFIL_PERSONALIZADO)
+        if not nome:
+            return
+        atual = perfis_disponiveis(self.config)[perfil_valido(self.config)]
+        self.config.usage_profiles[nome] = {"exames": list(atual["exames"]), "paineis": {}}
+        self._perfil_definir(nome)
+
+    def _perfil_duplicar(self):
+        """Duplica o perfil em vigor (inclusive um pronto) como personalizado."""
+        origem = perfil_valido(self.config)
+        nome = self._perfil_pede_nome(tr("Duplicar perfil"),
+                                      tr("{0} (cópia)").format(rotulo_perfil(origem)))
+        if not nome:
+            return
+        dados = perfis_disponiveis(self.config)[origem]
+        self.config.usage_profiles[nome] = {"exames": list(dados["exames"]),
+                                            "paineis": dict(dados.get("paineis") or {})}
+        self._perfil_definir(nome)
+
+    def _perfil_renomear(self):
+        """Renomeia o perfil personalizado em vigor."""
+        atual = perfil_valido(self.config)
+        if perfis_disponiveis(self.config)[atual].get("pronto", True):
+            QtWidgets.QMessageBox.information(self, tr("Perfil de uso"), tr(
+                "Perfis prontos não podem ser renomeados nem excluídos; duplique para editar."))
+            return
+        nome = self._perfil_pede_nome(tr("Renomear perfil"), atual)
+        if not nome:
+            return
+        self.config.usage_profiles[nome] = self.config.usage_profiles.pop(atual)
+        self._perfil_definir(nome)
+
+    def _perfil_excluir(self):
+        """Exclui o perfil personalizado em vigor (volta para "Tudo")."""
+        atual = perfil_valido(self.config)
+        if perfis_disponiveis(self.config)[atual].get("pronto", True):
+            return
+        if QtWidgets.QMessageBox.question(
+                self, tr("Perfil de uso"),
+                tr("Excluir o perfil \"{0}\"?").format(atual)) \
+                != QtWidgets.QMessageBox.StandardButton.Yes:
+            return
+        self.config.usage_profiles.pop(atual, None)
+        self._perfil_definir(PERFIL_TUDO)
+
     def _menu_trocar_modalidade(self):
         """Menu do badge de modalidade: troca o modo do exame sem passar por
         Filtros e Canais (que some no Simples). Seleciona no combo — o handler
@@ -60595,7 +71913,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         atual = combo.findData(getattr(self, "_signal_mode", None))
         if atual < 0:
             atual = combo.currentIndex()
+        permitidos = self._exames_do_perfil()
         for i in range(combo.count()):
+            if combo.itemData(i) not in permitidos and i != atual:
+                continue   # fora do perfil de uso (P4) não é oferecido
             ac = menu.addAction(combo.itemText(i) + ("   ✓" if i == atual else ""))
             ac.setData(i)
         escolha = menu.exec(QtGui.QCursor.pos())
@@ -60722,6 +72043,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 self._populate_eog_channel_combos()
             if hasattr(self, "_joy_axes"):
                 self._joy_repopulate_combos()
+            # Combos EMG, Atlas, ERP, Layout e Calibração seguem os canais em
+            # uso do exame escolhido (P1)
+            self._refresh_listas_canais()
             # os nomes dos canais do Empilhado seguem o tipo do exame (G13):
             # os combos foram sincronizados com os sinais bloqueados
             if hasattr(self, "montage_plot"):
@@ -61570,6 +72894,21 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         cb = getattr(self, "emg_atlas_regiao", None)
         if cb is None:
             return
+        # Mudança vinda de set_area (combo de vista, P3): a área já é um
+        # enquadramento, então "(livre)" seria mentira.
+        if getattr(self, "_emg_atlas_mudando_area", False):
+            return
+        # Saiu da área por outro caminho (zoom por região, "Corpo inteiro"):
+        # o combo de vista volta a mostrar a vista, não a área.
+        vcb = getattr(self, "emg_atlas_view", None)
+        _area = getattr(self.emg_atlas, "get_area", lambda: None)()
+        if (vcb is not None and _area is None
+                and str(vcb.currentData() or "").startswith("area:")):
+            _j = vcb.findData("view:" + self.emg_atlas.get_view())
+            if _j >= 0:
+                _b = vcb.blockSignals(True)
+                vcb.setCurrentIndex(_j)
+                vcb.blockSignals(_b)
         antigo = cb.blockSignals(True)
         if abs(z - 1.0) < 1e-6:
             cb.setCurrentIndex(0)
@@ -61655,6 +72994,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         except Exception:
             cfg = {}
         url = (cfg or {}).get("version_url", "")
+        if not url and not os.path.exists(cfg_path):
+            # Sem update_config.json ao lado do programa (1.10.0): usa o
+            # manifesto do repositório oficial. O arquivo, se existir, manda.
+            url = VERSION_URL_PADRAO
         if not url or "SEU_USUARIO" in url:
             QtWidgets.QMessageBox.information(self, tr("Atualizações"),
                 tr("A atualização automática não está configurada nesta instalação.\n\nEste "
@@ -61704,6 +73047,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                    "Apenas o código é baixado; nenhum dado seu é enviado.").format(novo, APP_VERSION, changelog)) \
                 != QtWidgets.QMessageBox.StandardButton.Yes:
             return
+        aviso_lancador = ""
         try:
             blob = _get(manifest["py_url"], 60)
             expected = (manifest.get("sha256") or "").lower().strip()
@@ -61724,13 +73068,57 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             try: _shutil.copyfile(py_path, py_path + ".bak")
             except Exception: pass
             os.replace(tmp, py_path)                 # troca atômica
+            # O lançador só é tocado DEPOIS de o ROA.py estar gravado: se falhar,
+            # a atualização principal já valeu.
+            aviso_lancador = self._atualizar_lancador(manifest, _get, _hashlib, _shutil)
         except Exception as exc:
             self._notify_error("E401" if "SHA-256" in str(exc) else "E403",
                                str(exc), exc=exc)
             return
         QtWidgets.QMessageBox.information(self, tr("Atualização aplicada"),
             tr("Atualizado para a versão {0}.\n\nFeche e abra o aplicativo para usar a "
-               "nova versão.").format(novo))
+               "nova versão.").format(novo)
+            + ("\n\n" + aviso_lancador if aviso_lancador else ""))
+
+    def _atualizar_lancador(self, manifest, _get, _hashlib, _shutil):
+        """Atualiza também o lançador (EEG_Data_Collector.py) quando o manifesto
+        traz launcher_url + launcher_sha256, chaves novas da 1.10.0.
+
+        Manifestos antigos não têm as chaves e nada acontece, então instalações
+        antigas seguem como estavam. Só grava se o lançador .py existir ao lado
+        do programa (no .exe ele vem embutido). O arquivo baixado precisa pelo
+        menos compilar: um lançador quebrado impediria o programa de abrir.
+        Falha aqui não desfaz a atualização do ROA.py: devolve um aviso em texto
+        para a caixa final, ou "" quando não há o que dizer.
+        """
+        url = (manifest.get("launcher_url") or "").strip()
+        esperado = (manifest.get("launcher_sha256") or "").lower().strip()
+        if not url:
+            return ""
+        destino = os.path.join(SCRIPT_DIR, "EEG_Data_Collector.py")
+        if not os.path.exists(destino):
+            return ""
+        try:
+            if not esperado:
+                raise ValueError("manifesto sem launcher_sha256")
+            blob = _get(url, 60)
+            if _hashlib.sha256(blob).hexdigest().lower() != esperado:
+                raise ValueError("SHA-256 do lançador não confere")
+            compile(blob, destino, "exec")
+            tmp = destino + ".new"
+            with open(tmp, "wb") as f:
+                f.write(blob)
+            try:
+                _shutil.copyfile(destino, destino + ".bak")
+            except Exception:
+                pass
+            os.replace(tmp, destino)
+            logging.getLogger("eeg").info("lançador atualizado: %s", destino)
+            return ""
+        except Exception as exc:
+            logging.getLogger("eeg").info("lançador não atualizado: %s", exc)
+            return tr("O lançador (EEG_Data_Collector.py) não pôde ser atualizado; "
+                      "o programa continua funcionando com o atual.")
 
     def _update_status_state(self, text=None):
         """Atualiza a barra de status do rodapé com o estado atual."""
@@ -61979,6 +73367,14 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self._audit_event("app_close")
         self._close_audit_log()
         self._guarda_geometria()
+        # Arranjo dos painéis ainda no debounce (P2) entra neste save.
+        for _aba, _p in getattr(self, "_pilhas", {}).items():
+            try:
+                if _p.pendente():
+                    _p.cancelar_pendente()
+                    self.config.paineis[_aba] = _p.estado()
+            except Exception:
+                pass
         self.config.save()
         event.accept()
 
@@ -62202,10 +73598,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 it = QtWidgets.QTableWidgetItem("—")
                 it.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.imp_table.setItem(ch, col, it)
-        # Altura exata: 16 linhas + header + bordas
-        exact_h = ROW_H * MAX_CHANNELS + 28 + 4
-        self.imp_table.setMinimumHeight(exact_h)
-        self.imp_table.setMaximumHeight(exact_h + 40)
+        # Só as linhas dos canais em uso ficam visíveis e a altura segue a
+        # quantidade (P1): com 64 linhas fixas a tabela de uma placa de 8 era
+        # um bloco de 1,7 mil pixels quase todo vazio
+        self._refresh_imp_table_rows()
         # Sem barras de rolagem na tabela em si
         self.imp_table.setHorizontalScrollBarPolicy(
             QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -62213,6 +73609,21 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         outer.addWidget(self.imp_table, stretch=1)
         return widget
+
+    def _refresh_imp_table_rows(self):
+        """Esconde na tabela de Calibração as linhas dos canais que a placa não
+        tem (ch >= num_channels) e ajusta a altura à quantidade visível, para a
+        aba continuar mostrando todos os canais em uso sem rolagem."""
+        tbl = getattr(self, "imp_table", None)
+        if tbl is None:
+            return
+        n = len(self._canais_em_uso())
+        for ch in range(tbl.rowCount()):
+            tbl.setRowHidden(ch, ch >= n)
+        row_h = tbl.verticalHeader().defaultSectionSize()
+        exact_h = row_h * max(1, n) + 28 + 4       # linhas + cabeçalho + bordas
+        tbl.setMinimumHeight(exact_h)
+        tbl.setMaximumHeight(exact_h + 40)
 
     def _show_impedance_tips(self):
         """Abre uma caixa de mensagem com o checklist de preparo de pele e
@@ -62327,9 +73738,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         if not hasattr(self, "layout_slots"): return
         cfg = []
         for slot in self.layout_slots:
+            _ch = slot["ch_combo"].currentData()
             cfg.append({
                 "kind":    slot["kind"],
-                "channel": slot["ch_combo"].currentIndex(),
+                "channel": _ch if isinstance(_ch, int) and _ch >= 0
+                           else slot["ch_combo"].currentIndex(),
             })
         self.config.layout_slots_cfg     = cfg
         self.config.layout_split_h_sizes = self.main_layout_split.sizes()
@@ -62370,9 +73783,10 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         aba.
 
         Ja anexa o dict a self.layout_slots e liga os sinais dos combos, então
-        chamar duas vezes duplica slots. O combo de canal lista sempre
-        MAX_CHANNELS opções, mesmo que a montagem tenha menos canais; quem
-        válida e o _update_layout_slots.
+        chamar duas vezes duplica slots. O combo de canal lista só os canais
+        em uso (userData = índice do canal) e _refresh_listas_canais o
+        repopula quando o número de canais muda; quem valida no desenho é o
+        _update_layout_slots.
         """
         frame = QtWidgets.QFrame()
         frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
@@ -62396,11 +73810,12 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         tb.addWidget(kind_combo)
 
         ch_combo = QtWidgets.QComboBox()
-        for c in range(MAX_CHANNELS):
-            ch_combo.addItem(f"CH{c + 1}")
+        for c in self._canais_em_uso():            # só canais em uso (P1)
+            ch_combo.addItem(f"CH{c + 1}", c)
         ch_combo.setMaximumWidth(80)
-        if 0 <= default_channel < MAX_CHANNELS:
-            ch_combo.setCurrentIndex(default_channel)
+        _idx_def = ch_combo.findData(default_channel)
+        if _idx_def >= 0:
+            ch_combo.setCurrentIndex(_idx_def)
         tb.addWidget(QtWidgets.QLabel(tr("Canal:")))
         tb.addWidget(ch_combo)
         tb.addStretch()
@@ -62523,8 +73938,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             w = slot["widget"]
             if w is None or k == "empty":
                 continue
-            ch = slot["ch_combo"].currentIndex()
-            if ch >= self.num_channels:
+            ch = slot["ch_combo"].currentData()
+            if not isinstance(ch, int) or ch < 0 or ch >= self.num_channels:
                 ch = 0
             try:
                 if k == "ts1":
@@ -62751,8 +74166,11 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         ctrl_row.addWidget(self.erp_marker_combo)
         ctrl_row.addWidget(QtWidgets.QLabel(tr("Canal:")))
         self.erp_channel_combo = QtWidgets.QComboBox()
-        for i in range(MAX_CHANNELS):
-            self.erp_channel_combo.addItem(f"CH{i+1}")
+        # sem gravação carregada lista os canais em uso; ao carregar um
+        # data.csv passa a listar os canais DA GRAVAÇÃO (P1)
+        self._repopular_combo_canais(
+            self.erp_channel_combo, self._canais_em_uso(),
+            rotulo=lambda ch: f"CH{ch + 1}")
         ctrl_row.addWidget(self.erp_channel_combo)
         ctrl_row.addWidget(QtWidgets.QLabel(tr("Pré (ms):")))
         self.erp_pre_spin = QtWidgets.QSpinBox()
@@ -62831,6 +74249,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 tr("Esse CSV não tem marcadores — não dá para calcular ERP."))
             return
         self._erp_data = d
+        # o combo de canal segue os canais da gravação, não os da placa (P1)
+        self._erp_popula_canais_da_gravacao(d)
         # Popula combo de markers
         from collections import Counter
         counts = Counter(lbl for _t, lbl in d["markers"])
@@ -62842,6 +74262,20 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             tr("Carregado: {0} canais, {1} amostras @ {2:.1f} Hz, {3} marcadores ({4} "
                "tipos distintos)").format(len(d['ch_names']), d['eeg'].shape[1], d['sr'], len(d['markers']), len(counts))
         )
+
+    def _erp_popula_canais_da_gravacao(self, d):
+        """Lista no combo da aba ERP os canais da gravação carregada
+        (d["ch_names"]), com userData = índice do canal no arquivo, mantendo a
+        seleção quando o canal ainda existe. Não mexe em num_channels nem no
+        config: "Rever uma gravação" segue os canais da gravação (P1)."""
+        combo = getattr(self, "erp_channel_combo", None)
+        if combo is None:
+            return
+        nomes = list((d or {}).get("ch_names") or [])
+        rotulos = {i: (str(nm) if nm not in (None, "") else f"CH{i + 1}")
+                   for i, nm in enumerate(nomes)}
+        self._repopular_combo_canais(
+            combo, list(range(len(nomes))), rotulo=lambda i: rotulos[i])
 
     def _erp_compute(self):
         """Recorta as épocas do marcador escolhido, corrige a linha de base e
@@ -62855,7 +74289,9 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         if not self._erp_data: return
         d = self._erp_data
         label = self.erp_marker_combo.currentData() or self.erp_marker_combo.currentText().split("  ")[0]
-        ch = self.erp_channel_combo.currentIndex()
+        ch = self.erp_channel_combo.currentData()
+        if not isinstance(ch, int) or ch < 0:
+            ch = self.erp_channel_combo.currentIndex()
         if ch >= len(d["ch_names"]): ch = 0
         pre_s = self.erp_pre_spin.value() / 1000.0
         post_s = self.erp_post_spin.value() / 1000.0
@@ -66416,6 +77852,9 @@ print("Análise completa.")
         lgl.addWidget(lang_hint, stretch=1)
         layout.addWidget(lang_group)
 
+        # ---- Perfil de uso (P4): visível nos dois níveis ----
+        layout.addWidget(self._build_perfil_group())
+
         # ---- Quais bandas usar ----
         # Pedido de usuário: silenciar banda que não vai usar. Quem trabalha
         # com alfa/mu/beta não precisa carregar Delta em toda tabela, e banda
@@ -68389,8 +79828,10 @@ class FirstRunWizard(QtWidgets.QDialog):
         self._layout_mostrado = False   # só grava layout se a página apareceu
         self.stack.addWidget(self._build_page_language())  # 0
         self.stack.addWidget(self._build_page_uso())       # 1
-        self.stack.addWidget(self._build_page_layout())    # 2 (só em Pesquisa)
-        self.stack.addWidget(self._build_page_terms())     # 3
+        self.stack.addWidget(self._build_page_trabalho())  # 2 (perfil de uso, P4)
+        self.stack.addWidget(self._build_page_graficos())  # 3 (só em Pesquisa, P4)
+        self.stack.addWidget(self._build_page_layout())    # 4 (só em Pesquisa)
+        self.stack.addWidget(self._build_page_terms())     # 5
         root.addWidget(self.stack, 1)
         nav = QtWidgets.QHBoxLayout()
         self.btn_decline = QtWidgets.QPushButton(tr("Recusar e sair"))
@@ -68497,8 +79938,11 @@ class FirstRunWizard(QtWidgets.QDialog):
         return tr("Você pode trocar depois no seletor Exibição, no alto da tela, "
                   "ou em Ajuda → Mudar para Completo (pesquisa).")
 
-    # Índices do stack; a página de layout é pulada no caminho "Aplicar exames"
-    _PAG_LAYOUT = 2
+    # Índices do stack; as páginas de gráficos e de layout são puladas no
+    # caminho "Aplicar exames" (só o Completo escolhe gráficos e layout)
+    _PAG_GRAFICOS = 3
+    _PAG_LAYOUT = 4
+    _PAGS_SO_PESQUISA = (3, 4)
 
     @staticmethod
     def _renumera(titulo, n):
@@ -68537,13 +79981,169 @@ class FirstRunWizard(QtWidgets.QDialog):
         v.addStretch(1)
         return w
 
+    def _build_page_trabalho(self):
+        """Página 3 do assistente: "Com o que você trabalha?" — quatro cartões
+        grandes de marcar (cérebro, músculos, coração, olhos). Decide o perfil
+        de uso (P4): um cartão = perfil pronto daquele exame; dois ou três =
+        "Minha bancada"; os quatro = "Tudo". Todos vêm marcados: ninguém perde
+        uma tela por esquecer de marcar."""
+        w = QtWidgets.QWidget(); v = QtWidgets.QVBoxLayout(w)
+        v.addWidget(QtWidgets.QLabel("<h2>3. " + tr("Com o que você trabalha?") + "</h2>"))
+        dica = QtWidgets.QLabel(tr("Marque tudo o que você usa. Quem só faz um tipo de "
+                                   "exame não vê os outros na tela. Dá para mudar depois na "
+                                   "tela inicial ou em Sistema → Perfil de uso."))
+        dica.setWordWrap(True)
+        v.addWidget(dica)
+        grade = QtWidgets.QGridLayout(); grade.setSpacing(12)
+        self._cartoes_trabalho = {}
+        descricoes = {
+            "EEG": tr("Sinal do cérebro, pelos eletrodos na cabeça."),
+            "EMG": tr("Sinal dos músculos, pelos eletrodos na pele sobre o músculo."),
+            "ECG": tr("Sinal do coração, pelos eletrodos no peito ou nos pulsos."),
+            "EoG": tr("Piscadas e movimento do olhar, pelos eletrodos perto dos olhos."),
+        }
+        exames_atuais = set(exames_do_perfil(self.config)) - {"Hibrido"}
+        th = COLORS
+        # QPushButton não quebra linha: o cartão é um botão marcável com dois
+        # QLabel dentro (título e descrição com quebra), transparentes ao mouse
+        # para o clique em qualquer ponto marcar o cartão.
+        w.setStyleSheet(
+            "QPushButton#cartaoPerfil { border: 2px solid %s; border-radius: 10px; "
+            "background: %s; text-align: left; }"
+            "QPushButton#cartaoPerfil:hover { border-color: %s; }"
+            "QPushButton#cartaoPerfil:checked { border-color: %s; background: %s; }"
+            % (th["border"], th["surface"], th["accent_dim"], th["accent"], th["accent"]))
+        for i, code in enumerate(EXAMES_PERFIL):
+            bt = QtWidgets.QPushButton()
+            bt.setCheckable(True)
+            bt.setObjectName("cartaoPerfil")
+            bt.setMinimumSize(250, 96)
+            lay = QtWidgets.QVBoxLayout(bt)
+            lay.setContentsMargins(16, 12, 16, 12); lay.setSpacing(4)
+            titulo = QtWidgets.QLabel(tr(ROTULO_EXAME_PERFIL[code]))
+            texto = QtWidgets.QLabel(descricoes[code])
+            texto.setWordWrap(True)
+            for lbl in (titulo, texto):
+                lbl.setAttribute(QtCore.Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+                lay.addWidget(lbl)
+            lay.addStretch(1)
+
+            def _pinta(marcado, _t=titulo, _d=texto, _th=th):
+                # marcado: fundo no acento, letras brancas; solto: cores do tema
+                cor_t = "#ffffff" if marcado else _th["text"]
+                cor_d = "#ffffff" if marcado else _th["text_dim"]
+                _t.setStyleSheet("background: transparent; font-weight: bold; "
+                                 "font-size: %dpt; color: %s;" % (_pt(12), cor_t))
+                _d.setStyleSheet("background: transparent; color: %s;" % cor_d)
+            bt.toggled.connect(_pinta)
+            bt.toggled.connect(lambda _on: self._refresh_nav())
+            bt.setChecked(code in exames_atuais)
+            _pinta(bt.isChecked())
+            grade.addWidget(bt, i // 2, i % 2)
+            self._cartoes_trabalho[code] = bt
+        v.addLayout(grade)
+        self._aviso_trabalho = QtWidgets.QLabel(tr("Marque pelo menos um."))
+        self._aviso_trabalho.setStyleSheet("color: %s;" % COLORS["error"])
+        self._aviso_trabalho.setVisible(False)
+        v.addWidget(self._aviso_trabalho)
+        v.addStretch(1)
+        return w
+
+    def _exames_marcados(self):
+        """Códigos dos cartões marcados em "Com o que você trabalha?"."""
+        cartoes = getattr(self, "_cartoes_trabalho", {})
+        return [c for c in EXAMES_PERFIL if c in cartoes and cartoes[c].isChecked()]
+
+    def _build_page_graficos(self):
+        """Página 4 (só no caminho Pesquisa): quais gráficos (painéis) ver,
+        com os recomendados já marcados. A lista vem do catálogo de painéis
+        (P2); sem catálogo a página fica vazia e é pulada."""
+        w = QtWidgets.QWidget(); v = QtWidgets.QVBoxLayout(w)
+        v.addWidget(QtWidgets.QLabel("<h2>4. " + tr("Escolha os gráficos") + "</h2>"))
+        dica = QtWidgets.QLabel(tr("Os recomendados para o seu perfil já estão marcados; "
+                                   "desmarque o que não quer ver. Isto vale para o nível "
+                                   "Completo e pode ser mudado a qualquer hora pelo botão "
+                                   "Painéis de cada aba."))
+        dica.setWordWrap(True)
+        v.addWidget(dica)
+        area = QtWidgets.QScrollArea(); area.setWidgetResizable(True)
+        area.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        self._graficos_widget = QtWidgets.QWidget()
+        self._graficos_layout = QtWidgets.QVBoxLayout(self._graficos_widget)
+        area.setWidget(self._graficos_widget)
+        v.addWidget(area, 1)
+        self._graficos_chks = {}
+        return w
+
+    def _atualiza_pagina_graficos(self):
+        """(Re)monta as caixas de painéis conforme os exames marcados."""
+        lay = getattr(self, "_graficos_layout", None)
+        if lay is None:
+            return
+        while lay.count():
+            item = lay.takeAt(0)
+            wdg = item.widget()
+            if wdg is not None:
+                wdg.deleteLater()
+        self._graficos_chks = {}
+        catalogo = globals().get("CATALOGO_PAINEIS")
+        exames = set(self._exames_marcados())
+        itens = []
+        if catalogo is not None:
+            try:
+                itens = [it for it in catalogo.itens()
+                         if not it.get("exames") or (set(it["exames"]) & exames)]
+            except Exception:
+                itens = []
+        if not itens:
+            lay.addWidget(QtWidgets.QLabel(tr("Nenhum gráfico a escolher para estes exames.")))
+            return
+        por_aba = {}
+        for it in itens:
+            por_aba.setdefault(it.get("aba", ""), []).append(it)
+        for aba, lista in por_aba.items():
+            cab = QtWidgets.QLabel("<b>%s</b>" % tr(aba))
+            lay.addWidget(cab)
+            for it in lista:
+                chk = QtWidgets.QCheckBox(tr(it.get("titulo", it["id"])))
+                chk.setChecked(bool((it.get("padrao") or {}).get("visivel", True)))
+                lay.addWidget(chk)
+                self._graficos_chks[it["id"]] = chk
+        lay.addStretch(1)
+
+    def _paineis_escolhidos(self):
+        """{id: visível?} só quando a pessoa desmarcou algo; vazio = padrão."""
+        chks = getattr(self, "_graficos_chks", {})
+        if not chks:
+            return {}
+        return {pid: chk.isChecked() for pid, chk in chks.items()}
+
+    def _aplicar_perfil_escolhido(self):
+        """Grava no config o perfil decidido pelos cartões (e pelos gráficos)."""
+        exames = self._exames_marcados()
+        if not exames:
+            exames = list(EXAMES_PERFIL)
+        paineis = self._paineis_escolhidos() if self._caminho_pesquisa() else {}
+        # só o que foi DESMARCADO personaliza o perfil; tudo marcado é o padrão
+        paineis = {pid: vis for pid, vis in paineis.items() if not vis}
+        nome = perfil_para_exames(exames)
+        if paineis and nome != PERFIL_PERSONALIZADO:
+            nome = PERFIL_PERSONALIZADO
+        if nome == PERFIL_PERSONALIZADO:
+            perfis = dict(getattr(self.config, "usage_profiles", {}) or {})
+            perfis[nome] = {"exames": exames, "paineis": paineis}
+            self.config.usage_profiles = perfis
+        self.config.usage_profile = nome
+        if getattr(self.config, "acquisition_mode", "EEG") not in exames_do_perfil(self.config):
+            self.config.acquisition_mode = exames[0]
+
     def _build_page_layout(self):
-        """Página 3 do assistente (só no caminho Pesquisa): radio buttons com
+        """Página 5 do assistente (só no caminho Pesquisa): radio buttons com
         os presets de WIZARD_LAYOUT_PRESETS para o arranjo inicial dos 4
         painéis."""
         w = QtWidgets.QWidget(); v = QtWidgets.QVBoxLayout(w)
         v.addWidget(QtWidgets.QLabel(
-            self._renumera(tr("<h2>2. Layout dos painéis</h2>"), 3)))
+            self._renumera(tr("<h2>2. Layout dos painéis</h2>"), 5)))
         v.addWidget(QtWidgets.QLabel(
             tr("Organização inicial dos 4 painéis (mude depois em "
             "Visualizar → Layout Custom):")))
@@ -68632,7 +80232,8 @@ class FirstRunWizard(QtWidgets.QDialog):
         i = self.stack.currentIndex()
         if i > 0:
             ant = i - 1
-            if ant == self._PAG_LAYOUT and not self._caminho_pesquisa():
+            # no caminho "Aplicar exames" as páginas só de pesquisa não existem
+            while ant in self._PAGS_SO_PESQUISA and not self._caminho_pesquisa():
                 ant -= 1
             self.stack.setCurrentIndex(ant)
         self._refresh_nav()
@@ -68643,11 +80244,12 @@ class FirstRunWizard(QtWidgets.QDialog):
         i = self.stack.currentIndex()
         if i < self.stack.count() - 1:
             prox = i + 1
+            while prox in self._PAGS_SO_PESQUISA and not self._caminho_pesquisa():
+                prox += 1   # "Aplicar exames" vai direto ao Termo
             if prox == self._PAG_LAYOUT:
-                if self._caminho_pesquisa():
-                    self._layout_mostrado = True
-                else:
-                    prox += 1   # "Aplicar exames" vai direto ao Termo
+                self._layout_mostrado = True
+            if prox == self._PAG_GRAFICOS:
+                self._atualiza_pagina_graficos()
             self.stack.setCurrentIndex(prox); self._refresh_nav()
         else:
             self.accept()
@@ -68666,10 +80268,16 @@ class FirstRunWizard(QtWidgets.QDialog):
         # Numa captura do assistente em inglês, "Decline and exit" e "Back"
         # apareciam traduzidos e "Avançar" não.
         self.btn_next.setText(tr("Concluir") if last else tr("Avançar"))
-        self.btn_next.setEnabled(self.chk_terms.isChecked() if last else True)
+        pode = self.chk_terms.isChecked() if last else True
+        # na página dos cartões é preciso marcar pelo menos um exame
+        if i == 2 and hasattr(self, "_cartoes_trabalho"):
+            algum = bool(self._exames_marcados())
+            self._aviso_trabalho.setVisible(not algum)
+            pode = pode and algum
+        self.btn_next.setEnabled(pode)
         if hasattr(self, "lbl_titulo_termo"):
             self.lbl_titulo_termo.setText(self._renumera(
-                self._titulo_termo, 4 if self._caminho_pesquisa() else 3))
+                self._titulo_termo, 6 if self._caminho_pesquisa() else 4))
 
     def accept(self):
         """Conclui o primeiro uso gravando na config idioma, nível da interface
@@ -68700,6 +80308,7 @@ class FirstRunWizard(QtWidgets.QDialog):
             self.config.terms_version     = TERMS_VERSION
             self.config.terms_accepted_at = datetime.now().isoformat(timespec="seconds")
             self.config.first_run_done    = True
+            self._aplicar_perfil_escolhido()
             self.config.save()
         except Exception:
             logging.getLogger("eeg").exception("Falha salvando aceite do termo")
@@ -68789,13 +80398,13 @@ ERROR_CATALOG = {
     'E305': ('Layout salvo com painel inexistente', 'Um ou mais painéis do seu layout salvo não existem nesta versão e foram substituídos pelo padrão. Reorganize em Visualizar → Layout Custom.', False),
     'E306': ('Salvar layout/tema reportou sucesso falso', 'A configuração foi aplicada, mas não pôde ser salva para as próximas sessões (veja o aviso sobre config.json).', False),
     'E307': ('Aceite do Termo de Uso não persistido', 'Você aceitou o termo, mas não foi possível registrar o aceite em disco. O assistente vai reaparecer na próxima abertura. Verifique espaço/permissões.', True),
-    'E308': ('Termo de Uso completo ausente (resumo exibido)', 'O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/OpenBionica.', False),
+    'E308': ('Termo de Uso completo ausente (resumo exibido)', 'O texto completo do Termo de Uso não foi encontrado; exibindo a versão resumida. O documento completo está em https://github.com/rodrigooa43-create/ROA.', False),
     'E309': ('Configurações não salvas ao sair', 'Não foi possível salvar suas configurações ao sair. Verifique espaço/permissões. Deseja fechar mesmo assim?', True),
     'E400': ('Manifesto de update inválido/incompleto', 'O servidor respondeu, mas as informações da nova versão estão incompletas/corrompidas. Tente mais tarde; sua versão atual foi mantida.', False),
     'E401': ('SHA-256 do download não confere', 'A atualização baixada está corrompida ou adulterada e não foi aplicada. Verifique sua conexão e tente novamente; a versão atual foi preservada.', True),
-    'E402': ('Update sem assinatura SHA-256', 'Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/OpenBionica.', True),
-    'E403': ('Falha ao gravar o arquivo atualizado', 'Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/OpenBionica.', True),
-    'E404': ('update_config.json corrompido', 'O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/OpenBionica.', False),
+    'E402': ('Update sem assinatura SHA-256', 'Esta atualização não inclui assinatura de verificação (SHA-256). Por segurança, baixe a nova versão manualmente em https://github.com/rodrigooa43-create/ROA.', True),
+    'E403': ('Falha ao gravar o arquivo atualizado', 'Não foi possível gravar a atualização (sem permissão na pasta do programa, ou o app está aberto em outra janela). Feche outras cópias / rode como administrador, ou baixe manualmente em https://github.com/rodrigooa43-create/ROA.', True),
+    'E404': ('update_config.json corrompido', 'O arquivo de configuração de atualização está corrompido. A verificação foi desativada; baixe atualizações manualmente em https://github.com/rodrigooa43-create/ROA.', False),
     'E500': ('Exportação EDF indisponível (pyedflib ausente)', 'Exportação EDF indisponível: a biblioteca pyedflib não está instalada. Instale com pip install pyedflib ou use outro formato (FIF/BIDS).', True),
     'E501': ('Exportação FIF indisponível (MNE ausente)', 'Exportação FIF indisponível: a biblioteca MNE não está instalada (pip install mne). Use EDF/BIDS como alternativa.', True),
     'E502': ('Relatório PDF indisponível (reportlab/matplotlib)', 'Geração de PDF indisponível: faltam reportlab e/ou matplotlib (pip install reportlab matplotlib).', True),
@@ -69338,6 +80947,65 @@ HELP_FAQ = [
           "ler, papel de cada coluna). EDF/BDF têm botão próprio com reparo "
           "automático.",
      "ref": "Manual: Importar arquivos"},
+    # ---- 1.10.0: Replay, perfis de uso, gavetas, atlas, abertura rápida, canais em uso
+    {"t": "Replay: ver a gravação como uma animação",
+     "k": "replay animacao boneco figura coracao batendo olhos piscando rever gravacao "
+          "tocar play pausar movimento simula video",
+     "a": "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou "
+          "olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um "
+          "coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. "
+          "Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação "
+          "<b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. "
+          "Para gravações de cérebro o botão fica desligado.",
+     "ref": "Manual: Rever uma gravação → Replay"},
+    {"t": "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo",
+     "k": "perfil uso com o que voce trabalha abas sumiram escondidas cerebro musculos "
+          "coracao olhos tudo minha bancada trocar mudar personalizado",
+     "a": "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. "
+          "Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em "
+          "<b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com "
+          "exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa "
+          "inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.",
+     "ref": "Manual: Perfis de uso"},
+    {"t": "Um painel sumiu ou quero reorganizar os painéis (gavetas)",
+     "k": "painel sumiu fechei gaveta recolher expandir reabrir mover para cima baixo "
+          "tamanho altura botao paineis restaurar padrao arranjo",
+     "a": "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> "
+          "abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um "
+          "painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da "
+          "aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo "
+          "muda a altura. O arranjo fica salvo para a próxima vez.",
+     "ref": "Manual: Nível Completo → Painéis em gavetas"},
+    {"t": "Onde está cada eletrodo (desenho do corpo)",
+     "k": "atlas desenho corpo eletrodo musculo onde colocar seniam frente costas lado "
+          "area rosto calor intensidade mancha ponto numero",
+     "a": "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas "
+          "ampliadas) mostra cada eletrodo como um ponto numerado. Clique em "
+          "<b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado "
+          "(ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o "
+          "exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.",
+     "ref": "Manual: Exame de músculos → Atlas muscular"},
+    {"t": "O programa demora para abrir",
+     "k": "abrir demora lento devagar abertura rapida cache tela de abertura logo "
+          "primeira vez depois de atualizar carregando",
+     "a": "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache "
+          "(pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais "
+          "do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A "
+          "tela de abertura com o logo diz em palavras o que está sendo carregado. Se a "
+          "demora continuar, confira se o antivírus não examina a pasta do programa a "
+          "cada abertura.",
+     "ref": "Manual: Abertura rápida"},
+    {"t": "Só os canais em uso aparecem nas listas",
+     "k": "canal sumiu lista faltando canais desligado off tipo nao aparece 16 32 64 "
+          "escolher canal combo musculo coracao",
+     "a": "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do "
+          "exame (um canal marcado como coração não aparece na lista de músculos). Para "
+          "mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. "
+          "Ao rever uma gravação, as listas seguem os canais daquela gravação.",
+     "a_simples": "As listas de canais mostram só os canais <b>em uso</b> no exame "
+                  "escolhido. Ao rever uma gravação, as listas seguem os canais daquela "
+                  "gravação, não os do aparelho ligado agora.",
+     "ref": "Manual: Canais em uso"},
 ]
 
 
@@ -69791,6 +81459,122 @@ HELP_GUIAS = [
      ],
      "erros": [],
      "ref": "Guardando seus dados ao atualizar (PDF que acompanha o programa)"},
+
+    # ---- 1.10.0: Replay, perfis de uso e atlas
+    {"t": "Ver o Replay de uma gravação de músculos, coração ou olhos",
+     "obj": "a gravação tocando como animação: a figura que se move, o coração que bate "
+            "ou os olhos que piscam e olham.",
+     "k": "replay animacao tocar ver gravacao boneco figura movimento coracao batendo "
+          "olhos piscando play pausar linha do tempo lista batidas adiantada pausa",
+     "passos": [
+         "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só "
+         "existe para exames de músculos, coração e olhos.",
+         "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, "
+         "<b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.",
+         "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em "
+         "um trecho, uma batida ou um evento para o tocador pular até lá.",
+         "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, "
+         "triângulo laranja = adiantada, retângulo vermelho = pausa maior.",
+         "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou "
+         "<b>Inverter vertical</b>.",
+     ],
+     "cuidados": [
+         "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da "
+         "pessoa, e não é laudo nem diagnóstico.",
+         "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los "
+         "(nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.",
+     ],
+     "erros": [
+         ("O botão ▶ Replay está apagado",
+          "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma "
+          "gravação de músculos, coração ou olhos."),
+         ("A figura não se mexe",
+          "a gravação não tem marcadores de movimento nem contrações detectadas. No "
+          "nível Completo, marque os trechos na linha do tempo com o botão direito."),
+     ],
+     "ref": "Manual: Rever uma gravação → Replay"},
+
+    {"t": "Marcar ou corrigir os movimentos do Replay (músculos)",
+     "obj": "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da "
+            "gravação.",
+     "k": "movimento errado trocar dividir apagar faixa tarefa pronta halter chave copo "
+          "desfazer salvar movimentos.json supinacao pronacao linha do tempo editar",
+     "passos": [
+         "Abra o Replay da gravação de músculos no nível <b>Completo</b>.",
+         "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações "
+         "detectadas aparecem como <b>a definir</b>. Clique com o botão direito num "
+         "trecho e escolha <b>Trocar o movimento</b>.",
+         "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> "
+         "corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para "
+         "movimentos ao mesmo tempo (até quatro).",
+         "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir "
+         "a porta com a chave, pegar o copo): ela entra a partir do cursor.",
+         "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado "
+         "da gravação e é lido da próxima vez.",
+     ],
+     "cuidados": [
+         "Um aviso aparece quando os músculos ativos não combinam com o movimento "
+         "escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma "
+         "dica, não uma correção automática.",
+     ],
+     "erros": [
+         ("Fechei a janela e perdi as marcações",
+          "o programa pergunta se há marcações não salvas ao fechar; responda "
+          "<b>Salvar</b>. Se já fechou, refaça e salve."),
+     ],
+     "ref": "Manual: Rever uma gravação → Replay → Músculos"},
+
+    {"t": "Escolher o perfil de uso (quais abas aparecem)",
+     "obj": "só as abas do seu trabalho na tela, sem perder nenhuma gravação.",
+     "k": "perfil uso escolher trocar abas sumiram esconder cerebro musculos coracao "
+          "olhos tudo minha bancada personalizado com o que voce trabalha",
+     "passos": [
+         "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha "
+         "<b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.",
+         "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em "
+         "<b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos "
+         "que quer ver.",
+         "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.",
+     ],
+     "cuidados": [
+         "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.",
+         "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só "
+         "organiza a tela.",
+     ],
+     "erros": [
+         ("Uma aba sumiu",
+          "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil "
+          "em <b>Sistema → Perfil de uso</b>."),
+     ],
+     "ref": "Manual: Perfis de uso"},
+
+    {"t": "Colocar os eletrodos no desenho do corpo",
+     "obj": "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar "
+            "dele.",
+     "k": "eletrodo desenho corpo atlas colocar adicionar arrastar renomear apagar "
+          "seniam musculo lado direito esquerdo frente costas rosto area ampliada",
+     "passos": [
+         "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma "
+         "área ampliada (rosto, antebraço e mão, perna…).",
+         "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar "
+         "recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).",
+         "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o "
+         "selecionado.",
+         "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade "
+         "medida ali; o anel em volta do número mostra a qualidade do sinal.",
+     ],
+     "cuidados": [
+         "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, "
+         "como numa foto; confira o D/E no nome do músculo.",
+         "Montagens de versões anteriores são convertidas sozinhas; confira só se os "
+         "pontos caíram onde você esperava.",
+     ],
+     "erros": [
+         ("O eletrodo caiu no músculo errado",
+          "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa "
+          "área ampliada fica mais fácil acertar."),
+     ],
+     "ref": "Manual: Exame de músculos → Atlas muscular"},
 ]
 
 
@@ -69803,6 +81587,16 @@ HELP_GUIAS = [
 # Formato: sigla -> (nome por extenso, o que é, onde ver no ROA).
 # ------------------------------------------------------------------
 HELP_GLOSSARIO = {
+    # ---- 1.10.0
+    "replay": ("Replay (animação da gravação)",
+               "animação que refaz, a partir dos sinais gravados, o movimento marcado, "
+               "o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo "
+               "nem laudo.", "Rever uma gravação → ▶ Replay"),
+    "seniam": ("Surface EMG for Non-Invasive Assessment of Muscles",
+               "recomendações europeias de onde colocar os eletrodos de superfície em "
+               "cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do "
+               "corpo cola o eletrodo nesses pontos.",
+               "Visualizar → Músculos → desenho do corpo"),
     "erd": ("Event-Related Desynchronization (dessincronização relacionada a evento)",
             "queda da potência de uma banda (tipicamente mu, 8–13 Hz) quando a "
             "região cortical correspondente é recrutada — é o que se mede em "
@@ -70711,6 +82505,63 @@ impedância?) ou um código de erro (ex.: E115); há também botões de tema
 : chat de
 perguntas frequentes e códigos de erro, sem enviar dados para fora.
 
+## Replay de uma gravação (músculos, coração e olhos)
+
+Em Rever uma gravação, o botão ▶ Replay abre a gravação como uma animação:
+uma figura articulada vista de lado refaz o movimento marcado na linha do
+tempo e acende cada músculo com a intensidade medida; um coração desenhado
+bate no ritmo gravado, com a faixa de todas as batidas (regular, adiantada,
+pausa maior, em cor e forma) e a lista clicável; dois olhos piscam e olham
+conforme os sinais, com inversão horizontal e vertical e a linha do tempo em
+palavras. O tocador é o mesmo nos três exames (tocar, pausar, início, linha
+do tempo, relógio; no Completo velocidade e repetir). A animação simula o que
+foi gravado: não é vídeo nem laudo. No Completo a linha do tempo dos
+movimentos é editável (trocar, dividir, apagar, faixas, tarefas prontas,
+desfazer) e as batidas e os eventos dos olhos podem ser corrigidos; tudo
+fica em movimentos.json, batidas.json e olhos.json ao lado da gravação.
+
+## Perfis de uso
+
+O perfil de uso (Cérebro, Músculos, Coração, Olhos, Tudo ou Minha bancada)
+diz com o que você trabalha e esconde as abas de fora. Escolha na tela
+inicial ou em Sistema → Perfil de uso, onde perfis personalizados são
+criados, editados e apagados. O assistente de primeiro uso pergunta "Com o
+que você trabalha?". Instalações antigas começam em Tudo. Uma gravação de
+outro exame abre igual em qualquer perfil.
+
+## Painéis em gavetas (nível Completo)
+
+Cada painel das abas Músculos, Coração, Olhos, Análises, Filtros e Canais e
+Rede e Eventos é uma gaveta com cabeçalho fino: recolher (▾), menu (⋯:
+mover, tamanho padrão, fechar) e fechar (×); a alça de baixo muda a altura;
+painéis lado a lado dividem a largura. O botão Painéis ▾ lista os painéis da
+aba, recolhe ou expande todos e restaura o padrão. O arranjo é salvo no
+config.json. Painel fechado ou recolhido não processa. No Simples nada muda.
+
+## Atlas muscular (desenho do corpo)
+
+Corpo inteiro em traço de ilustração médica, de frente, de costas e de lado,
+e áreas ampliadas (rosto, pescoço, peito e abdômen, costas, braço, antebraço
+e mão, mão, perna e pé, com lado direito e esquerdo). Adicionar eletrodo e
+clicar no corpo: o ponto cola no ventre do músculo mais próximo (referência
+SENIAM; no rosto masseter, temporal, frontal, orbicular e zigomático).
+Durante o exame, a intensidade aparece como mancha de calor no ponto do
+eletrodo, recortada pelo contorno do corpo. Montagens antigas são convertidas.
+
+## Abertura rápida
+
+O lançador compila o programa uma vez para um cache (.roa_cache ao lado do
+programa ou na pasta ROA/cache dos dados locais do usuário) e as aberturas
+seguintes levam poucos segundos. A tela de abertura com o logo mostra em
+palavras o que está sendo carregado e some em fade. A primeira abertura
+depois de atualizar demora mais porque refaz o cache.
+
+## Canais em uso
+
+As listas de canais de todos os painéis mostram só os canais em uso: ligados
+e do tipo do exame (cérebro, músculos, coração ou olhos). Ao rever uma
+gravação, as listas seguem os canais daquela gravação, não os da coleta atual.
+
 ## Solução de problemas
 
 - O Windows bloqueou o programa (SmartScreen).: Clique em Mais
@@ -70943,7 +82794,9 @@ _HELP_TELAS_SO_COMPLETO = tuple(re.compile(p) for p in (
     r"\bBancada\b", r"\bICA\b", r"Abrir EDF", r"iCelera", r"Importar arquivos",
     r"\bBIDS\b", r"\bFIF\b", r"\bMNE\b", r"\bLSL\b", r"Playback",
     r"Modo Simula[çc][ãa]o", r"summary\.json", r"Rede e Eventos", r"Layout Custom",
-    r"\bReceitas\b", r"Regress[ãa]o ocular", r"\bnotch\b", r"Sistema → Volunt"))
+    r"\bReceitas\b", r"Regress[ãa]o ocular", r"\bnotch\b", r"Sistema → Volunt",
+    # 1.10.0: gavetas e a edição da linha do tempo do Replay só existem no Completo
+    r"\bgavetas?\b", r"Pain[ée]is ▾", r"Tarefa pronta"))
 
 
 def _help_cita_tela_oculta(texto):
@@ -80229,6 +92082,71 @@ def _install_excepthook(logger):
 # ============================================================
 # Entry point
 # ============================================================
+def _diagnostico_ob_core(logger):
+    """Confere se a ponte C++ (ob_core) carrega e registra o backend no log.
+
+    Chamada por QTimer depois de a janela aparecer: é só diagnóstico, não
+    pode atrasar a abertura. Sem a DLL (Linux, instalação sem o núcleo) loga
+    o motivo e o programa segue no caminho Python, como sempre.
+    """
+    try:
+        import importlib
+        _obmod = importlib.import_module("ob_core.ob_bridge")
+        _obc = _obmod.OBCore(board_id=0, n_channels=8, srate=250.0)
+        logger.info("ob_core: ponte OK — backend=%s (dll=%s)",
+                    _obc.backend, bool(getattr(_obc, "_lib_path", None)))
+        _obc.close()
+    except Exception as _obexc:
+        logger.info("ob_core: indisponivel (%s) — fallback/desabilitado", _obexc)
+
+
+def _splash_lancador():
+    """Tela de abertura do lançador (EEG_Data_Collector.py 1.10+), se houver.
+
+    O lançador a registra em sys.modules["roa_splash"] com progresso(texto) e
+    fechar(). Rodando `python ROA.py` direto, ou com um lançador antigo, não
+    existe e tudo aqui vira no-op.
+    """
+    return sys.modules.get("roa_splash")
+
+
+def _splash_progresso(texto):
+    """Escreve uma frase na tela de abertura, se ela existir."""
+    sp = _splash_lancador()
+    if sp is not None:
+        try:
+            sp.progresso(texto)
+        except Exception:
+            pass
+
+
+def _medir_arranque_se_pedido(app):
+    """Gancho de medição do arranque (ferramentas/mede_arranque.py).
+
+    Com a variável de ambiente ROA_MEDIR_ARRANQUE = instante inicial (time.time()
+    do processo que mediu), imprime "ROA_ARRANQUE_PRONTO <segundos>" assim que a
+    primeira tela (assistente, tela inicial ou janela) estiver desenhada e
+    encerra o processo. Idempotente: a primeira chamada vale.
+    """
+    t0 = os.environ.get("ROA_MEDIR_ARRANQUE")
+    if not t0 or getattr(app, "_roa_medindo", False):
+        return
+    app._roa_medindo = True
+
+    def _pronto():
+        # dois giros do loop para a janela recém-mostrada chegar a pintar
+        """Chamado quando a janela pintou: imprime o tempo de arranque e encerra."""
+        app.processEvents()
+        app.processEvents()
+        try:
+            dt = time.time() - float(t0)
+        except ValueError:
+            dt = -1.0
+        print("ROA_ARRANQUE_PRONTO %.3f" % dt, flush=True)
+        os._exit(0)
+    QtCore.QTimer.singleShot(0, _pronto)
+
+
 def main():
     # reaproveita a QApplication se o launcher (auto-update) já tiver criado uma
     """Ponto de entrada do aplicativo: prepara QApplication, logging, tema e
@@ -80278,19 +92196,13 @@ def main():
     _install_excepthook(logger)
 
     # Diagnóstico do núcleo de aquisição C++ (ob_core): registra no app.log se a
-    # ponte Python<->C++ carregou (backend=c++) ou caiu no fallback Python. Leve:
-    # só carrega a lib, não inicia thread.
-    try:
-        if SCRIPT_DIR not in sys.path:
-            sys.path.insert(0, SCRIPT_DIR)
-        import importlib
-        _obmod = importlib.import_module("ob_core.ob_bridge")
-        _obc = _obmod.OBCore(board_id=0, n_channels=8, srate=250.0)
-        logger.info("ob_core: ponte OK — backend=%s (dll=%s)",
-                    _obc.backend, bool(getattr(_obc, "_lib_path", None)))
-        _obc.close()
-    except Exception as _obexc:
-        logger.info("ob_core: indisponivel (%s) — fallback/desabilitado", _obexc)
+    # ponte Python<->C++ carregou (backend=c++) ou caiu no fallback Python. Só
+    # carrega a lib, não inicia thread — mas carregar uma DLL antes da tela
+    # inicial é tempo que a pessoa espera à toa, então roda 2 s depois de a
+    # janela aparecer (1.10.0, P9). O caminho de busca entra já.
+    if SCRIPT_DIR not in sys.path:
+        sys.path.insert(0, SCRIPT_DIR)
+    QtCore.QTimer.singleShot(2000, lambda: _diagnostico_ob_core(logger))
 
     # ----------------------------------------------------------------
     # IMPORTANTE: carrega config.json e aplica o tema salvo ANTES de
@@ -80321,6 +92233,7 @@ def main():
     if needs_wizard and "--no-wizard" not in sys.argv:
         app.setStyleSheet(build_stylesheet(COLORS))   # estilo p/ o assistente
         wiz = FirstRunWizard(early_config)
+        _medir_arranque_se_pedido(app)
         if wiz.exec() != QtWidgets.QDialog.DialogCode.Accepted:
             logger.info("Termo de uso recusado pelo usuário — encerrando.")
             sys.exit(0)                                # sem consentimento -> nao abre
@@ -80360,8 +92273,10 @@ def main():
             temp_vols = VolunteerRegistry(early_config.save_directory)
         except Exception:
             temp_vols = None
+        _splash_progresso(tr("Montando a tela inicial…"))
         while True:
             launcher = LauncherScreen(config=early_config, volunteers_mgr=temp_vols)
+            _medir_arranque_se_pedido(app)
             result = launcher.exec()
             # "Modo completo (pesquisa)" na tela simples: o nível já foi
             # gravado; reabre o launcher, agora o de 3 painéis.
@@ -80381,6 +92296,7 @@ def main():
     if app.styleSheet() != _qss:
         app.setStyleSheet(_qss)
 
+    _splash_progresso(tr("Abrindo o programa…"))
     window = EEGCollectorWindow()
     # Aplica a escolha do launcher (porta, modo, expansão, tipo de aquisição)
     if launcher_choice is not None:
@@ -80392,7 +92308,15 @@ def main():
     if app.styleSheet() != _qss:
         app.setStyleSheet(_qss)
     # do tamanho da tela útil (notebook maximizado); geometria salva só se couber
+    _medir_arranque_se_pedido(app)
     window.mostrar_na_tela()
+    # a tela de abertura some sozinha ao ver a janela; aqui é só garantia
+    _sp = _splash_lancador()
+    if _sp is not None:
+        try:
+            _sp.fechar()
+        except Exception:
+            pass
     sys.exit(app.exec())
 
 

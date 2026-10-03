@@ -1,0 +1,173 @@
+# Chaves de tr() que o código passa por VARIÁVEL (tabelas), uma por linha.
+# coleta_faltantes.py lê este arquivo junto das chaves literais.
+# --- P6 replay do movimento: títulos e títulos curtos de MOVIMENTOS_TITULOS ---
+Repouso
+Flexão do cotovelo
+Extensão do cotovelo
+Supinação (palma para cima)
+Pronação (palma para baixo)
+Flexão do punho
+Extensão do punho
+Abrir a mão
+Fechar a mão
+Pinça
+Flexão do ombro
+Extensão do ombro
+A definir
+Flex. cotovelo
+Ext. cotovelo
+Supinação
+Pronação
+Flex. punho
+Ext. punho
+Abrir mão
+Fechar mão
+Flex. ombro
+Ext. ombro
+# --- P7 replay do coração e dos olhos ---
+direita
+esquerda
+cima
+baixo
+{0} olhou para a direita
+{0} olhou para a esquerda
+{0} olhou para cima
+{0} olhou para baixo
+{0} moveu os olhos
+{0} ficou olhando para a direita
+{0} ficou olhando para a esquerda
+{0} ficou olhando para cima
+{0} ficou olhando para baixo
+{0} ficou olhando para frente
+olhando para a direita
+olhando para a esquerda
+olhando para cima
+olhando para baixo
+olhando para frente
+batida adiantada
+pausa maior
+batida regular
+Marcar como batida regular
+Marcar como batida adiantada
+Marcar como pausa maior
+{0} batida
+{0} batidas
+nenhuma batida
+{0} adiantada
+{0} adiantadas
+nenhuma adiantada
+{0} pausa
+{0} pausas
+nenhuma pausa
+Isto não é laudo nem diagnóstico.
+# --- P3 atlas muscular: títulos de área, músculos SENIAM e nomes curtos ---
+Bíceps
+Delt. ant.
+Delt. médio
+Delt. post.
+ECM
+ECR
+Eretor esp.
+Ext. dedos
+FCR
+Fibular
+Flex. dedos
+Frontal
+Gastroc. med.
+Glúteo máx.
+Glúteo méd.
+Isquiotib.
+Latíssimo
+Masseter
+Orbicular
+Peitoral
+Reto abd.
+Reto fem.
+Temporal
+Tibial ant.
+Trap. sup.
+Tríceps
+Vasto lat.
+Vasto med.
+Vista Lateral (perfil esquerdo)
+Zigomático
+Replay: ver a gravação como uma animação
+Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.
+Manual: Rever uma gravação → Replay
+Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo
+O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.
+Manual: Perfis de uso
+Um painel sumiu ou quero reorganizar os painéis (gavetas)
+No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.
+Manual: Nível Completo → Painéis em gavetas
+Onde está cada eletrodo (desenho do corpo)
+Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.
+Manual: Exame de músculos → Atlas muscular
+O programa demora para abrir
+A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.
+Manual: Abertura rápida
+Só os canais em uso aparecem nas listas
+As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.
+Manual: Canais em uso
+As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.
+Ver o Replay de uma gravação de músculos, coração ou olhos
+a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.
+Manual: Rever uma gravação → Replay
+Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.
+Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.
+Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.
+No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.
+Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.
+A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.
+As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.
+O botão ▶ Replay está apagado
+a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.
+A figura não se mexe
+a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.
+Marcar ou corrigir os movimentos do Replay (músculos)
+uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.
+Manual: Rever uma gravação → Replay → Músculos
+Abra o Replay da gravação de músculos no nível <b>Completo</b>.
+Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.
+Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).
+Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.
+Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.
+Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.
+Fechei a janela e perdi as marcações
+o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.
+Escolher o perfil de uso (quais abas aparecem)
+só as abas do seu trabalho na tela, sem perder nenhuma gravação.
+Manual: Perfis de uso
+Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.
+Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.
+Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.
+Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.
+Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.
+Uma aba sumiu
+o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.
+Colocar os eletrodos no desenho do corpo
+cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.
+Manual: Exame de músculos → Atlas muscular
+Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).
+Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).
+Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.
+Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.
+De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.
+Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.
+O eletrodo caiu no músculo errado
+arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.
+Replay (animação da gravação)
+animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.
+Rever uma gravação → ▶ Replay
+Surface EMG for Non-Invasive Assessment of Muscles
+recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.
+Visualizar → Músculos → desenho do corpo
+Cérebro (EEG)
+Músculos (EMG)
+Coração (ECG)
+Olhos (EOG)
+Tudo
+Minha bancada
+Músculos
+Coração
+Olhos

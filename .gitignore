@@ -1,0 +1,9 @@
+# Gerado ao rodar o programa ou os testes; nunca entra no repositório.
+__pycache__/
+*.pyc
+sessions/
+app.log
+*.log
+# Cache do lançador (ROA.py compilado) e saídas temporárias dos testes
+.roa_cache/
+testes/_saida/

@@ -5,8 +5,8 @@ type: software
 authors:
   - name: "Equipe ROA"
     # Substitua pelo(s) nome(s) civil(is) do(s) autor(es) antes de publicar/arquivar.
-repository-code: "https://github.com/rodrigooa43-create/OpenBionica"
-url: "https://github.com/rodrigooa43-create/OpenBionica"
+repository-code: "https://github.com/rodrigooa43-create/ROA"
+url: "https://github.com/rodrigooa43-create/ROA"
 license: MIT
 version: "1.9.0"
 date-released: "2026-09-25"

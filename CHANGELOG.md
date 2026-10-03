@@ -9,6 +9,179 @@ Todas as mudanças notáveis deste projeto. Formato baseado em [Keep a Changelog
 
 ## [Não lançado]
 
+### Adicionado
+- **Replay dentro de "Rever uma gravação" (P6, P7, P8).** Botão **▶ Replay**
+  na fileira da aba Offline (nos dois níveis), ligado quando a gravação aberta
+  é de músculos, coração ou olhos; um tocador único (Tocar/Pausar, Início,
+  linha do tempo arrastável, relógio; no Completo velocidade 0,25×–4× e
+  Repetir) alimenta a cena do exame:
+  - **Músculos**: figura articulada de perfil desenhada em código (tronco,
+    ombro, cotovelo, antebraço, punho, mão com dedos e polegar) refaz o
+    movimento marcado e cada músculo acende com a intensidade medida
+    (envelope de 100 ms normalizado pelo percentil 95 da gravação).
+    Movimentos: flexão/extensão do cotovelo, supinação e pronação
+    (inconfundíveis: palma clara para cima × dorso para baixo, polegar de
+    lado e o texto "palma para cima/baixo"), punho, abrir/fechar a mão,
+    pinça, ombro, repouso, "a definir". Tarefas prontas com o objeto preso à
+    mão: levantar o halter, abrir/fechar a porta com a chave, pegar o copo e
+    levar à boca. Linha do tempo com 2 a 4 faixas (arrastar, esticar,
+    dividir, trocar o movimento, apagar, desfazer/refazer; faixas no mesmo
+    instante se somam), que nasce dos marcadores/fases da gravação ou, sem
+    marcador, das contrações detectadas como "a definir"; aviso quando os
+    músculos ativos não combinam com o movimento (e quando há músculo ativo
+    num trecho de repouso). Salvo em `movimentos.json` ao lado do `data.csv`.
+    No Simples: tocador, figura e lista de trechos (linha do tempo só exibe).
+  - **Coração**: coração que bate no ritmo gravado, traçado com cursor, bpm,
+    faixa com todas as batidas (adiantada = triângulo laranja, pausa maior =
+    retângulo vazado vermelho: cor E forma) e lista em palavras simples. As
+    batidas vêm das MESMAS funções do relatório PDF (`ecg_pan_tompkins`,
+    `correct_ectopic_rr` com 30 %); no Completo, clique direito na faixa
+    remove/adiciona/retipa batidas, salvas em `batidas.json`.
+  - **Olhos**: olhos que piscam nas piscadas e olham para onde os sinais
+    mandam (`eog_piscadas_tela`/`eog_sacadas`, as mesmas do PDF), "Inverter
+    horizontal/vertical", linha do tempo em palavras ("0:03 piscou", "0:05
+    olhou para a direita") e contadores; no Completo, clique direito na lista
+    remove o evento ou troca a direção, salvo em `olhos.json`.
+  Em toda cena um selo diz que a animação SIMULA o que foi gravado e que não
+  é laudo nem diagnóstico. Testes: `test_p6_figura`, `test_p6_linha_tempo`,
+  `test_p7_replay`, `test_p8_replay`.
+- **Painéis em gavetas no Completo (P2).** Cada painel das abas Músculos,
+  Coração, Olhos, Análises, Filtros e Canais e Rede e Eventos ganhou um
+  cabeçalho fino (▾ recolher/expandir, ⋯ menu com Mover para cima/baixo,
+  Tamanho padrão e Fechar, × fechar) e uma alça inferior para arrastar a
+  altura; painéis lado a lado (Traçado ECG + Tacograma, FFT + Bandas) dividem
+  a largura num divisor persistido. Botão **Painéis** em cada aba
+  (mostrar/ocultar cada painel, Recolher todos, Expandir todos, Restaurar o
+  padrão). O arranjo é salvo sozinho na chave nova `paineis` do
+  `config.json` (debounce de 0,5 s) e restaurado; `CATALOGO_PAINEIS` guarda
+  id, título, aba, exames e estado padrão de cada painel e serve ao perfil de
+  uso (aba sem arranjo salvo nasce do perfil; painéis fora dos exames do
+  perfil ou desmarcados nascem fechados). Painel fechado ou recolhido não
+  gasta processamento (`gaveta_ativa()` nos laços de EMG/ECG/EOG/Análises;
+  os acumuladores de série continuam). No Simples nada disso aparece. Painéis
+  núcleo (canais EMG, traçado ECG/EOG, modo do exame) não fecham.
+  Teste: `test_p2_gavetas` (unidade + janela real).
+- **Atlas muscular desenhado em código (P3).** O boneco de retângulos deu
+  lugar a um corpo em curvas de Bézier (ilustração médica limpa, linhas dos
+  grupos musculares, volumes suaves) nas vistas Frente, Costas e **Lado**, e
+  em 14 áreas recortadas (rosto, pescoço, peito e abdômen, costas, braço,
+  antebraço e mão, mão, perna e pé, com lado direito/esquerdo). Eletrodos
+  como pontos numerados que colam no ponto SENIAM do ventre do músculo (19
+  músculos antigos, rosto: masseter, temporal, frontal, orbicular do olho,
+  zigomático, e extras SENIAM); a ativação aparece NO ponto do eletrodo como
+  mancha de calor que cresce e esquenta, recortada pelo corpo; eletrodo posto
+  numa área aparece no corpo inteiro. Montagens antigas são convertidas sem
+  perder músculo, canal nem nome (marca `atlas: 2`); o `config.json` aceita a
+  vista `side`. Pintura ~3 ms em 300×470 (corpo em camada cacheada). Três
+  propostas de estilo comparadas em `revisao/p3_atlas/COMPARACAO.md`.
+  Teste: `test_p3_atlas` (27 testes).
+
+- **Perfis de uso (P4).** Conceito novo: o perfil diz com o que a pessoa
+  trabalha e decide o que a tela inicial oferece e quais abas aparecem.
+  Prontos: "Cérebro (EEG)", "Músculos (EMG)", "Coração (ECG)", "Olhos (EOG)"
+  e "Tudo"; personalizado: "Minha bancada" (criar, duplicar, renomear e
+  excluir em Sistema → Tema e Cores → Perfil de uso, com os exames do perfil
+  em caixas de marcar). No assistente de primeiro uso, a página "Com o que
+  você trabalha?" tem quatro cartões grandes de marcar (um cartão = perfil
+  pronto; dois ou três = "Minha bancada"; quatro = "Tudo"); no caminho
+  Completo há a página opcional "Escolha os gráficos" (recomendados já
+  marcados; lista vem do catálogo de painéis). Trocar de perfil na tela
+  inicial (combo "Perfil:", nos dois níveis) ou em Sistema vale na hora: os
+  exames fora do perfil somem da tela inicial, do diálogo "Trocar", do combo
+  "Modo do exame" e do menu do selo; as abas que não pertencem a nenhum
+  exame do perfil ficam ocultas, inclusive no Multimodal. Abrir uma gravação
+  de outro exame continua funcionando. Chaves novas do `config.json`:
+  `usage_profile` (padrão "Tudo": instalações existentes não mudam nada) e
+  `usage_profiles` (só os personalizados). Teste: `testes/test_p4_perfis.py`.
+
+- **Abertura rápida com tela de abertura (P9).** O lançador
+  `EEG_Data_Collector.py` deixou de recompilar o `ROA.py` inteiro a cada
+  abertura (6,7 s medidos no Windows): compila uma vez para um `.pyc` em
+  cache (`.roa_cache/` ao lado do programa ou, sem permissão de escrita,
+  `%LOCALAPPDATA%\ROA\cache`), invalidado sozinho quando o `ROA.py` ou a
+  versão do Python mudam, e roda o `.pyc`. Na primeira abertura a compilação
+  roda num processo à parte, para a animação não congelar. Enquanto carrega,
+  uma tela leve mostra a logo do ROA entrando com fade e uma linha de sinal se
+  desenhando, com o progresso em palavras nos 9 idiomas e fundo claro ou
+  escuro conforme o tema salvo; ela some com um fade assim que a primeira
+  janela aparece, sem atraso de propósito, e funciona até com um `ROA.py`
+  antigo. `--sem-splash` (ou `ROA_SEM_SPLASH=1`) desliga a tela.
+- **Atualizador também atualiza o lançador** quando o `version.json` trouxer
+  as chaves novas `launcher_url` e `launcher_sha256` (opcionais: manifestos
+  antigos seguem funcionando). Só grava se o `.py` do lançador existir ao lado
+  do programa, depois de o `ROA.py` já estar gravado, com SHA-256 conferido e
+  o arquivo compilando; se falhar, avisa e o programa segue com o lançador
+  atual. Sem `update_config.json`, a verificação usa o manifesto do repositório
+  oficial (`VERSION_URL_PADRAO`); o arquivo, quando existe, continua mandando.
+- `ferramentas/mede_arranque.py` mede o tempo até a primeira tela; bateria de
+  testes offscreen em `testes/` (`python testes/roda_todos.py`) e pipeline de
+  tradução em `ferramentas/` (`coleta_faltantes.py` → `trad/<lote>/` →
+  `aplica_trad.py`), com `testes/test_vazamento_idioma.py` garantindo que toda
+  chave de `tr()` existe nos 8 idiomas.
+
+- **Documentação (P5).** Textos-fonte das seções novas do Manual do Usuário
+  em `docs/manual_1.10/pt/` (abertura rápida, perfis de uso, canais em uso,
+  painéis em gavetas, atlas muscular, Replay) traduzidos para os 8 idiomas
+  (`docs/manual_1.10/<idioma>/`, rótulos de interface iguais aos do programa)
+  e seções do Manual Técnico em `docs/manual_1.10/tecnico/`. A ajuda interna
+  (Ajuda → Assistente) ganhou 6 perguntas, 4 guias passo a passo (Replay,
+  marcar movimentos, perfil de uso, eletrodos no desenho do corpo), 2 verbetes
+  (Replay, SENIAM) e 6 seções na base de conhecimento, tudo nos 9 idiomas; as
+  entradas que citam gavetas ou a edição da linha do tempo ficam fora do nível
+  Simples. Toda classe e função nova do 1.10.0 tem docstring em português
+  (`testes/test_p5_ajuda.py`).
+### Corrigido
+- **Só os canais em uso (P1).** Com 8 canais de EMG o mapa "Atividade
+  muscular (canais × tempo)" listava CH1 a CH64, porque `_emg_update_advanced`
+  percorria `range(MAX_CHANNELS)` e os canais 9 a 64 também estão marcados
+  como EMG no config. Agora há um helper único (`canais_por_tipo` no módulo;
+  `_canais_em_uso`, `_tipo_do_canal`, `_canais_em_uso_tipo` e
+  `_refresh_listas_canais` na janela) usado em todos os pontos que montavam
+  listas por tipo: combos do canal EMG (MDF/MNF, APDF, espectrograma), combos
+  "Canal" do Atlas, ERP, slots do Layout Custom, linhas da tabela de
+  Calibração, legenda do envelope EMG, laços `_update_emg_view`,
+  `_emg_update_advanced`, `_emg_update_ergonomics`, `_emg_atlas_update_live` e
+  o diálogo de co-contração. As listas repopulam (preservando a seleção)
+  quando muda o número ou o tipo dos canais e ao aplicar a escolha da tela
+  inicial; o ERP segue os canais da gravação carregada. Teste:
+  `testes/test_p1_canais_em_uso.py` (5 exames × 8/16/32/64 canais × 2 níveis).
+- **Nomes dos perfis prontos e título da aba Bio traduzidos.** "Cérebro (EEG)",
+  "Músculos (EMG)", "Coração (ECG)", "Olhos (EOG)", "Tudo" e "Minha bancada"
+  passavam por `tr()` através de uma variável, por isso a coleta de chaves não
+  os via e eles saíam em português nos outros idiomas (tela inicial,
+  assistente, Sistema). O título da aba "Músculos"/"Coração"/"Olhos" em modo
+  único também não era traduzido. Agora estão nos 8 dicionários
+  (`ferramentas/trad/p5_rotulos/`) e `chaves_extras.txt` registra as chaves
+  dinâmicas para a coleta.
+
+### Alterado
+- **`bleak` e `ob_core` fora do caminho crítico da abertura (P9).** O import
+  do `bleak` (Bluetooth) saiu do topo do arquivo (custava 0,3 a 1 s no
+  Windows) e passou a acontecer só ao procurar aparelhos; o diagnóstico da
+  ponte C++ `ob_core` roda 2 s depois de a janela aparecer, não antes da tela
+  inicial.
+- **Importações pesadas adiadas (P9).** `scipy.signal` e `scipy.fft` passam a
+  ser importados na primeira vez que são usados (`_ModuloAdiado`), não na
+  abertura: `import scipy.signal` sozinho custava 1,2 s (puxa scipy.stats,
+  interpolate e optimize) e nada disso é preciso para a tela inicial. As
+  funções chamadas são as mesmas; só o momento do import muda.
+- **Medição do arranque** (Linux da nuvem, Python 3.11; no Windows do autor a
+  compilação custava 6,7 s, então o ganho lá é bem maior). Tempo até a tela
+  inicial desenhada, mediana de 3 aberturas:
+
+  | Como abre | Antes (1.9.0) | Depois |
+  |---|---|---|
+  | lançador, aberturas seguintes (cache pronto) | 2,03 s | **0,90 s** |
+  | lançador, primeira abertura (compila e grava o cache) | 2,03 s | 1,59 s |
+  | `python ROA.py` direto (compila sempre) | 2,02 s | 1,13 s |
+  | só `import ROA`, sem `.pyc` | 2,64 s | 1,35 s → 0,02 s de carga do `.pyc` |
+
+- URL do repositório atualizada para `github.com/rodrigooa43-create/ROA` em
+  `CODE_URL`, no catálogo de erros (E308, E402, E403, E404) nos 9 idiomas e em
+  `CITATION.cff`; a URL antiga (`.../OpenBionica`) redireciona. `version.json`
+  não foi tocado (é publicação).
+
+
 ## [1.9.0] — 2026-09-25
 
 Responde à **crítica de usabilidade** de 17/09/2026: o programa era bom, mas

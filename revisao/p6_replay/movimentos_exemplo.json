@@ -1,0 +1,63 @@
+{
+  "versao": 1,
+  "gravacao": "2026-10-01_paciente_demo",
+  "duracao_s": 60.0,
+  "origem": "marcadores",
+  "faixas": [
+    {
+      "nome": "Faixa 1",
+      "trechos": [
+        {
+          "t0": 5.0,
+          "t1": 10.0,
+          "movimento": "flexao_cotovelo"
+        },
+        {
+          "t0": 15.0,
+          "t1": 20.0,
+          "movimento": "extensao_cotovelo"
+        },
+        {
+          "t0": 25.0,
+          "t1": 30.0,
+          "movimento": "supinacao"
+        },
+        {
+          "t0": 35.0,
+          "t1": 40.0,
+          "movimento": "fechar_mao"
+        },
+        {
+          "t0": 45.0,
+          "t1": 50.0,
+          "movimento": "a_definir"
+        }
+      ]
+    },
+    {
+      "nome": "Faixa 2",
+      "trechos": [
+        {
+          "t0": 0.0,
+          "t1": 5.0,
+          "movimento": "repouso"
+        },
+        {
+          "t0": 25.0,
+          "t1": 30.0,
+          "movimento": "fechar_mao"
+        }
+      ]
+    },
+    {
+      "nome": "Faixa 3",
+      "trechos": [
+        {
+          "t0": 35.0,
+          "t1": 41.0,
+          "movimento": "flexao_ombro"
+        }
+      ]
+    }
+  ]
+}
