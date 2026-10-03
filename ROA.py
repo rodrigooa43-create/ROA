@@ -493,6 +493,75 @@ class I18N:
 
     # Dicionários ENGLISH — chaves em pt-BR
     _en = {
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "The <b>first</b> start after installing or updating prepares a cache (the <b>.roa_cache</b> folder, next to the program or in the user's local ROA data folder) and therefore takes longer; the next ones open in a few seconds. The opening screen with the logo says in words what is being loaded. If it stays slow, check that the antivirus is not scanning the program folder at every start.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "The animation <b>simulates</b> what was recorded from the signals: it is not a video of the person, and it is not a report or a diagnosis.",
+        "A figura não se mexe": "The figure does not move",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Open the Replay of the muscle recording in the <b>Complete</b> level.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Drag the timeline to go to a moment. In the list beside it, click a segment, a beat or an event and the player jumps there.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Drag the point to adjust; double-click renames; <b>Delete</b> removes the selected one.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Drag a block to move it and pull its edge to stretch it. <b>Split here</b> cuts a segment in two; <b>Add track</b> creates another track for movements at the same time (up to four).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "The beats and the eye events are the same as in the PDF report; correcting them (Complete level) does not change the recording, only the Replay file next to it.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "The channel lists show only the channels <b>in use</b> in the chosen exam. When reviewing a recording, the lists follow the channels of that recording, not those of the device connected now.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "The channel lists show only the channels <b>in use</b>: switched on and of the exam's type (a channel marked as heart does not appear in the muscle list). To change the type or switch a channel back on, use <b>Filters and Channels</b> in the Complete level. When reviewing a recording, the lists follow the channels of that recording.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Click <b>Add electrode</b> and then on the body: the point snaps to the recommended spot of the nearest muscle (muscle belly, SENIAM reference).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Click <b>▶ Replay</b>. The window opens with the player: <b>▶ Play</b>, <b>⏸ Pause</b>, <b>⏮ Start</b>, the timeline and the clock.",
+        "Colocar os eletrodos no desenho do corpo": "Placing the electrodes on the body drawing",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z undoes. Click <b>Save</b>: the movimentos.json file stays next to the recording and is read next time.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "From the front, the person's <b>right</b> side is on the <b>left</b> of the drawing, as in a photo; check the R/L in the muscle name.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "During the exam, the heat spot at the electrode point shows the intensity measured there; the ring around the number shows the signal quality.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "In <b>Review a recording</b>, choose a muscle, heart or eye recording and click <b>▶ Replay</b>. A figure redoes the marked movement, a heart beats at the recorded rhythm or two eyes blink and look according to the signals. Use <b>▶ Play</b>, <b>⏸ Pause</b> and drag the timeline. The animation <b>simulates</b> what was recorded: it is not a video of the person nor a report or diagnosis. For brain recordings the button is disabled.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Choosing the usage profile (which tabs appear)",
+        "Fechei a janela e perdi as marcações": "I closed the window and lost my marks",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Older installations start in <b>Everything</b>: nothing disappears unless you choose so.",
+        "Manual: Abertura rápida": "Manual: Fast start",
+        "Manual: Canais em uso": "Manual: Channels in use",
+        "Manual: Exame de músculos → Atlas muscular": "Manual: Muscle exam → Muscle atlas",
+        "Manual: Nível Completo → Painéis em gavetas": "Manual: Complete level → Panels as drawers",
+        "Manual: Perfis de uso": "Manual: Usage profiles",
+        "Manual: Rever uma gravação → Replay": "Manual: Review a recording → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Manual: Review a recording → Replay → Muscles",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Marking or correcting the Replay movements (muscles)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "Montages from earlier versions are converted on their own; just check that the points landed where you expected.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "On the <b>home screen</b>, open the <b>Usage profile</b> box and choose <b>Brain</b>, <b>Muscles</b>, <b>Heart</b>, <b>Eyes</b> or <b>Everything</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "In the <b>Muscles</b> tab, choose the <b>View</b>: front, back, side or a zoomed area (face, forearm and hand, leg…).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "In the <b>Muscles</b> tab, the body drawing (front, back, side and zoomed areas) shows each electrode as a numbered point. Click <b>Add electrode</b> and then on the body: the point snaps to the recommended spot (muscle belly, SENIAM reference) or stays where you clicked. During the exam, a heat spot at the electrode point shows the intensity measured there.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "For the heart, the beat strip uses colour <b>and</b> shape: thin line = regular, orange triangle = early, red rectangle = longer pause.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "In the Complete level each panel is a <b>drawer</b>: <b>▾</b> collapses, <b>⋯</b> opens the menu (move, default size, close) and <b>×</b> closes. To reopen a panel or return to the original arrangement, use the <b>Panels ▾</b> button at the top of the tab and tick it, or choose <b>Restore default</b>. The handle on the bottom edge changes the height. The arrangement is saved for next time.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "For the eyes, if the sides come out swapped, tick <b>Invert horizontal</b> or <b>Invert vertical</b>.",
+        "O botão ▶ Replay está apagado": "The ▶ Replay button is greyed out",
+        "O eletrodo caiu no músculo errado": "The electrode landed on the wrong muscle",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "The profile says what you work with and hides the tabs that are not part of it. Change it on the <b>home screen</b> (<b>Usage profile</b> box) or in <b>System → Usage profile</b>, where you can also create <b>My bench</b> with exactly the exams and charts you want. <b>Everything</b> shows the whole program. A recording of another exam opens normally in any profile.",
+        "O programa demora para abrir": "The program takes long to open",
+        "Onde está cada eletrodo (desenho do corpo)": "Where each electrode is (body drawing)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "Segments are born from the recording's markers; without markers, the detected contractions appear as <b>to define</b>. Right-click a segment and choose <b>Change movement</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "For a profile of your own, go to <b>System → Usage profile</b>, click <b>New…</b> (My bench) and tick the exams and, in Complete, the charts you want to see.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "For a whole sequence, use <b>Ready-made task</b> (lift the dumbbell, open the door with the key, pick up the cup): it is inserted from the cursor on.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Usage profile: Brain, Muscles, Heart, Eyes or Everything",
+        "Replay (animação da gravação)": "Replay (animation of the recording)",
+        "Replay: ver a gravação como uma animação": "Replay: watching the recording as an animation",
+        "Rever uma gravação → ▶ Replay": "Review a recording → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "Only the channels in use appear in the lists",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "A warning appears when the active muscles do not match the chosen movement (triceps active in a flexion segment, for example). It is a hint, not an automatic correction.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "A panel disappeared or I want to rearrange the panels (drawers)",
+        "Uma aba sumiu": "A tab disappeared",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "A recording of another exam opens the same in any profile; the profile only organises the screen.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Watching the Replay of a muscle, heart or eye recording",
+        "Visualizar → Músculos → desenho do corpo": "View → Muscles → body drawing",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Go back to the acquisition: the tabs outside the profile disappear and the others stay in place.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Go to <b>Review a recording</b> and choose the recording in the list: the animation exists only for muscle, heart and eye exams.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "the recording has no movement markers and no detected contractions. In the Complete level, mark the segments on the timeline with the right button.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "the recording playing as an animation: the figure that moves, the heart that beats or the eyes that blink and look.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "the recording is of the brain or has not finished loading yet. Choose a muscle, heart or eye recording.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "an animation that redoes, from the recorded signals, the marked movement, the heart rhythm or the gaze. It simulates what was recorded: it is not a video nor a report.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "drag it: when released near another recommended point it snaps to it. In a zoomed area it is easier to get right.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "each electrode on the right muscle, with the activation heat appearing in its place.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "the current profile does not include it. Switch to <b>Everything</b> or edit your profile in <b>System → Usage profile</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "the program asks whether there are unsaved marks when closing; answer <b>Save</b>. If you already closed it, redo and save.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "European recommendations on where to place surface electrodes for each muscle (over the muscle belly, away from the tendon). The body drawing snaps the electrode to those points.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "only the tabs of your work on screen, without losing any recording.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "a timeline with the right movement in each segment, saved next to the recording.",
         # ===== p3_atlas (1.10.0) =====
         "Bíceps": "Biceps",
         "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Click 'Add electrode' and then click on the body: the electrode snaps to the\nnearest SENIAM point (muscle belly) or stays where you clicked.\nDRAG the electrode: the heat follows it and shows the intensity measured there.\nMouse wheel zooms; right button drags the zoomed view.\nDouble-click renames · Delete removes the selected one.",
@@ -4510,6 +4579,75 @@ class I18N:
 
     # Dicionários ESPAÑOL — chaves em pt-BR
     _es = {
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "La <b>primera</b> apertura después de instalar o actualizar prepara una caché (carpeta <b>.roa_cache</b>, junto al programa o en la carpeta ROA de los datos locales del usuario) y por eso tarda más; las siguientes abren en pocos segundos. La pantalla de apertura con el logo dice con palabras qué se está cargando. Si sigue tardando, compruebe que el antivirus no examine la carpeta del programa en cada apertura.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "La animación <b>simula</b> lo que se grabó a partir de las señales: no es un vídeo de la persona, y no es informe ni diagnóstico.",
+        "A figura não se mexe": "La figura no se mueve",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Abra el Replay de la grabación de músculos en el nivel <b>Completo</b>.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Arrastre la línea de tiempo para ir a un instante. En la lista de al lado, haga clic en un tramo, un latido o un evento para que el reproductor salte hasta allí.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Arrastre el punto para ajustar; doble clic renombra; <b>Supr</b> elimina el seleccionado.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Arrastre un bloque para moverlo y tire del borde para estirarlo. <b>Dividir aquí</b> corta un tramo en dos; <b>Añadir pista</b> crea otra pista para movimientos simultáneos (hasta cuatro).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "Los latidos y los eventos de los ojos son los mismos del informe PDF; corregirlos (nivel Completo) no altera la grabación, solo el archivo del Replay junto a ella.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "Las listas de canales muestran solo los canales <b>en uso</b> en el examen elegido. Al revisar una grabación, las listas siguen los canales de esa grabación, no los del aparato conectado ahora.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "Las listas de canales muestran solo los canales <b>en uso</b>: encendidos y del tipo del examen (un canal marcado como corazón no aparece en la lista de músculos). Para cambiar el tipo o volver a encender un canal, use <b>Filtros y Canales</b> en el nivel Completo. Al revisar una grabación, las listas siguen los canales de esa grabación.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Haga clic en <b>Añadir electrodo</b> y luego en el cuerpo: el punto se pega al lugar recomendado del músculo más cercano (vientre del músculo, referencia SENIAM).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Haga clic en <b>▶ Replay</b>. La ventana se abre con el reproductor: <b>▶ Reproducir</b>, <b>⏸ Pausar</b>, <b>⏮ Inicio</b>, la línea de tiempo y el reloj.",
+        "Colocar os eletrodos no desenho do corpo": "Colocar los electrodos en el dibujo del cuerpo",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z deshace. Haga clic en <b>Guardar</b>: el archivo movimentos.json queda junto a la grabación y se lee la próxima vez.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "De frente, el lado <b>derecho</b> de la persona queda a la <b>izquierda</b> del dibujo, como en una foto; compruebe la D/I en el nombre del músculo.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "Durante el examen, la mancha de calor en el punto del electrodo muestra la intensidad medida allí; el anillo alrededor del número muestra la calidad de la señal.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "En <b>Revisar una grabación</b>, elija una grabación de músculos, corazón u ojos y haga clic en <b>▶ Replay</b>. Una figura rehace el movimiento marcado, un corazón late al ritmo grabado o dos ojos parpadean y miran según las señales. Use <b>▶ Reproducir</b>, <b>⏸ Pausar</b> y arrastre la línea de tiempo. La animación <b>simula</b> lo grabado: no es un vídeo de la persona ni informe o diagnóstico. Para grabaciones de cerebro el botón queda desactivado.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Elegir el perfil de uso (qué pestañas aparecen)",
+        "Fechei a janela e perdi as marcações": "Cerré la ventana y perdí las marcas",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Las instalaciones antiguas empiezan en <b>Todo</b>: nada desaparece sin que usted lo elija.",
+        "Manual: Abertura rápida": "Manual: Apertura rápida",
+        "Manual: Canais em uso": "Manual: Canales en uso",
+        "Manual: Exame de músculos → Atlas muscular": "Manual: Examen de músculos → Atlas muscular",
+        "Manual: Nível Completo → Painéis em gavetas": "Manual: Nivel Completo → Paneles en cajones",
+        "Manual: Perfis de uso": "Manual: Perfiles de uso",
+        "Manual: Rever uma gravação → Replay": "Manual: Revisar una grabación → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Manual: Revisar una grabación → Replay → Músculos",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Marcar o corregir los movimientos del Replay (músculos)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "Los montajes de versiones anteriores se convierten solos; compruebe únicamente que los puntos cayeron donde esperaba.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "En la <b>pantalla inicial</b>, abra la casilla <b>Perfil de uso</b> y elija <b>Cerebro</b>, <b>Músculos</b>, <b>Corazón</b>, <b>Ojos</b> o <b>Todo</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "En la pestaña <b>Músculos</b>, elija la <b>Vista</b>: frente, espalda, lado o un área ampliada (cara, antebrazo y mano, pierna…).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "En la pestaña <b>Músculos</b>, el dibujo del cuerpo (frente, espalda, lado y áreas ampliadas) muestra cada electrodo como un punto numerado. Haga clic en <b>Añadir electrodo</b> y luego en el cuerpo: el punto se pega al lugar recomendado (vientre del músculo, referencia SENIAM) o queda donde hizo clic. Durante el examen, una mancha de calor en el punto del electrodo muestra la intensidad medida allí.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "En el corazón, la franja de latidos usa color <b>y</b> forma: trazo fino = regular, triángulo naranja = adelantado, rectángulo rojo = pausa mayor.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "En el nivel Completo cada panel es un <b>cajón</b>: <b>▾</b> lo pliega, <b>⋯</b> abre el menú (mover, tamaño por defecto, cerrar) y <b>×</b> lo cierra. Para reabrir un panel o volver a la disposición original, use el botón <b>Paneles ▾</b> en lo alto de la pestaña y márquelo, o elija <b>Restaurar el predeterminado</b>. El asa del borde inferior cambia la altura. La disposición queda guardada para la próxima vez.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "En los ojos, si los lados salen cambiados, marque <b>Invertir horizontal</b> o <b>Invertir vertical</b>.",
+        "O botão ▶ Replay está apagado": "El botón ▶ Replay está apagado",
+        "O eletrodo caiu no músculo errado": "El electrodo cayó en el músculo equivocado",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "El perfil dice con qué trabaja usted y oculta las pestañas que no forman parte. Cámbielo en la <b>pantalla inicial</b> (casilla <b>Perfil de uso</b>) o en <b>Sistema → Perfil de uso</b>, donde también se crea <b>Mi banco</b> con exactamente los exámenes y gráficos que quiera. <b>Todo</b> muestra el programa entero. Una grabación de otro examen se abre normalmente en cualquier perfil.",
+        "O programa demora para abrir": "El programa tarda en abrir",
+        "Onde está cada eletrodo (desenho do corpo)": "Dónde está cada electrodo (dibujo del cuerpo)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "Los tramos nacen de los marcadores de la grabación; sin marcador, las contracciones detectadas aparecen como <b>por definir</b>. Haga clic derecho en un tramo y elija <b>Cambiar el movimiento</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "Para un perfil solo suyo, vaya a <b>Sistema → Perfil de uso</b>, haga clic en <b>Nuevo…</b> (Mi banco) y marque los exámenes y, en Completo, los gráficos que quiere ver.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "Para una secuencia entera, use <b>Tarea lista</b> (levantar la mancuerna, abrir la puerta con la llave, coger el vaso): entra a partir del cursor.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Perfil de uso: Cerebro, Músculos, Corazón, Ojos o Todo",
+        "Replay (animação da gravação)": "Replay (animación de la grabación)",
+        "Replay: ver a gravação como uma animação": "Replay: ver la grabación como una animación",
+        "Rever uma gravação → ▶ Replay": "Revisar una grabación → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "Solo los canales en uso aparecen en las listas",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "Aparece un aviso cuando los músculos activos no coinciden con el movimiento elegido (tríceps activo en un tramo de flexión, por ejemplo). Es una pista, no una corrección automática.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "Un panel desapareció o quiero reorganizar los paneles (cajones)",
+        "Uma aba sumiu": "Una pestaña desapareció",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "Una grabación de otro examen se abre igual en cualquier perfil; el perfil solo organiza la pantalla.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Ver el Replay de una grabación de músculos, corazón u ojos",
+        "Visualizar → Músculos → desenho do corpo": "Visualizar → Músculos → dibujo del cuerpo",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Vuelva a la adquisición: las pestañas fuera del perfil desaparecen y las demás quedan en su lugar.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Vaya a <b>Revisar una grabación</b> y elija la grabación en la lista: la animación solo existe para exámenes de músculos, corazón y ojos.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "la grabación no tiene marcadores de movimiento ni contracciones detectadas. En el nivel Completo, marque los tramos en la línea de tiempo con el botón derecho.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "la grabación reproduciéndose como animación: la figura que se mueve, el corazón que late o los ojos que parpadean y miran.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "la grabación es de cerebro o aún no terminó de cargar. Elija una grabación de músculos, corazón u ojos.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "animación que rehace, a partir de las señales grabadas, el movimiento marcado, el ritmo del corazón o la mirada. Simula lo grabado: no es vídeo ni informe.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "arrástrelo: al soltarlo cerca de otro punto recomendado se pega a él. En un área ampliada es más fácil acertar.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "cada electrodo en el músculo correcto, con el calor de la activación apareciendo en su lugar.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "el perfil actual no la incluye. Cambie a <b>Todo</b> o edite su perfil en <b>Sistema → Perfil de uso</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "el programa pregunta si hay marcas sin guardar al cerrar; responda <b>Guardar</b>. Si ya cerró, rehágalas y guarde.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "recomendaciones europeas sobre dónde colocar los electrodos de superficie en cada músculo (sobre el vientre del músculo, lejos del tendón). El dibujo del cuerpo pega el electrodo en esos puntos.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "solo las pestañas de su trabajo en pantalla, sin perder ninguna grabación.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "una línea de tiempo con el movimiento correcto en cada tramo, guardada junto a la grabación.",
         # ===== p3_atlas (1.10.0) =====
         "Bíceps": "Bíceps",
         "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Haga clic en 'Añadir electrodo' y luego en el cuerpo: el electrodo se pega al\npunto SENIAM más cercano (vientre del músculo) o queda donde hizo clic.\nARRASTRE el electrodo: el calor lo acompaña y muestra la intensidad medida allí.\nLa rueda del ratón amplía; el botón derecho arrastra la vista ampliada.\nDoble clic renombra · Supr elimina el seleccionado.",
@@ -8527,6 +8665,75 @@ class I18N:
 
     # Dicionários ITALIANO / FRANCÊS / CHINÊS — gerados na revisão ago/2026
     _it = {
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "La <b>prima</b> apertura dopo l'installazione o l'aggiornamento prepara una cache (cartella <b>.roa_cache</b>, accanto al programma o nella cartella ROA dei dati locali dell'utente) e per questo richiede più tempo; le successive si aprono in pochi secondi. La schermata di apertura con il logo dice a parole che cosa si sta caricando. Se continua a essere lenta, controlla che l'antivirus non esamini la cartella del programma a ogni apertura.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "L'animazione <b>simula</b> ciò che è stato registrato a partire dai segnali: non è un video della persona, e non è un referto né una diagnosi.",
+        "A figura não se mexe": "La figura non si muove",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Apri il Replay della registrazione dei muscoli nel livello <b>Completo</b>.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Trascina la linea del tempo per andare a un istante. Nell'elenco accanto, clicca su un tratto, un battito o un evento e il lettore salta lì.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Trascina il punto per regolarlo; il doppio clic rinomina; <b>Canc</b> rimuove quello selezionato.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Trascina un blocco per spostarlo e tira il bordo per allungarlo. <b>Dividi qui</b> taglia un tratto in due; <b>Aggiungi traccia</b> crea un'altra traccia per movimenti contemporanei (fino a quattro).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "I battiti e gli eventi degli occhi sono gli stessi del rapporto PDF; correggerli (livello Completo) non modifica la registrazione, solo il file del Replay accanto a essa.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "Gli elenchi dei canali mostrano solo i canali <b>in uso</b> nell'esame scelto. Rivedendo una registrazione, gli elenchi seguono i canali di quella registrazione, non quelli dell'apparecchio collegato ora.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "Gli elenchi dei canali mostrano solo i canali <b>in uso</b>: accesi e del tipo dell'esame (un canale segnato come cuore non compare nell'elenco dei muscoli). Per cambiare il tipo o riaccendere un canale, usa <b>Filtri e Canali</b> nel livello Completo. Rivedendo una registrazione, gli elenchi seguono i canali di quella registrazione.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Clicca su <b>Aggiungi elettrodo</b> e poi sul corpo: il punto si aggancia alla posizione consigliata del muscolo più vicino (ventre muscolare, riferimento SENIAM).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Clicca su <b>▶ Replay</b>. La finestra si apre con il lettore: <b>▶ Riproduci</b>, <b>⏸ Pausa</b>, <b>⏮ Inizio</b>, la linea del tempo e l'orologio.",
+        "Colocar os eletrodos no desenho do corpo": "Posizionare gli elettrodi sul disegno del corpo",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z annulla. Clicca su <b>Salva</b>: il file movimentos.json resta accanto alla registrazione e viene letto la prossima volta.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "Di fronte, il lato <b>destro</b> della persona sta a <b>sinistra</b> del disegno, come in una foto; controlla la D/S nel nome del muscolo.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "Durante l'esame, la macchia di calore sul punto dell'elettrodo mostra l'intensità misurata lì; l'anello intorno al numero mostra la qualità del segnale.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "In <b>Rivedi una registrazione</b>, scegli una registrazione di muscoli, cuore o occhi e clicca su <b>▶ Replay</b>. Una figura rifà il movimento segnato, un cuore batte al ritmo registrato o due occhi sbattono le palpebre e guardano secondo i segnali. Usa <b>▶ Riproduci</b>, <b>⏸ Pausa</b> e trascina la linea del tempo. L'animazione <b>simula</b> ciò che è stato registrato: non è un video della persona né un referto o una diagnosi. Per le registrazioni del cervello il pulsante resta disattivato.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Scegliere il profilo d'uso (quali schede compaiono)",
+        "Fechei a janela e perdi as marcações": "Ho chiuso la finestra e ho perso le marcature",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Le installazioni precedenti partono in <b>Tutto</b>: niente sparisce senza che tu lo scelga.",
+        "Manual: Abertura rápida": "Manuale: Apertura rapida",
+        "Manual: Canais em uso": "Manuale: Canali in uso",
+        "Manual: Exame de músculos → Atlas muscular": "Manuale: Esame dei muscoli → Atlante muscolare",
+        "Manual: Nível Completo → Painéis em gavetas": "Manuale: Livello Completo → Pannelli a cassetto",
+        "Manual: Perfis de uso": "Manuale: Profili d'uso",
+        "Manual: Rever uma gravação → Replay": "Manuale: Rivedi una registrazione → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Manuale: Rivedi una registrazione → Replay → Muscoli",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Segnare o correggere i movimenti del Replay (muscoli)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "I montaggi delle versioni precedenti vengono convertiti da soli; controlla solo che i punti siano finiti dove ti aspettavi.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "Nella <b>schermata iniziale</b>, apri la casella <b>Profilo d'uso</b> e scegli <b>Cervello</b>, <b>Muscoli</b>, <b>Cuore</b>, <b>Occhi</b> o <b>Tutto</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "Nella scheda <b>Muscoli</b>, scegli la <b>Vista</b>: fronte, schiena, lato o un'area ingrandita (viso, avambraccio e mano, gamba…).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "Nella scheda <b>Muscoli</b>, il disegno del corpo (fronte, schiena, lato e aree ingrandite) mostra ogni elettrodo come un punto numerato. Clicca su <b>Aggiungi elettrodo</b> e poi sul corpo: il punto si aggancia alla posizione consigliata (ventre muscolare, riferimento SENIAM) o resta dove hai cliccato. Durante l'esame, una macchia di calore sul punto dell'elettrodo mostra l'intensità misurata lì.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "Nel cuore, la striscia dei battiti usa colore <b>e</b> forma: tratto sottile = regolare, triangolo arancione = anticipato, rettangolo rosso = pausa più lunga.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "Nel livello Completo ogni pannello è un <b>cassetto</b>: <b>▾</b> lo ripiega, <b>⋯</b> apre il menu (sposta, dimensione predefinita, chiudi) e <b>×</b> lo chiude. Per riaprire un pannello o tornare alla disposizione originale, usa il pulsante <b>Pannelli ▾</b> in alto nella scheda e spuntalo, oppure scegli <b>Ripristina predefinito</b>. La maniglia sul bordo inferiore cambia l'altezza. La disposizione resta salvata per la prossima volta.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "Negli occhi, se i lati risultano invertiti, spunta <b>Inverti orizzontale</b> o <b>Inverti verticale</b>.",
+        "O botão ▶ Replay está apagado": "Il pulsante ▶ Replay è spento",
+        "O eletrodo caiu no músculo errado": "L'elettrodo è finito sul muscolo sbagliato",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "Il profilo dice con che cosa lavori e nasconde le schede che non ne fanno parte. Cambialo nella <b>schermata iniziale</b> (casella <b>Profilo d'uso</b>) o in <b>Sistema → Profilo d'uso</b>, dove si crea anche <b>Il mio banco</b> con esattamente gli esami e i grafici che vuoi. <b>Tutto</b> mostra il programma intero. Una registrazione di un altro esame si apre normalmente in qualsiasi profilo.",
+        "O programa demora para abrir": "Il programma ci mette molto ad aprirsi",
+        "Onde está cada eletrodo (desenho do corpo)": "Dove si trova ogni elettrodo (disegno del corpo)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "I tratti nascono dai marcatori della registrazione; senza marcatori, le contrazioni rilevate compaiono come <b>da definire</b>. Clicca con il tasto destro su un tratto e scegli <b>Cambia movimento</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "Per un profilo tutto tuo, vai in <b>Sistema → Profilo d'uso</b>, clicca su <b>Nuovo…</b> (Il mio banco) e spunta gli esami e, nel Completo, i grafici che vuoi vedere.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "Per una sequenza intera, usa <b>Compito pronto</b> (sollevare il manubrio, aprire la porta con la chiave, prendere il bicchiere): viene inserita a partire dal cursore.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Profilo d'uso: Cervello, Muscoli, Cuore, Occhi o Tutto",
+        "Replay (animação da gravação)": "Replay (animazione della registrazione)",
+        "Replay: ver a gravação como uma animação": "Replay: vedere la registrazione come un'animazione",
+        "Rever uma gravação → ▶ Replay": "Rivedi una registrazione → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "Negli elenchi compaiono solo i canali in uso",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "Compare un avviso quando i muscoli attivi non corrispondono al movimento scelto (tricipite attivo in un tratto di flessione, per esempio). È un suggerimento, non una correzione automatica.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "Un pannello è sparito o voglio riorganizzare i pannelli (cassetti)",
+        "Uma aba sumiu": "Una scheda è sparita",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "Una registrazione di un altro esame si apre allo stesso modo in qualsiasi profilo; il profilo organizza solo lo schermo.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Vedere il Replay di una registrazione di muscoli, cuore o occhi",
+        "Visualizar → Músculos → desenho do corpo": "Visualizza → Muscoli → disegno del corpo",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Torna all'acquisizione: le schede fuori dal profilo spariscono e le altre restano al loro posto.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Vai in <b>Rivedi una registrazione</b> e scegli la registrazione nell'elenco: l'animazione esiste solo per esami di muscoli, cuore e occhi.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "la registrazione non ha marcatori di movimento né contrazioni rilevate. Nel livello Completo, segna i tratti sulla linea del tempo con il tasto destro.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "la registrazione riprodotta come animazione: la figura che si muove, il cuore che batte o gli occhi che sbattono le palpebre e guardano.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "la registrazione è del cervello o non ha ancora finito di caricarsi. Scegli una registrazione di muscoli, cuore o occhi.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "animazione che rifà, a partire dai segnali registrati, il movimento segnato, il ritmo del cuore o lo sguardo. Simula ciò che è stato registrato: non è un video né un referto.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "trascinalo: rilasciandolo vicino a un altro punto consigliato si aggancia a quello. In un'area ingrandita è più facile centrarlo.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "ogni elettrodo sul muscolo giusto, con il calore dell'attivazione che compare al suo posto.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "il profilo attuale non la include. Passa a <b>Tutto</b> o modifica il tuo profilo in <b>Sistema → Profilo d'uso</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "alla chiusura il programma chiede se ci sono marcature non salvate; rispondi <b>Salva</b>. Se hai già chiuso, rifalle e salva.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "raccomandazioni europee su dove posizionare gli elettrodi di superficie per ogni muscolo (sul ventre muscolare, lontano dal tendine). Il disegno del corpo aggancia l'elettrodo a quei punti.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "solo le schede del tuo lavoro sullo schermo, senza perdere nessuna registrazione.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "una linea del tempo con il movimento giusto in ogni tratto, salvata accanto alla registrazione.",
         # ===== p3_atlas (1.10.0) =====
         "Bíceps": "Bicipite",
         "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Clicca su 'Aggiungi elettrodo' e poi sul corpo: l'elettrodo si aggancia al\npunto SENIAM più vicino (ventre muscolare) o resta dove hai cliccato.\nTRASCINA l'elettrodo: il calore lo segue e mostra l'intensità misurata lì.\nLa rotella del mouse ingrandisce; il tasto destro trascina la vista ingrandita.\nDoppio clic rinomina · Canc rimuove quello selezionato.",
@@ -12504,6 +12711,75 @@ class I18N:
     }
 
     _fr = {
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "La <b>première</b> ouverture après l'installation ou une mise à jour prépare un cache (dossier <b>.roa_cache</b>, à côté du programme ou dans le dossier ROA des données locales de l'utilisateur) et prend donc plus de temps ; les suivantes s'ouvrent en quelques secondes. L'écran d'ouverture avec le logo dit en mots ce qui est en cours de chargement. Si la lenteur persiste, vérifiez que l'antivirus n'examine pas le dossier du programme à chaque ouverture.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "L'animation <b>simule</b> ce qui a été enregistré à partir des signaux : ce n'est pas une vidéo de la personne, et ce n'est ni un compte rendu ni un diagnostic.",
+        "A figura não se mexe": "La silhouette ne bouge pas",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Ouvrez le Replay de l'enregistrement des muscles au niveau <b>Complet</b>.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Faites glisser la ligne de temps pour aller à un instant. Dans la liste à côté, cliquez sur un segment, un battement ou un événement : le lecteur y saute.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Faites glisser le point pour l'ajuster ; un double-clic renomme ; <b>Suppr</b> retire le point sélectionné.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Faites glisser un bloc pour le déplacer et tirez son bord pour l'étirer. <b>Diviser ici</b> coupe un segment en deux ; <b>Ajouter une piste</b> crée une autre piste pour des mouvements simultanés (jusqu'à quatre).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "Les battements et les événements des yeux sont les mêmes que dans le rapport PDF ; les corriger (niveau Complet) ne modifie pas l'enregistrement, seulement le fichier du Replay à côté.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "Les listes de canaux n'affichent que les canaux <b>utilisés</b> dans l'examen choisi. En revoyant un enregistrement, les listes suivent les canaux de cet enregistrement, pas ceux de l'appareil branché maintenant.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "Les listes de canaux n'affichent que les canaux <b>utilisés</b> : allumés et du type de l'examen (un canal marqué cœur n'apparaît pas dans la liste des muscles). Pour changer le type ou rallumer un canal, utilisez <b>Filtres et Canaux</b> au niveau Complet. En revoyant un enregistrement, les listes suivent les canaux de cet enregistrement.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Cliquez sur <b>Ajouter une électrode</b> puis sur le corps : le point se cale sur l'emplacement recommandé du muscle le plus proche (ventre du muscle, référence SENIAM).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Cliquez sur <b>▶ Replay</b>. La fenêtre s'ouvre avec le lecteur : <b>▶ Lecture</b>, <b>⏸ Pause</b>, <b>⏮ Début</b>, la ligne de temps et l'horloge.",
+        "Colocar os eletrodos no desenho do corpo": "Placer les électrodes sur le dessin du corps",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z annule. Cliquez sur <b>Enregistrer</b> : le fichier movimentos.json reste à côté de l'enregistrement et est lu la prochaine fois.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "De face, le côté <b>droit</b> de la personne est à <b>gauche</b> du dessin, comme sur une photo ; vérifiez le D/G dans le nom du muscle.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "Pendant l'examen, la tache de chaleur au point de l'électrode montre l'intensité mesurée là ; l'anneau autour du numéro montre la qualité du signal.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "Dans <b>Revoir un enregistrement</b>, choisissez un enregistrement de muscles, de cœur ou d'yeux et cliquez sur <b>▶ Replay</b>. Une silhouette refait le mouvement marqué, un cœur bat au rythme enregistré ou deux yeux clignent et regardent selon les signaux. Utilisez <b>▶ Lecture</b>, <b>⏸ Pause</b> et faites glisser la ligne de temps. L'animation <b>simule</b> ce qui a été enregistré : ce n'est ni une vidéo de la personne ni un compte rendu ou un diagnostic. Pour les enregistrements du cerveau, le bouton est désactivé.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Choisir le profil d'utilisation (quels onglets apparaissent)",
+        "Fechei a janela e perdi as marcações": "J'ai fermé la fenêtre et perdu mes marquages",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Les installations anciennes démarrent sur <b>Tout</b> : rien ne disparaît sans votre choix.",
+        "Manual: Abertura rápida": "Manuel : Ouverture rapide",
+        "Manual: Canais em uso": "Manuel : Canaux utilisés",
+        "Manual: Exame de músculos → Atlas muscular": "Manuel : Examen des muscles → Atlas musculaire",
+        "Manual: Nível Completo → Painéis em gavetas": "Manuel : Niveau Complet → Panneaux en tiroirs",
+        "Manual: Perfis de uso": "Manuel : Profils d'utilisation",
+        "Manual: Rever uma gravação → Replay": "Manuel : Revoir un enregistrement → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Manuel : Revoir un enregistrement → Replay → Muscles",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Marquer ou corriger les mouvements du Replay (muscles)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "Les montages des versions précédentes sont convertis automatiquement ; vérifiez seulement que les points sont tombés où vous l'attendiez.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "Sur l'<b>écran d'accueil</b>, ouvrez la case <b>Profil d'utilisation</b> et choisissez <b>Cerveau</b>, <b>Muscles</b>, <b>Cœur</b>, <b>Yeux</b> ou <b>Tout</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "Dans l'onglet <b>Muscles</b>, choisissez la <b>Vue</b> : face, dos, côté ou une zone agrandie (visage, avant-bras et main, jambe…).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "Dans l'onglet <b>Muscles</b>, le dessin du corps (face, dos, côté et zones agrandies) montre chaque électrode comme un point numéroté. Cliquez sur <b>Ajouter une électrode</b> puis sur le corps : le point se cale sur l'emplacement recommandé (ventre du muscle, référence SENIAM) ou reste où vous avez cliqué. Pendant l'examen, une tache de chaleur au point de l'électrode montre l'intensité mesurée là.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "Pour le cœur, la bande des battements utilise la couleur <b>et</b> la forme : trait fin = régulier, triangle orange = prématuré, rectangle rouge = pause plus longue.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "Au niveau Complet, chaque panneau est un <b>tiroir</b> : <b>▾</b> le replie, <b>⋯</b> ouvre le menu (déplacer, taille par défaut, fermer) et <b>×</b> le ferme. Pour rouvrir un panneau ou revenir à la disposition d'origine, utilisez le bouton <b>Panneaux ▾</b> en haut de l'onglet et cochez-le, ou choisissez <b>Rétablir la disposition par défaut</b>. La poignée du bord inférieur change la hauteur. La disposition est conservée pour la prochaine fois.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "Pour les yeux, si les côtés sortent inversés, cochez <b>Inverser l'horizontale</b> ou <b>Inverser la verticale</b>.",
+        "O botão ▶ Replay está apagado": "Le bouton ▶ Replay est grisé",
+        "O eletrodo caiu no músculo errado": "L'électrode est tombée sur le mauvais muscle",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "Le profil dit avec quoi vous travaillez et masque les onglets qui n'en font pas partie. Changez-le sur l'<b>écran d'accueil</b> (case <b>Profil d'utilisation</b>) ou dans <b>Système → Profil d'utilisation</b>, où l'on crée aussi <b>Mon établi</b> avec exactement les examens et les graphiques voulus. <b>Tout</b> affiche le programme entier. Un enregistrement d'un autre examen s'ouvre normalement dans n'importe quel profil.",
+        "O programa demora para abrir": "Le programme met longtemps à s'ouvrir",
+        "Onde está cada eletrodo (desenho do corpo)": "Où se trouve chaque électrode (dessin du corps)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "Les segments naissent des marqueurs de l'enregistrement ; sans marqueur, les contractions détectées apparaissent comme <b>à définir</b>. Cliquez avec le bouton droit sur un segment et choisissez <b>Changer le mouvement</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "Pour un profil rien qu'à vous, allez dans <b>Système → Profil d'utilisation</b>, cliquez sur <b>Nouveau…</b> (Mon établi) et cochez les examens et, en Complet, les graphiques à afficher.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "Pour une séquence entière, utilisez <b>Tâche prête</b> (soulever l'haltère, ouvrir la porte avec la clé, prendre le verre) : elle s'insère à partir du curseur.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Profil d'utilisation : Cerveau, Muscles, Cœur, Yeux ou Tout",
+        "Replay (animação da gravação)": "Replay (animation de l'enregistrement)",
+        "Replay: ver a gravação como uma animação": "Replay : voir l'enregistrement comme une animation",
+        "Rever uma gravação → ▶ Replay": "Revoir un enregistrement → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "Seuls les canaux utilisés apparaissent dans les listes",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "Un avertissement apparaît quand les muscles actifs ne correspondent pas au mouvement choisi (triceps actif dans un segment de flexion, par exemple). C'est une indication, pas une correction automatique.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "Un panneau a disparu ou je veux réorganiser les panneaux (tiroirs)",
+        "Uma aba sumiu": "Un onglet a disparu",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "Un enregistrement d'un autre examen s'ouvre de la même façon dans n'importe quel profil ; le profil ne fait qu'organiser l'écran.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Voir le Replay d'un enregistrement de muscles, de cœur ou d'yeux",
+        "Visualizar → Músculos → desenho do corpo": "Visualiser → Muscles → dessin du corps",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Revenez à l'acquisition : les onglets hors du profil disparaissent et les autres restent en place.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Allez dans <b>Revoir un enregistrement</b> et choisissez l'enregistrement dans la liste : l'animation n'existe que pour les examens des muscles, du cœur et des yeux.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "l'enregistrement n'a ni marqueurs de mouvement ni contractions détectées. Au niveau Complet, marquez les segments sur la ligne de temps avec le bouton droit.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "l'enregistrement joué comme une animation : la silhouette qui bouge, le cœur qui bat ou les yeux qui clignent et regardent.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "l'enregistrement concerne le cerveau ou n'a pas fini de se charger. Choisissez un enregistrement de muscles, de cœur ou d'yeux.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "animation qui refait, à partir des signaux enregistrés, le mouvement marqué, le rythme du cœur ou le regard. Elle simule ce qui a été enregistré : ce n'est ni une vidéo ni un compte rendu.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "faites-la glisser : relâchée près d'un autre point recommandé, elle s'y cale. Dans une zone agrandie, c'est plus facile de viser juste.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "chaque électrode sur le bon muscle, avec la chaleur de l'activation qui apparaît à sa place.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "le profil actuel ne l'inclut pas. Passez à <b>Tout</b> ou modifiez votre profil dans <b>Système → Profil d'utilisation</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "à la fermeture, le programme demande s'il y a des marquages non enregistrés ; répondez <b>Enregistrer</b>. Si c'est déjà fermé, refaites-les et enregistrez.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "recommandations européennes sur l'emplacement des électrodes de surface pour chaque muscle (sur le ventre du muscle, loin du tendon). Le dessin du corps cale l'électrode sur ces points.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "seulement les onglets de votre travail à l'écran, sans perdre aucun enregistrement.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "une ligne de temps avec le bon mouvement dans chaque segment, enregistrée à côté de l'enregistrement.",
         # ===== p3_atlas (1.10.0) =====
         "Bíceps": "Biceps",
         "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Cliquez sur « Ajouter une électrode » puis sur le corps : l'électrode se cale sur le\npoint SENIAM le plus proche (ventre du muscle) ou reste où vous avez cliqué.\nFAITES GLISSER l'électrode : la chaleur la suit et montre l'intensité mesurée là.\nLa molette agrandit ; le bouton droit déplace la vue agrandie.\nDouble-clic renomme · Suppr retire l'électrode sélectionnée.",
@@ -16481,6 +16757,75 @@ class I18N:
     }
 
     _zh = {
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "安装或更新后的<b>第一次</b>打开会准备缓存（<b>.roa_cache</b> 文件夹，位于程序旁边或用户本地数据的 ROA 文件夹中），因此时间较长；之后几秒即可打开。带标志的启动画面会用文字说明正在加载的内容。如果仍然很慢，请检查杀毒软件是否在每次打开时扫描程序文件夹。",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "动画根据信号<b>模拟</b>所记录的内容：它不是本人的视频，也不是报告或诊断。",
+        "A figura não se mexe": "人形不动",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "在<b>完整</b>级别打开肌肉记录的回放。",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "拖动时间线到某一时刻。在旁边的列表中点击一个片段、一次心跳或一个事件，播放器会跳到那里。",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "拖动点以调整；双击重命名；<b>Delete</b> 删除所选电极。",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "拖动色块可移动，拉动边缘可拉长。<b>在此分割</b>把一段切成两段；<b>添加轨道</b>为同时发生的动作新建一条轨道（最多四条）。",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "心跳和眼部事件与 PDF 报告中的相同；修正它们（完整级别）不会改变记录，只会改变记录旁边的回放文件。",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "通道列表只显示所选检查中<b>正在使用</b>的通道。回看记录时，列表跟随该记录的通道，而不是当前连接的设备。",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "通道列表只显示<b>正在使用</b>的通道：已开启且属于该检查类型（标记为心脏的通道不会出现在肌肉列表中）。要更改类型或重新开启通道，请在完整级别使用<b>滤波器与通道</b>。回看记录时，列表跟随该记录的通道。",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "点击<b>添加电极</b>，再点击身体：电极会贴到最近肌肉的推荐位置（肌腹，SENIAM 参考）。",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "点击<b>▶ 回放</b>。窗口随播放器打开：<b>▶ 播放</b>、<b>⏸ 暂停</b>、<b>⏮ 开始</b>、时间线和时钟。",
+        "Colocar os eletrodos no desenho do corpo": "在身体图上放置电极",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z 撤销。点击<b>保存</b>：movimentos.json 文件保存在记录旁边，下次自动读取。",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "正面视图中，本人的<b>右</b>侧位于图的<b>左</b>侧，如同照片；请核对肌肉名称中的左/右。",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "检查过程中，电极点处的热斑显示该处测得的强度；数字周围的圆环显示信号质量。",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "在<b>回看记录</b>中选择一条肌肉、心脏或眼睛的记录，点击<b>▶ 回放</b>。人形重现标记的动作，心脏按记录的节律跳动，或两只眼睛按信号眨眼和转动。使用<b>▶ 播放</b>、<b>⏸ 暂停</b>并拖动时间线。动画<b>模拟</b>所记录的内容：不是本人的视频，也不是报告或诊断。脑部记录的该按钮不可用。",
+        "Escolher o perfil de uso (quais abas aparecem)": "选择使用配置（显示哪些标签页）",
+        "Fechei a janela e perdi as marcações": "我关闭了窗口，标记丢失了",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "旧安装从<b>全部</b>开始：没有您的选择，什么都不会消失。",
+        "Manual: Abertura rápida": "手册：快速启动",
+        "Manual: Canais em uso": "手册：使用中的通道",
+        "Manual: Exame de músculos → Atlas muscular": "手册：肌肉检查 → 肌肉图谱",
+        "Manual: Nível Completo → Painéis em gavetas": "手册：完整级别 → 抽屉式面板",
+        "Manual: Perfis de uso": "手册：使用配置",
+        "Manual: Rever uma gravação → Replay": "手册：回看记录 → 回放",
+        "Manual: Rever uma gravação → Replay → Músculos": "手册：回看记录 → 回放 → 肌肉",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "标记或修正回放中的动作（肌肉）",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "旧版本的电极布局会自动转换；只需确认各点落在预期位置。",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "在<b>主屏幕</b>打开<b>使用配置</b>框，选择<b>大脑</b>、<b>肌肉</b>、<b>心脏</b>、<b>眼睛</b>或<b>全部</b>。",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "在<b>肌肉</b>标签页选择<b>视图</b>：正面、背面、侧面或放大区域（面部、前臂与手、腿……）。",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "在<b>肌肉</b>标签页，身体图（正面、背面、侧面和放大区域）把每个电极显示为带编号的点。点击<b>添加电极</b>，再点击身体：点会贴到推荐位置（肌腹，SENIAM 参考）或停在您点击的位置。检查过程中，电极点处的热斑显示该处测得的强度。",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "心脏部分，心跳条同时用颜色<b>和</b>形状：细线 = 规律，橙色三角 = 提前，红色矩形 = 较长停顿。",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "在完整级别，每个面板都是一个<b>抽屉</b>：<b>▾</b> 折叠，<b>⋯</b> 打开菜单（移动、默认大小、关闭），<b>×</b> 关闭。要重新打开面板或恢复原来的布局，请使用标签页顶部的<b>面板 ▾</b> 按钮勾选它，或选择<b>恢复默认</b>。底边的把手改变高度。布局会保存到下次使用。",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "眼睛部分，如果左右颠倒，请勾选<b>水平反转</b>或<b>垂直反转</b>。",
+        "O botão ▶ Replay está apagado": "▶ 回放按钮是灰色的",
+        "O eletrodo caiu no músculo errado": "电极落在了错误的肌肉上",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "使用配置说明您的工作内容，并隐藏不属于它的标签页。在<b>主屏幕</b>（<b>使用配置</b>框）或<b>系统 → 使用配置</b>中更改，那里还可以创建<b>我的工作台</b>，精确选择想要的检查和图表。<b>全部</b>显示整个程序。其他检查的记录在任何配置下都能正常打开。",
+        "O programa demora para abrir": "程序打开很慢",
+        "Onde está cada eletrodo (desenho do corpo)": "每个电极在哪里（身体图）",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "片段来自记录的标记；没有标记时，检测到的收缩显示为<b>待定</b>。右键点击一个片段，选择<b>更改动作</b>。",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "要创建自己的配置，请进入<b>系统 → 使用配置</b>，点击<b>新建…</b>（我的工作台），勾选检查项目，在完整级别还可勾选想看的图表。",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "要插入整套动作，请使用<b>预设任务</b>（举哑铃、用钥匙开门、拿杯子）：从光标处开始插入。",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "使用配置：大脑、肌肉、心脏、眼睛或全部",
+        "Replay (animação da gravação)": "回放（记录的动画）",
+        "Replay: ver a gravação como uma animação": "回放：把记录看成动画",
+        "Rever uma gravação → ▶ Replay": "回看记录 → ▶ 回放",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "列表中只显示正在使用的通道",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "当活动的肌肉与所选动作不符时（例如屈曲片段中肱三头肌活动）会出现提示。它只是提示，不会自动修正。",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "有个面板不见了，或者我想重新排列面板（抽屉）",
+        "Uma aba sumiu": "有个标签页不见了",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "其他检查的记录在任何配置下都同样打开；配置只是整理屏幕。",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "观看肌肉、心脏或眼睛记录的回放",
+        "Visualizar → Músculos → desenho do corpo": "查看 → 肌肉 → 身体图",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "回到采集：配置之外的标签页消失，其余保持原位。",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "进入<b>回看记录</b>并在列表中选择记录：动画只适用于肌肉、心脏和眼睛检查。",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "该记录没有动作标记，也没有检测到收缩。在完整级别，用右键在时间线上标记片段。",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "记录以动画播放：会动的人形、跳动的心脏或眨眼转动的眼睛。",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "该记录是脑部记录，或尚未加载完成。请选择肌肉、心脏或眼睛的记录。",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "根据记录的信号重现标记的动作、心脏节律或视线的动画。它模拟所记录的内容：不是视频，也不是报告。",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "拖动它：在另一个推荐点附近松开时会贴上去。在放大区域更容易放准。",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "每个电极都在正确的肌肉上，激活的热斑出现在它的位置。",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "当前配置不包含它。切换到<b>全部</b>，或在<b>系统 → 使用配置</b>中编辑您的配置。",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "关闭时程序会询问是否有未保存的标记；请选择<b>保存</b>。如果已经关闭，请重做并保存。",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "欧洲关于每块肌肉表面电极放置位置的建议（放在肌腹上，远离肌腱）。身体图会把电极贴到这些点上。",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "屏幕上只显示您工作所需的标签页，不丢失任何记录。",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "每个片段都有正确动作的时间线，保存在记录旁边。",
         # ===== p3_atlas (1.10.0) =====
         "Bíceps": "肱二头肌",
         "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "点击“添加电极”，再点击身体：电极会贴到最近的 SENIAM 点（肌腹），\n或停在您点击的位置。\n拖动电极：热区会跟随并显示该处测得的强度。\n鼠标滚轮缩放；右键拖动放大后的视图。\n双击重命名 · Delete 删除所选电极。",
@@ -20460,6 +20805,75 @@ class I18N:
 
     # Dicionários DEUTSCH — chaves em pt-BR
     _de = {
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "Der <b>erste</b> Start nach der Installation oder einem Update legt einen Cache an (Ordner <b>.roa_cache</b>, neben dem Programm oder im ROA-Ordner der lokalen Benutzerdaten) und dauert deshalb länger; die folgenden öffnen in wenigen Sekunden. Der Startbildschirm mit dem Logo sagt in Worten, was gerade geladen wird. Bleibt es langsam, prüfen Sie, ob das Antivirenprogramm den Programmordner bei jedem Start durchsucht.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "Die Animation <b>simuliert</b> anhand der Signale, was aufgezeichnet wurde: Sie ist kein Video der Person und weder Befund noch Diagnose.",
+        "A figura não se mexe": "Die Figur bewegt sich nicht",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Öffnen Sie das Replay der Muskelaufzeichnung in der Stufe <b>Vollständig</b>.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Ziehen Sie die Zeitleiste, um zu einem Zeitpunkt zu gehen. Klicken Sie in der Liste daneben auf einen Abschnitt, einen Schlag oder ein Ereignis, springt der Player dorthin.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Ziehen Sie den Punkt zum Anpassen; Doppelklick benennt um; <b>Entf</b> entfernt den ausgewählten.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Ziehen Sie einen Block, um ihn zu verschieben, und ziehen Sie am Rand, um ihn zu strecken. <b>Hier teilen</b> schneidet einen Abschnitt in zwei; <b>Spur hinzufügen</b> erzeugt eine weitere Spur für gleichzeitige Bewegungen (bis zu vier).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "Die Schläge und die Augenereignisse sind dieselben wie im PDF-Bericht; sie zu korrigieren (Stufe Vollständig) ändert die Aufzeichnung nicht, nur die Replay-Datei daneben.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "Die Kanallisten zeigen nur die im gewählten Untersuchungstyp <b>verwendeten</b> Kanäle. Beim Ansehen einer Aufzeichnung folgen die Listen den Kanälen dieser Aufzeichnung, nicht denen des jetzt angeschlossenen Geräts.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "Die Kanallisten zeigen nur die <b>verwendeten</b> Kanäle: eingeschaltet und vom Typ der Untersuchung (ein als Herz markierter Kanal erscheint nicht in der Muskelliste). Um den Typ zu ändern oder einen Kanal wieder einzuschalten, nutzen Sie <b>Filter und Kanäle</b> in der Stufe Vollständig. Beim Ansehen einer Aufzeichnung folgen die Listen den Kanälen dieser Aufzeichnung.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Klicken Sie auf <b>Elektrode hinzufügen</b> und dann auf den Körper: Der Punkt rastet an der empfohlenen Stelle des nächsten Muskels ein (Muskelbauch, SENIAM-Referenz).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Klicken Sie auf <b>▶ Replay</b>. Das Fenster öffnet sich mit dem Player: <b>▶ Abspielen</b>, <b>⏸ Pause</b>, <b>⏮ Anfang</b>, die Zeitleiste und die Uhr.",
+        "Colocar os eletrodos no desenho do corpo": "Elektroden auf der Körperzeichnung platzieren",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Strg+Z macht rückgängig. Klicken Sie auf <b>Speichern</b>: Die Datei movimentos.json liegt neben der Aufzeichnung und wird beim nächsten Mal gelesen.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "Von vorn liegt die <b>rechte</b> Seite der Person <b>links</b> in der Zeichnung, wie auf einem Foto; prüfen Sie das R/L im Muskelnamen.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "Während der Untersuchung zeigt der Wärmefleck am Elektrodenpunkt die dort gemessene Intensität; der Ring um die Nummer zeigt die Signalqualität.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "Wählen Sie in <b>Aufzeichnung ansehen</b> eine Muskel-, Herz- oder Augenaufzeichnung und klicken Sie auf <b>▶ Replay</b>. Eine Figur wiederholt die markierte Bewegung, ein Herz schlägt im aufgezeichneten Rhythmus oder zwei Augen blinzeln und blicken gemäß den Signalen. Nutzen Sie <b>▶ Abspielen</b>, <b>⏸ Pause</b> und ziehen Sie die Zeitleiste. Die Animation <b>simuliert</b>, was aufgezeichnet wurde: kein Video der Person, kein Befund, keine Diagnose. Bei Gehirnaufzeichnungen ist die Schaltfläche deaktiviert.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Das Nutzungsprofil wählen (welche Reiter erscheinen)",
+        "Fechei a janela e perdi as marcações": "Ich habe das Fenster geschlossen und die Markierungen verloren",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Ältere Installationen starten mit <b>Alles</b>: Nichts verschwindet ohne Ihre Wahl.",
+        "Manual: Abertura rápida": "Handbuch: Schnellstart",
+        "Manual: Canais em uso": "Handbuch: Verwendete Kanäle",
+        "Manual: Exame de músculos → Atlas muscular": "Handbuch: Muskeluntersuchung → Muskelatlas",
+        "Manual: Nível Completo → Painéis em gavetas": "Handbuch: Stufe Vollständig → Panels als Schubladen",
+        "Manual: Perfis de uso": "Handbuch: Nutzungsprofile",
+        "Manual: Rever uma gravação → Replay": "Handbuch: Aufzeichnung ansehen → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Handbuch: Aufzeichnung ansehen → Replay → Muskeln",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Bewegungen im Replay markieren oder korrigieren (Muskeln)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "Montagen aus früheren Versionen werden automatisch umgewandelt; prüfen Sie nur, ob die Punkte dort gelandet sind, wo Sie es erwartet haben.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "Öffnen Sie auf dem <b>Startbildschirm</b> das Feld <b>Nutzungsprofil</b> und wählen Sie <b>Gehirn</b>, <b>Muskeln</b>, <b>Herz</b>, <b>Augen</b> oder <b>Alles</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "Wählen Sie im Reiter <b>Muskeln</b> die <b>Ansicht</b>: vorn, hinten, seitlich oder einen vergrößerten Bereich (Gesicht, Unterarm und Hand, Bein …).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "Im Reiter <b>Muskeln</b> zeigt die Körperzeichnung (vorn, hinten, seitlich und vergrößerte Bereiche) jede Elektrode als nummerierten Punkt. Klicken Sie auf <b>Elektrode hinzufügen</b> und dann auf den Körper: Der Punkt rastet an der empfohlenen Stelle ein (Muskelbauch, SENIAM-Referenz) oder bleibt, wo Sie geklickt haben. Während der Untersuchung zeigt ein Wärmefleck am Elektrodenpunkt die dort gemessene Intensität.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "Beim Herzen nutzt der Schlagstreifen Farbe <b>und</b> Form: dünner Strich = regelmäßig, oranges Dreieck = vorzeitig, rotes Rechteck = längere Pause.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "In der Stufe Vollständig ist jedes Panel eine <b>Schublade</b>: <b>▾</b> klappt ein, <b>⋯</b> öffnet das Menü (verschieben, Standardgröße, schließen) und <b>×</b> schließt. Um ein Panel wieder zu öffnen oder zur ursprünglichen Anordnung zurückzukehren, nutzen Sie die Schaltfläche <b>Panels ▾</b> oben im Reiter und haken es an, oder wählen Sie <b>Standard wiederherstellen</b>. Der Griff am unteren Rand ändert die Höhe. Die Anordnung bleibt fürs nächste Mal gespeichert.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "Bei den Augen: Sind die Seiten vertauscht, haken Sie <b>Horizontal umkehren</b> oder <b>Vertikal umkehren</b> an.",
+        "O botão ▶ Replay está apagado": "Die Schaltfläche ▶ Replay ist ausgegraut",
+        "O eletrodo caiu no músculo errado": "Die Elektrode ist auf dem falschen Muskel gelandet",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "Das Profil sagt, womit Sie arbeiten, und blendet die Reiter aus, die nicht dazugehören. Ändern Sie es auf dem <b>Startbildschirm</b> (Feld <b>Nutzungsprofil</b>) oder unter <b>System → Nutzungsprofil</b>, wo Sie auch <b>Meine Werkbank</b> mit genau den gewünschten Untersuchungen und Diagrammen anlegen. <b>Alles</b> zeigt das ganze Programm. Eine Aufzeichnung einer anderen Untersuchung öffnet sich in jedem Profil normal.",
+        "O programa demora para abrir": "Das Programm braucht lange zum Öffnen",
+        "Onde está cada eletrodo (desenho do corpo)": "Wo jede Elektrode sitzt (Körperzeichnung)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "Die Abschnitte entstehen aus den Markern der Aufzeichnung; ohne Marker erscheinen die erkannten Kontraktionen als <b>festzulegen</b>. Klicken Sie mit der rechten Maustaste auf einen Abschnitt und wählen Sie <b>Bewegung ändern</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "Für ein eigenes Profil gehen Sie zu <b>System → Nutzungsprofil</b>, klicken auf <b>Neu…</b> (Meine Werkbank) und haken die Untersuchungen und, in Vollständig, die gewünschten Diagramme an.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "Für eine ganze Sequenz nutzen Sie <b>Fertige Aufgabe</b> (Hantel heben, Tür mit dem Schlüssel öffnen, Becher greifen): Sie wird ab dem Cursor eingefügt.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Nutzungsprofil: Gehirn, Muskeln, Herz, Augen oder Alles",
+        "Replay (animação da gravação)": "Replay (Animation der Aufzeichnung)",
+        "Replay: ver a gravação como uma animação": "Replay: die Aufzeichnung als Animation ansehen",
+        "Rever uma gravação → ▶ Replay": "Aufzeichnung ansehen → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "Nur die verwendeten Kanäle erscheinen in den Listen",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "Ein Hinweis erscheint, wenn die aktiven Muskeln nicht zur gewählten Bewegung passen (z. B. aktiver Trizeps in einem Beugeabschnitt). Er ist ein Hinweis, keine automatische Korrektur.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "Ein Panel ist verschwunden oder ich möchte die Panels neu anordnen (Schubladen)",
+        "Uma aba sumiu": "Ein Reiter ist verschwunden",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "Eine Aufzeichnung einer anderen Untersuchung öffnet sich in jedem Profil gleich; das Profil ordnet nur den Bildschirm.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Das Replay einer Muskel-, Herz- oder Augenaufzeichnung ansehen",
+        "Visualizar → Músculos → desenho do corpo": "Anzeigen → Muskeln → Körperzeichnung",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Zurück zur Aufnahme: Die Reiter außerhalb des Profils verschwinden, die anderen bleiben an ihrem Platz.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Gehen Sie zu <b>Aufzeichnung ansehen</b> und wählen Sie die Aufzeichnung in der Liste: Die Animation gibt es nur für Muskel-, Herz- und Augenuntersuchungen.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "die Aufzeichnung hat weder Bewegungsmarker noch erkannte Kontraktionen. Markieren Sie in der Stufe Vollständig die Abschnitte auf der Zeitleiste mit der rechten Maustaste.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "die Aufzeichnung als Animation: die Figur, die sich bewegt, das Herz, das schlägt, oder die Augen, die blinzeln und blicken.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "die Aufzeichnung ist vom Gehirn oder noch nicht fertig geladen. Wählen Sie eine Muskel-, Herz- oder Augenaufzeichnung.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "Animation, die aus den aufgezeichneten Signalen die markierte Bewegung, den Herzrhythmus oder den Blick nachbildet. Sie simuliert, was aufgezeichnet wurde: weder Video noch Befund.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "ziehen Sie sie: Wird sie nahe einem anderen empfohlenen Punkt losgelassen, rastet sie dort ein. In einem vergrößerten Bereich trifft man leichter.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "jede Elektrode auf dem richtigen Muskel, mit der Aktivierungswärme an ihrer Stelle.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "das aktuelle Profil enthält ihn nicht. Wechseln Sie zu <b>Alles</b> oder bearbeiten Sie Ihr Profil unter <b>System → Nutzungsprofil</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "beim Schließen fragt das Programm, ob es ungespeicherte Markierungen gibt; antworten Sie <b>Speichern</b>. Falls schon geschlossen, wiederholen und speichern.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "europäische Empfehlungen, wo Oberflächenelektroden für jeden Muskel sitzen sollen (über dem Muskelbauch, fern der Sehne). Die Körperzeichnung lässt die Elektrode an diesen Punkten einrasten.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "nur die Reiter Ihrer Arbeit auf dem Bildschirm, ohne eine Aufzeichnung zu verlieren.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "eine Zeitleiste mit der richtigen Bewegung in jedem Abschnitt, gespeichert neben der Aufzeichnung.",
         # ===== p3_atlas (1.10.0) =====
         "Bíceps": "Bizeps",
         "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Klicken Sie auf „Elektrode hinzufügen“ und dann auf den Körper: die Elektrode rastet am\nnächsten SENIAM-Punkt (Muskelbauch) ein oder bleibt dort, wo Sie geklickt haben.\nZIEHEN Sie die Elektrode: die Wärme folgt ihr und zeigt die dort gemessene Intensität.\nMausrad zoomt; rechte Taste verschiebt die vergrößerte Ansicht.\nDoppelklick benennt um · Entf entfernt die ausgewählte.",
@@ -24437,6 +24851,75 @@ class I18N:
 
     # Dicionários JAPANESE — chaves em pt-BR
     _ja = {
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "インストールや更新後の<b>最初</b>の起動ではキャッシュ（プログラムの隣、またはユーザーのローカルデータの ROA フォルダー内の <b>.roa_cache</b> フォルダー）を準備するため時間がかかります。次回からは数秒で開きます。ロゴ付きの起動画面には、読み込み中の内容が言葉で表示されます。遅いままなら、ウイルス対策ソフトが起動のたびにプログラムのフォルダーを検査していないか確認してください。",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "アニメーションは信号から記録内容を<b>再現（シミュレーション）</b>したものです。本人の映像ではなく、報告書でも診断でもありません。",
+        "A figura não se mexe": "人形が動かない",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "<b>完全</b>レベルで筋肉の記録のリプレイを開きます。",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "タイムラインをドラッグして任意の時点へ移動します。横のリストで区間・拍・イベントをクリックすると、プレーヤーがそこへ飛びます。",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "点をドラッグして調整します。ダブルクリックで名前変更、<b>Delete</b> で選択した電極を削除します。",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "ブロックをドラッグして移動し、端を引いて伸ばします。<b>ここで分割</b>は区間を二つに切り、<b>トラックを追加</b>は同時に起こる動作のための別トラックを作ります（最大 4 本）。",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "拍と目のイベントは PDF 報告書と同じものです。修正（完全レベル）しても記録は変わらず、記録の隣にあるリプレイのファイルだけが変わります。",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "チャンネル一覧には、選んだ検査で<b>使用中</b>のチャンネルだけが表示されます。記録を見直すときは、一覧は今つながっている機器ではなく、その記録のチャンネルに従います。",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "チャンネル一覧には<b>使用中</b>のチャンネルだけが表示されます。オンで、検査の種類に合うもの（心臓と指定したチャンネルは筋肉の一覧に出ません）。種類の変更やチャンネルの再オンは、完全レベルの<b>フィルターとチャンネル</b>で行います。記録を見直すときは、一覧はその記録のチャンネルに従います。",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "<b>電極を追加</b>をクリックしてから体をクリックします。点は最も近い筋肉の推奨位置（筋腹、SENIAM 基準）に吸着します。",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "<b>▶ リプレイ</b>をクリックします。プレーヤー付きのウィンドウが開きます：<b>▶ 再生</b>、<b>⏸ 一時停止</b>、<b>⏮ 先頭</b>、タイムライン、時計。",
+        "Colocar os eletrodos no desenho do corpo": "体の図に電極を配置する",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z で元に戻します。<b>保存</b>をクリックすると、movimentos.json ファイルが記録の隣に保存され、次回読み込まれます。",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "正面から見ると、本人の<b>右</b>側は図の<b>左</b>側にあります（写真と同じ）。筋肉名の右/左を確認してください。",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "検査中、電極の点の熱い斑点はそこで測った強さを示し、番号の周りのリングは信号の質を示します。",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "<b>記録を見直す</b>で筋肉・心臓・目の記録を選び、<b>▶ リプレイ</b>をクリックします。人形がマークされた動作を再現し、心臓が記録されたリズムで鼓動し、あるいは二つの目が信号に合わせてまばたきし視線を動かします。<b>▶ 再生</b>、<b>⏸ 一時停止</b>を使い、タイムラインをドラッグしてください。アニメーションは記録内容を<b>再現</b>したもので、本人の映像でも報告書・診断でもありません。脳の記録ではボタンは無効です。",
+        "Escolher o perfil de uso (quais abas aparecem)": "使用プロファイルを選ぶ（表示されるタブ）",
+        "Fechei a janela e perdi as marcações": "ウィンドウを閉じてマークが消えた",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "以前からのインストールは<b>すべて</b>で始まります。あなたが選ばない限り何も消えません。",
+        "Manual: Abertura rápida": "マニュアル：高速起動",
+        "Manual: Canais em uso": "マニュアル：使用中のチャンネル",
+        "Manual: Exame de músculos → Atlas muscular": "マニュアル：筋肉の検査 → 筋肉アトラス",
+        "Manual: Nível Completo → Painéis em gavetas": "マニュアル：完全レベル → 引き出し式パネル",
+        "Manual: Perfis de uso": "マニュアル：使用プロファイル",
+        "Manual: Rever uma gravação → Replay": "マニュアル：記録を見直す → リプレイ",
+        "Manual: Rever uma gravação → Replay → Músculos": "マニュアル：記録を見直す → リプレイ → 筋肉",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "リプレイの動作をマーク・修正する（筋肉）",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "以前のバージョンの配置は自動で変換されます。点が想定どおりの位置にあるかだけ確認してください。",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "<b>ホーム画面</b>で<b>使用プロファイル</b>のボックスを開き、<b>脳</b>、<b>筋肉</b>、<b>心臓</b>、<b>目</b>、<b>すべて</b>のいずれかを選びます。",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "<b>筋肉</b>タブで<b>ビュー</b>を選びます：正面、背面、側面、または拡大領域（顔、前腕と手、脚…）。",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "<b>筋肉</b>タブの体の図（正面、背面、側面、拡大領域）は、各電極を番号付きの点で示します。<b>電極を追加</b>をクリックしてから体をクリックすると、点は推奨位置（筋腹、SENIAM 基準）に吸着するか、クリックした位置に置かれます。検査中は電極の点の熱い斑点がそこで測った強さを示します。",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "心臓では、拍の帯は色<b>と</b>形の両方を使います：細い線 = 規則的、オレンジの三角 = 早期、赤い長方形 = 長い休止。",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "完全レベルでは各パネルが<b>引き出し</b>です：<b>▾</b> で折りたたみ、<b>⋯</b> でメニュー（移動、既定サイズ、閉じる）、<b>×</b> で閉じます。パネルを再び開く、または元の配置に戻すには、タブ上部の<b>パネル ▾</b> ボタンでチェックを入れるか、<b>既定に戻す</b>を選びます。下端のハンドルで高さを変えます。配置は次回のために保存されます。",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "目では、左右が逆に出る場合、<b>水平反転</b>または<b>垂直反転</b>にチェックを入れます。",
+        "O botão ▶ Replay está apagado": "▶ リプレイのボタンが灰色",
+        "O eletrodo caiu no músculo errado": "電極が違う筋肉に置かれた",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "プロファイルはあなたが何を扱うかを示し、それ以外のタブを隠します。<b>ホーム画面</b>（<b>使用プロファイル</b>のボックス）または<b>システム → 使用プロファイル</b>で切り替えられ、そこでは欲しい検査とグラフだけを選んだ<b>マイベンチ</b>も作れます。<b>すべて</b>はプログラム全体を表示します。別の検査の記録はどのプロファイルでも普通に開けます。",
+        "O programa demora para abrir": "プログラムの起動が遅い",
+        "Onde está cada eletrodo (desenho do corpo)": "各電極の位置（体の図）",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "区間は記録のマーカーから生まれます。マーカーがない場合、検出された収縮は<b>未定</b>として表示されます。区間を右クリックして<b>動作を変更</b>を選びます。",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "自分専用のプロファイルは、<b>システム → 使用プロファイル</b>で<b>新規…</b>（マイベンチ）をクリックし、検査と、完全レベルでは表示したいグラフにチェックを入れます。",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "一連の動作をまとめて入れるには<b>既定のタスク</b>（ダンベルを持ち上げる、鍵でドアを開ける、コップを取る）を使います。カーソル位置から挿入されます。",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "使用プロファイル：脳、筋肉、心臓、目、すべて",
+        "Replay (animação da gravação)": "リプレイ（記録のアニメーション）",
+        "Replay: ver a gravação como uma animação": "リプレイ：記録をアニメーションとして見る",
+        "Rever uma gravação → ▶ Replay": "記録を見直す → ▶ リプレイ",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "一覧には使用中のチャンネルだけが表示される",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "活動している筋肉が選んだ動作と合わないとき（例：屈曲の区間で上腕三頭筋が活動）に注意が表示されます。これはヒントであり、自動修正ではありません。",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "パネルが消えた、またはパネルを並べ替えたい（引き出し）",
+        "Uma aba sumiu": "タブが消えた",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "別の検査の記録はどのプロファイルでも同じように開けます。プロファイルは画面を整理するだけです。",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "筋肉・心臓・目の記録のリプレイを見る",
+        "Visualizar → Músculos → desenho do corpo": "表示 → 筋肉 → 体の図",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "計測に戻ります。プロファイル外のタブは消え、ほかはそのまま残ります。",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "<b>記録を見直す</b>へ行き、一覧から記録を選びます。アニメーションは筋肉・心臓・目の検査にだけあります。",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "その記録には動作のマーカーも検出された収縮もありません。完全レベルで、タイムライン上を右クリックして区間をマークしてください。",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "記録がアニメーションとして再生される：動く人形、鼓動する心臓、まばたきし視線を動かす目。",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "その記録は脳のものか、まだ読み込みが終わっていません。筋肉・心臓・目の記録を選んでください。",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "記録された信号から、マークされた動作、心臓のリズム、視線を再現するアニメーション。記録内容を再現したもので、映像でも報告書でもありません。",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "ドラッグしてください。別の推奨点の近くで離すとそこに吸着します。拡大領域のほうが正確に置けます。",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "各電極が正しい筋肉の上にあり、活動の熱がその位置に表示される。",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "現在のプロファイルに含まれていません。<b>すべて</b>に切り替えるか、<b>システム → 使用プロファイル</b>でプロファイルを編集してください。",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "閉じるときに未保存のマークがあるか尋ねられます。<b>保存</b>と答えてください。すでに閉じた場合はやり直して保存してください。",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "各筋肉の表面電極をどこに置くかについての欧州の推奨（筋腹の上、腱から離れた位置）。体の図は電極をこれらの点に吸着させます。",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "自分の仕事に必要なタブだけが画面にあり、記録は一つも失われない。",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "各区間に正しい動作が入ったタイムラインが、記録の隣に保存される。",
         # ===== p3_atlas (1.10.0) =====
         "Bíceps": "上腕二頭筋",
         "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "「電極を追加」をクリックしてから体をクリック：電極は最も近い SENIAM 点（筋腹）に\n吸着するか、クリックした位置に置かれます。\n電極をドラッグ：熱表示が追従し、その位置で測った強さを示します。\nマウスホイールで拡大、右ボタンで拡大表示をドラッグ。\nダブルクリックで名前変更 · Delete で選択した電極を削除。",
@@ -28414,6 +28897,75 @@ class I18N:
 
     # Dicionários RUSSIAN — chaves em pt-BR
     _ru = {
+        # ===== p5_ajuda (1.10.0) =====
+        "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "<b>Первый</b> запуск после установки или обновления готовит кэш (папка <b>.roa_cache</b> рядом с программой или в папке ROA локальных данных пользователя) и поэтому длится дольше; следующие открываются за несколько секунд. Заставка с логотипом словами сообщает, что загружается. Если медленно по-прежнему, проверьте, не сканирует ли антивирус папку программы при каждом запуске.",
+        "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "Анимация <b>имитирует</b> записанное по сигналам: это не видео человека и не заключение или диагноз.",
+        "A figura não se mexe": "Фигура не двигается",
+        "Abra o Replay da gravação de músculos no nível <b>Completo</b>.": "Откройте Replay записи мышц на уровне <b>Полный</b>.",
+        "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em um trecho, uma batida ou um evento para o tocador pular até lá.": "Перетащите шкалу времени, чтобы перейти к моменту. В списке рядом щёлкните отрезок, удар или событие — проигрыватель перейдёт туда.",
+        "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o selecionado.": "Перетащите точку, чтобы подправить; двойной щелчок переименовывает; <b>Delete</b> удаляет выбранный.",
+        "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para movimentos ao mesmo tempo (até quatro).": "Перетащите блок, чтобы сдвинуть, и потяните край, чтобы растянуть. <b>Разделить здесь</b> режет отрезок надвое; <b>Добавить дорожку</b> создаёт ещё одну дорожку для одновременных движений (до четырёх).",
+        "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los (nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.": "Удары и события глаз те же, что в отчёте PDF; их исправление (уровень Полный) не меняет запись, только файл Replay рядом с ней.",
+        "As listas de canais mostram só os canais <b>em uso</b> no exame escolhido. Ao rever uma gravação, as listas seguem os canais daquela gravação, não os do aparelho ligado agora.": "Списки каналов показывают только каналы, <b>используемые</b> в выбранном обследовании. При просмотре записи списки следуют каналам этой записи, а не подключённого сейчас прибора.",
+        "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do exame (um canal marcado como coração não aparece na lista de músculos). Para mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. Ao rever uma gravação, as listas seguem os canais daquela gravação.": "Списки каналов показывают только <b>используемые</b> каналы: включённые и соответствующие типу обследования (канал, отмеченный как сердце, не появится в списке мышц). Чтобы сменить тип или снова включить канал, используйте <b>Фильтры и каналы</b> на уровне Полный. При просмотре записи списки следуют каналам этой записи.",
+        "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).": "Нажмите <b>Добавить электрод</b>, затем щёлкните по телу: точка прилипнет к рекомендуемому месту ближайшей мышцы (брюшко мышцы, ориентир SENIAM).",
+        "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, <b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.": "Нажмите <b>▶ Replay</b>. Откроется окно с проигрывателем: <b>▶ Воспроизвести</b>, <b>⏸ Пауза</b>, <b>⏮ Начало</b>, шкала времени и часы.",
+        "Colocar os eletrodos no desenho do corpo": "Разместить электроды на рисунке тела",
+        "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado da gravação e é lido da próxima vez.": "Ctrl+Z отменяет. Нажмите <b>Сохранить</b>: файл movimentos.json остаётся рядом с записью и читается в следующий раз.",
+        "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, como numa foto; confira o D/E no nome do músculo.": "Спереди <b>правая</b> сторона человека находится <b>слева</b> на рисунке, как на фото; сверьте П/Л в названии мышцы.",
+        "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade medida ali; o anel em volta do número mostra a qualidade do sinal.": "Во время обследования тепловое пятно в точке электрода показывает измеренную там интенсивность; кольцо вокруг номера показывает качество сигнала.",
+        "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação <b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. Para gravações de cérebro o botão fica desligado.": "В <b>Просмотреть запись</b> выберите запись мышц, сердца или глаз и нажмите <b>▶ Replay</b>. Фигура повторяет отмеченное движение, сердце бьётся в записанном ритме, а два глаза моргают и смотрят согласно сигналам. Используйте <b>▶ Воспроизвести</b>, <b>⏸ Пауза</b> и перетаскивайте шкалу времени. Анимация <b>имитирует</b> записанное: это не видео человека и не заключение или диагноз. Для записей мозга кнопка выключена.",
+        "Escolher o perfil de uso (quais abas aparecem)": "Выбрать профиль использования (какие вкладки показывать)",
+        "Fechei a janela e perdi as marcações": "Я закрыл(а) окно и потерял(а) отметки",
+        "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.": "Старые установки начинают с <b>Всё</b>: ничего не исчезает без вашего выбора.",
+        "Manual: Abertura rápida": "Руководство: Быстрый запуск",
+        "Manual: Canais em uso": "Руководство: Используемые каналы",
+        "Manual: Exame de músculos → Atlas muscular": "Руководство: Обследование мышц → Мышечный атлас",
+        "Manual: Nível Completo → Painéis em gavetas": "Руководство: Уровень Полный → Панели-ящики",
+        "Manual: Perfis de uso": "Руководство: Профили использования",
+        "Manual: Rever uma gravação → Replay": "Руководство: Просмотреть запись → Replay",
+        "Manual: Rever uma gravação → Replay → Músculos": "Руководство: Просмотреть запись → Replay → Мышцы",
+        "Marcar ou corrigir os movimentos do Replay (músculos)": "Отметить или исправить движения в Replay (мышцы)",
+        "Montagens de versões anteriores são convertidas sozinhas; confira só se os pontos caíram onde você esperava.": "Монтажи прежних версий преобразуются сами; проверьте только, что точки попали туда, куда вы ожидали.",
+        "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha <b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.": "На <b>начальном экране</b> откройте поле <b>Профиль использования</b> и выберите <b>Мозг</b>, <b>Мышцы</b>, <b>Сердце</b>, <b>Глаза</b> или <b>Всё</b>.",
+        "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma área ampliada (rosto, antebraço e mão, perna…).": "На вкладке <b>Мышцы</b> выберите <b>Вид</b>: спереди, сзади, сбоку или увеличенную область (лицо, предплечье и кисть, нога…).",
+        "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas ampliadas) mostra cada eletrodo como um ponto numerado. Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado (ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.": "На вкладке <b>Мышцы</b> рисунок тела (спереди, сзади, сбоку и увеличенные области) показывает каждый электрод пронумерованной точкой. Нажмите <b>Добавить электрод</b>, затем щёлкните по телу: точка прилипнет к рекомендуемому месту (брюшко мышцы, ориентир SENIAM) или останется там, где вы щёлкнули. Во время обследования тепловое пятно в точке электрода показывает измеренную там интенсивность.",
+        "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, triângulo laranja = adiantada, retângulo vermelho = pausa maior.": "У сердца полоса ударов использует цвет <b>и</b> форму: тонкая черта = обычный, оранжевый треугольник = преждевременный, красный прямоугольник = длинная пауза.",
+        "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo muda a altura. O arranjo fica salvo para a próxima vez.": "На уровне Полный каждая панель — это <b>ящик</b>: <b>▾</b> сворачивает, <b>⋯</b> открывает меню (переместить, размер по умолчанию, закрыть), <b>×</b> закрывает. Чтобы снова открыть панель или вернуть исходное расположение, нажмите кнопку <b>Панели ▾</b> вверху вкладки и отметьте её или выберите <b>Восстановить по умолчанию</b>. Ручка на нижнем крае меняет высоту. Расположение сохраняется до следующего раза.",
+        "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou <b>Inverter vertical</b>.": "У глаз, если стороны перепутаны, отметьте <b>Инвертировать по горизонтали</b> или <b>Инвертировать по вертикали</b>.",
+        "O botão ▶ Replay está apagado": "Кнопка ▶ Replay погашена",
+        "O eletrodo caiu no músculo errado": "Электрод попал не на ту мышцу",
+        "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em <b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.": "Профиль говорит, с чем вы работаете, и скрывает вкладки, которые к этому не относятся. Смените его на <b>начальном экране</b> (поле <b>Профиль использования</b>) или в <b>Система → Профиль использования</b>, где также создаётся <b>Моя лаборатория</b> ровно с теми обследованиями и графиками, которые вам нужны. <b>Всё</b> показывает программу целиком. Запись другого обследования открывается в любом профиле как обычно.",
+        "O programa demora para abrir": "Программа долго открывается",
+        "Onde está cada eletrodo (desenho do corpo)": "Где находится каждый электрод (рисунок тела)",
+        "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações detectadas aparecem como <b>a definir</b>. Clique com o botão direito num trecho e escolha <b>Trocar o movimento</b>.": "Отрезки рождаются из маркеров записи; без маркеров обнаруженные сокращения появляются как <b>не определено</b>. Щёлкните отрезок правой кнопкой и выберите <b>Сменить движение</b>.",
+        "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em <b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos que quer ver.": "Для собственного профиля перейдите в <b>Система → Профиль использования</b>, нажмите <b>Новый…</b> (Моя лаборатория) и отметьте обследования и, на уровне Полный, графики, которые хотите видеть.",
+        "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir a porta com a chave, pegar o copo): ela entra a partir do cursor.": "Для целой последовательности используйте <b>Готовая задача</b> (поднять гантель, открыть дверь ключом, взять стакан): она вставляется от курсора.",
+        "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo": "Профиль использования: Мозг, Мышцы, Сердце, Глаза или Всё",
+        "Replay (animação da gravação)": "Replay (анимация записи)",
+        "Replay: ver a gravação como uma animação": "Replay: смотреть запись как анимацию",
+        "Rever uma gravação → ▶ Replay": "Просмотреть запись → ▶ Replay",
+        "Surface EMG for Non-Invasive Assessment of Muscles": "Surface EMG for Non-Invasive Assessment of Muscles",
+        "Só os canais em uso aparecem nas listas": "В списках появляются только используемые каналы",
+        "Um aviso aparece quando os músculos ativos não combinam com o movimento escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma dica, não uma correção automática.": "Предупреждение появляется, когда активные мышцы не соответствуют выбранному движению (например, активный трицепс в отрезке сгибания). Это подсказка, а не автоматическое исправление.",
+        "Um painel sumiu ou quero reorganizar os painéis (gavetas)": "Панель исчезла, или я хочу переставить панели (ящики)",
+        "Uma aba sumiu": "Вкладка исчезла",
+        "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só organiza a tela.": "Запись другого обследования открывается одинаково в любом профиле; профиль лишь упорядочивает экран.",
+        "Ver o Replay de uma gravação de músculos, coração ou olhos": "Смотреть Replay записи мышц, сердца или глаз",
+        "Visualizar → Músculos → desenho do corpo": "Просмотр → Мышцы → рисунок тела",
+        "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.": "Вернитесь к сбору: вкладки вне профиля исчезают, остальные остаются на месте.",
+        "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só existe para exames de músculos, coração e olhos.": "Перейдите в <b>Просмотреть запись</b> и выберите запись в списке: анимация есть только для обследований мышц, сердца и глаз.",
+        "a gravação não tem marcadores de movimento nem contrações detectadas. No nível Completo, marque os trechos na linha do tempo com o botão direito.": "в записи нет ни маркеров движения, ни обнаруженных сокращений. На уровне Полный отметьте отрезки на шкале времени правой кнопкой.",
+        "a gravação tocando como animação: a figura que se move, o coração que bate ou os olhos que piscam e olham.": "запись, проигрываемая как анимация: движущаяся фигура, бьющееся сердце или моргающие и смотрящие глаза.",
+        "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma gravação de músculos, coração ou olhos.": "запись относится к мозгу или ещё не загрузилась. Выберите запись мышц, сердца или глаз.",
+        "animação que refaz, a partir dos sinais gravados, o movimento marcado, o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo nem laudo.": "анимация, которая по записанным сигналам повторяет отмеченное движение, ритм сердца или взгляд. Она имитирует записанное: это не видео и не заключение.",
+        "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa área ampliada fica mais fácil acertar.": "перетащите его: отпущенный рядом с другой рекомендуемой точкой, он прилипнет к ней. В увеличенной области попасть легче.",
+        "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar dele.": "каждый электрод на нужной мышце, и тепло активации появляется на его месте.",
+        "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil em <b>Sistema → Perfil de uso</b>.": "текущий профиль её не включает. Переключитесь на <b>Всё</b> или измените свой профиль в <b>Система → Профиль использования</b>.",
+        "o programa pergunta se há marcações não salvas ao fechar; responda <b>Salvar</b>. Se já fechou, refaça e salve.": "при закрытии программа спрашивает, есть ли несохранённые отметки; ответьте <b>Сохранить</b>. Если уже закрыли, повторите и сохраните.",
+        "recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.": "европейские рекомендации, куда ставить поверхностные электроды на каждой мышце (над брюшком мышцы, подальше от сухожилия). Рисунок тела прилепляет электрод к этим точкам.",
+        "só as abas do seu trabalho na tela, sem perder nenhuma gravação.": "на экране только вкладки вашей работы, без потери записей.",
+        "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da gravação.": "шкала времени с верным движением в каждом отрезке, сохранённая рядом с записью.",
         # ===== p3_atlas (1.10.0) =====
         "Bíceps": "Бицепс",
         "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Нажмите «Добавить электрод», затем щёлкните по телу: электрод прилипнет к\nближайшей точке SENIAM (брюшко мышцы) или останется там, где вы щёлкнули.\nПЕРЕТАЩИТЕ электрод: тепло следует за ним и показывает измеренную там интенсивность.\nКолесо мыши увеличивает; правая кнопка перетаскивает увеличенный вид.\nДвойной щелчок переименовывает · Delete удаляет выбранный.",
@@ -80239,6 +80791,65 @@ HELP_FAQ = [
           "ler, papel de cada coluna). EDF/BDF têm botão próprio com reparo "
           "automático.",
      "ref": "Manual: Importar arquivos"},
+    # ---- 1.10.0: Replay, perfis de uso, gavetas, atlas, abertura rápida, canais em uso
+    {"t": "Replay: ver a gravação como uma animação",
+     "k": "replay animacao boneco figura coracao batendo olhos piscando rever gravacao "
+          "tocar play pausar movimento simula video",
+     "a": "Em <b>Rever uma gravação</b>, escolha uma gravação de músculos, coração ou "
+          "olhos e clique em <b>▶ Replay</b>. Uma figura refaz o movimento marcado, um "
+          "coração bate no ritmo gravado ou dois olhos piscam e olham conforme os sinais. "
+          "Use <b>▶ Tocar</b>, <b>⏸ Pausar</b> e arraste a linha do tempo. A animação "
+          "<b>simula</b> o que foi gravado: não é vídeo da pessoa nem laudo ou diagnóstico. "
+          "Para gravações de cérebro o botão fica desligado.",
+     "ref": "Manual: Rever uma gravação → Replay"},
+    {"t": "Perfil de uso: Cérebro, Músculos, Coração, Olhos ou Tudo",
+     "k": "perfil uso com o que voce trabalha abas sumiram escondidas cerebro musculos "
+          "coracao olhos tudo minha bancada trocar mudar personalizado",
+     "a": "O perfil diz com o que você trabalha e esconde as abas que não fazem parte. "
+          "Troque na <b>tela inicial</b> (caixa <b>Perfil de uso</b>) ou em "
+          "<b>Sistema → Perfil de uso</b>, onde também se cria <b>Minha bancada</b> com "
+          "exatamente os exames e gráficos que você quer. <b>Tudo</b> mostra o programa "
+          "inteiro. Uma gravação de outro exame abre normalmente em qualquer perfil.",
+     "ref": "Manual: Perfis de uso"},
+    {"t": "Um painel sumiu ou quero reorganizar os painéis (gavetas)",
+     "k": "painel sumiu fechei gaveta recolher expandir reabrir mover para cima baixo "
+          "tamanho altura botao paineis restaurar padrao arranjo",
+     "a": "No nível Completo cada painel é uma <b>gaveta</b>: <b>▾</b> recolhe, <b>⋯</b> "
+          "abre o menu (mover, tamanho padrão, fechar) e <b>×</b> fecha. Para reabrir um "
+          "painel ou voltar ao arranjo original, use o botão <b>Painéis ▾</b> no alto da "
+          "aba e marque-o, ou escolha <b>Restaurar o padrão</b>. A alça na borda de baixo "
+          "muda a altura. O arranjo fica salvo para a próxima vez.",
+     "ref": "Manual: Nível Completo → Painéis em gavetas"},
+    {"t": "Onde está cada eletrodo (desenho do corpo)",
+     "k": "atlas desenho corpo eletrodo musculo onde colocar seniam frente costas lado "
+          "area rosto calor intensidade mancha ponto numero",
+     "a": "Na aba <b>Músculos</b>, o desenho do corpo (frente, costas, lado e áreas "
+          "ampliadas) mostra cada eletrodo como um ponto numerado. Clique em "
+          "<b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar recomendado "
+          "(ventre do músculo, referência SENIAM) ou fica onde você clicou. Durante o "
+          "exame, uma mancha de calor no ponto do eletrodo mostra a intensidade medida ali.",
+     "ref": "Manual: Exame de músculos → Atlas muscular"},
+    {"t": "O programa demora para abrir",
+     "k": "abrir demora lento devagar abertura rapida cache tela de abertura logo "
+          "primeira vez depois de atualizar carregando",
+     "a": "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache "
+          "(pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais "
+          "do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A "
+          "tela de abertura com o logo diz em palavras o que está sendo carregado. Se a "
+          "demora continuar, confira se o antivírus não examina a pasta do programa a "
+          "cada abertura.",
+     "ref": "Manual: Abertura rápida"},
+    {"t": "Só os canais em uso aparecem nas listas",
+     "k": "canal sumiu lista faltando canais desligado off tipo nao aparece 16 32 64 "
+          "escolher canal combo musculo coracao",
+     "a": "As listas de canais mostram só os canais <b>em uso</b>: ligados e do tipo do "
+          "exame (um canal marcado como coração não aparece na lista de músculos). Para "
+          "mudar o tipo ou religar um canal, use <b>Filtros e Canais</b> no nível Completo. "
+          "Ao rever uma gravação, as listas seguem os canais daquela gravação.",
+     "a_simples": "As listas de canais mostram só os canais <b>em uso</b> no exame "
+                  "escolhido. Ao rever uma gravação, as listas seguem os canais daquela "
+                  "gravação, não os do aparelho ligado agora.",
+     "ref": "Manual: Canais em uso"},
 ]
 
 
@@ -80692,6 +81303,122 @@ HELP_GUIAS = [
      ],
      "erros": [],
      "ref": "Guardando seus dados ao atualizar (PDF que acompanha o programa)"},
+
+    # ---- 1.10.0: Replay, perfis de uso e atlas
+    {"t": "Ver o Replay de uma gravação de músculos, coração ou olhos",
+     "obj": "a gravação tocando como animação: a figura que se move, o coração que bate "
+            "ou os olhos que piscam e olham.",
+     "k": "replay animacao tocar ver gravacao boneco figura movimento coracao batendo "
+          "olhos piscando play pausar linha do tempo lista batidas adiantada pausa",
+     "passos": [
+         "Vá em <b>Rever uma gravação</b> e escolha a gravação na lista: a animação só "
+         "existe para exames de músculos, coração e olhos.",
+         "Clique em <b>▶ Replay</b>. A janela abre com o tocador: <b>▶ Tocar</b>, "
+         "<b>⏸ Pausar</b>, <b>⏮ Início</b>, a linha do tempo e o relógio.",
+         "Arraste a linha do tempo para ir a um instante. Na lista ao lado, clique em "
+         "um trecho, uma batida ou um evento para o tocador pular até lá.",
+         "No coração, a faixa de batidas usa cor <b>e</b> forma: traço fino = regular, "
+         "triângulo laranja = adiantada, retângulo vermelho = pausa maior.",
+         "Nos olhos, se os lados saírem trocados, marque <b>Inverter horizontal</b> ou "
+         "<b>Inverter vertical</b>.",
+     ],
+     "cuidados": [
+         "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da "
+         "pessoa, e não é laudo nem diagnóstico.",
+         "As batidas e os eventos dos olhos são os mesmos do relatório PDF; corrigi-los "
+         "(nível Completo) não altera a gravação, só o arquivo do Replay ao lado dela.",
+     ],
+     "erros": [
+         ("O botão ▶ Replay está apagado",
+          "a gravação é de cérebro ou ainda não terminou de carregar. Escolha uma "
+          "gravação de músculos, coração ou olhos."),
+         ("A figura não se mexe",
+          "a gravação não tem marcadores de movimento nem contrações detectadas. No "
+          "nível Completo, marque os trechos na linha do tempo com o botão direito."),
+     ],
+     "ref": "Manual: Rever uma gravação → Replay"},
+
+    {"t": "Marcar ou corrigir os movimentos do Replay (músculos)",
+     "obj": "uma linha do tempo com o movimento certo em cada trecho, salva ao lado da "
+            "gravação.",
+     "k": "movimento errado trocar dividir apagar faixa tarefa pronta halter chave copo "
+          "desfazer salvar movimentos.json supinacao pronacao linha do tempo editar",
+     "passos": [
+         "Abra o Replay da gravação de músculos no nível <b>Completo</b>.",
+         "Os trechos nascem dos marcadores da gravação; sem marcador, as contrações "
+         "detectadas aparecem como <b>a definir</b>. Clique com o botão direito num "
+         "trecho e escolha <b>Trocar o movimento</b>.",
+         "Arraste um bloco para movê-lo e puxe a borda para esticar. <b>Dividir aqui</b> "
+         "corta um trecho em dois; <b>Adicionar faixa</b> cria outra faixa para "
+         "movimentos ao mesmo tempo (até quatro).",
+         "Para uma sequência inteira, use <b>Tarefa pronta</b> (levantar o halter, abrir "
+         "a porta com a chave, pegar o copo): ela entra a partir do cursor.",
+         "Ctrl+Z desfaz. Clique em <b>Salvar</b>: o arquivo movimentos.json fica ao lado "
+         "da gravação e é lido da próxima vez.",
+     ],
+     "cuidados": [
+         "Um aviso aparece quando os músculos ativos não combinam com o movimento "
+         "escolhido (tríceps ativo num trecho de flexão, por exemplo). Ele é uma "
+         "dica, não uma correção automática.",
+     ],
+     "erros": [
+         ("Fechei a janela e perdi as marcações",
+          "o programa pergunta se há marcações não salvas ao fechar; responda "
+          "<b>Salvar</b>. Se já fechou, refaça e salve."),
+     ],
+     "ref": "Manual: Rever uma gravação → Replay → Músculos"},
+
+    {"t": "Escolher o perfil de uso (quais abas aparecem)",
+     "obj": "só as abas do seu trabalho na tela, sem perder nenhuma gravação.",
+     "k": "perfil uso escolher trocar abas sumiram esconder cerebro musculos coracao "
+          "olhos tudo minha bancada personalizado com o que voce trabalha",
+     "passos": [
+         "Na <b>tela inicial</b>, abra a caixa <b>Perfil de uso</b> e escolha "
+         "<b>Cérebro</b>, <b>Músculos</b>, <b>Coração</b>, <b>Olhos</b> ou <b>Tudo</b>.",
+         "Para um perfil só seu, vá em <b>Sistema → Perfil de uso</b>, clique em "
+         "<b>Nova…</b> (Minha bancada) e marque os exames e, no Completo, os gráficos "
+         "que quer ver.",
+         "Volte para a coleta: as abas de fora do perfil somem e as outras ficam no lugar.",
+     ],
+     "cuidados": [
+         "Instalações antigas começam em <b>Tudo</b>: nada some sem você escolher.",
+         "Uma gravação de outro exame abre igual em qualquer perfil; o perfil só "
+         "organiza a tela.",
+     ],
+     "erros": [
+         ("Uma aba sumiu",
+          "o perfil atual não a inclui. Troque para <b>Tudo</b> ou edite o seu perfil "
+          "em <b>Sistema → Perfil de uso</b>."),
+     ],
+     "ref": "Manual: Perfis de uso"},
+
+    {"t": "Colocar os eletrodos no desenho do corpo",
+     "obj": "cada eletrodo no músculo certo, com o calor da ativação aparecendo no lugar "
+            "dele.",
+     "k": "eletrodo desenho corpo atlas colocar adicionar arrastar renomear apagar "
+          "seniam musculo lado direito esquerdo frente costas rosto area ampliada",
+     "passos": [
+         "Na aba <b>Músculos</b>, escolha a <b>Vista</b>: frente, costas, lado ou uma "
+         "área ampliada (rosto, antebraço e mão, perna…).",
+         "Clique em <b>Adicionar eletrodo</b> e depois no corpo: o ponto cola no lugar "
+         "recomendado do músculo mais próximo (ventre do músculo, referência SENIAM).",
+         "Arraste o ponto para ajustar; duplo clique renomeia; <b>Delete</b> remove o "
+         "selecionado.",
+         "Durante o exame, a mancha de calor no ponto do eletrodo mostra a intensidade "
+         "medida ali; o anel em volta do número mostra a qualidade do sinal.",
+     ],
+     "cuidados": [
+         "De frente, o lado <b>direito</b> da pessoa fica à <b>esquerda</b> do desenho, "
+         "como numa foto; confira o D/E no nome do músculo.",
+         "Montagens de versões anteriores são convertidas sozinhas; confira só se os "
+         "pontos caíram onde você esperava.",
+     ],
+     "erros": [
+         ("O eletrodo caiu no músculo errado",
+          "arraste-o: ao soltar perto de outro ponto recomendado ele cola nele. Numa "
+          "área ampliada fica mais fácil acertar."),
+     ],
+     "ref": "Manual: Exame de músculos → Atlas muscular"},
 ]
 
 
@@ -80704,6 +81431,16 @@ HELP_GUIAS = [
 # Formato: sigla -> (nome por extenso, o que é, onde ver no ROA).
 # ------------------------------------------------------------------
 HELP_GLOSSARIO = {
+    # ---- 1.10.0
+    "replay": ("Replay (animação da gravação)",
+               "animação que refaz, a partir dos sinais gravados, o movimento marcado, "
+               "o ritmo do coração ou o olhar. Simula o que foi gravado: não é vídeo "
+               "nem laudo.", "Rever uma gravação → ▶ Replay"),
+    "seniam": ("Surface EMG for Non-Invasive Assessment of Muscles",
+               "recomendações europeias de onde colocar os eletrodos de superfície em "
+               "cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do "
+               "corpo cola o eletrodo nesses pontos.",
+               "Visualizar → Músculos → desenho do corpo"),
     "erd": ("Event-Related Desynchronization (dessincronização relacionada a evento)",
             "queda da potência de uma banda (tipicamente mu, 8–13 Hz) quando a "
             "região cortical correspondente é recrutada — é o que se mede em "
@@ -81612,6 +82349,63 @@ impedância?) ou um código de erro (ex.: E115); há também botões de tema
 : chat de
 perguntas frequentes e códigos de erro, sem enviar dados para fora.
 
+## Replay de uma gravação (músculos, coração e olhos)
+
+Em Rever uma gravação, o botão ▶ Replay abre a gravação como uma animação:
+uma figura articulada vista de lado refaz o movimento marcado na linha do
+tempo e acende cada músculo com a intensidade medida; um coração desenhado
+bate no ritmo gravado, com a faixa de todas as batidas (regular, adiantada,
+pausa maior, em cor e forma) e a lista clicável; dois olhos piscam e olham
+conforme os sinais, com inversão horizontal e vertical e a linha do tempo em
+palavras. O tocador é o mesmo nos três exames (tocar, pausar, início, linha
+do tempo, relógio; no Completo velocidade e repetir). A animação simula o que
+foi gravado: não é vídeo nem laudo. No Completo a linha do tempo dos
+movimentos é editável (trocar, dividir, apagar, faixas, tarefas prontas,
+desfazer) e as batidas e os eventos dos olhos podem ser corrigidos; tudo
+fica em movimentos.json, batidas.json e olhos.json ao lado da gravação.
+
+## Perfis de uso
+
+O perfil de uso (Cérebro, Músculos, Coração, Olhos, Tudo ou Minha bancada)
+diz com o que você trabalha e esconde as abas de fora. Escolha na tela
+inicial ou em Sistema → Perfil de uso, onde perfis personalizados são
+criados, editados e apagados. O assistente de primeiro uso pergunta "Com o
+que você trabalha?". Instalações antigas começam em Tudo. Uma gravação de
+outro exame abre igual em qualquer perfil.
+
+## Painéis em gavetas (nível Completo)
+
+Cada painel das abas Músculos, Coração, Olhos, Análises, Filtros e Canais e
+Rede e Eventos é uma gaveta com cabeçalho fino: recolher (▾), menu (⋯:
+mover, tamanho padrão, fechar) e fechar (×); a alça de baixo muda a altura;
+painéis lado a lado dividem a largura. O botão Painéis ▾ lista os painéis da
+aba, recolhe ou expande todos e restaura o padrão. O arranjo é salvo no
+config.json. Painel fechado ou recolhido não processa. No Simples nada muda.
+
+## Atlas muscular (desenho do corpo)
+
+Corpo inteiro em traço de ilustração médica, de frente, de costas e de lado,
+e áreas ampliadas (rosto, pescoço, peito e abdômen, costas, braço, antebraço
+e mão, mão, perna e pé, com lado direito e esquerdo). Adicionar eletrodo e
+clicar no corpo: o ponto cola no ventre do músculo mais próximo (referência
+SENIAM; no rosto masseter, temporal, frontal, orbicular e zigomático).
+Durante o exame, a intensidade aparece como mancha de calor no ponto do
+eletrodo, recortada pelo contorno do corpo. Montagens antigas são convertidas.
+
+## Abertura rápida
+
+O lançador compila o programa uma vez para um cache (.roa_cache ao lado do
+programa ou na pasta ROA/cache dos dados locais do usuário) e as aberturas
+seguintes levam poucos segundos. A tela de abertura com o logo mostra em
+palavras o que está sendo carregado e some em fade. A primeira abertura
+depois de atualizar demora mais porque refaz o cache.
+
+## Canais em uso
+
+As listas de canais de todos os painéis mostram só os canais em uso: ligados
+e do tipo do exame (cérebro, músculos, coração ou olhos). Ao rever uma
+gravação, as listas seguem os canais daquela gravação, não os da coleta atual.
+
 ## Solução de problemas
 
 - O Windows bloqueou o programa (SmartScreen).: Clique em Mais
@@ -81844,7 +82638,9 @@ _HELP_TELAS_SO_COMPLETO = tuple(re.compile(p) for p in (
     r"\bBancada\b", r"\bICA\b", r"Abrir EDF", r"iCelera", r"Importar arquivos",
     r"\bBIDS\b", r"\bFIF\b", r"\bMNE\b", r"\bLSL\b", r"Playback",
     r"Modo Simula[çc][ãa]o", r"summary\.json", r"Rede e Eventos", r"Layout Custom",
-    r"\bReceitas\b", r"Regress[ãa]o ocular", r"\bnotch\b", r"Sistema → Volunt"))
+    r"\bReceitas\b", r"Regress[ãa]o ocular", r"\bnotch\b", r"Sistema → Volunt",
+    # 1.10.0: gavetas e a edição da linha do tempo do Replay só existem no Completo
+    r"\bgavetas?\b", r"Pain[ée]is ▾", r"Tarefa pronta"))
 
 
 def _help_cita_tela_oculta(texto):
