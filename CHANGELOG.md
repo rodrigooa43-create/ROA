@@ -119,6 +119,17 @@ Todas as mudanças notáveis deste projeto. Formato baseado em [Keep a Changelog
   `aplica_trad.py`), com `testes/test_vazamento_idioma.py` garantindo que toda
   chave de `tr()` existe nos 8 idiomas.
 
+- **Documentação (P5).** Textos-fonte das seções novas do Manual do Usuário
+  em `docs/manual_1.10/pt/` (abertura rápida, perfis de uso, canais em uso,
+  painéis em gavetas, atlas muscular, Replay) traduzidos para os 8 idiomas
+  (`docs/manual_1.10/<idioma>/`, rótulos de interface iguais aos do programa)
+  e seções do Manual Técnico em `docs/manual_1.10/tecnico/`. A ajuda interna
+  (Ajuda → Assistente) ganhou 6 perguntas, 4 guias passo a passo (Replay,
+  marcar movimentos, perfil de uso, eletrodos no desenho do corpo), 2 verbetes
+  (Replay, SENIAM) e 6 seções na base de conhecimento, tudo nos 9 idiomas; as
+  entradas que citam gavetas ou a edição da linha do tempo ficam fora do nível
+  Simples. Toda classe e função nova do 1.10.0 tem docstring em português
+  (`testes/test_p5_ajuda.py`).
 ### Corrigido
 - **Só os canais em uso (P1).** Com 8 canais de EMG o mapa "Atividade
   muscular (canais × tempo)" listava CH1 a CH64, porque `_emg_update_advanced`
@@ -134,6 +145,14 @@ Todas as mudanças notáveis deste projeto. Formato baseado em [Keep a Changelog
   quando muda o número ou o tipo dos canais e ao aplicar a escolha da tela
   inicial; o ERP segue os canais da gravação carregada. Teste:
   `testes/test_p1_canais_em_uso.py` (5 exames × 8/16/32/64 canais × 2 níveis).
+- **Nomes dos perfis prontos e título da aba Bio traduzidos.** "Cérebro (EEG)",
+  "Músculos (EMG)", "Coração (ECG)", "Olhos (EOG)", "Tudo" e "Minha bancada"
+  passavam por `tr()` através de uma variável, por isso a coleta de chaves não
+  os via e eles saíam em português nos outros idiomas (tela inicial,
+  assistente, Sistema). O título da aba "Músculos"/"Coração"/"Olhos" em modo
+  único também não era traduzido. Agora estão nos 8 dicionários
+  (`ferramentas/trad/p5_rotulos/`) e `chaves_extras.txt` registra as chaves
+  dinâmicas para a coleta.
 
 ### Alterado
 - **`bleak` e `ob_core` fora do caminho crítico da abertura (P9).** O import

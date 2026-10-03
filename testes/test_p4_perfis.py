@@ -190,6 +190,27 @@ class TestAssistente(unittest.TestCase):
         finally:
             wiz.close()
 
+    def test_rotulos_dos_perfis_traduzidos(self):
+        """Os nomes dos perfis prontos e da aba Bio passam por tr() via
+        variável (a coleta não os via): existem nos 8 idiomas e saem
+        traduzidos na tela."""
+        chaves = ["Cérebro (EEG)", "Músculos (EMG)", "Coração (ECG)", "Olhos (EOG)",
+                  "Tudo", "Minha bancada", "Músculos", "Coração", "Olhos"]
+        for lang in ("en", "es", "it", "fr", "zh", "de", "ja", "ru"):
+            d = getattr(ROA.I18N, "_" + lang)
+            for k in chaves:
+                self.assertIn(k, d, (lang, k))
+                self.assertNotEqual(d[k].strip(), "", (lang, k))
+        atual = ROA.I18N.current
+        try:
+            ROA.I18N.current = "en"
+            self.assertEqual(ROA.rotulo_perfil("Cérebro (EEG)"), "Brain (EEG)")
+            self.assertEqual(ROA.rotulo_perfil("Tudo"), "Everything")
+            # perfil do usuário não passa por tr(): sai como foi escrito
+            self.assertEqual(ROA.rotulo_perfil("Bancada do João"), "Bancada do João")
+        finally:
+            ROA.I18N.current = atual
+
     def test_dois_cartoes_viram_minha_bancada(self):
         wiz, cfg = self._wiz()
         try:

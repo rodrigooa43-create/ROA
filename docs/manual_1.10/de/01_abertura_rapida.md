@@ -12,8 +12,7 @@ Startbildschirm fertig ist; nichts muss angeklickt werden.
 einmal vorbereitet (das Fenster zeigt „Das Programm wird zum ersten Mal
 vorbereitet…“) und legt das Ergebnis im Ordner `.roa_cache` neben dem Programm
 ab. Bei den folgenden Malen geht das Öffnen deutlich schneller. Wenn der
-Programmordner kein Schreiben erlaubt (zum Beispiel in `Arquivos de
-Programas`), wandert der Cache in den Benutzerordner
+Programmordner kein Schreiben erlaubt (zum Beispiel in `Programme`), wandert der Cache in den Benutzerordner
 (`%LOCALAPPDATA%\ROA\cache`). Diesen Ordner zu löschen ist unproblematisch:
 Er wird beim nächsten Öffnen neu angelegt.
 

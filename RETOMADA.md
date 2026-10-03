@@ -35,7 +35,7 @@ Tradução de textos novos: `python ferramentas/coleta_faltantes.py --lote <nome
 | P6 Replay do movimento (EMG) | **feito** | figura + linha do tempo; `test_p6_figura`, `test_p6_linha_tempo` |
 | P7 Replay coração e olhos | **feito** | mesmas detecções do PDF; `test_p7_replay` |
 | P8 Replay integrado em "Rever uma gravação" | **feito** | botão ▶ Replay nos dois níveis; `test_p8_replay`; imagens em `revisao/p8_replay/` |
-| P5 Documentação | em curso | CHANGELOG, `docs/manual_1.10/`, ajuda interna |
+| P5 Documentação | **feito** | CHANGELOG; `docs/manual_1.10/{pt,en,es,it,fr,zh,de,ja,ru,tecnico}/`; ajuda interna (FAQ, guias, glossário, base) nos 9 idiomas; docstrings em 100 % das funções novas; `test_p5_ajuda` |
 | Pendências antigas (URLs OpenBionica → ROA) | **feito** | CODE_URL, catálogo E308/E402-404 (9 idiomas), CITATION.cff; version.json não tocado |
 
 ## Medições (P9) — base, antes das mudanças
@@ -81,7 +81,10 @@ mas as proporções valem:
   8. "Rever uma gravação" (Simples) com o botão ▶ Replay — `revisao/p8_replay/`.
   9. Replay dos músculos, do coração e dos olhos, nos dois níveis — `revisao/p8_replay/`.
   10. Mapa "Atividade muscular (canais × tempo)" com 8 canais (P1).
-- PDFs finais dos manuais (textos-fonte atualizados em `docs/manual_1.10/`).
+- PDFs finais dos manuais: copiar as seções de `docs/manual_1.10/<idioma>/`
+  (6 por idioma, cada uma diz em que capítulo entra) e de `tecnico/` para os
+  manuais no Windows e gerar os PDFs com as fotos novas. Conferir os pontos
+  marcados na decisão 8.
 - `.exe`, empacotamento e `publicar_update.py`.
 - Conferir no Windows a fonte Inter/JetBrains Mono nos textos curtos das gavetas
   e da linha do tempo (aqui as capturas usaram DejaVu/Noto, ~8 % mais largas).
@@ -111,6 +114,18 @@ mas as proporções valem:
 7. **Figura do movimento**: no neutro a mão fica em 3/4 (licença visual para a
    supinação/pronação ser inconfundível); faixas > 2,5 s viram platô (sobe,
    sustenta, desce) em vez de repetição em câmera lenta.
+8. **Manuais traduzidos** (P5): os tradutores seguiram os rótulos do programa,
+   mas apontaram escolhas a conferir: a pasta do Windows "Arquivos de
+   Programas" aparece com o nome local da pasta (Program Files / Archivos de
+   programa / Programmi / Programmes / Programme) em vez do literal; "Tarefa
+   pronta" e "Painéis" têm uma tradução no rótulo do botão e outra nos textos
+   de ajuda em es/it/de (o manual segue o botão); nomes das tarefas prontas
+   (halter, chave, copo) e dos perfis não tinham chave própria e foram
+   traduzidos como nos textos de ajuda — os perfis ganharam chave nesta etapa
+   (lote `p5_rotulos`), as tarefas continuam só em português no programa.
+9. **Ajuda interna**: a base de conhecimento embutida (BASE_CONHECIMENTO_EMBED)
+   continua só em português, como já era; FAQ, guias e glossário são
+   traduzidos por `tr()`.
 
 ## Resultados dos testes
 
@@ -122,3 +137,12 @@ test_p2_gavetas 22/22, test_p3_atlas 27/27, test_p4_perfis 16/16,
 test_p6_figura 11/11, test_p6_linha_tempo 37/37, test_p7_replay 18/18,
 test_p8_replay 6/6, test_p9_lancador 7/7, test_vazamento_idioma 4/4
 (0 chaves de tr() sem tradução nos 8 idiomas).
+
+Etapa P5 (`python testes/roda_todos.py`): test_p1 12/12, test_p2_gavetas 22/22,
+test_p3_atlas 27/27, test_p4_perfis 18/18 (2 novos: página "Escolha os
+gráficos" ligada ao catálogo do P2; rótulos dos perfis nos 8 idiomas),
+test_p5_ajuda 16/16, test_p6_figura 11/11, test_p6_linha_tempo 37/37,
+test_p7_replay 18/18, test_p8_replay 6/6, test_p9_lancador 7/7,
+test_vazamento_idioma 4/4; `coleta_faltantes.py` = 0 chaves sem tradução;
+verificação estrutural dos 48 arquivos do manual traduzido (títulos, negritos,
+citações, nomes de arquivo, glossário, vírgula decimal) = 0 problemas.

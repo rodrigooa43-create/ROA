@@ -495,6 +495,16 @@ class I18N:
 
     # Dicionários ENGLISH — chaves em pt-BR
     _en = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Brain (EEG)",
+        "Músculos (EMG)": "Muscles (EMG)",
+        "Coração (ECG)": "Heart (ECG)",
+        "Olhos (EOG)": "Eyes (EOG)",
+        "Tudo": "Everything",
+        "Minha bancada": "My bench",
+        "Músculos": "Muscles",
+        "Coração": "Heart",
+        "Olhos": "Eyes",
         # ===== p5_ajuda (1.10.0) =====
         "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "The <b>first</b> start after installing or updating prepares a cache (the <b>.roa_cache</b> folder, next to the program or in the user's local ROA data folder) and therefore takes longer; the next ones open in a few seconds. The opening screen with the logo says in words what is being loaded. If it stays slow, check that the antivirus is not scanning the program folder at every start.",
         "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "The animation <b>simulates</b> what was recorded from the signals: it is not a video of the person, and it is not a report or a diagnosis.",
@@ -4581,6 +4591,16 @@ class I18N:
 
     # Dicionários ESPAÑOL — chaves em pt-BR
     _es = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Cerebro (EEG)",
+        "Músculos (EMG)": "Músculos (EMG)",
+        "Coração (ECG)": "Corazón (ECG)",
+        "Olhos (EOG)": "Ojos (EOG)",
+        "Tudo": "Todo",
+        "Minha bancada": "Mi banco",
+        "Músculos": "Músculos",
+        "Coração": "Corazón",
+        "Olhos": "Ojos",
         # ===== p5_ajuda (1.10.0) =====
         "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "La <b>primera</b> apertura después de instalar o actualizar prepara una caché (carpeta <b>.roa_cache</b>, junto al programa o en la carpeta ROA de los datos locales del usuario) y por eso tarda más; las siguientes abren en pocos segundos. La pantalla de apertura con el logo dice con palabras qué se está cargando. Si sigue tardando, compruebe que el antivirus no examine la carpeta del programa en cada apertura.",
         "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "La animación <b>simula</b> lo que se grabó a partir de las señales: no es un vídeo de la persona, y no es informe ni diagnóstico.",
@@ -8667,6 +8687,16 @@ class I18N:
 
     # Dicionários ITALIANO / FRANCÊS / CHINÊS — gerados na revisão ago/2026
     _it = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Cervello (EEG)",
+        "Músculos (EMG)": "Muscoli (EMG)",
+        "Coração (ECG)": "Cuore (ECG)",
+        "Olhos (EOG)": "Occhi (EOG)",
+        "Tudo": "Tutto",
+        "Minha bancada": "Il mio banco",
+        "Músculos": "Muscoli",
+        "Coração": "Cuore",
+        "Olhos": "Occhi",
         # ===== p5_ajuda (1.10.0) =====
         "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "La <b>prima</b> apertura dopo l'installazione o l'aggiornamento prepara una cache (cartella <b>.roa_cache</b>, accanto al programma o nella cartella ROA dei dati locali dell'utente) e per questo richiede più tempo; le successive si aprono in pochi secondi. La schermata di apertura con il logo dice a parole che cosa si sta caricando. Se continua a essere lenta, controlla che l'antivirus non esamini la cartella del programma a ogni apertura.",
         "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "L'animazione <b>simula</b> ciò che è stato registrato a partire dai segnali: non è un video della persona, e non è un referto né una diagnosi.",
@@ -12713,6 +12743,16 @@ class I18N:
     }
 
     _fr = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Cerveau (EEG)",
+        "Músculos (EMG)": "Muscles (EMG)",
+        "Coração (ECG)": "Cœur (ECG)",
+        "Olhos (EOG)": "Yeux (EOG)",
+        "Tudo": "Tout",
+        "Minha bancada": "Mon établi",
+        "Músculos": "Muscles",
+        "Coração": "Cœur",
+        "Olhos": "Yeux",
         # ===== p5_ajuda (1.10.0) =====
         "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "La <b>première</b> ouverture après l'installation ou une mise à jour prépare un cache (dossier <b>.roa_cache</b>, à côté du programme ou dans le dossier ROA des données locales de l'utilisateur) et prend donc plus de temps ; les suivantes s'ouvrent en quelques secondes. L'écran d'ouverture avec le logo dit en mots ce qui est en cours de chargement. Si la lenteur persiste, vérifiez que l'antivirus n'examine pas le dossier du programme à chaque ouverture.",
         "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "L'animation <b>simule</b> ce qui a été enregistré à partir des signaux : ce n'est pas une vidéo de la personne, et ce n'est ni un compte rendu ni un diagnostic.",
@@ -16759,6 +16799,16 @@ class I18N:
     }
 
     _zh = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "大脑 (EEG)",
+        "Músculos (EMG)": "肌肉 (EMG)",
+        "Coração (ECG)": "心脏 (ECG)",
+        "Olhos (EOG)": "眼睛 (EOG)",
+        "Tudo": "全部",
+        "Minha bancada": "我的工作台",
+        "Músculos": "肌肉",
+        "Coração": "心脏",
+        "Olhos": "眼睛",
         # ===== p5_ajuda (1.10.0) =====
         "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "安装或更新后的<b>第一次</b>打开会准备缓存（<b>.roa_cache</b> 文件夹，位于程序旁边或用户本地数据的 ROA 文件夹中），因此时间较长；之后几秒即可打开。带标志的启动画面会用文字说明正在加载的内容。如果仍然很慢，请检查杀毒软件是否在每次打开时扫描程序文件夹。",
         "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "动画根据信号<b>模拟</b>所记录的内容：它不是本人的视频，也不是报告或诊断。",
@@ -20807,6 +20857,16 @@ class I18N:
 
     # Dicionários DEUTSCH — chaves em pt-BR
     _de = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Gehirn (EEG)",
+        "Músculos (EMG)": "Muskeln (EMG)",
+        "Coração (ECG)": "Herz (ECG)",
+        "Olhos (EOG)": "Augen (EOG)",
+        "Tudo": "Alles",
+        "Minha bancada": "Meine Werkbank",
+        "Músculos": "Muskeln",
+        "Coração": "Herz",
+        "Olhos": "Augen",
         # ===== p5_ajuda (1.10.0) =====
         "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "Der <b>erste</b> Start nach der Installation oder einem Update legt einen Cache an (Ordner <b>.roa_cache</b>, neben dem Programm oder im ROA-Ordner der lokalen Benutzerdaten) und dauert deshalb länger; die folgenden öffnen in wenigen Sekunden. Der Startbildschirm mit dem Logo sagt in Worten, was gerade geladen wird. Bleibt es langsam, prüfen Sie, ob das Antivirenprogramm den Programmordner bei jedem Start durchsucht.",
         "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "Die Animation <b>simuliert</b> anhand der Signale, was aufgezeichnet wurde: Sie ist kein Video der Person und weder Befund noch Diagnose.",
@@ -24853,6 +24913,16 @@ class I18N:
 
     # Dicionários JAPANESE — chaves em pt-BR
     _ja = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "脳 (EEG)",
+        "Músculos (EMG)": "筋肉 (EMG)",
+        "Coração (ECG)": "心臓 (ECG)",
+        "Olhos (EOG)": "目 (EOG)",
+        "Tudo": "すべて",
+        "Minha bancada": "マイベンチ",
+        "Músculos": "筋肉",
+        "Coração": "心臓",
+        "Olhos": "目",
         # ===== p5_ajuda (1.10.0) =====
         "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "インストールや更新後の<b>最初</b>の起動ではキャッシュ（プログラムの隣、またはユーザーのローカルデータの ROA フォルダー内の <b>.roa_cache</b> フォルダー）を準備するため時間がかかります。次回からは数秒で開きます。ロゴ付きの起動画面には、読み込み中の内容が言葉で表示されます。遅いままなら、ウイルス対策ソフトが起動のたびにプログラムのフォルダーを検査していないか確認してください。",
         "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "アニメーションは信号から記録内容を<b>再現（シミュレーション）</b>したものです。本人の映像ではなく、報告書でも診断でもありません。",
@@ -28899,6 +28969,16 @@ class I18N:
 
     # Dicionários RUSSIAN — chaves em pt-BR
     _ru = {
+        # ===== p5_rotulos (1.10.0) =====
+        "Cérebro (EEG)": "Мозг (EEG)",
+        "Músculos (EMG)": "Мышцы (EMG)",
+        "Coração (ECG)": "Сердце (ECG)",
+        "Olhos (EOG)": "Глаза (EOG)",
+        "Tudo": "Всё",
+        "Minha bancada": "Моя лаборатория",
+        "Músculos": "Мышцы",
+        "Coração": "Сердце",
+        "Olhos": "Глаза",
         # ===== p5_ajuda (1.10.0) =====
         "A <b>primeira</b> abertura depois de instalar ou atualizar prepara um cache (pasta <b>.roa_cache</b>, ao lado do programa ou na pasta ROA dos dados locais do usuário) e por isso demora mais; as seguintes abrem em poucos segundos. A tela de abertura com o logo diz em palavras o que está sendo carregado. Se a demora continuar, confira se o antivírus não examina a pasta do programa a cada abertura.": "<b>Первый</b> запуск после установки или обновления готовит кэш (папка <b>.roa_cache</b> рядом с программой или в папке ROA локальных данных пользователя) и поэтому длится дольше; следующие открываются за несколько секунд. Заставка с логотипом словами сообщает, что загружается. Если медленно по-прежнему, проверьте, не сканирует ли антивирус папку программы при каждом запуске.",
         "A animação <b>simula</b> o que foi gravado a partir dos sinais: não é vídeo da pessoa, e não é laudo nem diagnóstico.": "Анимация <b>имитирует</b> записанное по сигналам: это не видео человека и не заключение или диагноз.",
@@ -71398,8 +71478,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             return
 
         # A aba deixa de anunciar as três modalidades quando só uma está ativa
-        self._set_bio_tab_title(self.MODE_BIO_TAB_TITLE.get(
-            acq_type, "Bio (EMG/ECG/EoG)"))
+        self._set_bio_tab_title(tr(self.MODE_BIO_TAB_TITLE.get(
+            acq_type, "Bio (EMG/ECG/EoG)")))
         if hasattr(self, "bio_banner"):
             self.bio_banner.setVisible(False)
 
@@ -71414,9 +71494,12 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         'Músculos'/'Coração'/'Olhos')."""
         sub = getattr(self, "_sub_tabs", {}).get("view")
         if not sub: return
+        nomes = ("Músculos", "Coração", "Olhos")
+        # nos outros idiomas a aba já está com o nome traduzido (1.10.0)
+        nomes_tela = tuple(tr(n) for n in nomes)
         for i in range(sub.count()):
             t = sub.tabText(i)
-            if t.startswith("Bio") or t in ("Músculos", "Coração", "Olhos"):
+            if t.startswith("Bio") or t in nomes or t in nomes_tela:
                 sub.setTabText(i, titulo); return
 
     def _nome_modalidade(self, code=None):

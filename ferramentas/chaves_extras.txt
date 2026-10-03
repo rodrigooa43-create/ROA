@@ -162,3 +162,12 @@ Rever uma gravação → ▶ Replay
 Surface EMG for Non-Invasive Assessment of Muscles
 recomendações europeias de onde colocar os eletrodos de superfície em cada músculo (sobre o ventre do músculo, longe do tendão). O desenho do corpo cola o eletrodo nesses pontos.
 Visualizar → Músculos → desenho do corpo
+Cérebro (EEG)
+Músculos (EMG)
+Coração (ECG)
+Olhos (EOG)
+Tudo
+Minha bancada
+Músculos
+Coração
+Olhos
