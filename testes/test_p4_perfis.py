@@ -165,6 +165,31 @@ class TestAssistente(unittest.TestCase):
         finally:
             wiz.close()
 
+    def test_pagina_graficos_vem_do_catalogo_de_paineis(self):
+        """No caminho Pesquisa, "Escolha os gráficos" lista os painéis do
+        catálogo do P2 para os exames marcados; desmarcar um deles vira um
+        perfil personalizado com esse painel fechado."""
+        wiz, cfg = self._wiz("completo")
+        try:
+            wiz.rb_uso_pesquisa.setChecked(True)
+            for code, bt in wiz._cartoes_trabalho.items():
+                bt.setChecked(code == "EMG")
+            wiz._atualiza_pagina_graficos()
+            chks = wiz._graficos_chks
+            esperados = {it["id"] for it in ROA.CATALOGO_PAINEIS.itens()
+                         if not it["exames"] or "EMG" in it["exames"]}
+            self.assertTrue(esperados)
+            self.assertEqual(set(chks), esperados)
+            # nenhum painel de outro exame (ECG/EoG) entra na lista
+            self.assertFalse([i for i in chks if i.startswith(("ecg.", "eog."))])
+            alvo = sorted(i for i in chks if i.startswith("emg."))[0]
+            chks[alvo].setChecked(False)
+            wiz._aplicar_perfil_escolhido()
+            self.assertEqual(cfg.usage_profile, "Minha bancada")
+            self.assertEqual(cfg.usage_profiles["Minha bancada"]["paineis"], {alvo: False})
+        finally:
+            wiz.close()
+
     def test_dois_cartoes_viram_minha_bancada(self):
         wiz, cfg = self._wiz()
         try:
