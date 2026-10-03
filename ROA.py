@@ -87,6 +87,7 @@ class _ModuloAdiado:
     """
 
     def __init__(self, nome):
+        """Guarda o nome do módulo; nada é importado aqui."""
         self._nome = nome
         self._mod = None
 
@@ -99,6 +100,7 @@ class _ModuloAdiado:
 
     def __getattr__(self, attr):
         # só chega aqui para atributos que o proxy não tem: os do módulo real
+        """Importa o módulo real no primeiro acesso e repassa o atributo."""
         return getattr(self._carrega(), attr)
 
 
@@ -45161,6 +45163,7 @@ class TocadorReplay(QtWidgets.QWidget):
     PASSO_MS = 33   # ~30 quadros por segundo
 
     def __init__(self, duracao_s=0.0, simples=False, parent=None):
+        """Monta os controles: tocar/pausar, início, linha do tempo, relógio e, no Completo, velocidade e repetir."""
         super().__init__(parent)
         self._dur = max(0.0, float(duracao_s))
         self._t = 0.0
@@ -45301,26 +45304,32 @@ class TocadorReplay(QtWidgets.QWidget):
 
     # ---- internos ----
     def _texto_tempo(self):
+        """Texto do relógio: posição atual / duração, em m:ss."""
         return "%s / %s" % (fmt_mmss(self._t), fmt_mmss(self._dur))
 
     def _on_tocar(self, ligado):
+        """Botão Tocar/Pausar: toca ou pausa conforme o estado do botão."""
         if ligado:
             self.tocar()
         else:
             self.pausar()
 
     def _on_loop(self, on):
+        """Caixa Repetir: guarda a escolha; vale quando a gravação chega ao fim."""
         self._loop = bool(on)
 
     def _on_slider_pressed(self):
+        """Começou a arrastar a linha do tempo: o relógio não a puxa de volta."""
         self._arrastando = True
 
     def _on_slider_released(self):
+        """Soltou a linha do tempo: posiciona de verdade no instante escolhido."""
         self._arrastando = False
         self.set_tempo(self.slider.value() / 100.0)
 
     def _on_slider_moved(self, valor):
         # arrastando: só o relógio acompanha; solto: posiciona de verdade
+        """Linha do tempo mexeu: durante o arrasto só o relógio acompanha."""
         if self._arrastando:
             self._t = valor / 100.0
             self.lbl_tempo.setText(self._texto_tempo())
@@ -45329,6 +45338,7 @@ class TocadorReplay(QtWidgets.QWidget):
             self.set_tempo(valor / 100.0)
 
     def _tique(self):
+        """Passo do relógio: avança o tempo pela velocidade; no fim, repete ou pausa."""
         t = self._t_base + self._relogio.elapsed() / 1000.0 * self._vel
         if t >= self._dur:
             if self._loop and self._dur > 0:
@@ -45354,6 +45364,7 @@ class ReplayDialog(QtWidgets.QDialog):
 
     def __init__(self, cena, duracao_s, titulo, simples=False, parent=None,
                  aviso=None):
+        """Monta a janela: selo de que SIMULA, cena, tocador e, no Completo, Salvar."""
         super().__init__(parent)
         self.setWindowTitle(titulo)
         self.setMinimumSize(760, 520)
@@ -45395,12 +45406,14 @@ class ReplayDialog(QtWidgets.QDialog):
         self.tocador.set_tempo(0.0)
 
     def _on_tempo(self, t):
+        """O tocador mudou o tempo: repassa à cena (erro na cena não derruba o tocador)."""
         try:
             self.cena.set_tempo(t)
         except Exception:
             pass
 
     def _on_cursor_da_cena(self, t):
+        """A cena pediu um instante (clique no traçado ou na lista): move o tocador."""
         self.tocador.set_tempo(float(t))
 
     def _salvar(self):
@@ -48516,6 +48529,7 @@ def _envoltoria(pontos):
         return pts
 
     def cruz(o, a, b):
+        """Produto vetorial 2D: o sinal diz de que lado de o→a está o ponto b."""
         return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
     baixo, cima = [], []
     for p in pts:
@@ -48566,6 +48580,7 @@ class FiguraMovimentoWidget(QtWidgets.QWidget):
     """
 
     def __init__(self, parent=None):
+        """Começa em repouso, sem ativação, sem objeto e sem rótulo."""
         super().__init__(parent)
         self._pose = dict(POSE_REPOUSO)
         self._ativacao = {}
@@ -48616,6 +48631,7 @@ class FiguraMovimentoWidget(QtWidgets.QWidget):
 
     # ---------------- pintura ----------------
     def paintEvent(self, _ev):
+        """Pinta a figura inteira no retângulo do widget."""
         p = QtGui.QPainter(self)
         try:
             self.pintar(p, self.rect())
@@ -48751,6 +48767,7 @@ class FiguraMovimentoWidget(QtWidgets.QWidget):
         tronco = pose["tronco"]
 
         def R(pt):
+            """Gira um ponto do tronco em torno do quadril pelo ângulo do tronco."""
             return _girar(pt, _QUADRIL, tronco)
         S = R((0.0, 0.0))
         a1 = math.radians(pose["ombro"] + tronco)
@@ -48961,11 +48978,13 @@ class FiguraMovimentoWidget(QtWidgets.QWidget):
         uh = (math.cos(a3), -math.sin(a3))   # lado dorsal (extensão) no plano
 
         def proj(x, y, z):
+            """Projeta um ponto 3D da mão (eixo do antebraço, largura, espessura) na tela."""
             up = y * ca - z * sa
             return (self._ox + (Wr[0] + x * xh[0] + up * uh[0]) * e,
                     self._oy + (Wr[1] + x * xh[1] + up * uh[1]) * e)
 
         def prof(y, z):
+            """Profundidade do ponto: positivo = mais perto de quem olha (decide o que fica por cima)."""
             return y * sa + z * ca      # profundidade (+ = mais perto de quem olha)
 
         w2, t2 = _PALMA_LARG / 2.0, _PALMA_ESP / 2.0
@@ -49256,6 +49275,7 @@ class _TracadoReplay(QtWidgets.QWidget):
     cursorMovido = QtCore.Signal(float)
 
     def __init__(self, titulo="", unidade="µV", parent=None):
+        """Traçado em pyqtgraph com cursor vertical e título opcional."""
         super().__init__(parent)
         pg = _replay_global("pg")
         lay = QtWidgets.QVBoxLayout(self)
@@ -49333,6 +49353,7 @@ class _TracadoReplay(QtWidgets.QWidget):
             vb.setXRange(max(0.0, t - larg * 0.1), max(0.0, t - larg * 0.1) + larg, padding=0)
 
     def _on_click(self, ev):
+        """Clique no traçado: emite o instante clicado para o tocador ir até lá."""
         if self._cursor is None:
             return
         try:
@@ -49361,6 +49382,7 @@ class CenaReplayEMG(QtWidgets.QWidget):
 
     def __init__(self, d, pasta, tipos=None, musculos=None, simples=False,
                  nome="", parent=None):
+        """Prepara sinais, envelope por músculo e modelo de movimentos, e monta a cena."""
         super().__init__(parent)
         self._simples = bool(simples)
         self.pasta = pasta
@@ -49415,6 +49437,7 @@ class CenaReplayEMG(QtWidgets.QWidget):
 
     # ---- montagem ----
     def _monta(self):
+        """Monta a cena: figura e lista (Simples) mais linha do tempo editável e tarefas (Completo)."""
         lay = QtWidgets.QVBoxLayout(self)
         lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(6)
         topo = QtWidgets.QHBoxLayout(); topo.setSpacing(8)
@@ -49486,6 +49509,7 @@ class CenaReplayEMG(QtWidgets.QWidget):
             return []
 
     def _modelo_mudou(self):
+        """O modelo de movimentos mudou (edição ou desfazer): atualiza lista e figura."""
         self.lista.set_modelo(self.modelo)
         self.set_tempo(self._t)
 
@@ -49516,6 +49540,7 @@ class CenaReplayEMG(QtWidgets.QWidget):
         self._modelo_mudou()
 
     def _objeto_em(self, t):
+        """Objeto preso à mão no instante t (halter, chave, copo) ou None."""
         for a, b, obj in self._objetos:
             if a <= t < b:
                 return obj
@@ -49595,6 +49620,7 @@ class CenaReplayECG(QtWidgets.QWidget):
     cursorMovido = QtCore.Signal(float)
 
     def __init__(self, d, pasta, tipos=None, canal=None, simples=False, parent=None):
+        """Escolhe o canal de ECG, detecta as batidas (ou lê batidas.json) e monta a cena."""
         super().__init__(parent)
         self._simples = bool(simples)
         self.pasta = pasta
@@ -49623,6 +49649,7 @@ class CenaReplayECG(QtWidgets.QWidget):
         self.set_tempo(0.0)
 
     def _monta(self):
+        """Monta a cena: coração, traçado com cursor, faixa de batidas e lista."""
         lay = QtWidgets.QVBoxLayout(self)
         lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(6)
         topo = QtWidgets.QHBoxLayout(); topo.setSpacing(8)
@@ -49649,6 +49676,7 @@ class CenaReplayECG(QtWidgets.QWidget):
         self._atualiza_widgets()
 
     def _atualiza_widgets(self):
+        """Repassa as batidas atuais (detecção + correções) a todos os widgets."""
         bat = self.deteccao.get("batidas", [])
         self.coracao.set_batidas(bat)
         self.faixa.set_batidas(bat)
@@ -49670,15 +49698,18 @@ class CenaReplayECG(QtWidgets.QWidget):
         self.set_tempo(self._t)
 
     def set_tempo(self, t):
+        """Posiciona coração, faixa e traçado no instante t."""
         self._t = float(t)
         self.coracao.set_tempo(self._t)
         self.faixa.set_tempo(self._t)
         self.tracado.set_tempo(self._t)
 
     def tem_alteracoes(self):
+        """Há correções ainda não gravadas em batidas.json?"""
         return self._alterado
 
     def salvar(self):
+        """Grava batidas.json ao lado da gravação; devolve True se gravou."""
         if not self.pasta:
             return False
         salvar_batidas(self.pasta, self.deteccao, self.correcoes)
@@ -49701,6 +49732,7 @@ class CenaReplayEOG(QtWidgets.QWidget):
 
     def __init__(self, d, pasta, tipos=None, canal_h=None, canal_v=None,
                  limiar_uV=None, simples=False, parent=None):
+        """Escolhe os canais H/V, detecta piscadas e sacadas (ou lê olhos.json) e monta a cena."""
         super().__init__(parent)
         self._simples = bool(simples)
         self.pasta = pasta
@@ -49741,6 +49773,7 @@ class CenaReplayEOG(QtWidgets.QWidget):
         self.set_tempo(0.0)
 
     def _monta(self):
+        """Monta a cena: olhos, caixas de inverter, traçados com cursor e linha do tempo em palavras."""
         lay = QtWidgets.QVBoxLayout(self)
         lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(6)
         topo = QtWidgets.QHBoxLayout(); topo.setSpacing(8)
@@ -49776,6 +49809,7 @@ class CenaReplayEOG(QtWidgets.QWidget):
         self._atualiza_widgets()
 
     def _atualiza_widgets(self):
+        """Repassa os eventos atuais aos olhos, à linha do tempo, aos traçados e aos contadores."""
         ev = self.deteccao.get("eventos", [])
         self.olhos.set_eventos(self.deteccao)
         self.linha.set_eventos(self.deteccao)
@@ -49830,6 +49864,7 @@ class CenaReplayEOG(QtWidgets.QWidget):
         self._atualiza_widgets()
 
     def set_tempo(self, t):
+        """Posiciona olhar, olhos, linha do tempo e traçados no instante t."""
         self._t = float(t)
         gx, gy = olhar_no_instante(self.h, self.v, self.fs, self._t, self.inv_h, self.inv_v,
                                    2.0 * self.limiar)
@@ -49839,9 +49874,11 @@ class CenaReplayEOG(QtWidgets.QWidget):
         self.tracado.set_tempo(self._t)
 
     def tem_alteracoes(self):
+        """Há correções ou inversões ainda não gravadas em olhos.json?"""
         return self._alterado
 
     def salvar(self):
+        """Grava olhos.json (eventos, correções e inversões); devolve True se gravou."""
         if not self.pasta:
             return False
         self.deteccao["inverter_h"] = self.inv_h
@@ -53072,6 +53109,7 @@ def _gaveta_mistura(cor, fundo, alfa):
         return str(cor)
 
     def m(x, y):
+        """Mistura um componente de cor (0–255) pela proporção alfa."""
         return int(round(x * alfa + y * (1 - alfa)))
     return "#%02x%02x%02x" % (m(a.red(), b.red()), m(a.green(), b.green()),
                               m(a.blue(), b.blue()))
@@ -53142,6 +53180,7 @@ class CatalogoPaineis:
     tanto para as pilhas (PilhaGavetas) quanto para os perfis de uso (P4)."""
 
     def __init__(self):
+        """Catálogo vazio: painéis, estado, ordem por aba e divisores."""
         self._paineis = {}        # id -> {"titulo", "aba", "exames", "padrao", "fechavel", "assistente"}
         self._estado = {}         # id -> {"visivel", "recolhido", "altura"}
         self._ordem = {}          # aba -> [ids] (ordem atual)
@@ -53411,12 +53450,14 @@ class _CabecalhoGaveta(QtWidgets.QFrame):
     def mousePressEvent(self, ev):
         # Aceita o press para o release chegar aqui (se ignorasse, o Qt
         # mandaria o par press/release para o pai).
+        """Aceita o clique esquerdo para o release chegar ao cabeçalho."""
         if ev.button() == QtCore.Qt.MouseButton.LeftButton:
             ev.accept()
             return
         super().mousePressEvent(ev)
 
     def mouseReleaseEvent(self, ev):
+        """Soltou dentro do cabeçalho: emite clicado (recolher/expandir)."""
         if (ev.button() == QtCore.Qt.MouseButton.LeftButton
                 and self.rect().contains(ev.position().toPoint())):
             self.clicado.emit()
@@ -53430,6 +53471,7 @@ class _RotuloElidido(QtWidgets.QLabel):
     gavetas lado a lado numa tela pequena), em vez de vazar por cima dos botões."""
 
     def __init__(self, texto="", parent=None):
+        """Guarda o texto cheio e pede largura expansível."""
         super().__init__(texto, parent)
         self._texto_cheio = texto
         self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
@@ -53446,6 +53488,7 @@ class _RotuloElidido(QtWidgets.QLabel):
         return self._texto_cheio
 
     def _reelidir(self):
+        """Reescreve o texto com reticências conforme a largura atual."""
         fm = self.fontMetrics()
         larg = max(10, self.width() - 2)
         super().setText(fm.elidedText(self._texto_cheio,
@@ -53453,17 +53496,20 @@ class _RotuloElidido(QtWidgets.QLabel):
         self.setToolTip(self._texto_cheio if self.text() != self._texto_cheio else "")
 
     def resizeEvent(self, ev):
+        """Mudou a largura: elide de novo."""
         super().resizeEvent(ev)
         self._reelidir()
 
     def sizeHint(self):
         # A dica de tamanho é do texto inteiro, para a gaveta pedir largura
         # suficiente quando houver espaço.
+        """Dica de tamanho do texto inteiro (a gaveta pede largura quando há espaço)."""
         fm = self.fontMetrics()
         return QtCore.QSize(fm.horizontalAdvance(self._texto_cheio) + 4,
                             fm.height())
 
     def minimumSizeHint(self):
+        """Mínimo pequeno: o rótulo pode encolher até quase sumir."""
         return QtCore.QSize(40, self.fontMetrics().height())
 
 
@@ -53479,6 +53525,7 @@ class _AlcaGaveta(QtWidgets.QFrame):
     ALTURA = 7
 
     def __init__(self, parent=None):
+        """Alça fina com cursor de redimensionar vertical."""
         super().__init__(parent)
         self.setObjectName("gavetaAlca")
         self.setFixedHeight(self.ALTURA)
@@ -53489,6 +53536,7 @@ class _AlcaGaveta(QtWidgets.QFrame):
         self._quente = False
 
     def paintEvent(self, ev):
+        """Pinta a linha da alça: realçada ao passar o mouse ou durante o arrasto."""
         super().paintEvent(ev)
         c = _gaveta_cores()
         cor = QtGui.QColor(c["accent_dim"] if (self._quente or self._y0 is not None)
@@ -53504,16 +53552,19 @@ class _AlcaGaveta(QtWidgets.QFrame):
         p.end()
 
     def enterEvent(self, ev):
+        """Mouse entrou: realça."""
         self._quente = True
         self.update()
         super().enterEvent(ev)
 
     def leaveEvent(self, ev):
+        """Mouse saiu: volta à cor normal."""
         self._quente = False
         self.update()
         super().leaveEvent(ev)
 
     def mousePressEvent(self, ev):
+        """Começa o arrasto: guarda o y inicial e avisa a gaveta."""
         if ev.button() == QtCore.Qt.MouseButton.LeftButton:
             self._y0 = ev.globalPosition().y()
             self.inicioArrasto.emit()
@@ -53523,6 +53574,7 @@ class _AlcaGaveta(QtWidgets.QFrame):
         super().mousePressEvent(ev)
 
     def mouseMoveEvent(self, ev):
+        """Arrastando: emite o deslocamento vertical acumulado."""
         if self._y0 is not None:
             self.arrastou.emit(int(round(ev.globalPosition().y() - self._y0)))
             ev.accept()
@@ -53530,6 +53582,7 @@ class _AlcaGaveta(QtWidgets.QFrame):
         super().mouseMoveEvent(ev)
 
     def mouseReleaseEvent(self, ev):
+        """Fim do arrasto: avisa a gaveta."""
         if self._y0 is not None and ev.button() == QtCore.Qt.MouseButton.LeftButton:
             self._y0 = None
             self.fimArrasto.emit()
@@ -53539,6 +53592,7 @@ class _AlcaGaveta(QtWidgets.QFrame):
         super().mouseReleaseEvent(ev)
 
     def mouseDoubleClickEvent(self, ev):
+        """Duplo clique: pede o tamanho padrão."""
         if ev.button() == QtCore.Qt.MouseButton.LeftButton:
             self._y0 = None
             self.duploClique.emit()
@@ -53568,6 +53622,7 @@ class PainelGaveta(QtWidgets.QFrame):
                  parent=None):
         # Antes do super(): setVisible (sobrescrito) pode ser chamado pelo Qt
         # durante a construção e lê estes campos via getattr.
+        """Embrulha o conteúdo numa gaveta: cabeçalho, corpo e alça; começa aberta."""
         self._visivel_painel = True
         self._recolhido = False
         self._simples = bool(simples)
@@ -53688,6 +53743,7 @@ class PainelGaveta(QtWidgets.QFrame):
             bt.setFixedSize(h - 4, h - 4)
 
     def changeEvent(self, ev):
+        """Fonte ou estilo mudou: recalcula as alturas do cabeçalho e do corpo."""
         super().changeEvent(ev)
         if ev.type() in (QtCore.QEvent.Type.FontChange,
                          QtCore.QEvent.Type.StyleChange,
@@ -53788,6 +53844,7 @@ class PainelGaveta(QtWidgets.QFrame):
         self.set_recolhido(not self._recolhido)
 
     def _aplicar_recolhido(self):
+        """Mostra ou esconde o corpo conforme recolhido; no Simples o corpo fica sempre visível."""
         pol = QtWidgets.QSizePolicy.Policy
         if self._simples:
             self._corpo.setVisible(True)
@@ -53862,6 +53919,7 @@ class PainelGaveta(QtWidgets.QFrame):
             self.estadoMudou.emit(self._id)
 
     def _aplicar_altura(self):
+        """Aplica a altura escolhida ao corpo (ou a libera, no Simples ou sem altura)."""
         if self._simples or self._altura is None:
             self._corpo.setMinimumHeight(0)
             self._corpo.setMaximumHeight(_GAVETA_ALTURA_MAX)
@@ -53874,9 +53932,11 @@ class PainelGaveta(QtWidgets.QFrame):
         self.set_altura(self._altura_padrao)
 
     def _ao_iniciar_arrasto(self):
+        """Guarda a altura do corpo no início do arrasto da alça."""
         self._h0 = self._corpo.height()
 
     def _ao_arrastar(self, dy):
+        """Alça arrastada: nova altura = inicial + deslocamento, nunca abaixo do mínimo."""
         self.set_altura(max(self.altura_minima(), self._h0 + dy))
 
     # ---------- nível ----------
@@ -53953,6 +54013,7 @@ class _CelulaLinha(QtWidgets.QWidget):
     vizinha expandida."""
 
     def __init__(self, gaveta, parent=None):
+        """Célula de uma linha lado a lado: envolve a gaveta e espelha sua visibilidade."""
         super().__init__(parent)
         self.gaveta = gaveta
         gaveta._celula = self          # a gaveta espelha a visibilidade aqui
@@ -53986,6 +54047,7 @@ class PilhaGavetas(QtWidgets.QWidget):
 
     def __init__(self, aba, catalogo=None, dono=None, simples=False,
                  aba_visivel=None, espacamento=6, parent=None):
+        """Pilha vazia para a aba: layout vertical, botão Painéis e debounce de gravação."""
         super().__init__(parent)
         self.setObjectName("pilhaGavetas")
         self._aba = str(aba)
@@ -54063,6 +54125,7 @@ class PilhaGavetas(QtWidgets.QWidget):
         return g
 
     def _preparar_gaveta(self, g):
+        """Liga os sinais da gaveta à pilha e a registra no catálogo."""
         g._pilha = self
         g.estadoMudou.connect(self._ao_mudar_gaveta)
         g.moverPedido.connect(self.mover)
@@ -54087,6 +54150,7 @@ class PilhaGavetas(QtWidgets.QWidget):
             self._aplicando = False
 
     def _inserir_item(self, item):
+        """Insere o item (gaveta ou linha) antes do espaçador final, com o stretch certo."""
         self._itens.append(item)
         # Antes do espaçador final.
         self._lay.insertWidget(self._lay.count() - 1, item["widget"],
@@ -54165,6 +54229,7 @@ class PilhaGavetas(QtWidgets.QWidget):
         return split
 
     def _item_de(self, id_):
+        """Índice e item que contêm a gaveta id_ (ou -1, None)."""
         for i, it in enumerate(self._itens):
             if id_ in it["ids"]:
                 return i, it
@@ -54183,6 +54248,7 @@ class PilhaGavetas(QtWidgets.QWidget):
         return 0
 
     def _atualizar_stretches(self):
+        """Recalcula o stretch de cada item (itens recolhidos não esticam)."""
         for it in self._itens:
             idx = self._lay.indexOf(it["widget"])
             if idx >= 0:
@@ -54193,6 +54259,7 @@ class PilhaGavetas(QtWidgets.QWidget):
 
     # ---------- mudanças ----------
     def _ao_mudar_gaveta(self, id_):
+        """Uma gaveta mudou (recolher/fechar/altura): grava no catálogo e agenda o salvamento."""
         g = self._gavetas.get(id_)
         if g is None:
             return
@@ -54203,6 +54270,7 @@ class PilhaGavetas(QtWidgets.QWidget):
         self._agendar()
 
     def _ao_mover_split(self, nome, split):
+        """Divisor lado a lado movido: grava os tamanhos no catálogo e agenda o salvamento."""
         self._catalogo.definir_split(self._aba, nome, split.sizes())
         self._agendar()
 
@@ -54212,6 +54280,7 @@ class PilhaGavetas(QtWidgets.QWidget):
             self._timer.start()
 
     def _emitir_estado(self):
+        """Emite estadoMudou com o estado completo da pilha."""
         self.estadoMudou.emit(self.estado())
 
     def salvar_agora(self):
@@ -54272,6 +54341,7 @@ class PilhaGavetas(QtWidgets.QWidget):
         grande = len(ids) + 1
 
         def chave(par):
+            """Chave de ordenação: menor posição pedida entre as gavetas do item; empate pela ordem atual."""
             idx, it = par
             ps = [pos[i] for i in it["ids"] if i in pos]
             return (min(ps) if ps else grande, idx)
@@ -54313,6 +54383,7 @@ class PilhaGavetas(QtWidgets.QWidget):
         self._aplicar_do_catalogo()
 
     def _aplicar_do_catalogo(self):
+        """Aplica às gavetas o estado guardado no catálogo (visível, recolhido, altura), sem reemitir."""
         self._aplicando = True
         try:
             for id_, g in self._gavetas.items():
@@ -54370,6 +54441,7 @@ class PilhaGavetas(QtWidgets.QWidget):
         return self._botao
 
     def _montar_menu_paineis(self):
+        """Refaz o menu Painéis: uma ação marcável por gaveta mais recolher/expandir todos e restaurar."""
         m = self._menu_paineis
         if m is None:
             return
@@ -54388,6 +54460,7 @@ class PilhaGavetas(QtWidgets.QWidget):
 
     def _atualizar_menu_paineis(self):
         # O menu é refeito a cada abertura; nada a fazer se estiver fechado.
+        """Se o menu Painéis está aberto, refaz suas marcações."""
         if self._menu_paineis is not None and self._menu_paineis.isVisible():
             self._montar_menu_paineis()
 
@@ -91979,6 +92052,7 @@ def _medir_arranque_se_pedido(app):
 
     def _pronto():
         # dois giros do loop para a janela recém-mostrada chegar a pintar
+        """Chamado quando a janela pintou: imprime o tempo de arranque e encerra."""
         app.processEvents()
         app.processEvents()
         try:
