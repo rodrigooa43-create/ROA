@@ -493,6 +493,40 @@ class I18N:
 
     # Dicionários ENGLISH — chaves em pt-BR
     _en = {
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Biceps",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Click 'Add electrode' and then click on the body: the electrode snaps to the\nnearest SENIAM point (muscle belly) or stays where you clicked.\nDRAG the electrode: the heat follows it and shows the intensity measured there.\nMouse wheel zooms; right button drags the zoomed view.\nDouble-click renames · Delete removes the selected one.",
+        "Delt. ant.": "Ant. delt.",
+        "Delt. médio": "Mid. delt.",
+        "Delt. post.": "Post. delt.",
+        "ECM": "SCM",
+        "ECR": "ECR",
+        "Eretor esp.": "Erector sp.",
+        "Ext. dedos": "Finger ext.",
+        "FCR": "FCR",
+        "Fibular": "Peroneus",
+        "Flex. dedos": "Finger flex.",
+        "Frontal": "Frontalis",
+        "Gastroc. med.": "Med. gastroc.",
+        "Glúteo máx.": "Glut. max.",
+        "Glúteo méd.": "Glut. med.",
+        "Isquiotib.": "Hamstrings",
+        "Lado": "Side",
+        "Lateral": "Lateral",
+        "Latíssimo": "Latissimus",
+        "Masseter": "Masseter",
+        "Orbicular": "Orbicularis",
+        "Peitoral": "Pectoralis",
+        "Reto abd.": "Rectus abd.",
+        "Reto fem.": "Rectus fem.",
+        "Temporal": "Temporalis",
+        "Tibial ant.": "Tib. ant.",
+        "Trap. sup.": "Upper trap.",
+        "Tríceps": "Triceps",
+        "Vasto lat.": "Vastus lat.",
+        "Vasto med.": "Vastus med.",
+        "Vista Lateral (perfil esquerdo)": "Side View (left profile)",
+        "Zigomático": "Zygomaticus",
         # ===== p2_gavetas (1.10.0) =====
         "Arraste para mudar a altura · duplo clique: tamanho padrão": "Drag to change the height · double-click: default size",
         "Canais EMG — envelope e ativações": "EMG channels — envelope and activations",
@@ -4476,6 +4510,40 @@ class I18N:
 
     # Dicionários ESPAÑOL — chaves em pt-BR
     _es = {
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Bíceps",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Haga clic en 'Añadir electrodo' y luego en el cuerpo: el electrodo se pega al\npunto SENIAM más cercano (vientre del músculo) o queda donde hizo clic.\nARRASTRE el electrodo: el calor lo acompaña y muestra la intensidad medida allí.\nLa rueda del ratón amplía; el botón derecho arrastra la vista ampliada.\nDoble clic renombra · Supr elimina el seleccionado.",
+        "Delt. ant.": "Delt. ant.",
+        "Delt. médio": "Delt. medio",
+        "Delt. post.": "Delt. post.",
+        "ECM": "ECM",
+        "ECR": "ECR",
+        "Eretor esp.": "Erector esp.",
+        "Ext. dedos": "Ext. dedos",
+        "FCR": "FCR",
+        "Fibular": "Peroneo",
+        "Flex. dedos": "Flex. dedos",
+        "Frontal": "Frontal",
+        "Gastroc. med.": "Gastroc. med.",
+        "Glúteo máx.": "Glúteo máx.",
+        "Glúteo méd.": "Glúteo med.",
+        "Isquiotib.": "Isquiotib.",
+        "Lado": "Lado",
+        "Lateral": "Lateral",
+        "Latíssimo": "Dorsal ancho",
+        "Masseter": "Masetero",
+        "Orbicular": "Orbicular",
+        "Peitoral": "Pectoral",
+        "Reto abd.": "Recto abd.",
+        "Reto fem.": "Recto fem.",
+        "Temporal": "Temporal",
+        "Tibial ant.": "Tibial ant.",
+        "Trap. sup.": "Trap. sup.",
+        "Tríceps": "Tríceps",
+        "Vasto lat.": "Vasto lat.",
+        "Vasto med.": "Vasto med.",
+        "Vista Lateral (perfil esquerdo)": "Vista lateral (perfil izquierdo)",
+        "Zigomático": "Cigomático",
         # ===== p2_gavetas (1.10.0) =====
         "Arraste para mudar a altura · duplo clique: tamanho padrão": "Arrastre para cambiar la altura · doble clic: tamaño predeterminado",
         "Canais EMG — envelope e ativações": "Canales EMG — envolvente y activaciones",
@@ -8459,6 +8527,40 @@ class I18N:
 
     # Dicionários ITALIANO / FRANCÊS / CHINÊS — gerados na revisão ago/2026
     _it = {
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Bicipite",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Clicca su 'Aggiungi elettrodo' e poi sul corpo: l'elettrodo si aggancia al\npunto SENIAM più vicino (ventre muscolare) o resta dove hai cliccato.\nTRASCINA l'elettrodo: il calore lo segue e mostra l'intensità misurata lì.\nLa rotella del mouse ingrandisce; il tasto destro trascina la vista ingrandita.\nDoppio clic rinomina · Canc rimuove quello selezionato.",
+        "Delt. ant.": "Delt. ant.",
+        "Delt. médio": "Delt. medio",
+        "Delt. post.": "Delt. post.",
+        "ECM": "SCM",
+        "ECR": "ECR",
+        "Eretor esp.": "Erettore sp.",
+        "Ext. dedos": "Est. dita",
+        "FCR": "FCR",
+        "Fibular": "Peroneo",
+        "Flex. dedos": "Fless. dita",
+        "Frontal": "Frontale",
+        "Gastroc. med.": "Gastroc. med.",
+        "Glúteo máx.": "Gluteo max.",
+        "Glúteo méd.": "Gluteo med.",
+        "Isquiotib.": "Ischiocrur.",
+        "Lado": "Lato",
+        "Lateral": "Laterale",
+        "Latíssimo": "Gran dorsale",
+        "Masseter": "Massetere",
+        "Orbicular": "Orbicolare",
+        "Peitoral": "Pettorale",
+        "Reto abd.": "Retto addom.",
+        "Reto fem.": "Retto fem.",
+        "Temporal": "Temporale",
+        "Tibial ant.": "Tibiale ant.",
+        "Trap. sup.": "Trap. sup.",
+        "Tríceps": "Tricipite",
+        "Vasto lat.": "Vasto lat.",
+        "Vasto med.": "Vasto med.",
+        "Vista Lateral (perfil esquerdo)": "Vista laterale (profilo sinistro)",
+        "Zigomático": "Zigomatico",
         # ===== p2_gavetas (1.10.0) =====
         "Arraste para mudar a altura · duplo clique: tamanho padrão": "Trascina per cambiare l'altezza · doppio clic: dimensione predefinita",
         "Canais EMG — envelope e ativações": "Canali EMG — inviluppo e attivazioni",
@@ -12402,6 +12504,40 @@ class I18N:
     }
 
     _fr = {
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Biceps",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Cliquez sur « Ajouter une électrode » puis sur le corps : l'électrode se cale sur le\npoint SENIAM le plus proche (ventre du muscle) ou reste où vous avez cliqué.\nFAITES GLISSER l'électrode : la chaleur la suit et montre l'intensité mesurée là.\nLa molette agrandit ; le bouton droit déplace la vue agrandie.\nDouble-clic renomme · Suppr retire l'électrode sélectionnée.",
+        "Delt. ant.": "Delt. ant.",
+        "Delt. médio": "Delt. moyen",
+        "Delt. post.": "Delt. post.",
+        "ECM": "SCM",
+        "ECR": "ECR",
+        "Eretor esp.": "Érecteur rach.",
+        "Ext. dedos": "Ext. doigts",
+        "FCR": "FCR",
+        "Fibular": "Fibulaire",
+        "Flex. dedos": "Fléch. doigts",
+        "Frontal": "Frontal",
+        "Gastroc. med.": "Gastroc. méd.",
+        "Glúteo máx.": "Grand fessier",
+        "Glúteo méd.": "Moyen fessier",
+        "Isquiotib.": "Ischio-jamb.",
+        "Lado": "Côté",
+        "Lateral": "Latéral",
+        "Latíssimo": "Grand dorsal",
+        "Masseter": "Masséter",
+        "Orbicular": "Orbiculaire",
+        "Peitoral": "Pectoral",
+        "Reto abd.": "Droit abd.",
+        "Reto fem.": "Droit fém.",
+        "Temporal": "Temporal",
+        "Tibial ant.": "Tibial ant.",
+        "Trap. sup.": "Trap. sup.",
+        "Tríceps": "Triceps",
+        "Vasto lat.": "Vaste lat.",
+        "Vasto med.": "Vaste méd.",
+        "Vista Lateral (perfil esquerdo)": "Vue latérale (profil gauche)",
+        "Zigomático": "Zygomatique",
         # ===== p2_gavetas (1.10.0) =====
         "Arraste para mudar a altura · duplo clique: tamanho padrão": "Glisser pour changer la hauteur · double-clic : taille par défaut",
         "Canais EMG — envelope e ativações": "Canaux EMG — enveloppe et activations",
@@ -16345,6 +16481,40 @@ class I18N:
     }
 
     _zh = {
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "肱二头肌",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "点击“添加电极”，再点击身体：电极会贴到最近的 SENIAM 点（肌腹），\n或停在您点击的位置。\n拖动电极：热区会跟随并显示该处测得的强度。\n鼠标滚轮缩放；右键拖动放大后的视图。\n双击重命名 · Delete 删除所选电极。",
+        "Delt. ant.": "三角肌前束",
+        "Delt. médio": "三角肌中束",
+        "Delt. post.": "三角肌后束",
+        "ECM": "胸锁乳突肌",
+        "ECR": "桡侧腕伸肌",
+        "Eretor esp.": "竖脊肌",
+        "Ext. dedos": "指伸肌",
+        "FCR": "桡侧腕屈肌",
+        "Fibular": "腓骨长肌",
+        "Flex. dedos": "指屈肌",
+        "Frontal": "额肌",
+        "Gastroc. med.": "腓肠肌内侧",
+        "Glúteo máx.": "臀大肌",
+        "Glúteo méd.": "臀中肌",
+        "Isquiotib.": "腘绳肌",
+        "Lado": "侧面",
+        "Lateral": "外侧",
+        "Latíssimo": "背阔肌",
+        "Masseter": "咬肌",
+        "Orbicular": "眼轮匝肌",
+        "Peitoral": "胸大肌",
+        "Reto abd.": "腹直肌",
+        "Reto fem.": "股直肌",
+        "Temporal": "颞肌",
+        "Tibial ant.": "胫骨前肌",
+        "Trap. sup.": "上斜方肌",
+        "Tríceps": "肱三头肌",
+        "Vasto lat.": "股外侧肌",
+        "Vasto med.": "股内侧肌",
+        "Vista Lateral (perfil esquerdo)": "侧视图（左侧面）",
+        "Zigomático": "颧肌",
         # ===== p2_gavetas (1.10.0) =====
         "Arraste para mudar a altura · duplo clique: tamanho padrão": "拖动调整高度 · 双击：默认大小",
         "Canais EMG — envelope e ativações": "EMG 通道 — 包络与激活",
@@ -20290,6 +20460,40 @@ class I18N:
 
     # Dicionários DEUTSCH — chaves em pt-BR
     _de = {
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Bizeps",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Klicken Sie auf „Elektrode hinzufügen“ und dann auf den Körper: die Elektrode rastet am\nnächsten SENIAM-Punkt (Muskelbauch) ein oder bleibt dort, wo Sie geklickt haben.\nZIEHEN Sie die Elektrode: die Wärme folgt ihr und zeigt die dort gemessene Intensität.\nMausrad zoomt; rechte Taste verschiebt die vergrößerte Ansicht.\nDoppelklick benennt um · Entf entfernt die ausgewählte.",
+        "Delt. ant.": "Vord. Delt.",
+        "Delt. médio": "Mittl. Delt.",
+        "Delt. post.": "Hint. Delt.",
+        "ECM": "SCM",
+        "ECR": "ECR",
+        "Eretor esp.": "Rückenstr.",
+        "Ext. dedos": "Fingerstr.",
+        "FCR": "FCR",
+        "Fibular": "Peroneus",
+        "Flex. dedos": "Fingerbeuger",
+        "Frontal": "Frontalis",
+        "Gastroc. med.": "Med. Gastroc.",
+        "Glúteo máx.": "Glut. max.",
+        "Glúteo méd.": "Glut. med.",
+        "Isquiotib.": "Ischiocrurale",
+        "Lado": "Seite",
+        "Lateral": "Lateral",
+        "Latíssimo": "Latissimus",
+        "Masseter": "Masseter",
+        "Orbicular": "Orbicularis",
+        "Peitoral": "Pectoralis",
+        "Reto abd.": "Rectus abd.",
+        "Reto fem.": "Rectus fem.",
+        "Temporal": "Temporalis",
+        "Tibial ant.": "Tib. ant.",
+        "Trap. sup.": "Ob. Trapez",
+        "Tríceps": "Trizeps",
+        "Vasto lat.": "Vastus lat.",
+        "Vasto med.": "Vastus med.",
+        "Vista Lateral (perfil esquerdo)": "Seitenansicht (linkes Profil)",
+        "Zigomático": "Zygomaticus",
         # ===== p2_gavetas (1.10.0) =====
         "Arraste para mudar a altura · duplo clique: tamanho padrão": "Ziehen ändert die Höhe · Doppelklick: Standardgröße",
         "Canais EMG — envelope e ativações": "EMG-Kanäle — Hüllkurve und Aktivierungen",
@@ -24233,6 +24437,40 @@ class I18N:
 
     # Dicionários JAPANESE — chaves em pt-BR
     _ja = {
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "上腕二頭筋",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "「電極を追加」をクリックしてから体をクリック：電極は最も近い SENIAM 点（筋腹）に\n吸着するか、クリックした位置に置かれます。\n電極をドラッグ：熱表示が追従し、その位置で測った強さを示します。\nマウスホイールで拡大、右ボタンで拡大表示をドラッグ。\nダブルクリックで名前変更 · Delete で選択した電極を削除。",
+        "Delt. ant.": "三角筋前部",
+        "Delt. médio": "三角筋中部",
+        "Delt. post.": "三角筋後部",
+        "ECM": "胸鎖乳突筋",
+        "ECR": "橈側手根伸筋",
+        "Eretor esp.": "脊柱起立筋",
+        "Ext. dedos": "指伸筋",
+        "FCR": "橈側手根屈筋",
+        "Fibular": "長腓骨筋",
+        "Flex. dedos": "指屈筋",
+        "Frontal": "前頭筋",
+        "Gastroc. med.": "内側腓腹筋",
+        "Glúteo máx.": "大殿筋",
+        "Glúteo méd.": "中殿筋",
+        "Isquiotib.": "ハムストリング",
+        "Lado": "側面",
+        "Lateral": "外側",
+        "Latíssimo": "広背筋",
+        "Masseter": "咬筋",
+        "Orbicular": "眼輪筋",
+        "Peitoral": "大胸筋",
+        "Reto abd.": "腹直筋",
+        "Reto fem.": "大腿直筋",
+        "Temporal": "側頭筋",
+        "Tibial ant.": "前脛骨筋",
+        "Trap. sup.": "僧帽筋上部",
+        "Tríceps": "上腕三頭筋",
+        "Vasto lat.": "外側広筋",
+        "Vasto med.": "内側広筋",
+        "Vista Lateral (perfil esquerdo)": "側面図（左側）",
+        "Zigomático": "頬骨筋",
         # ===== p2_gavetas (1.10.0) =====
         "Arraste para mudar a altura · duplo clique: tamanho padrão": "ドラッグで高さを変更 · ダブルクリック：既定サイズ",
         "Canais EMG — envelope e ativações": "EMG チャネル — 包絡線と活動",
@@ -28176,6 +28414,40 @@ class I18N:
 
     # Dicionários RUSSIAN — chaves em pt-BR
     _ru = {
+        # ===== p3_atlas (1.10.0) =====
+        "Bíceps": "Бицепс",
+        "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\nponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\nARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\nRoda do mouse amplia; botão direito arrasta a vista ampliada.\nDuplo-clique renomeia · Delete remove o selecionado.": "Нажмите «Добавить электрод», затем щёлкните по телу: электрод прилипнет к\nближайшей точке SENIAM (брюшко мышцы) или останется там, где вы щёлкнули.\nПЕРЕТАЩИТЕ электрод: тепло следует за ним и показывает измеренную там интенсивность.\nКолесо мыши увеличивает; правая кнопка перетаскивает увеличенный вид.\nДвойной щелчок переименовывает · Delete удаляет выбранный.",
+        "Delt. ant.": "Пер. дельта",
+        "Delt. médio": "Ср. дельта",
+        "Delt. post.": "Задн. дельта",
+        "ECM": "ГКС",
+        "ECR": "ЛРК",
+        "Eretor esp.": "Разгиб. спины",
+        "Ext. dedos": "Разгиб. пальцев",
+        "FCR": "ЛСК",
+        "Fibular": "Малоберц.",
+        "Flex. dedos": "Сгиб. пальцев",
+        "Frontal": "Лобная",
+        "Gastroc. med.": "Мед. икронож.",
+        "Glúteo máx.": "Больш. ягод.",
+        "Glúteo méd.": "Сред. ягод.",
+        "Isquiotib.": "Задн. бедра",
+        "Lado": "Сбоку",
+        "Lateral": "Латеральная",
+        "Latíssimo": "Широчайшая",
+        "Masseter": "Жевательная",
+        "Orbicular": "Круговая глаза",
+        "Peitoral": "Грудная",
+        "Reto abd.": "Прямая живота",
+        "Reto fem.": "Прямая бедра",
+        "Temporal": "Височная",
+        "Tibial ant.": "Передн. большеберц.",
+        "Trap. sup.": "Верх. трапец.",
+        "Tríceps": "Трицепс",
+        "Vasto lat.": "Лат. широкая",
+        "Vasto med.": "Мед. широкая",
+        "Vista Lateral (perfil esquerdo)": "Вид сбоку (левый профиль)",
+        "Zigomático": "Скуловая",
         # ===== p2_gavetas (1.10.0) =====
         "Arraste para mudar a altura · duplo clique: tamanho padrão": "Перетащите, чтобы изменить высоту · двойной щелчок: размер по умолчанию",
         "Canais EMG — envelope e ativações": "Каналы ЭМГ — огибающая и активации",
@@ -33035,15 +33307,22 @@ class AppConfig:
                     if not isinstance(e, dict):
                         continue
                     try:
-                        clean.append({
+                        item = {
                             "id":      int(e.get("id", len(clean) + 1)),
                             "name":    str(e.get("name", f"E{len(clean)+1}")),
                             "x":       float(e.get("x", 0.5)),
                             "y":       float(e.get("y", 0.5)),
-                            "view":    "back" if e.get("view") == "back" else "front",
+                            # "side" é a vista lateral do atlas novo (P3)
+                            "view":    (e.get("view") if e.get("view") in ("front", "back", "side")
+                                        else "front"),
                             "channel": int(e.get("channel", -1)),
                             "muscle":  str(e.get("muscle", "")),
-                        })
+                        }
+                        # atlas=2 marca coordenadas já no corpo novo; sem a
+                        # marca o widget converte a montagem antiga ao carregar
+                        if isinstance(e.get("atlas"), int) and not isinstance(e.get("atlas"), bool):
+                            item["atlas"] = int(e["atlas"])
+                        clean.append(item)
                     except Exception:
                         continue
                 self.emg_electrode_montage = clean
@@ -41777,6 +42056,1692 @@ class CoContractionMapDialog(QtWidgets.QDialog):
         if getattr(self.main, "_cocontr_dialog", None) is self:
             self.main._cocontr_dialog = None
         super().closeEvent(ev)
+
+
+# ============================================================
+# P3 — Atlas muscular desenhado em código (AtlasCorpoWidget)
+# Corpo humano em Bézier (frente, costas, perfil), áreas recortadas,
+# pontos SENIAM e calor no ponto do eletrodo. Substitui o
+# MuscleAtlasWidget na aba Músculos; a classe antiga fica logo abaixo
+# por compatibilidade (não é mais instanciada).
+# ============================================================
+# === INÍCIO DO BLOCO PARA O ROA.py ===
+# ----------------------------------------------------------------------------
+# ATLAS MUSCULAR (P3) — corpo humano desenhado em código (QPainter + Bézier),
+# três vistas, áreas recortadas, pontos SENIAM e calor no ponto do eletrodo.
+# ----------------------------------------------------------------------------
+# Caixa do corpo: 4 "unidades de cabeça" (UC) de largura por 8 de altura.
+# Coordenadas normalizadas do corpo inteiro: nx = 0.5 + ux/4, ny = uy/8.
+_ATLAS_UC_LARG = 4.0
+_ATLAS_UC_ALT = 8.0
+ATLAS_ASPECTO = _ATLAS_UC_LARG / _ATLAS_UC_ALT     # largura/altura da caixa
+
+# "front"/"back" mantidos como hoje para os arquivos salvos continuarem válidos.
+ATLAS_VISTAS = ("front", "back", "side")
+
+# Títulos em português DE PROPÓSITO (dado, não texto de tela): quem exibe
+# chama tr() na hora, senão um tr() aqui congelaria o idioma no import.
+ATLAS_TITULOS_VISTA = {
+    "front": "Vista Frontal (anterior)",
+    "back": "Vista Posterior",
+    "side": "Vista Lateral (perfil esquerdo)",
+}
+
+
+def _atlas_rec(ux0, uy0, ux1, uy1):
+    """Recorte em UC -> (x0, y0, x1, y1) normalizados do corpo inteiro."""
+    return (0.5 + ux0 / _ATLAS_UC_LARG, uy0 / _ATLAS_UC_ALT,
+            0.5 + ux1 / _ATLAS_UC_LARG, uy1 / _ATLAS_UC_ALT)
+
+
+# Áreas = ZOOMS da vista inteira. Um eletrodo colocado numa área tem
+# coordenadas no espaço do corpo inteiro, por isso aparece também nele.
+# Lado D (direito do paciente) fica à ESQUERDA de quem olha na vista frontal.
+ATLAS_AREAS = {
+    "rosto":            {"titulo": "Rosto",            "vista": "front", "lado": None,
+                         "recorte": _atlas_rec(-0.80, -0.10, 0.80, 1.28)},
+    "pescoco":          {"titulo": "Pescoço",          "vista": "front", "lado": None,
+                         "recorte": _atlas_rec(-0.95, 0.70, 0.95, 1.80)},
+    "peito_abdomen":    {"titulo": "Peito e abdômen",  "vista": "front", "lado": None,
+                         "recorte": _atlas_rec(-1.15, 1.20, 1.15, 4.30)},
+    "costas":           {"titulo": "Costas",           "vista": "back",  "lado": None,
+                         "recorte": _atlas_rec(-1.15, 1.10, 1.15, 4.70)},
+    "braco_D":          {"titulo": "Braço",            "vista": "front", "lado": "D",
+                         "recorte": _atlas_rec(-1.60, 1.30, -0.55, 3.40)},
+    "braco_E":          {"titulo": "Braço",            "vista": "front", "lado": "E",
+                         "recorte": _atlas_rec(0.55, 1.30, 1.60, 3.40)},
+    "antebraco_mao_D":  {"titulo": "Antebraço e mão",  "vista": "front", "lado": "D",
+                         "recorte": _atlas_rec(-1.80, 2.80, -0.75, 5.30)},
+    "antebraco_mao_E":  {"titulo": "Antebraço e mão",  "vista": "front", "lado": "E",
+                         "recorte": _atlas_rec(0.75, 2.80, 1.80, 5.30)},
+    "mao_D":            {"titulo": "Mão",              "vista": "front", "lado": "D",
+                         "recorte": _atlas_rec(-1.75, 4.05, -0.80, 5.30)},
+    "mao_E":            {"titulo": "Mão",              "vista": "front", "lado": "E",
+                         "recorte": _atlas_rec(0.80, 4.05, 1.75, 5.30)},
+    "perna_D":          {"titulo": "Perna",            "vista": "front", "lado": "D",
+                         "recorte": _atlas_rec(-1.15, 3.80, 0.10, 8.15)},
+    "perna_E":          {"titulo": "Perna",            "vista": "front", "lado": "E",
+                         "recorte": _atlas_rec(-0.10, 3.80, 1.15, 8.15)},
+    "pe_D":             {"titulo": "Pé",               "vista": "front", "lado": "D",
+                         "recorte": _atlas_rec(-0.95, 7.15, 0.00, 8.15)},
+    "pe_E":             {"titulo": "Pé",               "vista": "front", "lado": "E",
+                         "recorte": _atlas_rec(0.00, 7.15, 0.95, 8.15)},
+}
+
+
+def _atlas_pt(ux, uy):
+    """Ponto em UC -> (nx, ny) normalizado."""
+    return (0.5 + ux / _ATLAS_UC_LARG, uy / _ATLAS_UC_ALT)
+
+
+def _seniam(vista, ux, uy, area, nota, lado="ambos", lateral=None, alias_de=None):
+    """Monta uma entrada de ELETRODOS_SENIAM a partir de UC.
+
+    (ux, uy) é o ponto do lado DIREITO do paciente na vista indicada (à
+    esquerda de quem olha na frontal, à direita na posterior); o esquerdo é o
+    espelho em x. `lateral` é a posição alternativa no perfil esquerdo.
+    """
+    nx, ny = _atlas_pt(ux, uy)
+    e = {"vista": vista, "x": nx, "y": ny, "lado": lado, "area": area, "nota": nota}
+    if lateral is not None:
+        e["lateral"] = _atlas_pt(*lateral)
+    if alias_de:
+        e["alias_de"] = alias_de
+    return e
+
+
+# Posições do VENTRE do músculo conforme as recomendações SENIAM (e, para o
+# rosto, Fridlund & Cacioppo 1986). Chaves iguais às de COMMON_MUSCLES.
+ELETRODOS_SENIAM = {
+    # ---- membro superior (frontal) ----
+    "Bíceps Braquial": _seniam(
+        "front", -1.04, 2.55, "braco_D",
+        "ventre do músculo, a 1/3 da linha fossa cubital–acrômio medial",
+        lateral=(-0.11, 2.55)),
+    "Deltoide Anterior": _seniam(
+        "front", -0.93, 1.82, "braco_D",
+        "um dedo distal e anterior ao acrômio", lateral=(-0.16, 1.85)),
+    "Deltoide Medio": _seniam(
+        "front", -1.12, 1.95, "braco_D",
+        "ponto mais lateral entre o acrômio e o epicôndilo lateral",
+        lateral=(0.08, 1.88)),
+    "Peitoral Maior": _seniam(
+        "front", -0.52, 2.05, "peito_abdomen",
+        "porção esternal, ~2 cm medial à prega axilar anterior",
+        lateral=(-0.44, 2.05)),
+    "Flexor Carpi Radialis": _seniam(
+        "front", -1.17, 3.45, "antebraco_mao_D",
+        "a 1/3 da linha epicôndilo medial–estiloide do rádio (face anterior)"),
+    "Flexor dos dedos": _seniam(
+        "front", -1.04, 3.52, "antebraco_mao_D",
+        "flexor superficial dos dedos, 1/3 proximal do antebraço anterior medial"),
+    "Iliopsoas": _seniam(
+        "front", -0.42, 4.12, "peito_abdomen",
+        "trígono femoral, lateral à artéria femoral (acesso de superfície limitado)"),
+    "Reto abdominal": _seniam(
+        "front", -0.22, 3.15, "peito_abdomen",
+        "2–3 cm lateral ao umbigo, fibras verticais", lateral=(-0.38, 3.15)),
+    "Esternocleidomastóideo": _seniam(
+        "front", -0.17, 1.12, "pescoco",
+        "a 1/3 da linha mastoide–incisura esternal", lateral=(0.02, 1.15)),
+    # ---- membro inferior (frontal) ----
+    "Quadríceps (Reto Femoral)": _seniam(
+        "front", -0.56, 4.85, "perna_D",
+        "50% da linha espinha ilíaca ântero-superior–borda superior da patela",
+        lateral=(-0.38, 4.85)),
+    "Vasto Lateral": _seniam(
+        "front", -0.74, 5.15, "perna_D",
+        "2/3 da linha espinha ilíaca ântero-superior–borda lateral da patela",
+        lateral=(-0.26, 5.10)),
+    "Vasto Medial": _seniam(
+        "front", -0.36, 5.45, "perna_D",
+        "80% da linha espinha ilíaca ântero-superior–interlinha articular medial"),
+    "Tibial Anterior": _seniam(
+        "front", -0.50, 6.55, "perna_D",
+        "a 1/3 da linha ponta da fíbula–maléolo medial", lateral=(-0.20, 6.55)),
+    "Fibular longo": _seniam(
+        "front", -0.60, 6.50, "perna_D",
+        "25% da linha cabeça da fíbula–maléolo lateral (face lateral)",
+        lateral=(0.06, 6.50)),
+    # ---- rosto (frontal) ----
+    "Masseter": _seniam(
+        "front", -0.31, 0.78, "rosto",
+        "ventre, entre o arco zigomático e o ângulo da mandíbula",
+        lateral=(-0.16, 0.80)),
+    "Temporal": _seniam(
+        "front", -0.34, 0.40, "rosto",
+        "porção anterior, acima do arco zigomático, à frente da orelha",
+        lateral=(-0.10, 0.40)),
+    "Frontal": _seniam(
+        "front", -0.15, 0.28, "rosto",
+        "~2 cm acima da sobrancelha, na linha da pupila", lateral=(-0.30, 0.28)),
+    "Orbicular do olho": _seniam(
+        "front", -0.27, 0.56, "rosto",
+        "borda ínfero-lateral da órbita", lateral=(-0.36, 0.55)),
+    "Zigomático": _seniam(
+        "front", -0.22, 0.70, "rosto",
+        "metade da linha canto da boca–osso zigomático", lateral=(-0.30, 0.68)),
+    # ---- tronco e membro superior (posterior; D à direita de quem olha) ----
+    "Trapézio": _seniam(
+        "back", 0.50, 1.50, "costas",
+        "fibras descendentes (superior): 50% da linha acrômio–C7",
+        lateral=(0.30, 1.50)),
+    "Trapézio superior": _seniam(
+        "back", 0.50, 1.50, "costas",
+        "mesmo ponto de 'Trapézio' (50% da linha acrômio–C7)",
+        lateral=(0.30, 1.50), alias_de="Trapézio"),
+    "Deltoide Posterior": _seniam(
+        "back", 0.96, 1.86, "costas",
+        "dois dedos atrás do ângulo do acrômio", lateral=(0.26, 1.88)),
+    "Tríceps Braquial": _seniam(
+        "back", 1.02, 2.42, "costas",
+        "cabeça longa: 50% da linha acrômio posterior–olécrano, 2 dedos medial",
+        lateral=(0.22, 2.50)),
+    "Latíssimo do Dorso": _seniam(
+        "back", 0.46, 2.75, "costas",
+        "~4 cm abaixo do ângulo inferior da escápula, meio caminho até a borda",
+        lateral=(0.36, 2.72)),
+    "Eretor da espinha": _seniam(
+        "back", 0.18, 3.10, "costas",
+        "longuíssimo: dois dedos lateral ao processo espinhoso de L1"),
+    "Extensor Carpi Radialis": _seniam(
+        "back", 1.20, 3.30, "costas",
+        "a 1/3 da linha epicôndilo lateral–estiloide do rádio (face dorsal)"),
+    "Extensor dos dedos": _seniam(
+        "back", 1.10, 3.56, "costas",
+        "extensor comum dos dedos, 1/3 proximal do antebraço dorsal",
+        lateral=(0.10, 3.55)),
+    # ---- quadril e membro inferior (posterior) ----
+    "Glúteo Máximo": _seniam(
+        "back", 0.46, 4.05, "costas",
+        "50% da linha sacro–trocânter maior", lateral=(0.42, 4.05)),
+    "Glúteo médio": _seniam(
+        "back", 0.72, 3.70, "costas",
+        "50% da linha crista ilíaca–trocânter maior", lateral=(0.28, 3.72)),
+    "Isquiotibiais (Bíceps F.)": _seniam(
+        "back", 0.60, 5.05, "perna_D",
+        "50% da linha tuberosidade isquiática–epicôndilo lateral da tíbia",
+        lateral=(0.26, 5.05)),
+    "Gastrocnêmio (medial)": _seniam(
+        "back", 0.34, 6.45, "perna_D",
+        "parte mais proeminente do ventre medial"),
+    "Sóleo": _seniam(
+        "back", 0.32, 7.05, "perna_D",
+        "2/3 da linha côndilo medial do fêmur–maléolo medial", lateral=(0.14, 7.05)),
+}
+
+
+# Nomes curtos para o rótulo ao lado do marcador (o nome completo não cabe
+# ao lado de um braço em 300 px de largura). Dado em pt; exibido via tr().
+ATLAS_NOMES_CURTOS = {
+    "Bíceps Braquial": "Bíceps", "Tríceps Braquial": "Tríceps",
+    "Deltoide Anterior": "Delt. ant.", "Deltoide Medio": "Delt. médio",
+    "Deltoide Posterior": "Delt. post.", "Trapézio": "Trapézio",
+    "Trapézio superior": "Trap. sup.", "Latíssimo do Dorso": "Latíssimo",
+    "Peitoral Maior": "Peitoral", "Flexor Carpi Radialis": "FCR",
+    "Extensor Carpi Radialis": "ECR", "Quadríceps (Reto Femoral)": "Reto fem.",
+    "Vasto Lateral": "Vasto lat.", "Vasto Medial": "Vasto med.",
+    "Isquiotibiais (Bíceps F.)": "Isquiotib.", "Glúteo Máximo": "Glúteo máx.",
+    "Glúteo médio": "Glúteo méd.", "Iliopsoas": "Iliopsoas",
+    "Gastrocnêmio (medial)": "Gastroc. med.", "Sóleo": "Sóleo",
+    "Tibial Anterior": "Tibial ant.", "Fibular longo": "Fibular",
+    "Reto abdominal": "Reto abd.", "Eretor da espinha": "Eretor esp.",
+    "Extensor dos dedos": "Ext. dedos", "Flexor dos dedos": "Flex. dedos",
+    "Esternocleidomastóideo": "ECM", "Masseter": "Masseter", "Temporal": "Temporal",
+    "Frontal": "Frontal", "Orbicular do olho": "Orbicular", "Zigomático": "Zigomático",
+}
+
+
+def atlas_nome_curto(musculo):
+    """Nome curto do músculo para rótulos (cai no nome completo se não houver)."""
+    return ATLAS_NOMES_CURTOS.get(musculo, musculo)
+
+
+# ---------------- acesso tardio às globais do ROA.py ----------------
+_ATLAS_CORES_PADRAO = {
+    "background": "#f6f8fc", "surface": "#ffffff", "surface_alt": "#eef2fb",
+    "border": "#d6deef", "text": "#141a33", "text_dim": "#5a6480",
+    "accent": "#1a23e0", "accent_dim": "#131aa6", "error": "#d4364f",
+    "warning": "#b8730a", "expansion": "#0f9d75",
+}
+
+
+def _atlas_cores():
+    """COLORS do programa (lido na hora de pintar, para o tema trocar) ou a
+    paleta padrão quando o módulo roda sozinho."""
+    c = globals().get("COLORS")
+    return c if isinstance(c, dict) and "surface" in c else _ATLAS_CORES_PADRAO
+
+
+def _atlas_tr(s):
+    """tr() do programa para chaves DINÂMICAS (títulos de vista/área, nomes
+    curtos), ou identidade quando tr não existe no escopo. Os textos literais
+    de tela usam tr("...") direto, para o coletor de traduções enxergá-los."""
+    f = globals().get("tr")
+    return f(s) if callable(f) else s
+
+
+def _atlas_fonte(ui=True):
+    """Nome da fonte da interface (FONT_UI) ou de dados (FONT_DATA)."""
+    return str(globals().get("FONT_UI" if ui else "FONT_DATA")
+               or ("Inter" if ui else "JetBrains Mono"))
+
+
+def _atlas_cores_canais():
+    """CHANNEL_COLORS do programa ou lista vazia."""
+    c = globals().get("CHANNEL_COLORS")
+    return c if isinstance(c, (list, tuple)) else []
+
+
+# ---------------- spline Catmull-Rom centrípeta -> Bézier ----------------
+def _atlas_bezier_cr(p0, p1, p2, p3):
+    """Pontos de controle Bézier do trecho p1->p2 de uma Catmull-Rom
+    centrípeta. Centrípeta porque não faz laço nem cúspide com pontos
+    desigualmente espaçados — o normal num contorno anatômico."""
+    a = 0.5
+    d1 = max(1e-6, math.hypot(p1[0] - p0[0], p1[1] - p0[1]) ** a)
+    d2 = max(1e-6, math.hypot(p2[0] - p1[0], p2[1] - p1[1]) ** a)
+    d3 = max(1e-6, math.hypot(p3[0] - p2[0], p3[1] - p2[1]) ** a)
+    k1 = 3 * d1 * (d1 + d2)
+    k2 = 3 * d3 * (d3 + d2)
+    b1 = ((d1 * d1 * p2[0] - d2 * d2 * p0[0] + (2 * d1 * d1 + 3 * d1 * d2 + d2 * d2) * p1[0]) / k1,
+          (d1 * d1 * p2[1] - d2 * d2 * p0[1] + (2 * d1 * d1 + 3 * d1 * d2 + d2 * d2) * p1[1]) / k1)
+    b2 = ((d3 * d3 * p1[0] - d2 * d2 * p3[0] + (2 * d3 * d3 + 3 * d3 * d2 + d2 * d2) * p2[0]) / k2,
+          (d3 * d3 * p1[1] - d2 * d2 * p3[1] + (2 * d3 * d3 + 3 * d3 * d2 + d2 * d2) * p2[1]) / k2)
+    return b1, b2
+
+
+def _atlas_pts(pontos, esc, des):
+    """(x, y[, "c"]) em UC -> (px, py, canto) em px da caixa."""
+    sx, sy = esc
+    dx, dy = des
+    return [(float(p[0]) * sx + dx, float(p[1]) * sy + dy, len(p) > 2 and "c" in p[2])
+            for p in pontos]
+
+
+def atlas_spline_fechada(pontos, esc=(1.0, 1.0), des=(0.0, 0.0)):
+    """QPainterPath fechado e suave por todos os pontos; "c" marca canto
+    (axila, virilha, vão dos dedos), onde a curva não deve arredondar."""
+    pts = _atlas_pts(pontos, esc, des)
+    n = len(pts)
+    path = QtGui.QPainterPath()
+    if n < 3:
+        return path
+    path.moveTo(pts[0][0], pts[0][1])
+    for i in range(n):
+        p0, p1, p2, p3 = pts[i - 1], pts[i], pts[(i + 1) % n], pts[(i + 2) % n]
+        b1, b2 = _atlas_bezier_cr(p0, p1, p2, p3)
+        if p1[2]:
+            b1 = (p1[0], p1[1])
+        if p2[2]:
+            b2 = (p2[0], p2[1])
+        path.cubicTo(b1[0], b1[1], b2[0], b2[1], p2[0], p2[1])
+    path.closeSubpath()
+    return path
+
+
+def atlas_spline_aberta(pontos, esc=(1.0, 1.0), des=(0.0, 0.0)):
+    """Mesma spline, aberta (linhas internas dos músculos e do rosto)."""
+    pts = _atlas_pts(pontos, esc, des)
+    path = QtGui.QPainterPath()
+    if len(pts) < 2:
+        return path
+    path.moveTo(pts[0][0], pts[0][1])
+    if len(pts) == 2:
+        path.lineTo(pts[1][0], pts[1][1])
+        return path
+    ext = [pts[0]] + pts + [pts[-1]]
+    for i in range(1, len(ext) - 2):
+        b1, b2 = _atlas_bezier_cr(ext[i - 1], ext[i], ext[i + 1], ext[i + 2])
+        path.cubicTo(b1[0], b1[1], b2[0], b2[1], ext[i + 1][0], ext[i + 1][1])
+    return path
+
+
+# ---------------- pontos-guia anatômicos (UC) ----------------
+# Metade esquerda (de quem olha) do contorno frontal/posterior, do topo da
+# cabeça à virilha; a outra metade é espelhada. Posição anatômica: palmas
+# para a frente, polegares para fora. Proporção de 8 cabeças.
+_ATLAS_META_FRENTE = [
+    (0.00, 0.00),
+    (-0.24, 0.05), (-0.36, 0.22), (-0.40, 0.42),
+    (-0.40, 0.48), (-0.45, 0.52), (-0.45, 0.60), (-0.39, 0.67),      # orelha
+    (-0.35, 0.76), (-0.29, 0.88), (-0.20, 0.98),                     # mandíbula
+    (-0.18, 1.06), (-0.19, 1.18), (-0.25, 1.29),                     # pescoço
+    (-0.50, 1.37), (-0.78, 1.46), (-1.00, 1.56),                     # trapézio, acrômio
+    (-1.15, 1.72), (-1.21, 1.92), (-1.19, 2.22),                     # deltoide
+    (-1.17, 2.52), (-1.21, 2.82), (-1.26, 3.04),                     # braço lat., cotovelo
+    (-1.33, 3.30), (-1.35, 3.58), (-1.32, 3.92), (-1.28, 4.22),      # antebraço, punho
+    (-1.37, 4.38), (-1.47, 4.55), (-1.50, 4.68), (-1.44, 4.75),      # polegar
+    (-1.36, 4.67, "c"), (-1.34, 4.86), (-1.28, 5.08),                # vão, indicador
+    (-1.17, 5.12), (-1.05, 5.04), (-0.99, 4.80),                     # dedos, mínimo
+    (-1.00, 4.48), (-1.06, 4.22),                                    # punho medial
+    (-1.03, 3.95), (-0.98, 3.60), (-0.95, 3.30),                     # antebraço medial
+    (-0.90, 3.02), (-0.86, 2.80), (-0.88, 2.55), (-0.92, 2.25),      # braço medial
+    (-0.82, 2.10, "c"),                                              # axila
+    (-0.80, 2.40), (-0.74, 2.75), (-0.68, 3.05),                     # tórax, cintura
+    (-0.72, 3.38), (-0.84, 3.64), (-0.92, 3.95),                     # ilíaco, trocânter
+    (-0.90, 4.35), (-0.84, 4.85), (-0.74, 5.35),                     # coxa lateral
+    (-0.65, 5.75), (-0.62, 6.05),                                    # joelho
+    (-0.66, 6.40), (-0.63, 6.80), (-0.55, 7.20), (-0.51, 7.52),      # panturrilha, tornozelo
+    (-0.58, 7.70), (-0.62, 7.88), (-0.52, 8.00),                     # pé
+    (-0.28, 7.98), (-0.16, 7.86, "c"),                               # dedos mediais
+    (-0.26, 7.52), (-0.25, 7.15), (-0.29, 6.75), (-0.31, 6.42),      # perna medial
+    (-0.25, 6.05), (-0.24, 5.75),                                    # joelho medial
+    (-0.29, 5.25), (-0.35, 4.65), (-0.32, 4.25),                     # coxa medial
+    (-0.14, 4.06),
+    (0.00, 4.00, "c"),                                               # virilha
+]
+
+# Perfil esquerdo (rosto para a esquerda de quem olha), sem o braço.
+_ATLAS_PERFIL_CORPO = [
+    (0.02, 0.00), (0.28, 0.08), (0.44, 0.32), (0.43, 0.60),          # crânio
+    (0.33, 0.80), (0.27, 1.02), (0.27, 1.26), (0.33, 1.42),          # nuca
+    (0.42, 1.68), (0.50, 2.05), (0.46, 2.50), (0.34, 2.98),          # dorso, lombar
+    (0.34, 3.32), (0.45, 3.62), (0.58, 3.95), (0.53, 4.30),          # sacro, glúteo
+    (0.41, 4.48), (0.36, 4.90), (0.28, 5.40), (0.19, 5.92),          # coxa post., poplítea
+    (0.23, 6.22), (0.36, 6.52), (0.30, 6.92), (0.15, 7.30),          # panturrilha, aquiles
+    (0.13, 7.62), (0.23, 7.84), (0.14, 8.00, "c"),                   # calcanhar
+    (-0.62, 8.00), (-0.78, 7.90), (-0.70, 7.74),                     # dedos
+    (-0.44, 7.60), (-0.25, 7.50, "c"),                               # dorso do pé
+    (-0.22, 7.02), (-0.26, 6.42), (-0.31, 6.10), (-0.35, 5.84),      # canela, patela
+    (-0.33, 5.58), (-0.41, 5.10), (-0.47, 4.60), (-0.43, 4.20),      # coxa anterior
+    (-0.37, 3.88), (-0.43, 3.50), (-0.45, 3.10), (-0.42, 2.70),      # pelve, abdômen
+    (-0.51, 2.25), (-0.54, 1.92), (-0.41, 1.52), (-0.23, 1.38),      # peito, manúbrio
+    (-0.19, 1.20), (-0.23, 1.04), (-0.31, 0.97),                     # pescoço anterior
+    (-0.40, 0.92), (-0.42, 0.81), (-0.40, 0.75), (-0.44, 0.69),      # queixo, lábios
+    (-0.46, 0.63), (-0.52, 0.56), (-0.42, 0.45),                     # nariz
+    (-0.40, 0.36), (-0.38, 0.22), (-0.27, 0.07),                     # testa
+]
+
+# Braço em perfil: contorno próprio, pintado por cima do tronco.
+_ATLAS_PERFIL_BRACO = [
+    (0.05, 1.50), (0.30, 1.60), (0.37, 1.86), (0.31, 2.16),
+    (0.29, 2.50), (0.27, 2.86), (0.25, 3.06),
+    (0.21, 3.40), (0.13, 3.82), (0.07, 4.24),
+    (0.07, 4.56), (0.03, 4.90), (-0.06, 5.06), (-0.15, 4.96),
+    (-0.19, 4.70, "c"), (-0.27, 4.60), (-0.31, 4.44), (-0.22, 4.34),
+    (-0.15, 4.22), (-0.15, 3.90), (-0.13, 3.50), (-0.09, 3.14),
+    (-0.07, 2.94), (-0.11, 2.60), (-0.15, 2.20), (-0.21, 1.90),
+    (-0.22, 1.70), (-0.10, 1.52),
+]
+
+# Linhas internas: referências ósseas/pregas (sempre) e grupos musculares
+# principais (traço mais leve) — ajudam a achar o ventre do músculo.
+_ATLAS_LINHAS = {
+    "front": [
+        [(-0.06, 1.40), (-0.42, 1.46), (-0.84, 1.50)], [(0.06, 1.40), (0.42, 1.46), (0.84, 1.50)],   # clavículas
+        [(-0.08, 2.32), (-0.42, 2.38), (-0.78, 2.18)], [(0.08, 2.32), (0.42, 2.38), (0.78, 2.18)],   # peitoral
+        [(0.00, 1.55), (0.00, 2.30)], [(0.00, 2.45), (0.00, 3.70)],                                  # esterno, linha alba
+        [(-0.05, 3.28), (0.00, 3.33), (0.05, 3.28)],                                                  # umbigo
+        [(-0.84, 3.74), (-0.42, 3.98), (-0.08, 4.04)], [(0.84, 3.74), (0.42, 3.98), (0.08, 4.04)],   # virilha
+        [(-0.60, 5.78), (-0.45, 5.72), (-0.30, 5.80)], [(0.60, 5.78), (0.45, 5.72), (0.30, 5.80)],   # patelas
+        [(-1.24, 4.84), (-1.22, 5.06)], [(-1.16, 4.86), (-1.14, 5.10)], [(-1.08, 4.84), (-1.06, 5.04)],
+        [(1.24, 4.84), (1.22, 5.06)], [(1.16, 4.86), (1.14, 5.10)], [(1.08, 4.84), (1.06, 5.04)],     # dedos
+        [(-0.60, 7.82), (-0.46, 7.86), (-0.30, 7.84)], [(0.60, 7.82), (0.46, 7.86), (0.30, 7.84)],   # dedos dos pés
+    ],
+    "back": [
+        [(0.00, 1.26), (0.00, 3.72)],                                                                 # coluna
+        [(-0.22, 1.62), (-0.26, 2.05), (-0.20, 2.42)], [(0.22, 1.62), (0.26, 2.05), (0.20, 2.42)],   # escápulas
+        [(-0.26, 1.72), (-0.60, 1.62), (-0.86, 1.56)], [(0.26, 1.72), (0.60, 1.62), (0.86, 1.56)],
+        [(-0.24, 1.32), (-0.12, 2.20), (0.00, 2.55), (0.12, 2.20), (0.24, 1.32)],                    # trapézio
+        [(0.00, 3.72), (0.00, 4.42)],                                                                 # fenda glútea
+        [(-0.78, 4.30), (-0.46, 4.52), (-0.14, 4.42)], [(0.78, 4.30), (0.46, 4.52), (0.14, 4.42)],   # pregas glúteas
+        [(-0.58, 5.98), (-0.44, 6.04), (-0.30, 5.98)], [(0.58, 5.98), (0.44, 6.04), (0.30, 5.98)],   # poplítea
+        [(-1.16, 2.98), (-1.07, 3.03), (-0.98, 2.98)], [(1.16, 2.98), (1.07, 3.03), (0.98, 2.98)],   # olécrano
+        [(-0.32, 0.22), (0.00, 0.17), (0.32, 0.22)], [(-0.18, 1.06), (0.00, 1.00), (0.18, 1.06)],    # nuca
+        [(-1.24, 4.84), (-1.22, 5.06)], [(-1.16, 4.86), (-1.14, 5.10)], [(-1.08, 4.84), (-1.06, 5.04)],
+        [(1.24, 4.84), (1.22, 5.06)], [(1.16, 4.86), (1.14, 5.10)], [(1.08, 4.84), (1.06, 5.04)],
+        [(-0.56, 7.72), (-0.40, 7.66), (-0.24, 7.72)], [(0.56, 7.72), (0.40, 7.66), (0.24, 7.72)],   # calcanhares
+    ],
+    "side": [
+        [(0.06, 0.44), (0.16, 0.42), (0.19, 0.54), (0.12, 0.66), (0.06, 0.62)],                      # orelha
+        [(-0.36, 0.95), (-0.10, 0.92), (0.10, 0.76)],                                                 # mandíbula
+        [(0.44, 1.75), (0.28, 2.00), (0.30, 2.40)],                                                   # escápula
+        [(-0.30, 3.60), (0.05, 3.50), (0.38, 3.56)],                                                  # crista ilíaca
+        [(-0.30, 5.95), (-0.14, 5.90), (0.00, 5.98)],                                                 # joelho
+        [(-0.10, 7.48), (-0.02, 7.55), (0.02, 7.66)],                                                 # maléolo
+        [(-0.06, 4.86), (-0.10, 5.02)], [(0.00, 4.90), (-0.02, 5.06)],                               # dedos
+    ],
+}
+_ATLAS_LINHAS_MUSCULOS = {
+    "front": [
+        [(-0.78, 1.52), (-0.84, 1.90), (-1.00, 2.20)], [(0.78, 1.52), (0.84, 1.90), (1.00, 2.20)],   # deltoide
+        [(-1.00, 2.28), (-1.02, 2.60), (-0.96, 2.92)], [(1.00, 2.28), (1.02, 2.60), (0.96, 2.92)],   # bíceps
+        [(-0.08, 1.38), (-0.14, 1.18), (-0.24, 0.96)], [(0.08, 1.38), (0.14, 1.18), (0.24, 0.96)],   # ECM
+        [(-0.24, 2.72), (0.24, 2.72)], [(-0.24, 3.06), (0.24, 3.06)],                                 # reto abdominal
+        [(-0.30, 2.42), (-0.32, 3.00), (-0.26, 3.60)], [(0.30, 2.42), (0.32, 3.00), (0.26, 3.60)],
+        [(-0.70, 2.80), (-0.56, 3.30), (-0.48, 3.72)], [(0.70, 2.80), (0.56, 3.30), (0.48, 3.72)],   # oblíquos
+        [(-0.58, 4.30), (-0.52, 5.00), (-0.48, 5.60)], [(0.58, 4.30), (0.52, 5.00), (0.48, 5.60)],   # reto femoral
+        [(-0.36, 5.00), (-0.30, 5.40), (-0.32, 5.70)], [(0.36, 5.00), (0.30, 5.40), (0.32, 5.70)],   # vasto medial
+        [(-0.44, 6.20), (-0.40, 6.80), (-0.34, 7.40)], [(0.44, 6.20), (0.40, 6.80), (0.34, 7.40)],   # tibial anterior
+        [(-1.14, 3.10), (-1.20, 3.50), (-1.16, 3.95)], [(1.14, 3.10), (1.20, 3.50), (1.16, 3.95)],   # braquiorradial
+    ],
+    "back": [
+        [(-0.80, 1.55), (-0.86, 1.92), (-1.00, 2.20)], [(0.80, 1.55), (0.86, 1.92), (1.00, 2.20)],   # deltoide post.
+        [(-1.02, 2.26), (-1.06, 2.60), (-1.02, 2.92)], [(1.02, 2.26), (1.06, 2.60), (1.02, 2.92)],   # tríceps
+        [(-0.72, 2.40), (-0.50, 2.90), (-0.22, 3.40)], [(0.72, 2.40), (0.50, 2.90), (0.22, 3.40)],   # latíssimo
+        [(-0.14, 2.60), (-0.14, 3.70)], [(0.14, 2.60), (0.14, 3.70)],                                 # eretores
+        [(-0.60, 4.60), (-0.54, 5.20), (-0.50, 5.80)], [(0.60, 4.60), (0.54, 5.20), (0.50, 5.80)],   # isquiotibiais
+        [(-0.62, 6.20), (-0.44, 6.50), (-0.44, 7.20)], [(-0.26, 6.20), (-0.44, 6.50)],                # gastrocnêmio
+        [(0.62, 6.20), (0.44, 6.50), (0.44, 7.20)], [(0.26, 6.20), (0.44, 6.50)],
+        [(-1.12, 3.10), (-1.20, 3.50), (-1.16, 3.95)], [(1.12, 3.10), (1.20, 3.50), (1.16, 3.95)],   # extensores
+    ],
+    "side": [
+        [(-0.48, 1.70), (-0.22, 2.10), (-0.40, 2.35)],                                                # peitoral
+        [(-0.05, 2.60), (-0.25, 3.00), (-0.30, 3.45)],                                                # oblíquo
+        [(0.05, 3.70), (0.30, 3.90), (0.48, 4.25)],                                                   # glúteos
+        [(-0.10, 4.40), (-0.12, 5.10), (-0.20, 5.70)],                                                # trato iliotibial
+        [(-0.30, 4.50), (-0.28, 5.20), (-0.30, 5.60)],                                                # vasto lateral
+        [(0.00, 6.20), (0.18, 6.60), (0.10, 7.10)],                                                   # gastrocnêmio lat.
+        [(0.05, 2.20), (0.08, 2.60), (0.06, 2.95)],                                                   # braço
+    ],
+}
+# Rosto: só aparece quando a cabeça tem tamanho de leitura (área "rosto").
+_ATLAS_LINHAS_ROSTO = {
+    "front": [
+        [(-0.32, 0.18), (0.00, 0.12), (0.32, 0.18)],
+        [(-0.26, 0.42), (-0.15, 0.39), (-0.05, 0.42)], [(0.26, 0.42), (0.15, 0.39), (0.05, 0.42)],
+        [(-0.24, 0.49), (-0.15, 0.46), (-0.06, 0.49), (-0.15, 0.52), (-0.24, 0.49)],
+        [(0.24, 0.49), (0.15, 0.46), (0.06, 0.49), (0.15, 0.52), (0.24, 0.49)],
+        [(-0.02, 0.52), (-0.06, 0.66), (0.00, 0.70), (0.06, 0.66)],
+        [(-0.12, 0.81), (0.00, 0.83), (0.12, 0.81)],
+        [(-0.10, 0.93), (0.00, 0.95), (0.10, 0.93)],
+    ],
+    "back": [],
+    "side": [
+        [(-0.40, 0.47), (-0.33, 0.45), (-0.28, 0.47)], [(-0.43, 0.39), (-0.28, 0.37)],
+        [(-0.44, 0.63), (-0.38, 0.62)], [(-0.42, 0.78), (-0.30, 0.77)],
+        [(0.00, 0.10), (-0.30, 0.20), (-0.36, 0.34)],
+    ],
+}
+# Volumes (realce radial suave): (cx, cy, rx, ry) em UC.
+_ATLAS_VOLUMES = {
+    "front": [
+        (0.00, 0.45, 0.30, 0.42), (-0.38, 2.00, 0.36, 0.32), (0.38, 2.00, 0.36, 0.32),
+        (0.00, 3.05, 0.34, 0.60), (-1.00, 1.80, 0.20, 0.26), (1.00, 1.80, 0.20, 0.26),
+        (-1.02, 2.55, 0.16, 0.40), (1.02, 2.55, 0.16, 0.40), (-1.16, 3.60, 0.16, 0.42),
+        (1.16, 3.60, 0.16, 0.42), (-0.56, 5.00, 0.28, 0.70), (0.56, 5.00, 0.28, 0.70),
+        (-0.44, 6.70, 0.18, 0.50), (0.44, 6.70, 0.18, 0.50),
+    ],
+    "back": [
+        (0.00, 0.45, 0.30, 0.42), (-0.36, 2.00, 0.30, 0.40), (0.36, 2.00, 0.30, 0.40),
+        (0.00, 3.10, 0.34, 0.50), (-1.00, 1.80, 0.20, 0.26), (1.00, 1.80, 0.20, 0.26),
+        (-1.04, 2.55, 0.16, 0.40), (1.04, 2.55, 0.16, 0.40), (-1.16, 3.60, 0.16, 0.42),
+        (1.16, 3.60, 0.16, 0.42), (-0.44, 4.10, 0.34, 0.34), (0.44, 4.10, 0.34, 0.34),
+        (-0.56, 5.10, 0.26, 0.60), (0.56, 5.10, 0.26, 0.60), (-0.44, 6.60, 0.18, 0.46),
+        (0.44, 6.60, 0.18, 0.46),
+    ],
+    "side": [
+        (0.00, 0.45, 0.40, 0.42), (-0.05, 2.20, 0.36, 0.60), (0.00, 3.20, 0.32, 0.50),
+        (0.30, 3.95, 0.24, 0.36), (-0.08, 5.00, 0.30, 0.70), (0.00, 6.60, 0.24, 0.50),
+        (0.08, 1.80, 0.24, 0.26), (0.08, 2.55, 0.16, 0.40), (-0.02, 3.65, 0.14, 0.40),
+    ],
+}
+
+# Escala térmica do calor: azul frio -> âmbar -> vermelho quente. Sem amarelo
+# puro (some no tema claro) e sem o roxo escuro da viridis (some no escuro).
+_ATLAS_CALOR_LUT = ((52, 118, 222), (54, 176, 196), (240, 182, 52),
+                    (236, 110, 36), (214, 36, 44))
+
+
+def atlas_cor_calor(t):
+    """Intensidade 0..1 -> QColor da escala térmica (interpolação linear)."""
+    t = 0.0 if t != t else max(0.0, min(1.0, float(t)))
+    x = t * (len(_ATLAS_CALOR_LUT) - 1)
+    i = int(x)
+    if i >= len(_ATLAS_CALOR_LUT) - 1:
+        r, g, b = _ATLAS_CALOR_LUT[-1]
+    else:
+        a, c, fr = _ATLAS_CALOR_LUT[i], _ATLAS_CALOR_LUT[i + 1], x - i
+        r = a[0] + (c[0] - a[0]) * fr
+        g = a[1] + (c[1] - a[1]) * fr
+        b = a[2] + (c[2] - a[2]) * fr
+    return QtGui.QColor(int(r), int(g), int(b))
+
+
+def _atlas_mistura(c1, c2, t):
+    """Interpola duas cores em RGB; t=0 devolve c1."""
+    a, b = QtGui.QColor(c1), QtGui.QColor(c2)
+    return QtGui.QColor(int(a.red() + (b.red() - a.red()) * t),
+                        int(a.green() + (b.green() - a.green()) * t),
+                        int(a.blue() + (b.blue() - a.blue()) * t))
+
+
+class CorpoHumanoDesenho:
+    """Geometria e pintura do corpo humano (frente, costas, perfil esquerdo).
+
+    Estilo "anatômico delineado" com volumes suaves: preenchimento na cor da
+    superfície alternativa, realces radiais discretos, linhas internas dos
+    grupos musculares em traço leve e contorno fino. Os QPainterPath são
+    cacheados por (vista, largura, altura) e construídos em coordenadas
+    locais da caixa do corpo — quem pinta translada o painter até a caixa.
+    """
+
+    volumes = True          # realces radiais (proposta B) por cima do delineado
+
+    def __init__(self):
+        """Cria os caches de caminhos e de camadas prontas."""
+        self._cache_corpo = {}
+        self._cache_linhas = {}
+        self._camadas = {}
+
+    # ---- transformações UC <-> px da caixa ----
+    @staticmethod
+    def escala(bw, bh):
+        """Fatores UC->px e deslocamento (x=0 no meio da caixa)."""
+        return (bw / _ATLAS_UC_LARG, bh / _ATLAS_UC_ALT), (bw * 0.5, 0.0)
+
+    @staticmethod
+    def alfa_rosto(bh):
+        """Opacidade 0..1 das linhas do rosto pelo tamanho da cabeça em px:
+        invisível no corpo inteiro pequeno, nítido na área 'rosto'."""
+        return max(0.0, min(1.0, (bh / _ATLAS_UC_ALT - 45.0) / 90.0))
+
+    # ---- caminhos ----
+    def caminho_corpo(self, vista, w, h):
+        """QPainterPath fechado do corpo inteiro na vista, em px de uma caixa
+        w x h (cacheado por (vista, w, h))."""
+        chave = (vista, round(float(w), 1), round(float(h), 1))
+        c = self._cache_corpo.get(chave)
+        if c is not None:
+            return c
+        esc, des = self.escala(w, h)
+        if vista == "side":
+            path = atlas_spline_fechada(_ATLAS_PERFIL_CORPO, esc, des)
+            path.addPath(atlas_spline_fechada(_ATLAS_PERFIL_BRACO, esc, des))
+        else:
+            meio = list(_ATLAS_META_FRENTE)
+            espelho = [(-p[0], p[1]) + tuple(p[2:]) for p in reversed(meio[1:-1])]
+            path = atlas_spline_fechada(meio + espelho, esc, des)
+        # WindingFill: no perfil o braço sobrepõe o tronco e os dois têm de
+        # ficar preenchidos (OddEven abriria um buraco na sobreposição).
+        path.setFillRule(QtCore.Qt.FillRule.WindingFill)
+        if len(self._cache_corpo) > 24:
+            self._cache_corpo.clear()
+        self._cache_corpo[chave] = path
+        return path
+
+    def caminho_braco_lado(self, w, h):
+        """Só o braço do perfil (para repintar o contorno dele sobre o tronco)."""
+        chave = ("braco", round(float(w), 1), round(float(h), 1))
+        c = self._cache_linhas.get(chave)
+        if c is None:
+            esc, des = self.escala(w, h)
+            c = atlas_spline_fechada(_ATLAS_PERFIL_BRACO, esc, des)
+            self._cache_linhas[chave] = c
+        return c
+
+    def caminho_linhas(self, vista, w, h, grupo):
+        """Linhas internas abertas: grupo em ("base", "musculos", "rosto")."""
+        chave = (vista, round(float(w), 1), round(float(h), 1), grupo)
+        c = self._cache_linhas.get(chave)
+        if c is not None:
+            return c
+        esc, des = self.escala(w, h)
+        fonte = {"base": _ATLAS_LINHAS, "musculos": _ATLAS_LINHAS_MUSCULOS,
+                 "rosto": _ATLAS_LINHAS_ROSTO}[grupo].get(vista, [])
+        path = QtGui.QPainterPath()
+        for linha in fonte:
+            path.addPath(atlas_spline_aberta(linha, esc, des))
+        if len(self._cache_linhas) > 96:
+            self._cache_linhas.clear()
+        self._cache_linhas[chave] = path
+        return path
+
+    # ---- pintura ----
+    def pintar_corpo(self, p, vista, rect, cores=None):
+        """Pinta o corpo inteiro dentro de `rect` (QRectF em px) com as cores do
+        tema (dict COLORS; se None, lê COLORS do programa na hora)."""
+        cores = cores or _atlas_cores()
+        bw, bh = rect.width(), rect.height()
+        corpo = self.caminho_corpo(vista, bw, bh)
+        escuro = QtGui.QColor(cores["surface"]).lightness() < 128
+        pele = _atlas_mistura(cores["surface_alt"], cores["text"], 0.10 if escuro else 0.035)
+        traco = _atlas_mistura(cores["border"], cores["text"], 0.50 if escuro else 0.40)
+        p.save()
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+        p.translate(rect.left(), rect.top())
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.setBrush(QtGui.QBrush(pele))
+        p.drawPath(corpo)
+        p.save()
+        p.setClipPath(corpo)
+        if self.volumes:
+            realce = _atlas_mistura(cores["surface_alt"], "#ffffff", 0.40 if escuro else 0.85)
+            c0 = QtGui.QColor(realce); c0.setAlpha(95 if escuro else 150)
+            cm = QtGui.QColor(realce); cm.setAlpha(c0.alpha() // 3)
+            c1 = QtGui.QColor(realce); c1.setAlpha(0)
+            (sx, sy), (dx, dy) = self.escala(bw, bh)
+            for cx, cy, rx, ry in _ATLAS_VOLUMES.get(vista, []):
+                # Círculo unitário escalado pelo painter: o gradiente radial
+                # vira elíptico sem matemática extra.
+                p.save()
+                p.translate(cx * sx + dx, cy * sy + dy)
+                p.scale(rx * sx, ry * sy)
+                g = QtGui.QRadialGradient(QtCore.QPointF(0, 0), 1.0)
+                g.setColorAt(0.0, c0); g.setColorAt(0.6, cm); g.setColorAt(1.0, c1)
+                p.setBrush(QtGui.QBrush(g))
+                p.drawEllipse(QtCore.QPointF(0, 0), 1.0, 1.0)
+                p.restore()
+        # sombra interna da borda: destaca o contorno do fundo nos dois temas
+        sombra = QtGui.QColor(cores["text"]); sombra.setAlpha(24 if escuro else 15)
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        p.setPen(QtGui.QPen(sombra, max(2.0, bh / 100.0)))
+        p.drawPath(corpo)
+        p.restore()
+        # linhas internas: referências (mais firmes) e músculos (mais leves).
+        # NoBrush obrigatório: com o pincel da pele, cada linha aberta era
+        # preenchida como polígono e sumia.
+        p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+        cl = QtGui.QColor(traco); cl.setAlpha(130)
+        p.setPen(QtGui.QPen(cl, max(0.7, bh / 520.0)))
+        p.drawPath(self.caminho_linhas(vista, bw, bh, "base"))
+        cm2 = QtGui.QColor(traco); cm2.setAlpha(95)
+        p.setPen(QtGui.QPen(cm2, max(0.7, bh / 600.0)))
+        p.drawPath(self.caminho_linhas(vista, bw, bh, "musculos"))
+        a = self.alfa_rosto(bh)
+        if a > 0.02:
+            cr = QtGui.QColor(traco); cr.setAlpha(int(140 * a))
+            p.setPen(QtGui.QPen(cr, max(0.8, bh / 520.0)))
+            p.drawPath(self.caminho_linhas(vista, bw, bh, "rosto"))
+        if vista == "side":
+            p.setPen(QtGui.QPen(traco, max(0.9, bh / 420.0)))
+            p.drawPath(self.caminho_braco_lado(bw, bh))
+        p.setPen(QtGui.QPen(traco, max(1.0, bh / 400.0)))
+        p.drawPath(corpo)
+        p.restore()
+
+    def camada_corpo(self, vista, rect, cores, dpr=1.0, transf=None, tamanho=None):
+        """QPixmap transparente com o corpo já pintado, cacheado por tamanho,
+        cores e transformação.
+
+        O corpo é estático entre dois quadros (só calor e eletrodos mudam),
+        então a pintura cara (gradientes, traço largo recortado) acontece uma
+        vez e cada quadro custa um drawPixmap. `transf` (QTransform) e
+        `tamanho` (w, h) servem para gravar a camada já ampliada pelo zoom, no
+        espaço da tela, sem borrar o contorno.
+        """
+        cores = cores or _atlas_cores()
+        tam = tamanho or (int(math.ceil(rect.width())) + 4, int(math.ceil(rect.height())) + 4)
+        tk = None
+        if transf is not None:
+            tk = (round(transf.m11(), 4), round(transf.m22(), 4),
+                  round(transf.dx(), 1), round(transf.dy(), 1))
+        chave = (vista, int(round(rect.width())), int(round(rect.height())),
+                 round(rect.left(), 1), round(rect.top(), 1), tam, tk, round(dpr, 2),
+                 cores["surface_alt"], cores["border"], cores["text"], cores["surface"])
+        pm = self._camadas.get(chave)
+        if pm is not None:
+            return pm
+        pm = QtGui.QPixmap(max(1, int(tam[0] * dpr)), max(1, int(tam[1] * dpr)))
+        pm.setDevicePixelRatio(dpr)
+        pm.fill(QtCore.Qt.GlobalColor.transparent)
+        pc = QtGui.QPainter(pm)
+        pc.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+        if transf is not None:
+            pc.setTransform(transf)
+            self.pintar_corpo(pc, vista, rect, cores)
+        else:
+            self.pintar_corpo(pc, vista, QtCore.QRectF(2, 2, rect.width(), rect.height()), cores)
+        pc.end()
+        if len(self._camadas) > 6:
+            self._camadas.clear()
+        self._camadas[chave] = pm
+        return pm
+
+    @staticmethod
+    def pintar_calor(p, pontos, recorte=None):
+        """Manchas de calor nos pontos dos eletrodos, recortadas pelo corpo.
+
+        pontos: [(x, y, intensidade 0..1, raio_px)] em px. A cor esquenta
+        (azul -> âmbar -> vermelho) e a opacidade sobe com a intensidade; a
+        borda é sempre transparente, para a mancha nascer do corpo e não
+        parecer um disco colado.
+        """
+        if not pontos:
+            return
+        p.save()
+        if recorte is not None:
+            p.setClipPath(recorte)
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        for (cx, cy, t, raio) in pontos:
+            t = max(0.0, min(1.0, float(t)))
+            c0 = atlas_cor_calor(t); c0.setAlpha(int(70 + 160 * t))
+            cm = atlas_cor_calor(max(0.0, t - 0.25)); cm.setAlpha(int(35 + 90 * t))
+            c1 = QtGui.QColor(cm); c1.setAlpha(0)
+            grad = QtGui.QRadialGradient(cx, cy, max(1.0, raio))
+            grad.setColorAt(0.0, c0); grad.setColorAt(0.5, cm); grad.setColorAt(1.0, c1)
+            p.setBrush(QtGui.QBrush(grad))
+            p.drawEllipse(QtCore.QPointF(cx, cy), raio, raio)
+        p.restore()
+
+    # ---- áreas ----
+    @staticmethod
+    def recorte_area(area, vista=None):
+        """(x0, y0, x1, y1) normalizados da área na vista pedida.
+
+        A área é definida na sua própria vista; de frente para costas o
+        recorte espelha em x (o lado D do paciente troca de lado na tela), e
+        no perfil usa a mesma faixa de altura centrada no corpo.
+        """
+        a = ATLAS_AREAS[area]
+        x0, y0, x1, y1 = a["recorte"]
+        vista = vista or a["vista"]
+        if vista == a["vista"]:
+            return (x0, y0, x1, y1)
+        if vista == "side":
+            meia = max(0.20, (x1 - x0) * 0.5)
+            return (0.5 - meia, y0, 0.5 + meia, y1)
+        return (1.0 - x1, y0, 1.0 - x0, y1)
+
+    @staticmethod
+    def para_area(x, y, area):
+        """(x, y) do corpo inteiro -> (ax, ay) em 0..1 dentro da área."""
+        x0, y0, x1, y1 = ATLAS_AREAS[area]["recorte"]
+        return ((x - x0) / (x1 - x0), (y - y0) / (y1 - y0))
+
+    @staticmethod
+    def de_area(ax, ay, area):
+        """(ax, ay) em 0..1 dentro da área -> (x, y) do corpo inteiro."""
+        x0, y0, x1, y1 = ATLAS_AREAS[area]["recorte"]
+        return (x0 + ax * (x1 - x0), y0 + ay * (y1 - y0))
+
+    # ---- pontos SENIAM ----
+    @staticmethod
+    def pontos_seniam(vista, com_alias=False):
+        """[(músculo, lado, nx, ny)] dos pontos SENIAM visíveis na vista
+        (os dois lados nas vistas frontal/posterior; só o E no perfil)."""
+        out = []
+        for m, e in ELETRODOS_SENIAM.items():
+            if e.get("alias_de") and not com_alias:
+                continue
+            if vista == "side":
+                lat = e.get("lateral")
+                if lat is not None:
+                    out.append((m, "E", lat[0], lat[1]))
+                continue
+            if e["vista"] != vista:
+                continue
+            lado = e.get("lado", "ambos")
+            # x guardado é o do lado D do paciente na vista da entrada
+            if lado in ("ambos", "D"):
+                out.append((m, "D", e["x"], e["y"]))
+            if lado in ("ambos", "E"):
+                out.append((m, "E", 1.0 - e["x"], e["y"]))
+        return out
+
+    @staticmethod
+    def ponto_seniam(musculo, lado="D", vista=None):
+        """(nx, ny, vista) do ponto SENIAM do músculo no lado pedido, ou None.
+
+        Com `vista`="side" devolve a posição lateral quando existe.
+        """
+        e = ELETRODOS_SENIAM.get(musculo)
+        if e is None:
+            return None
+        if vista == "side":
+            lat = e.get("lateral")
+            return (lat[0], lat[1], "side") if lat is not None else None
+        x = e["x"] if lado != "E" else 1.0 - e["x"]
+        return (x, e["y"], e["vista"])
+
+
+class AtlasCorpoWidget(QtWidgets.QWidget):
+    """Atlas muscular interativo com corpo humano desenhado em código.
+
+    Mesma API pública do MuscleAtlasWidget (sinais, eletrodos, zoom, ao vivo,
+    exportação) mais a vista lateral ("side"), áreas recortadas (set_area) e
+    pontos SENIAM com snap. O calor aparece NO PONTO DO ELETRODO, recortado
+    pelo corpo; eletrodos colocados numa área têm coordenadas do corpo
+    inteiro, por isso aparecem também na vista inteira.
+    """
+
+    sigElectrodesChanged = QtCore.Signal()
+    sigElectrodeSelected = QtCore.Signal(int)   # id do eletrodo (ou -1)
+    sigZoomChanged = QtCore.Signal(float)      # fator de zoom atual
+
+    HANDLE_R = 12.0            # raio do marcador (px de tela)
+    ZOOM_MIN, ZOOM_MAX = 1.0, 8.0
+    RAIO_SNAP = 0.045          # distância (fração da altura do corpo) para colar no ponto SENIAM
+
+    # Compatível com o combo de regiões da aba EMG: (rótulo, zoom, foco x, foco y).
+    # Rótulos em português de propósito (dado comparado por zoom_regiao).
+    REGIOES = (
+        ("Corpo inteiro", 1.0, 0.50, 0.50),
+        ("Cabeça e pescoço", 3.4, 0.50, 0.09),
+        ("Ombro e braço", 2.6, 0.30, 0.28),
+        ("Antebraço e mão", 3.6, 0.22, 0.42),
+        ("Tronco", 2.0, 0.50, 0.32),
+        ("Quadril e coxa", 2.4, 0.50, 0.60),
+        ("Perna e pé", 2.8, 0.50, 0.84),
+    )
+    # Recorte real (normalizado) de cada região: mais preciso que zoom+foco.
+    REGIOES_RECORTE = {
+        "Cabeça e pescoço": _atlas_rec(-0.95, -0.10, 0.95, 1.80),
+        "Ombro e braço": _atlas_rec(-1.65, 1.20, 1.65, 3.40),
+        "Antebraço e mão": _atlas_rec(-1.85, 2.80, 1.85, 5.30),
+        "Tronco": _atlas_rec(-1.15, 1.20, 1.15, 4.40),
+        "Quadril e coxa": _atlas_rec(-1.15, 3.40, 1.15, 6.20),
+        "Perna e pé": _atlas_rec(-1.00, 5.60, 1.00, 8.15),
+    }
+
+    def __init__(self, parent=None):
+        """Prepara o estado: vista frontal, sem área, eletrodos, ativações e
+        leituras ao vivo vazias, seleção e margens reservadas.
+
+        Mouse tracking e ClickFocus ligados porque o widget trata arraste e a
+        tecla Delete. As margens reservam título (24 px) e legenda (42 px);
+        em miniatura elas somem.
+        """
+        super().__init__(parent)
+        self.setMinimumSize(300, 470)
+        self.setMouseTracking(True)
+        self.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
+        self._desenho = CorpoHumanoDesenho()
+        self._view = "front"
+        self._area = None                 # id de ATLAS_AREAS ou None
+        self._recorte = None              # recorte livre (zoom_regiao) ou None
+        self._electrodes = []             # [{id,name,x,y,view,channel,muscle,atlas}]
+        self._muscle_act = {}             # músculo -> %MVC (fallback)
+        self._live = {}                   # canal 0-based -> (pct, qualidade)
+        self._sel = -1
+        self._place_mode = False
+        self._dragging = False
+        self._show_labels = True
+        self._numeracao = "id"            # "id" | "canal"
+        self._miniatura_forcada = False
+        self._pad_top = 24
+        self._pad_bot = 42
+        self._pad_lado = 6
+        self._zoom = 1.0
+        self._foco_n = (0.5, 0.5)
+        self._pan_ini = None
+        self._z_atual = 1.0
+        self.setToolTip(tr(
+            "Clique em 'Adicionar eletrodo' e clique no corpo: o eletrodo cola no\n"
+            "ponto SENIAM mais próximo (ventre do músculo) ou fica onde você clicou.\n"
+            "ARRASTE o eletrodo: o calor acompanha e mostra a intensidade medida ali.\n"
+            "Roda do mouse amplia; botão direito arrasta a vista ampliada.\n"
+            "Duplo-clique renomeia · Delete remove o selecionado."))
+
+    # ---------------- API pública: vistas e áreas ----------------
+    def set_view(self, view):
+        """Alterna entre "front", "back" e "side"; outro valor vira "front"."""
+        self._view = view if view in ATLAS_VISTAS else "front"
+        self.update()
+
+    def get_view(self):
+        """Vista em exibição: "front", "back" ou "side"."""
+        return self._view
+
+    def set_area(self, area):
+        """Mostra uma área recortada (id de ATLAS_AREAS) ou o corpo inteiro (None).
+
+        Muda a vista para a da área quando a atual não é compatível e zera o
+        zoom livre: a área já é um enquadramento.
+        """
+        if area is not None and area not in ATLAS_AREAS:
+            area = None
+        self._area = area
+        self._recorte = None
+        if area is not None:
+            self._view = ATLAS_AREAS[area]["vista"]
+        self._zoom, self._foco_n = 1.0, (0.5, 0.5)
+        self.update()
+        self.sigZoomChanged.emit(self._zoom_efetivo())
+
+    def get_area(self):
+        """Id da área em exibição ou None (corpo inteiro)."""
+        return self._area
+
+    @staticmethod
+    def areas_disponiveis():
+        """[(id, título em pt, lado)] das áreas, na ordem de ATLAS_AREAS."""
+        return [(k, v["titulo"], v["lado"]) for k, v in ATLAS_AREAS.items()]
+
+    def set_show_labels(self, on):
+        """Liga ou desliga os rótulos dos eletrodos."""
+        self._show_labels = bool(on); self.update()
+
+    def set_numeracao(self, modo):
+        """Número dentro do marcador: "id" do eletrodo ou "canal" (CH)."""
+        self._numeracao = "canal" if modo == "canal" else "id"; self.update()
+
+    def set_miniatura(self, on):
+        """Força o modo miniatura (só corpo, pontos e calor) e libera o tamanho
+        mínimo para caber num cartão de 90 x 140."""
+        self._miniatura_forcada = bool(on)
+        self.setMinimumSize(60, 90) if on else self.setMinimumSize(300, 470)
+        self.update()
+
+    def set_place_mode(self, on):
+        """Arma o modo de posicionamento: o próximo clique cria um eletrodo.
+
+        Troca o cursor para cruz e mostra os pontos SENIAM como guias. Não
+        desliga sozinho após o clique.
+        """
+        self._place_mode = bool(on)
+        self.setCursor(QtCore.Qt.CursorShape.CrossCursor if on
+                       else QtCore.Qt.CursorShape.ArrowCursor)
+        self.update()
+
+    # ---------------- API pública: dados ----------------
+    def set_muscle_activations(self, d):
+        """Dicionário músculo -> %MVC usado quando o eletrodo não tem canal ao
+        vivo (e para músculos ativos sem eletrodo, nos pontos SENIAM)."""
+        self._muscle_act = dict(d or {}); self.update()
+
+    def set_live_channel_data(self, d):
+        """Leituras ao vivo: canal 0-based -> (pct de MVC, qualidade 0..100);
+        definem a intensidade do calor e o anel de qualidade."""
+        self._live = dict(d or {}); self.update()
+
+    def set_electrodes(self, items):
+        """Repõe a lista de eletrodos a partir de dados salvos, normalizando.
+
+        Itens sem a marca atlas=2 vêm do atlas antigo e passam por
+        converter_montagem_antiga (com ATLAS_MUSCLE_XY do programa quando
+        existe), para a montagem não perder músculo nem canal. Não emite
+        sigElectrodesChanged nem mexe na seleção.
+        """
+        tabela = globals().get("ATLAS_MUSCLE_XY") or {}
+        self._electrodes = []
+        for e in (items or []):
+            try:
+                if int(e.get("atlas", 0) or 0) < 2:
+                    conv = converter_montagem_antiga([e], tabela)
+                    if not conv:
+                        continue
+                    e = conv[0]
+                self._electrodes.append({
+                    "id":      int(e.get("id", self._next_id())),
+                    "name":    str(e.get("name", "")),
+                    "x":       float(e.get("x", 0.5)),
+                    "y":       float(e.get("y", 0.5)),
+                    "view":    e.get("view") if e.get("view") in ATLAS_VISTAS else "front",
+                    "channel": int(e.get("channel", -1)),
+                    "muscle":  str(e.get("muscle", "")),
+                    "atlas":   2,
+                })
+            except Exception:
+                continue
+        self.update()
+
+    def get_electrodes(self):
+        """Cópias dos eletrodos (para salvar ou preencher tabelas)."""
+        return [dict(e) for e in self._electrodes]
+
+    def selected_id(self):
+        """Id do eletrodo selecionado, ou -1."""
+        return self._sel
+
+    def select(self, eid):
+        """Seleciona por id a partir de fora e emite sigElectrodeSelected."""
+        self._sel = int(eid); self.update()
+        self.sigElectrodeSelected.emit(self._sel)
+
+    def _next_id(self):
+        """Próximo id = maior id existente + 1."""
+        return max((e["id"] for e in self._electrodes), default=0) + 1
+
+    def _nearest_muscle(self, nx, ny, view, max_d=0.07):
+        """Músculo cujo ponto SENIAM está mais perto de (nx, ny) na vista, ou "".
+
+        A distância pesa x pela proporção da caixa (ATLAS_ASPECTO) para ser
+        isotrópica em pixels; max_d é fração da altura do corpo.
+        """
+        m, _lado, d = self._seniam_mais_proximo(nx, ny, view)
+        return m if d <= max_d else ""
+
+    def _seniam_mais_proximo(self, nx, ny, view):
+        """(músculo, lado, distância) do ponto SENIAM mais próximo na vista."""
+        best, bl, bd = "", "", 1e9
+        for m, lado, mx, my in CorpoHumanoDesenho.pontos_seniam(view):
+            d = math.hypot((mx - nx) * ATLAS_ASPECTO, my - ny)
+            if d < bd:
+                bd, best, bl = d, m, lado
+        return best, bl, bd
+
+    def muscle_side(self, nx):
+        """Lado do corpo pela posição horizontal: na vista frontal o lado D do
+        paciente fica à esquerda de quem olha; no perfil é sempre E."""
+        if self._view == "side":
+            return "E"
+        if abs(nx - 0.5) < 0.035:
+            return ""
+        if self._view == "front":
+            return "D" if nx < 0.5 else "E"
+        return "E" if nx < 0.5 else "D"
+
+    def add_electrode(self, nx, ny, view=None, name=None, channel=-1, muscle=""):
+        """Cria um eletrodo em (nx, ny) do corpo inteiro, reconhecendo o músculo
+        pela posição; nome padrão E<id>; já sai selecionado; emite os sinais."""
+        eid = self._next_id()
+        view = view if view in ATLAS_VISTAS else self._view
+        snap_m = muscle or self._nearest_muscle(nx, ny, view)
+        e = {"id": eid, "name": name or f"E{eid}",
+             "x": float(max(0.02, min(0.98, nx))),
+             "y": float(max(0.0, min(1.0, ny))),
+             "view": view, "channel": int(channel), "muscle": snap_m, "atlas": 2}
+        self._electrodes.append(e)
+        self._sel = eid
+        self.update()
+        self.sigElectrodesChanged.emit()
+        self.sigElectrodeSelected.emit(eid)
+        return e
+
+    def add_electrode_snap(self, nx, ny, view=None):
+        """Como add_electrode, mas cola no ponto SENIAM mais próximo quando ele
+        está a menos de RAIO_SNAP; senão fica no ponto livre."""
+        view = view if view in ATLAS_VISTAS else self._view
+        m, _lado, d = self._seniam_mais_proximo(nx, ny, view)
+        if m and d <= self.RAIO_SNAP:
+            pt = CorpoHumanoDesenho.ponto_seniam(m, _lado, "side" if view == "side" else None)
+            if pt is not None:
+                return self.add_electrode(pt[0], pt[1], view, muscle=m)
+        return self.add_electrode(nx, ny, view)
+
+    def remove_selected(self):
+        """Remove o eletrodo selecionado e zera a seleção."""
+        if self._sel < 0:
+            return
+        self._electrodes = [e for e in self._electrodes if e["id"] != self._sel]
+        self._sel = -1
+        self.update()
+        self.sigElectrodesChanged.emit()
+        self.sigElectrodeSelected.emit(-1)
+
+    def clear_all(self):
+        """Esvazia todos os eletrodos (de todas as vistas) e a seleção."""
+        self._electrodes = []; self._sel = -1
+        self.update(); self.sigElectrodesChanged.emit()
+        self.sigElectrodeSelected.emit(-1)
+
+    def _find(self, eid):
+        """Eletrodo pelo id, ou None."""
+        for e in self._electrodes:
+            if e["id"] == eid:
+                return e
+        return None
+
+    def rename(self, eid, new_name):
+        """Novo nome (até 24 caracteres) e redesenho."""
+        e = self._find(eid)
+        if e:
+            e["name"] = str(new_name)[:24]
+            self.update(); self.sigElectrodesChanged.emit()
+
+    def set_channel(self, eid, ch, muscle=None):
+        """Vincula o eletrodo a um canal; o músculo só muda se muscle não for None."""
+        e = self._find(eid)
+        if e:
+            e["channel"] = int(ch)
+            if muscle is not None:
+                e["muscle"] = str(muscle)
+            self.update(); self.sigElectrodesChanged.emit()
+
+    # ---------------- geometria: corpo <-> tela ----------------
+    def _eh_miniatura(self, w, h):
+        """Miniatura = sem título, legenda nem rótulos (cartão pequeno)."""
+        return self._miniatura_forcada or w < 180 or h < 260
+
+    def _recorte_atual(self):
+        """(x0, y0, x1, y1) normalizados em exibição (área, região ou inteiro)."""
+        if self._area is not None:
+            return CorpoHumanoDesenho.recorte_area(self._area, self._view)
+        if self._recorte is not None:
+            return self._recorte
+        return (0.0, 0.0, 1.0, 1.0)
+
+    def _caixa(self, w, h):
+        """QRectF (px) da caixa do corpo INTEIRO tal que o recorte atual
+        preenche a área útil mantendo a proporção."""
+        mini = self._eh_miniatura(w, h)
+        pt, pb, pl = (2, 2, 2) if mini else (self._pad_top, self._pad_bot, self._pad_lado)
+        aw, ah = max(1.0, w - 2 * pl), max(1.0, h - pt - pb)
+        x0, y0, x1, y1 = self._recorte_atual()
+        rw, rh = max(1e-6, (x1 - x0) * ATLAS_ASPECTO), max(1e-6, (y1 - y0))
+        k = min(aw / rw, ah / rh)          # px por unidade de altura normalizada
+        bh, bw = k, k * ATLAS_ASPECTO
+        cx, cy = pl + aw * 0.5, pt + ah * 0.5
+        return QtCore.QRectF(cx - (x0 + x1) * 0.5 * bw, cy - (y0 + y1) * 0.5 * bh, bw, bh)
+
+    def _zoom_efetivo(self):
+        """Zoom percebido (corpo inteiro = 1.0) incluindo área/região e roda."""
+        x0, y0, x1, y1 = self._recorte_atual()
+        return float(self._zoom) / max(1e-6, (y1 - y0))
+
+    def _transf(self, w, h):
+        """(deslocamento x, deslocamento y, zoom) da roda do mouse."""
+        z = float(self._zoom)
+        fx, fy = self._foco_n[0] * w, self._foco_n[1] * h
+        return fx * (1.0 - z), fy * (1.0 - z), z
+
+    def _tela(self, nx, ny, w, h, caixa=None):
+        """Coordenada normalizada do corpo -> pixel de tela (com zoom)."""
+        caixa = caixa or self._caixa(w, h)
+        ox, oy, z = self._transf(w, h)
+        return (ox + (caixa.left() + nx * caixa.width()) * z,
+                oy + (caixa.top() + ny * caixa.height()) * z)
+
+    def _de_tela(self, sx, sy, w, h, caixa=None):
+        """Pixel de tela -> coordenada normalizada do corpo (inverso de _tela)."""
+        caixa = caixa or self._caixa(w, h)
+        ox, oy, z = self._transf(w, h)
+        px, py = (sx - ox) / z, (sy - oy) / z
+        return ((px - caixa.left()) / max(1e-6, caixa.width()),
+                (py - caixa.top()) / max(1e-6, caixa.height()))
+
+    def _hit(self, sx, sy, w, h):
+        """Id do eletrodo (vista atual) sob o pixel de tela, ou -1."""
+        caixa = self._caixa(w, h)
+        r2 = (self._raio_marcador(w, h) + 4) ** 2
+        best, bd = -1, r2
+        for e in self._electrodes:
+            if e["view"] != self._view:
+                continue
+            ex, ey = self._tela(e["x"], e["y"], w, h, caixa)
+            d = (ex - sx) ** 2 + (ey - sy) ** 2
+            if d <= bd:
+                bd, best = d, e["id"]
+        return best
+
+    def _raio_marcador(self, w, h):
+        """Raio do marcador: fixo em tela, menor na miniatura."""
+        if self._eh_miniatura(w, h):
+            return max(2.5, min(w, h) * 0.04)
+        return self.HANDLE_R
+
+    @staticmethod
+    def _quality_color(q):
+        """Cor do anel de contato: None cinza; >=75 verde; >=50 amarelo;
+        >=30 laranja; abaixo vermelho."""
+        cores = _atlas_cores()
+        if q is None:
+            return QtGui.QColor(cores.get("text_dim", "#8a8a8a"))
+        if q >= 75:
+            return QtGui.QColor(cores.get("success", "#2ea043"))
+        if q >= 50:
+            return QtGui.QColor(cores.get("warning", "#d29922"))
+        if q >= 30:
+            return QtGui.QColor("#e07b30")
+        return QtGui.QColor(cores.get("error", "#e05050"))
+
+    # ---------------- zoom ----------------
+    def set_zoom(self, z, foco_n=None):
+        """Zoom da roda (1..8) e, opcionalmente, o ponto focal (fração 0..1 do
+        widget que fica parado). Emite sigZoomChanged com o zoom efetivo."""
+        self._zoom = max(self.ZOOM_MIN, min(self.ZOOM_MAX, float(z)))
+        if foco_n is not None:
+            self._foco_n = (min(1.0, max(0.0, float(foco_n[0]))),
+                            min(1.0, max(0.0, float(foco_n[1]))))
+        if abs(self._zoom - 1.0) < 1e-6:
+            self._foco_n = (0.5, 0.5)
+        self.update()
+        self.sigZoomChanged.emit(self._zoom_efetivo())
+
+    def zoom_regiao(self, nome):
+        """Enquadramento pronto pelo rótulo de REGIOES ("Corpo inteiro" volta
+        ao inteiro). Usa o recorte real da região; devolve True se existia."""
+        for rot, z, fx, fy in self.REGIOES:
+            if rot != nome:
+                continue
+            self._area = None
+            self._recorte = self.REGIOES_RECORTE.get(rot)
+            self.set_zoom(1.0)
+            return True
+        return False
+
+    def wheelEvent(self, ev):
+        """Roda do mouse amplia/reduz ancorado no cursor."""
+        d = ev.angleDelta().y()
+        if not d:
+            return
+        w, h = self.width(), self.height()
+        antes = self._zoom
+        novo = max(self.ZOOM_MIN, min(self.ZOOM_MAX, antes * (1.15 if d > 0 else 1 / 1.15)))
+        if abs(novo - antes) < 1e-9:
+            ev.accept(); return
+        if novo <= 1.0 + 1e-9:
+            self.set_zoom(1.0)
+        else:
+            # foco = (tela − z·lógico) / (1 − z); ao ampliar (1 − z) é negativo
+            # e o sinal tem de ser preservado, senão a âncora foge.
+            den = 1.0 - novo
+            if abs(den) < 1e-9:
+                ev.accept(); return
+            ox, oy, z = self._transf(w, h)
+            px, py = ev.position().x(), ev.position().y()
+            lx, ly = (px - ox) / z, (py - oy) / z
+            self.set_zoom(novo, ((px - novo * lx) / den / max(1.0, w),
+                                 (py - novo * ly) / den / max(1.0, h)))
+        ev.accept()
+
+    # ---------------- pintura ----------------
+    def paintEvent(self, ev):
+        """Redesenha o atlas (corpo em camada cacheada, calor, eletrodos)."""
+        p = QtGui.QPainter(self)
+        try:
+            self.pintar(p, self.width(), self.height())
+        finally:
+            p.end()
+
+    def pintar(self, p, w, h):
+        """Pinta o atlas completo num painter já aberto, em w x h px (a mesma
+        rota do paintEvent, útil para medir e para miniaturas)."""
+        self._paint(p, w, h)
+
+    def render_highres(self, scale=2.0, title=""):
+        """QPixmap ampliado (w*scale x h*scale) para exportar a imagem.
+
+        Pinta direto (sem camada cacheada) para o contorno sair nítido na
+        escala pedida; o título extra só aparece nessa rota.
+        """
+        w, h = self.width(), self.height()
+        pm = QtGui.QPixmap(max(1, int(w * scale)), max(1, int(h * scale)))
+        pm.fill(QtGui.QColor(_atlas_cores()["surface"]))
+        p = QtGui.QPainter(pm)
+        p.scale(scale, scale)
+        self._paint(p, w, h, export_title=title, direto=True)
+        p.end()
+        return pm
+
+    def _intensidade(self, e):
+        """%MVC (0..100) do eletrodo: canal ao vivo, senão ativação do músculo."""
+        pct, ch = None, e.get("channel")
+        if ch is not None and ch >= 0 and ch in self._live:
+            pct = self._live[ch][0]
+        if pct is None and e.get("muscle"):
+            pct = self._muscle_act.get(e["muscle"])
+        return pct
+
+    def _paint(self, p, w, h, export_title=None, direto=False):
+        """Desenha tudo: fundo, corpo, calor, guias SENIAM, eletrodos, título e
+        legenda. w/h chegam por parâmetro (paintEvent e render_highres)."""
+        cores = _atlas_cores()
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+        p.fillRect(QtCore.QRectF(0, 0, w, h), QtGui.QColor(cores["surface"]))
+        mini = self._eh_miniatura(w, h)
+        caixa = self._caixa(w, h)
+        ox, oy, z = self._transf(w, h)
+        self._z_atual = z
+        transf = QtGui.QTransform()
+        transf.translate(ox, oy); transf.scale(z, z)
+
+        # 1) corpo — camada cacheada no espaço da tela (nítida sob zoom) ou
+        #    pintura direta na exportação
+        if direto:
+            p.save(); p.setTransform(transf, True)
+            self._desenho.pintar_corpo(p, self._view, caixa, cores)
+            p.restore()
+        else:
+            dpr = 1.0
+            try:
+                dpr = float(p.device().devicePixelRatioF() or 1.0)
+            except Exception:
+                pass
+            pm = self._desenho.camada_corpo(self._view, caixa, cores, dpr, transf, (int(w), int(h)))
+            p.drawPixmap(QtCore.QPointF(0, 0), pm)
+
+        # 2) calor NO PONTO DO ELETRODO, recortado pelo corpo (em tela)
+        corpo_tela = transf.map(self._desenho.caminho_corpo(self._view, caixa.width(), caixa.height())
+                                .translated(caixa.left(), caixa.top()))
+        base_r = caixa.height() * z * 0.075
+        pontos, cobertos = [], set()
+        for e in self._electrodes:
+            if e.get("view") != self._view:
+                continue
+            pct = self._intensidade(e)
+            if pct is None:
+                continue
+            t = max(0.0, min(1.0, float(pct) / 100.0))
+            ex, ey = self._tela(e["x"], e["y"], w, h, caixa)
+            pontos.append((ex, ey, t, base_r * (0.6 + 0.9 * t)))
+            if e.get("muscle"):
+                cobertos.add(e["muscle"])
+        # músculos ativos sem eletrodo nesta vista: nos pontos SENIAM (os dois
+        # lados, porque a leitura por músculo não traz o lado)
+        for m, _lado, mx, my in CorpoHumanoDesenho.pontos_seniam(self._view):
+            if m in cobertos:
+                continue
+            pct = self._muscle_act.get(m)
+            if pct is None:
+                continue
+            t = max(0.0, min(1.0, float(pct) / 100.0))
+            ex, ey = self._tela(mx, my, w, h, caixa)
+            pontos.append((ex, ey, t, base_r * (0.6 + 0.9 * t)))
+        CorpoHumanoDesenho.pintar_calor(p, pontos, corpo_tela)
+
+        # 3) guias SENIAM no modo de colocação
+        if self._place_mode and not mini:
+            guia = QtGui.QColor(cores["accent"]); guia.setAlpha(150)
+            p.setPen(QtGui.QPen(guia, 1.2))
+            p.setBrush(QtGui.QBrush(QtGui.QColor(cores["surface"])))
+            for m, _lado, mx, my in CorpoHumanoDesenho.pontos_seniam(self._view):
+                ex, ey = self._tela(mx, my, w, h, caixa)
+                if -6 <= ex <= w + 6 and -6 <= ey <= h + 6:
+                    p.drawEllipse(QtCore.QPointF(ex, ey), 3.2, 3.2)
+
+        # 4) eletrodos (tamanho de tela)
+        self._paint_electrodes(p, w, h, caixa)
+
+        if mini:
+            return
+        # 5) título, contagem e legenda por cima
+        fonte_ui = _atlas_fonte(True)
+        fundo = QtGui.QColor(cores["surface"]); fundo.setAlpha(215)
+        p.fillRect(QtCore.QRectF(0, 0, w, 36 if export_title else 21), fundo)
+        p.setPen(QtGui.QPen(QtGui.QColor(cores["text"])))
+        p.setFont(QtGui.QFont(fonte_ui, 10, QtGui.QFont.Weight.Bold))
+        head = _atlas_tr(ATLAS_TITULOS_VISTA.get(self._view, "Vista Frontal (anterior)"))
+        if self._area is not None:
+            a = ATLAS_AREAS[self._area]
+            head = _atlas_tr(a["titulo"]) + (f" {a['lado']}" if a["lado"] else "")
+            head += "  ·  " + _atlas_tr(ATLAS_TITULOS_VISTA.get(self._view, ""))
+        p.drawText(QtCore.QRectF(0, 2, w, 18), QtCore.Qt.AlignmentFlag.AlignHCenter, head)
+        if export_title:
+            p.setFont(QtGui.QFont(fonte_ui, 8))
+            p.setPen(QtGui.QPen(QtGui.QColor(cores["text_dim"])))
+            p.drawText(QtCore.QRectF(0, 20, w, 14), QtCore.Qt.AlignmentFlag.AlignHCenter,
+                       str(export_title)[:60])
+        p.fillRect(QtCore.QRectF(0, h - 38, w, 38), fundo)
+        p.setFont(QtGui.QFont(fonte_ui, 8))
+        n_here = sum(1 for e in self._electrodes if e["view"] == self._view)
+        p.setPen(QtGui.QPen(QtGui.QColor(cores["text_dim"])))
+        p.drawText(QtCore.QRectF(6, h - 34, w - 12, 14), QtCore.Qt.AlignmentFlag.AlignLeft,
+                   tr("Eletrodos nesta vista: {}   ·   total: {}").format(
+                       n_here, len(self._electrodes)))
+        p.setFont(QtGui.QFont(fonte_ui, 7))
+        p.drawText(QtCore.QRectF(6, h - 18, 54, 14), QtCore.Qt.AlignmentFlag.AlignLeft,
+                   tr("Qualidade:"))
+        seg = [(tr("baixa"), self._quality_color(20)),
+               (tr("média"), self._quality_color(40)),
+               (tr("boa"), self._quality_color(60)),
+               (tr("ótima"), self._quality_color(85))]
+        sx = 60
+        for lbl, col in seg:
+            p.setBrush(QtGui.QBrush(col)); p.setPen(QtCore.Qt.PenStyle.NoPen)
+            p.drawRect(QtCore.QRectF(sx, h - 16, 11, 9))
+            p.setPen(QtGui.QPen(QtGui.QColor(cores["text_dim"])))
+            p.drawText(int(sx + 13), int(h - 8), lbl)
+            sx += 13 + p.fontMetrics().horizontalAdvance(lbl) + 8
+
+    def _paint_electrodes(self, p, w, h, caixa):
+        """Marcadores da vista atual: halo de seleção, anel de qualidade, disco
+        na cor do canal, número e rótulo "nome · músculo D · 42%".
+
+        Duas passadas: primeiro os rótulos (com desvio de colisão e linha-guia),
+        depois os marcadores, para nenhum rótulo cobrir um marcador. O rótulo
+        vai para FORA do corpo (margem do lado mais próximo), troca de lado se
+        não couber, e o número sai preto ou branco conforme a luminância do
+        disco (as cores neon dos canais não leem com texto branco). Nada de
+        rótulo na miniatura.
+        """
+        cores = _atlas_cores()
+        canais = _atlas_cores_canais()
+        mini = self._eh_miniatura(w, h)
+        R = self._raio_marcador(w, h)
+        fonte_num = QtGui.QFont(_atlas_fonte(False), 9 if R >= 10 else 6, QtGui.QFont.Weight.Bold)
+        lbl_font = QtGui.QFont(_atlas_fonte(True), 7, QtGui.QFont.Weight.Bold)
+        fm = QtGui.QFontMetrics(lbl_font)
+        ox_, _oy, z_ = self._transf(w, h)
+        meio = ox_ + (caixa.left() + caixa.width() * 0.5) * z_
+        visiveis = []
+        for e in self._electrodes:
+            if e["view"] != self._view:
+                continue
+            ex, ey = self._tela(e["x"], e["y"], w, h, caixa)
+            if not (-R <= ex <= w + R and -R <= ey <= h + R):
+                continue
+            ch = e.get("channel", -1)
+            pct, qual = None, None
+            if ch is not None and ch >= 0 and ch in self._live:
+                pct, qual = self._live[ch]
+            visiveis.append((e, ex, ey, ch, pct, qual))
+
+        # ---- passada 1: rótulos ----
+        ocupados = []
+        if self._show_labels and not mini:
+            p.setFont(lbl_font)
+            for e, ex, ey, ch, pct, qual in visiveis:
+                qcol = self._quality_color(qual)
+                # Nome padrão "E<id>" não se repete: o número já está no disco.
+                # Q só em janela larga: o anel colorido já diz a qualidade.
+                parts = []
+                nome = str(e.get("name") or "")
+                if nome and nome != f"E{e['id']}":
+                    parts.append(nome)
+                mus = e.get("muscle") or ""
+                if mus:
+                    lado = self.muscle_side(e.get("x", 0.5))
+                    parts.append(f"{_atlas_tr(atlas_nome_curto(mus))}{(' ' + lado) if lado else ''}")
+                if pct is not None:
+                    parts.append(f"{pct:.0f}%")
+                if qual is not None and w >= 400:
+                    parts.append(f"Q{qual:.0f}")
+                if not parts:
+                    parts.append(nome or f"E{e['id']}")
+                txt = " · ".join(parts)
+                tw = fm.horizontalAdvance(txt) + 10
+                # lado preferido: para fora do corpo; se não couber, o outro
+                lado_pref = -1 if ex > meio else 1
+                bx = None
+                for s in (lado_pref, -lado_pref):
+                    cand = (ex - s * (R + 8) - tw) if s > 0 else (ex - s * (R + 8))
+                    if 2.0 <= cand <= w - tw - 2.0:
+                        bx = cand
+                        break
+                if bx is None:
+                    cand = (ex - lado_pref * (R + 8) - tw) if lado_pref > 0 else (ex - lado_pref * (R + 8))
+                    bx = max(2.0, min(cand, w - tw - 2.0))
+                by = max(2.0, min(ey - 8, h - 18))
+                alvo = QtCore.QRectF(bx, by, tw, 15)
+                for _ in range(6):
+                    if not any(alvo.intersects(o) for o in ocupados):
+                        break
+                    by += 17.0
+                    if by > h - 18:
+                        by = max(2.0, min(ey - 8, h - 18)) - 17.0
+                    alvo = QtCore.QRectF(bx, by, tw, 15)
+                else:
+                    continue
+                ocupados.append(alvo)
+                # linha-guia quando a caixa não encosta no marcador
+                if alvo.right() < ex - R:
+                    ax = alvo.right()
+                elif alvo.left() > ex + R:
+                    ax = alvo.left()
+                else:
+                    ax = None
+                if ax is not None and (abs(alvo.center().y() - ey) > R or abs(ax - ex) > R + 10):
+                    p.setPen(QtGui.QPen(qcol, 1.0))
+                    p.drawLine(QtCore.QPointF(ax, alvo.center().y()), QtCore.QPointF(ex, ey))
+                fundo_rot = QtGui.QColor(cores["surface_alt"]); fundo_rot.setAlpha(232)
+                p.setBrush(QtGui.QBrush(fundo_rot))
+                p.setPen(QtGui.QPen(qcol, 1.2))
+                p.drawRoundedRect(alvo, 3, 3)
+                p.setPen(QtGui.QPen(QtGui.QColor(cores["text"])))
+                p.drawText(alvo, QtCore.Qt.AlignmentFlag.AlignCenter, txt)
+
+        # ---- passada 2: marcadores por cima ----
+        for e, ex, ey, ch, pct, qual in visiveis:
+            base = (QtGui.QColor(canais[ch]) if (ch is not None and 0 <= ch < len(canais))
+                    else QtGui.QColor(cores["accent"]))
+            if e["id"] == self._sel and not mini:
+                halo = QtGui.QColor(cores["text"]); halo.setAlpha(50)
+                p.setBrush(QtGui.QBrush(halo)); p.setPen(QtCore.Qt.PenStyle.NoPen)
+                p.drawEllipse(QtCore.QPointF(ex, ey), R + 7, R + 7)
+            if not mini:
+                qcol = self._quality_color(qual)
+                p.setBrush(QtCore.Qt.BrushStyle.NoBrush)
+                p.setPen(QtGui.QPen(qcol, 3.2 if qual is not None else 1.6,
+                                    QtCore.Qt.PenStyle.SolidLine if qual is not None
+                                    else QtCore.Qt.PenStyle.DotLine))
+                p.drawEllipse(QtCore.QPointF(ex, ey), R + 2.2, R + 2.2)
+            p.setBrush(QtGui.QBrush(base))
+            p.setPen(QtGui.QPen(QtGui.QColor(cores["surface"]), 1.5 if not mini else 0.8))
+            p.drawEllipse(QtCore.QPointF(ex, ey), R, R)
+            if R >= 6:
+                num = (f"{ch + 1}" if (self._numeracao == "canal" and ch is not None and ch >= 0)
+                       else str(e["id"]))
+                lum = 0.299 * base.red() + 0.587 * base.green() + 0.114 * base.blue()
+                p.setPen(QtGui.QPen(QtGui.QColor("#101418" if lum > 150 else "#ffffff")))
+                p.setFont(fonte_num)
+                p.drawText(QtCore.QRectF(ex - R, ey - R, 2 * R, 2 * R),
+                           QtCore.Qt.AlignmentFlag.AlignCenter, num)
+
+    # ---------------- interação ----------------
+    def mousePressEvent(self, ev):
+        """Clique: botão direito com zoom = pan; modo de colocação = novo eletrodo
+        (com snap SENIAM); senão seleciona e inicia o arraste."""
+        w, h = self.width(), self.height()
+        sx, sy = ev.position().x(), ev.position().y()
+        if ev.button() == QtCore.Qt.MouseButton.RightButton and self._zoom > 1.0:
+            self._pan_ini = (sx, sy, self._foco_n[0], self._foco_n[1])
+            return
+        if self._place_mode:
+            nx, ny = self._de_tela(sx, sy, w, h)
+            self.add_electrode_snap(nx, ny)
+            return
+        eid = self._hit(sx, sy, w, h)
+        self._sel = eid
+        self._dragging = eid >= 0
+        self.sigElectrodeSelected.emit(eid)
+        self.update()
+
+    def mouseMoveEvent(self, ev):
+        """Pan com o botão direito; arraste do eletrodo selecionado reavaliando
+        o músculo sob ele a cada movimento."""
+        if self._pan_ini is not None:
+            x0, y0, fx0, fy0 = self._pan_ini
+            w0, h0 = max(1, self.width()), max(1, self.height())
+            z = max(1e-6, self._zoom - 1.0)
+            self.set_zoom(self._zoom, (fx0 + (ev.position().x() - x0) / (w0 * z),
+                                       fy0 + (ev.position().y() - y0) / (h0 * z)))
+            return
+        if not self._dragging or self._sel < 0:
+            return
+        e = self._find(self._sel)
+        if e is None:
+            return
+        w, h = self.width(), self.height()
+        nx, ny = self._de_tela(ev.position().x(), ev.position().y(), w, h)
+        e["x"] = max(0.02, min(0.98, nx))
+        e["y"] = max(0.0, min(1.0, ny))
+        novo = self._nearest_muscle(e["x"], e["y"], e["view"])
+        if novo and novo != e.get("muscle"):
+            e["muscle"] = novo
+            self.sigElectrodesChanged.emit()
+        self.update()
+
+    def mouseReleaseEvent(self, ev):
+        """Encerra pan/arraste; confirma o músculo da posição final."""
+        self._pan_ini = None
+        if self._dragging:
+            self._dragging = False
+            e = self._find(self._sel)
+            if e is not None:
+                m = self._nearest_muscle(e["x"], e["y"], e["view"])
+                if m:
+                    e["muscle"] = m
+            self.sigElectrodesChanged.emit()
+
+    def mouseDoubleClickEvent(self, ev):
+        """Duplo-clique num marcador abre o diálogo de renomear (pede_texto do
+        programa se existir, senão QInputDialog)."""
+        w, h = self.width(), self.height()
+        eid = self._hit(ev.position().x(), ev.position().y(), w, h)
+        if eid < 0:
+            return
+        e = self._find(eid)
+        pede = globals().get("pede_texto")
+        if callable(pede):
+            new, ok = pede(self, tr("Renomear eletrodo"), tr("Nome do eletrodo:"),
+                           QtWidgets.QLineEdit.EchoMode.Normal, e["name"])
+        else:
+            new, ok = QtWidgets.QInputDialog.getText(
+                self, tr("Renomear eletrodo"), tr("Nome do eletrodo:"),
+                QtWidgets.QLineEdit.EchoMode.Normal, e["name"])
+        if ok and str(new).strip():
+            self.rename(eid, str(new).strip())
+
+    def keyPressEvent(self, ev):
+        """Delete/Backspace apagam o eletrodo selecionado."""
+        if ev.key() in (QtCore.Qt.Key.Key_Delete, QtCore.Qt.Key.Key_Backspace):
+            self.remove_selected()
+        else:
+            super().keyPressEvent(ev)
+
+
+# Fator entre x antigo (fração da largura do widget, 300 px) e x novo (fração
+# da caixa do corpo, 0.5 * 404 px na mesma janela): um deslocamento horizontal
+# antigo vale ~1,49x em coordenadas novas.
+_ATLAS_FATOR_X_ANTIGO = 300.0 / (ATLAS_ASPECTO * (470.0 - 24.0 - 42.0))
+
+
+def _atlas_lado_antigo(x, view):
+    """Lado do paciente pela coordenada x antiga (regra do muscle_side de hoje):
+    x<0.5 na frente = direito; na vista posterior, invertido. Na linha média
+    devolve "D" por convenção."""
+    if view == "back":
+        return "E" if x < 0.5 - 1e-9 else "D"
+    return "D" if x <= 0.5 + 1e-9 else "E"
+
+
+def converter_montagem_antiga(eletrodos, ATLAS_MUSCLE_XY_antigo):
+    """Converte eletrodos do atlas antigo (retângulos) para as coordenadas do
+    corpo novo, sem perder id, nome, canal, músculo nem vista.
+
+    Músculo conhecido em ELETRODOS_SENIAM e na mesma vista: vai para o ponto
+    SENIAM do lado inferido pelo x antigo. Senão: desloca a coordenada antiga
+    pela diferença entre a posição antiga e a nova do músculo vizinho mais
+    próximo em ATLAS_MUSCLE_XY_antigo (testando o espelho). Marca atlas=2 para
+    não converter duas vezes; itens já com atlas>=2 passam intactos.
+    """
+    tabela = dict(ATLAS_MUSCLE_XY_antigo or {})
+    novos = []
+    for e in (eletrodos or []):
+        if not isinstance(e, dict):
+            continue
+        try:
+            view = e.get("view") if e.get("view") in ATLAS_VISTAS else "front"
+            x, y = float(e.get("x", 0.5)), float(e.get("y", 0.5))
+            n = {"id": int(e.get("id", len(novos) + 1)), "name": str(e.get("name", "")),
+                 "x": x, "y": y, "view": view, "channel": int(e.get("channel", -1)),
+                 "muscle": str(e.get("muscle", "")), "atlas": 2}
+        except Exception:
+            continue
+        if int(e.get("atlas", 0) or 0) >= 2:
+            novos.append(n)
+            continue
+        m = n["muscle"]
+        sen = ELETRODOS_SENIAM.get(m)
+        if sen is not None and sen["vista"] == view:
+            pt = CorpoHumanoDesenho.ponto_seniam(m, _atlas_lado_antigo(x, view))
+            n["x"], n["y"] = pt[0], pt[1]
+        else:
+            melhor = None
+            for nome, (v, mx, my) in tabela.items():
+                if v != view or nome not in ELETRODOS_SENIAM:
+                    continue
+                for mxx in (mx, 1.0 - mx):
+                    d2 = (mxx - x) ** 2 + (my - y) ** 2
+                    if melhor is None or d2 < melhor[0]:
+                        melhor = (d2, nome, mxx, my)
+            if melhor is not None:
+                _d2, nome, mxx, my = melhor
+                pt = CorpoHumanoDesenho.ponto_seniam(nome, _atlas_lado_antigo(mxx, view))
+                if ELETRODOS_SENIAM[nome]["vista"] != view:
+                    pt = (0.5 + (mxx - 0.5) * _ATLAS_FATOR_X_ANTIGO, my, view)
+                n["x"] = pt[0] + (x - mxx) * _ATLAS_FATOR_X_ANTIGO
+                n["y"] = pt[1] + (y - my)
+            else:
+                n["x"] = 0.5 + (x - 0.5) * _ATLAS_FATOR_X_ANTIGO
+            n["x"] = float(max(0.02, min(0.98, n["x"])))
+            n["y"] = float(max(0.0, min(1.0, n["y"])))
+        novos.append(n)
+    return novos
+# === FIM DO BLOCO ===
 
 
 # ============================================================
@@ -61947,7 +63912,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
 
         # ---- coluna esquerda: o atlas ----
         left = QtWidgets.QVBoxLayout(); left.setSpacing(4)
-        self.emg_atlas = MuscleAtlasWidget()
+        self.emg_atlas = AtlasCorpoWidget()
         self.emg_atlas.setMinimumWidth(300)
         self.emg_atlas.sigElectrodesChanged.connect(self._emg_atlas_on_changed)
         self.emg_atlas.sigElectrodeSelected.connect(self._emg_atlas_on_selected)
@@ -61966,17 +63931,24 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         ctl = QtWidgets.QHBoxLayout()
         ctl.addWidget(QtWidgets.QLabel(tr("Vista:")))
         self.emg_atlas_view = QtWidgets.QComboBox()
-        self.emg_atlas_view.addItems([tr("Frontal (anterior)"), tr("Posterior")])
+        # P3: três vistas + áreas recortadas (zoom anatômico) no mesmo combo.
+        # userData "view:<vista>" ou "area:<id>"; o separador não tem dado.
+        self.emg_atlas_view.addItem(tr("Frontal (anterior)"), "view:front")
+        self.emg_atlas_view.addItem(tr("Posterior"), "view:back")
+        self.emg_atlas_view.addItem(tr("Lado"), "view:side")
+        self.emg_atlas_view.insertSeparator(self.emg_atlas_view.count())
+        for _aid, _tit, _lado in AtlasCorpoWidget.areas_disponiveis():
+            self.emg_atlas_view.addItem(
+                tr(_tit) + (f" {_lado}" if _lado else ""), f"area:{_aid}")
         self.emg_atlas_view.setMinimumWidth(150)
-        self.emg_atlas_view.currentIndexChanged.connect(
-            lambda i: self.emg_atlas.set_view("back" if i == 1 else "front"))
+        self.emg_atlas_view.currentIndexChanged.connect(self._emg_atlas_vista_escolhida)
         ctl.addWidget(self.emg_atlas_view)
         # Zoom por REGIÃO: no corpo inteiro, antebraço e mão ficam com poucos
         # pixels e posicionar eletrodo ali vira sorte.
         ctl.addWidget(QtWidgets.QLabel(tr("Zoom:")))
         self.emg_atlas_regiao = QtWidgets.QComboBox()
         self.emg_atlas_regiao.setMinimumWidth(160)
-        for rot, _z, _fx, _fy in MuscleAtlasWidget.REGIOES:
+        for rot, _z, _fx, _fy in AtlasCorpoWidget.REGIOES:
             self.emg_atlas_regiao.addItem(tr(rot), rot)
         self.emg_atlas_regiao.setToolTip(tr(
             "Aproxima numa região do corpo. Também dá para usar a roda do "
@@ -62075,6 +64047,33 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         self._emg_atlas_reload_history()
         return grp
 
+    def _emg_atlas_vista_escolhida(self, i):
+        """Combo de vista do atlas (P3): "view:front|back|side" troca a vista e
+        sai da área; "area:<id>" mostra a área recortada (zoom anatômico).
+
+        O separador tem userData None e é ignorado. A flag
+        _emg_atlas_mudando_area impede _emg_atlas_zoom_mudou de marcar
+        "(livre)" no combo de região, porque a área já é um enquadramento.
+        """
+        dado = self.emg_atlas_view.itemData(i)
+        if not isinstance(dado, str) or ":" not in dado:
+            return
+        tipo, valor = dado.split(":", 1)
+        self._emg_atlas_mudando_area = True
+        try:
+            if tipo == "area":
+                self.emg_atlas.set_area(valor)
+            else:
+                self.emg_atlas.set_area(None)
+                self.emg_atlas.set_view(valor)
+        finally:
+            self._emg_atlas_mudando_area = False
+        cb = getattr(self, "emg_atlas_regiao", None)
+        if cb is not None:
+            _b = cb.blockSignals(True)
+            cb.setCurrentIndex(0)
+            cb.blockSignals(_b)
+
     def _emg_atlas_toggle_place(self, on):
         """Liga o modo de inserção de eletrodo no atlas e troca o texto do botão
         para indicar que se espera um clique no corpo."""
@@ -62164,7 +64163,12 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 mcb = QtWidgets.QComboBox()
                 for mn in COMMON_MUSCLES.keys():
                     mcb.addItem(tr(mn), mn)          # exibe traduzido, guarda a chave
-                if e["muscle"] in COMMON_MUSCLES:
+                # Músculo SENIAM fora de COMMON_MUSCLES (rosto, fibular...):
+                # entra como item extra para a tabela mostrar o que o atlas
+                # reconheceu, sem mexer na lista de músculos dos canais.
+                if e["muscle"] and e["muscle"] not in COMMON_MUSCLES:
+                    mcb.addItem(tr(e["muscle"]), e["muscle"])
+                if e["muscle"]:
                     _j = mcb.findData(e["muscle"])
                     if _j >= 0:
                         mcb.setCurrentIndex(_j)
@@ -62348,7 +64352,8 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                 str(rec.get("n_electrodes", "")),
                 ("—" if rec.get("quality_mean") is None
                  else f"{rec['quality_mean']:.1f}"),
-                (tr("Posterior") if rec.get("view") == "back" else "Frontal"),
+                ({"back": tr("Posterior"), "side": tr("Lateral")}.get(
+                    rec.get("view"), "Frontal")),
             ]
             for c, v in enumerate(vals):
                 it = QtWidgets.QTableWidgetItem(str(v))
@@ -62532,7 +64537,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
             # músculo do canal (para o heatmap)
             m = (self.config.emg_channel_muscle[ch]
                  if ch < len(self.config.emg_channel_muscle) else "")
-            if m in ATLAS_MUSCLE_XY and pct is not None:
+            if (m in ELETRODOS_SENIAM or m in ATLAS_MUSCLE_XY) and pct is not None:
                 muscle_act[m] = max(muscle_act.get(m, 0.0), pct)
         self._emg_atlas_live = live
         self.emg_atlas.set_muscle_activations(muscle_act)
@@ -62560,7 +64565,7 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
                     q_it.setText("—")
                 else:
                     q_it.setText(f"{qual:.0f}")
-                    q_it.setForeground(MuscleAtlasWidget._quality_color(qual))
+                    q_it.setForeground(AtlasCorpoWidget._quality_color(qual))
 
     def _emg_channel_quality(self, data, ch, env):
         """Índice 0..100 de qualidade/acurácia do eletrodo:
@@ -70181,6 +72186,21 @@ class EEGCollectorWindow(QtWidgets.QMainWindow):
         cb = getattr(self, "emg_atlas_regiao", None)
         if cb is None:
             return
+        # Mudança vinda de set_area (combo de vista, P3): a área já é um
+        # enquadramento, então "(livre)" seria mentira.
+        if getattr(self, "_emg_atlas_mudando_area", False):
+            return
+        # Saiu da área por outro caminho (zoom por região, "Corpo inteiro"):
+        # o combo de vista volta a mostrar a vista, não a área.
+        vcb = getattr(self, "emg_atlas_view", None)
+        _area = getattr(self.emg_atlas, "get_area", lambda: None)()
+        if (vcb is not None and _area is None
+                and str(vcb.currentData() or "").startswith("area:")):
+            _j = vcb.findData("view:" + self.emg_atlas.get_view())
+            if _j >= 0:
+                _b = vcb.blockSignals(True)
+                vcb.setCurrentIndex(_j)
+                vcb.blockSignals(_b)
         antigo = cb.blockSignals(True)
         if abs(z - 1.0) < 1e-6:
             cb.setCurrentIndex(0)

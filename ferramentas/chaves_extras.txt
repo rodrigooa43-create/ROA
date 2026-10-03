@@ -60,3 +60,34 @@ nenhuma adiantada
 {0} pausas
 nenhuma pausa
 Isto não é laudo nem diagnóstico.
+# --- P3 atlas muscular: títulos de área, músculos SENIAM e nomes curtos ---
+Bíceps
+Delt. ant.
+Delt. médio
+Delt. post.
+ECM
+ECR
+Eretor esp.
+Ext. dedos
+FCR
+Fibular
+Flex. dedos
+Frontal
+Gastroc. med.
+Glúteo máx.
+Glúteo méd.
+Isquiotib.
+Latíssimo
+Masseter
+Orbicular
+Peitoral
+Reto abd.
+Reto fem.
+Temporal
+Tibial ant.
+Trap. sup.
+Tríceps
+Vasto lat.
+Vasto med.
+Vista Lateral (perfil esquerdo)
+Zigomático
